@@ -13,7 +13,7 @@ import java.util.List;
 import org.apache.maven.plugin.logging.Log;
 import org.codehaus.plexus.util.StringUtils;
 
-public final class Utils {
+final class Utils {
     public static String executeAndGetResult(File workingDirectory, String... command) {
         try {
             Process process = buildPlatformIndependentProcess(command).directory(workingDirectory).start();

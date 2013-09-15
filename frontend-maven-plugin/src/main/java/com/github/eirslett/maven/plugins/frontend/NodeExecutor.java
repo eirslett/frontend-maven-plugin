@@ -7,7 +7,7 @@ import java.io.File;
 import static com.github.eirslett.maven.plugins.frontend.Utils.executeAndGetResult;
 import static com.github.eirslett.maven.plugins.frontend.Utils.executeAndRedirectOutput;
 
-public class NodeExecutor {
+final class NodeExecutor {
     private final File baseDir;
     private final Log log;
     private final OS os;

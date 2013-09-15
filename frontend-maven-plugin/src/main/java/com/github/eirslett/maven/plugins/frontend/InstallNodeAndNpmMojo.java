@@ -23,12 +23,11 @@ public final class InstallNodeAndNpmMojo extends AbstractMojo {
 
     }
 
-    public InstallNodeAndNpmMojo(String nodeVersion, String npmVersion, String targetDir){
+    InstallNodeAndNpmMojo(String nodeVersion, String npmVersion, String targetDir){
         this.nodeVersion = nodeVersion;
         this.npmVersion = npmVersion;
         this.targetDir = targetDir;
     }
-
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {

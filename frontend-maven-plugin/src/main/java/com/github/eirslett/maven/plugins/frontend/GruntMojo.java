@@ -1,6 +1,5 @@
 package com.github.eirslett.maven.plugins.frontend;
 
-import com.google.common.base.Strings;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -26,7 +25,7 @@ public class GruntMojo extends AbstractMojo {
         logger = super.getLog();
     }
 
-    public GruntMojo(File workingDirectory, String target, Log logger){
+    GruntMojo(File workingDirectory, String target, Log logger){
         this.workingDirectory = workingDirectory;
         this.target = target;
         this.logger = logger;

@@ -28,7 +28,7 @@ public final class KarmaRunMojo extends AbstractMojo {
         logger = super.getLog();
     }
 
-    public KarmaRunMojo(File workingDirectory, String karmaConfPath, Log logger){
+    KarmaRunMojo(File workingDirectory, String karmaConfPath, Log logger){
         this.workingDirectory = workingDirectory;
         this.karmaConfPath = karmaConfPath;
         this.logger = logger;
