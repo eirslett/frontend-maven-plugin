@@ -17,7 +17,7 @@ import java.nio.channels.ReadableByteChannel;
 import java.util.HashMap;
 import java.util.Scanner;
 
-public final class NodeAndNPMInstaller {
+final class NodeAndNPMInstaller {
     private final String nodeVersion;
     private final String npmVersion;
     private final String targetDir;

@@ -16,7 +16,7 @@ import static com.github.eirslett.maven.plugins.frontend.Utils.executeAndRedirec
 public final class NpmInstallMojo extends AbstractMojo {
 
     @Parameter(defaultValue = "${basedir}", property = "workingDirectory", required = false)
-    private java.io.File workingDirectory;
+    private File workingDirectory;
 
     private final Log logger;
 
@@ -24,7 +24,7 @@ public final class NpmInstallMojo extends AbstractMojo {
         logger = super.getLog();
     }
 
-    public NpmInstallMojo(File workingDirectory, Log logger){
+    NpmInstallMojo(File workingDirectory, Log logger){
         this.workingDirectory = workingDirectory;
         this.logger = logger;
     }
