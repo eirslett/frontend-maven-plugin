@@ -9,7 +9,7 @@
     <packaging>maven-plugin</packaging>
     <version>0.0.1</version>
 
-    <name>Plugin for frontend builds (NPM, Karma, Grunt etc.)</name>
+    <name>Maven Frontend Plugin</name>
 
     <description>
         This Maven plugin lets you install Node/NPM locally
@@ -28,7 +28,7 @@
 
     <scm>
         <url>https://github.com/eirslett/frontend-maven-plugin</url>
-        <connection>https://github.com/eirslett/frontend-maven-plugin.git</connection>
+        <connection>scm:git:https://github.com/eirslett/frontend-maven-plugin.git</connection>
     </scm>
 
     <developers>
@@ -92,6 +92,43 @@
                         <goals>
                             <goal>descriptor</goal>
                         </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.9.1</version>
+                <executions>
+                    <execution>
+                        <id>Generate javadoc</id>
+                        <goals>
+                            <!--<goal>javadoc</goal>-->
+                            <goal>jar</goal>
+                        </goals>
+                        <phase>package</phase>
+                        <configuration>
+                            <attach>true</attach>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>2.2.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                        <phase>package</phase>
+                        <configuration>
+                            <attach>true</attach>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
