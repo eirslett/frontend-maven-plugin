@@ -4,16 +4,44 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <groupId>com.github.eirslett</groupId>
     <artifactId>frontend-maven-plugin</artifactId>
     <packaging>maven-plugin</packaging>
-
-    <parent>
-        <groupId>com.github.eirslett</groupId>
-        <artifactId>frontend-maven-plugin-with-example</artifactId>
-        <version>1.0-SNAPSHOT</version>
-    </parent>
+    <version>0.0.1</version>
 
     <name>Plugin for frontend builds (NPM, Karma, Grunt etc.)</name>
+
+    <description>
+        This Maven plugin lets you install Node/NPM locally
+        for your project, install dependencies with NPM,
+        run Grunt tasks, and/or run Karma tests.
+    </description>
+
+    <url>https://github.com/eirslett/frontend-maven-plugin</url>
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <scm>
+        <url>https://github.com/eirslett/frontend-maven-plugin</url>
+        <connection>https://github.com/eirslett/frontend-maven-plugin.git</connection>
+    </scm>
+
+    <developers>
+        <developer>
+            <id>eirslett</id>
+            <name>Eirik Sletteberg</name>
+            <email>eiriksletteberg@gmail.com</email>
+        </developer>
+    </developers>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 
     <dependencies>
         <dependency>
@@ -21,21 +49,25 @@
             <artifactId>jarchivelib</artifactId>
             <version>0.3.0</version>
         </dependency>
+
         <dependency>
             <groupId>org.codehaus.jackson</groupId>
             <artifactId>jackson-mapper-asl</artifactId>
             <version>1.9.13</version>
         </dependency>
+
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-plugin-api</artifactId>
             <version>3.1.0</version>
         </dependency>
+
         <dependency>
             <groupId>org.apache.maven.plugin-tools</groupId>
             <artifactId>maven-plugin-annotations</artifactId>
             <version>3.2</version>
         </dependency>
+
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
