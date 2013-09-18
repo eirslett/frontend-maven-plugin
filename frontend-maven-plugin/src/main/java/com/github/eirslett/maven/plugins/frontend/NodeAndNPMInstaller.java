@@ -56,12 +56,28 @@ final class NodeAndNPMInstaller {
         if(os == OS.Windows){
             return nodeIsAlreadyInstalledOnWindows();
         } else {
-            return false;
+            return nodeIsAlreadyInstalledDefault();
         }
     }
 
     private boolean nodeIsAlreadyInstalledOnWindows() {
         final File nodeFile = new File(targetDir + "\\node\\node.exe");
+        if(nodeFile.exists()){
+            final String version = new NodeExecutor(new File(targetDir), log).executeWithResult(" --version");
+            if(version.equals(nodeVersion)){
+                log.info("Node "+version+" is already installed.");
+                return true;
+            } else {
+                log.info("Node "+version+" was installed, but we need version "+nodeVersion);
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    private boolean nodeIsAlreadyInstalledDefault() {
+        final File nodeFile = new File(targetDir + "/node/node");
         if(nodeFile.exists()){
             final String version = new NodeExecutor(new File(targetDir), log).executeWithResult(" --version");
             if(version.equals(nodeVersion)){
@@ -131,13 +147,32 @@ final class NodeAndNPMInstaller {
             log.info("Installing node version " + nodeVersion);
             final String osName = getOsName();
             final String architecture = this.architecture.toString();
-            downloadUrl = DOWNLOAD_ROOT+nodeVersion+"/node-"+nodeVersion+"-"+osName+"-"+architecture+".tar.gz";
-            final String targetName = targetDir + "/node/node.tar.gz";
+            final String longNodeFilename = "node-" + nodeVersion + "-" + osName + "-" + architecture;
+            downloadUrl = DOWNLOAD_ROOT + nodeVersion + "/" + longNodeFilename + ".tar.gz";
+
+            new File(targetDir + "/node_tmp").mkdir();
+
+            final String targetName = targetDir + "/node_tmp/node.tar.gz";
             downloadFile(downloadUrl, targetName);
 
             final File archive = new File(targetName);
             final Archiver archiver = ArchiverFactory.createArchiver(archive);
-            archiver.extract(archive, new File(targetDir));
+            archiver.extract(archive, new File(targetDir + "/node_tmp"));
+
+            // new File(targetName).delete();
+
+            // Search for the node binary
+            File nodeBinary = new File(targetDir + "/node_tmp/"+longNodeFilename+"/bin/node");
+            if(!nodeBinary.exists()){
+                throw new FileNotFoundException("Could not find the downloaded Node.js binary in "+nodeBinary);
+            } else {
+                File destination = new File(targetDir + "/node/node");
+                nodeBinary.renameTo(destination);
+
+                FileUtils.deleteDirectory(new File(targetDir + File.separator + "node_tmp"));
+
+                log.info("Installed node.exe locally.");
+            }
         } catch (IOException e) {
             throw new MojoFailureException("Could not download Node.js from "+downloadUrl, e);
         }
