@@ -9,7 +9,7 @@ public class InstallNodeAndNpmMojoTest {
     @Test
     @Ignore
     public void testExecute() throws Exception {
-//        new InstallNodeAndNpmMojo("v0.10.18").execute();
-        new NodeAndNPMInstaller("v0.9.6", "1.1.69", "D:\\workspace\\frontend-maven-plugin\\hello\\world", new DefaultLog(new ConsoleLogger(0, "FOO")), OS.Windows, Architecture.x64).install();
+//        new InstallNodeAndNpmMojo("v0.10.18", "1.3.8", "D:\\workspace\\frontend-maven-plugin\\example", new DefaultLog(new ConsoleLogger(0, "FOO")), OS.Windows, Architecture.x64).execute();
+        new NodeAndNPMInstaller("v0.9.6", "1.1.69", "D:\\workspace\\frontend-maven-plugin\\example", new DefaultLog(new ConsoleLogger(0, "FOO")), OS.Mac, Architecture.x64).install();
     }
 }
