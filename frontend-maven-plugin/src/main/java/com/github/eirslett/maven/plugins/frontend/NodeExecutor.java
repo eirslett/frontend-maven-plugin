@@ -4,6 +4,7 @@ import org.apache.maven.plugin.logging.Log;
 
 import java.io.File;
 
+import static com.github.eirslett.maven.plugins.frontend.Utils.concat;
 import static com.github.eirslett.maven.plugins.frontend.Utils.executeAndGetResult;
 import static com.github.eirslett.maven.plugins.frontend.Utils.executeAndRedirectOutput;
 
@@ -24,11 +25,13 @@ final class NodeExecutor {
         this.node = baseDir + File.separator + "node" + File.separator + "node";
     }
 
-    public int execute(final String command){
-        return executeAndRedirectOutput(log, baseDir, node + " " + command);
+    public int execute(final String... command){
+        String[] commands = concat(new String[]{node}, command);
+        return executeAndRedirectOutput(log, baseDir, commands);
     }
 
-    public String executeWithResult(final String command){
-        return executeAndGetResult(baseDir, node + " " + command);
+    public String executeWithResult(final String... command){
+        String[] commands = concat(new String[]{node}, command);
+        return executeAndGetResult(baseDir, commands);
     }
 }
