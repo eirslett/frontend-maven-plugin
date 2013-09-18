@@ -32,7 +32,7 @@ public final class NpmInstallMojo extends AbstractMojo {
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         getLog().info("Running NPM install in "+workingDirectory.toString());
-        final String npmPath = "node/npm/bin/npm-cli.js".replace("/", File.separator);
+        final String npmPath = workingDirectory+"/node/npm/bin/npm-cli.js".replace("/", File.separator);
         int result = new NodeExecutor(workingDirectory, logger).execute(npmPath+" install");
 
     }

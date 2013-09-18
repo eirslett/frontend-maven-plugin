@@ -159,8 +159,6 @@ final class NodeAndNPMInstaller {
             final Archiver archiver = ArchiverFactory.createArchiver(archive);
             archiver.extract(archive, new File(targetDir + "/node_tmp"));
 
-            // new File(targetName).delete();
-
             // Search for the node binary
             File nodeBinary = new File(targetDir + "/node_tmp/"+longNodeFilename+"/bin/node");
             if(!nodeBinary.exists()){
@@ -169,7 +167,7 @@ final class NodeAndNPMInstaller {
                 File destination = new File(targetDir + "/node/node");
                 nodeBinary.renameTo(destination);
 
-                FileUtils.deleteDirectory(new File(targetDir + File.separator + "node_tmp"));
+                // FileUtils.deleteDirectory(new File(targetDir + File.separator + "node_tmp"));
 
                 log.info("Installed node.exe locally.");
             }
