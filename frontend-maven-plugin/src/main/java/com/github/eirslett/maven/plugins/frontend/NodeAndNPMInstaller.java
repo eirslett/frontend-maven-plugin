@@ -63,7 +63,7 @@ final class NodeAndNPMInstaller {
     private boolean nodeIsAlreadyInstalledOnWindows() {
         final File nodeFile = new File(targetDir + "\\node\\node.exe");
         if(nodeFile.exists()){
-            final String version = new NodeExecutor(new File(targetDir), log).executeWithResult(" --version");
+            final String version = new NodeExecutor(new File(targetDir), log).executeWithResult("--version");
             if(version.equals(nodeVersion)){
                 log.info("Node "+version+" is already installed.");
                 return true;
@@ -79,7 +79,7 @@ final class NodeAndNPMInstaller {
     private boolean nodeIsAlreadyInstalledDefault() {
         final File nodeFile = new File(targetDir + "/node/node");
         if(nodeFile.exists()){
-            final String version = new NodeExecutor(new File(targetDir), log).executeWithResult(" --version");
+            final String version = new NodeExecutor(new File(targetDir), log).executeWithResult("--version");
             if(version.equals(nodeVersion)){
                 log.info("Node "+version+" is already installed.");
                 return true;
