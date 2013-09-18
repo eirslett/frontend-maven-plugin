@@ -167,7 +167,9 @@ final class NodeAndNPMInstaller {
                 File destination = new File(targetDir + "/node/node");
                 nodeBinary.renameTo(destination);
 
-                // FileUtils.deleteDirectory(new File(targetDir + File.separator + "node_tmp"));
+                nodeBinary.setExecutable(true);
+
+                FileUtils.deleteDirectory(new File(targetDir + File.separator + "node_tmp"));
 
                 log.info("Installed node.exe locally.");
             }
