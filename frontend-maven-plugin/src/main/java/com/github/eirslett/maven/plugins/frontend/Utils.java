@@ -19,7 +19,7 @@ final class Utils {
             Process process = buildPlatformIndependentProcess(command).directory(workingDirectory).start();
             String result = readString(process.getInputStream(), null);
             String error = readString(process.getErrorStream(), null);
-            int exitValue = process.exitValue();
+            int exitValue = process.waitFor();
 
             if (exitValue == 0) {
                 return result;
@@ -30,6 +30,8 @@ final class Utils {
                 throw new CommandExecutionException(error);
             }
         } catch (IOException e) {
+            throw new CommandExecutionException(e);
+        } catch (InterruptedException e) {
             throw new CommandExecutionException(e);
         }
     }
