@@ -12,16 +12,40 @@
     <version>0.0.3-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
+    <name>Maven Frontend Plugin</name>
 
+    <description>
+        This Maven plugin lets you install Node/NPM locally
+        for your project, install dependencies with NPM,
+        run Grunt tasks, and/or run Karma tests.
+    </description>
+
+    <url>https://github.com/eirslett/frontend-maven-plugin</url>
     <licenses>
         <license>
             <name>The Apache Software License, Version 2.0</name>
             <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
         </license>
     </licenses>
+
+    <scm>
+        <url>https://github.com/eirslett/frontend-maven-plugin</url>
+        <connection>scm:git:https://github.com/eirslett/frontend-maven-plugin.git</connection>
+        <developerConnection>scm:git:git@github.com:eirslett/frontend-maven-plugin.git</developerConnection>
+    </scm>
+
+    <developers>
+        <developer>
+            <id>eirslett</id>
+            <name>Eirik Sletteberg</name>
+            <email>eiriksletteberg@gmail.com</email>
+        </developer>
+    </developers>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 
     <modules>
         <module>frontend-maven-plugin</module>
@@ -29,9 +53,9 @@
 
     <profiles>
         <profile>
-            <id>build example</id>
+            <id>example</id>
             <activation>
-                <activeByDefault>true</activeByDefault>
+                <activeByDefault>false</activeByDefault>
             </activation>
             <modules>
                 <module>example</module>
