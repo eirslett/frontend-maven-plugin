@@ -47,12 +47,10 @@ final class Utils {
 
         public void run(){
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-            String result = "";
             String line;
             try {
                 while((line = reader.readLine()) != null) {
-                    result += line + "\n";
-                    log.info(result);
+                    log.info(line);
                 }
             } catch (IOException e) {
 
