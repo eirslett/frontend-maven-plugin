@@ -1,4 +1,1 @@
 language: java
-before_install:
-  - rm -r example/node
-  - rm -r example/node_modules
