@@ -167,11 +167,13 @@ final class NodeAndNPMInstaller {
                 File destination = new File(targetDir + "/node/node");
                 nodeBinary.renameTo(destination);
 
-                nodeBinary.setExecutable(true);
+                if(!nodeBinary.setExecutable(true)){
+                    throw new MojoFailureException("Cound not install Node: Was not allowed to make "+destination+" executable.");
+                }
 
                 FileUtils.deleteDirectory(new File(targetDir + File.separator + "node_tmp"));
 
-                log.info("Installed node.exe locally.");
+                log.info("Installed node locally.");
             }
         } catch (IOException e) {
             throw new MojoFailureException("Could not download Node.js from "+downloadUrl, e);
