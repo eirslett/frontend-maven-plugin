@@ -5,7 +5,7 @@
     <parent>
         <artifactId>frontend-maven-plugin-with-example</artifactId>
         <groupId>com.github.eirslett</groupId>
-        <version>0.0.3-SNAPSHOT</version>
+        <version>0.0.3</version>
     </parent>
 
     <groupId>com.github.eirslett</groupId>
