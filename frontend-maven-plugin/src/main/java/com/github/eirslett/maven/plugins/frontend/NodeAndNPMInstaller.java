@@ -167,7 +167,7 @@ final class NodeAndNPMInstaller {
                 File destination = new File(targetDir + "/node/node");
                 nodeBinary.renameTo(destination);
 
-                if(!nodeBinary.setExecutable(true)){
+                if(!nodeBinary.setExecutable(true, false)){
                     throw new MojoFailureException("Cound not install Node: Was not allowed to make "+destination+" executable.");
                 }
 
