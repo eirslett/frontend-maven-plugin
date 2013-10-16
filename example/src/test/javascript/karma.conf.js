@@ -6,6 +6,7 @@ module.exports = function(config) {
             'src/main/javascript/*.js',
             'src/test/javascript/*.js'
         ],
+        exclude: ['src/test/javascript/karma.conf*.js'],
         reporters: ['progress'],
         port: 9876,
         logLevel: config.LOG_INFO,
