@@ -10,12 +10,21 @@ import org.apache.maven.plugins.annotations.Parameter;
 @Mojo(name="install-node-and-npm", defaultPhase = LifecyclePhase.GENERATE_RESOURCES)
 public final class InstallNodeAndNpmMojo extends AbstractMojo {
 
-    @Parameter(defaultValue = "v0.10.18")
+    /**
+     * The version of Node.js to install. IMPORTANT! Most Node.js version names start with 'v', for example 'v0.10.18'
+     */
+    @Parameter(required = true)
     private String nodeVersion;
 
-    @Parameter(defaultValue = "1.3.9")
+    /**
+     * The version of NPM to install.
+     */
+    @Parameter(required = true)
     private String npmVersion;
 
+    /**
+     * The base directory for running all Node commands. (Usually the directory that contains package.json)
+     */
     @Parameter(defaultValue = "${basedir}")
     private String targetDir;
 
