@@ -49,7 +49,7 @@
                             <goal>karma</goal>
                         </goals>
                         <configuration>
-                            <karmaConfPath>src/test/javascript/karma.conf.js</karmaConfPath>
+                            <karmaConfPath>src/test/javascript/karma.conf.ci.js</karmaConfPath>
                         </configuration>
                     </execution>
                 </executions>
