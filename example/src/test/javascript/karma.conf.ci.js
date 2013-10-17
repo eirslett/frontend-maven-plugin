@@ -6,6 +6,7 @@ module.exports = function(config){
 
     // Override base config
     config.set({
-        singleRun: true
+        singleRun: true,
+        autoWatch: false
     });
 };

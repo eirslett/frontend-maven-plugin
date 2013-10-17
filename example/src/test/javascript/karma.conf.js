@@ -11,7 +11,8 @@ module.exports = function(config) {
         port: 9876,
         logLevel: config.LOG_INFO,
         browsers: ['PhantomJS'],
-        singleRun: true,
+        singleRun: false,
+        autoWatch: true,
         plugins: [
             'karma-jasmine',
             'karma-phantomjs-launcher'
