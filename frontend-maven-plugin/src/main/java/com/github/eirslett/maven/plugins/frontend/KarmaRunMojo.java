@@ -1,6 +1,7 @@
 package com.github.eirslett.maven.plugins.frontend;
 
 import java.io.File;
+import java.util.Map;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -25,6 +26,9 @@ public final class KarmaRunMojo extends AbstractMojo {
     @Parameter(defaultValue = "karma.conf.js")
     private String karmaConfPath;
 
+    @Parameter(property = "skipTests", required = false, defaultValue = "false")
+    private Boolean skipTests;
+
     private final Log logger;
 
     public KarmaRunMojo() {
@@ -39,11 +43,15 @@ public final class KarmaRunMojo extends AbstractMojo {
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
-        logger.info("Running karma in " + workingDirectory.toString());
-        final String karmaPath = workingDirectory+"/node_modules/karma/bin/karma".replace("/", File.separator);
-        int result = new NodeExecutor(workingDirectory, getLog()).execute(karmaPath, "start", workingDirectory+File.separator+karmaConfPath);
-        if(result != 0){
-            throw new MojoFailureException("Karma run failed.");
+        if(skipTests){
+            logger.info("Skipping karma tests.");
+        } else {
+            logger.info("Running karma in " + workingDirectory.toString());
+            final String karmaPath = workingDirectory+"/node_modules/karma/bin/karma".replace("/", File.separator);
+            int result = new NodeExecutor(workingDirectory, getLog()).execute(karmaPath, "start", workingDirectory+File.separator+karmaConfPath);
+            if(result != 0){
+                throw new MojoFailureException("Karma run failed.");
+            }
         }
     }
 }
