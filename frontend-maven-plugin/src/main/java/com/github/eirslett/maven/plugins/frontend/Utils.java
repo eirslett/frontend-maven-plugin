@@ -9,6 +9,7 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 import org.apache.maven.plugin.logging.Log;
 import org.codehaus.plexus.util.StringUtils;
@@ -53,7 +54,7 @@ final class Utils {
                     log.info(line);
                 }
             } catch (IOException e) {
-
+                log.error(e);
             }
         }
     }
@@ -125,16 +126,11 @@ final class Utils {
         List<String> commandList = new ArrayList<String>();
         commandList.addAll(Arrays.asList("cmd", "/C"));
         commandList.addAll(Arrays.asList(command));
-        System.out.println("Windows specific command: " + commandList.toString());
         return new ProcessBuilder(commandList);
     }
 
     private static boolean isWindows() {
-        return System.getProperty("os.name").toLowerCase().contains("windows");
-    }
-
-    public static interface Loggable {
-        public void println(String line);
+        return System.getProperty("os.name").toLowerCase(Locale.ENGLISH).contains("windows");
     }
 
     public static String joinPath(String... paths) {
