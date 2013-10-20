@@ -27,20 +27,9 @@ public final class KarmaRunMojo extends AbstractMojo {
     @Parameter(property = "skipTests", required = false, defaultValue = "false")
     private Boolean skipTests;
 
-    private final Log logger;
-
-    public KarmaRunMojo() {
-        logger = super.getLog();
-    }
-
-    KarmaRunMojo(File workingDirectory, String karmaConfPath, Log logger){
-        this.workingDirectory = workingDirectory;
-        this.karmaConfPath = karmaConfPath;
-        this.logger = logger;
-    }
-
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
+        Log logger = getLog();
         if(skipTests){
             logger.info("Skipping karma tests.");
         } else {

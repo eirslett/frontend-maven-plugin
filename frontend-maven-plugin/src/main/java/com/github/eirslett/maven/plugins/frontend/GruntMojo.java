@@ -21,20 +21,9 @@ public final class GruntMojo extends AbstractMojo {
     @Parameter
     private String target;
 
-    private final Log logger;
-
-    public GruntMojo(){
-        logger = super.getLog();
-    }
-
-    GruntMojo(File workingDirectory, String target, Log logger){
-        this.workingDirectory = workingDirectory;
-        this.target = target;
-        this.logger = logger;
-    }
-
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
+        Log logger = getLog();
         logger.info("Running Grunt in "+workingDirectory.toString());
         final String gruntPath = workingDirectory+"/node_modules/grunt-cli/bin/grunt".replace("/", File.separator);
 
