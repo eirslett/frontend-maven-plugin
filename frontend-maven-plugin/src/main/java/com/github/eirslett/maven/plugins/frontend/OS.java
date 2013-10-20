@@ -8,4 +8,8 @@ enum OS { Windows, Mac, Linux, SunOS;
                         osName.contains("SunOS") ? OS.SunOS :
                                 OS.Linux;
     }
+
+    public static boolean isWindows(){
+        return guess() == OS.Windows;
+    }
 }

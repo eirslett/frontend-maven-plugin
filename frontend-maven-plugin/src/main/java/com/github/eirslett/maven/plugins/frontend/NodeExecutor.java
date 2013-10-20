@@ -3,35 +3,21 @@ package com.github.eirslett.maven.plugins.frontend;
 import org.apache.maven.plugin.logging.Log;
 
 import java.io.File;
-
-import static com.github.eirslett.maven.plugins.frontend.Utils.concat;
-import static com.github.eirslett.maven.plugins.frontend.Utils.executeAndGetResult;
-import static com.github.eirslett.maven.plugins.frontend.Utils.executeAndRedirectOutput;
+import java.util.List;
 
 final class NodeExecutor {
-    private final File baseDir;
-    private final Log log;
-    private final OS os;
-    private final String node;
+    private final ProcessExecutor executor;
 
-    public NodeExecutor(File baseDir, Log log){
-        this(baseDir, log, OS.guess());
+    public NodeExecutor(File workingDirectory, List<String> command){
+        final String node = workingDirectory + File.separator + "node" + File.separator + "node";
+        this.executor = new ProcessExecutor(workingDirectory, Utils.prepend(node, command));
     }
 
-    public NodeExecutor(File baseDir, Log log, OS os){
-        this.baseDir = baseDir;
-        this.log = log;
-        this.os = os;
-        this.node = baseDir + File.separator + "node" + File.separator + "node";
+    public String executeAndGetResult(){
+        return executor.executeAndGetResult();
     }
 
-    public int execute(final String... command){
-        String[] commands = concat(new String[]{node}, command);
-        return executeAndRedirectOutput(log, baseDir, commands);
-    }
-
-    public String executeWithResult(final String... command){
-        String[] commands = concat(new String[]{node}, command);
-        return executeAndGetResult(baseDir, commands);
+    public int executeAndRedirectOutput(final Log logger){
+        return executor.executeAndRedirectOutput(logger);
     }
 }

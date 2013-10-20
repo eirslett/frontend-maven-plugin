@@ -9,9 +9,11 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.List;
 
 @Mojo(name="grunt", defaultPhase = LifecyclePhase.GENERATE_RESOURCES)
-public class GruntMojo extends AbstractMojo {
+public final class GruntMojo extends AbstractMojo {
 
     @Parameter(defaultValue = "${basedir}", property = "workingDirectory", required = false)
     private File workingDirectory;
@@ -34,16 +36,16 @@ public class GruntMojo extends AbstractMojo {
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         logger.info("Running Grunt in "+workingDirectory.toString());
-        final String gruntPath = workingDirectory+"/node_modules/grunt-cli/bin/grunt";
+        final String gruntPath = workingDirectory+"/node_modules/grunt-cli/bin/grunt".replace("/", File.separator);
 
-        final String[] commands;
+        List<String> commands;
         if(target == null || target.equals("null") || target.isEmpty()) {
-            commands = new String[]{gruntPath};
+            commands = Arrays.asList(gruntPath);
         } else {
-            commands = new String[]{gruntPath,target};
+            commands = Arrays.asList(gruntPath, target);
         }
 
-        int result = new NodeExecutor(workingDirectory, getLog()).execute(commands);
+        int result = new NodeExecutor(workingDirectory, commands).executeAndRedirectOutput(logger);
         if(result != 0){
             throw new MojoFailureException("Grunt build failed.");
         }
