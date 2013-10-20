@@ -2,8 +2,6 @@ package com.github.eirslett.maven.plugins.frontend;
 
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.logging.Log;
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.plexus.util.FileUtils;
 import org.rauschig.jarchivelib.Archiver;
@@ -14,46 +12,42 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Scanner;
 
 final class NodeAndNPMInstaller {
     private final String nodeVersion;
     private final String npmVersion;
-    private final String targetDir;
+    private final File workingDirectory;
     private final Log log;
-    private final OS os;
     private final Architecture architecture;
     private static final String DOWNLOAD_ROOT = "http://nodejs.org/dist/";
 
 
-    public NodeAndNPMInstaller(String nodeVersion, String npmVersion, String targetDir, Log log){
-        this(nodeVersion, npmVersion, targetDir, log, OS.guess(), Architecture.guess());
-    }
-    public NodeAndNPMInstaller(String nodeVersion, String npmVersion, String targetDir, Log log, OS os, Architecture architecture) {
-        this.os = os;
-        this.targetDir = targetDir;
+    public NodeAndNPMInstaller(String nodeVersion, String npmVersion, File workingDirectory, Log log) {
+        this.workingDirectory = workingDirectory;
         this.log = log;
-        this.architecture = architecture;
+        this.architecture = Architecture.x86;
         this.nodeVersion = nodeVersion;
         this.npmVersion = npmVersion;
     }
 
     public void install() throws MojoFailureException {
-        if(!npmIsAlreadyInstalled())
-            installNpm();
-
         if(!nodeIsAlreadyInstalled()){
-            if(os == OS.Windows){
+            if(OS.isWindows()){
                 installNodeForWindows();
             } else {
                 installNodeDefault();
             }
         }
+        if(!npmIsAlreadyInstalled()) {
+            installNpm();
+        }
     }
 
     private boolean nodeIsAlreadyInstalled() {
-        if(os == OS.Windows){
+        if(OS.isWindows()){
             return nodeIsAlreadyInstalledOnWindows();
         } else {
             return nodeIsAlreadyInstalledDefault();
@@ -61,9 +55,9 @@ final class NodeAndNPMInstaller {
     }
 
     private boolean nodeIsAlreadyInstalledOnWindows() {
-        final File nodeFile = new File(targetDir + "\\node\\node.exe");
+        final File nodeFile = new File(workingDirectory + "\\node\\node.exe");
         if(nodeFile.exists()){
-            final String version = new NodeExecutor(new File(targetDir), log).executeWithResult("--version");
+            final String version = new NodeExecutor(workingDirectory, Arrays.asList("--version")).executeAndGetResult();
             if(version.equals(nodeVersion)){
                 log.info("Node "+version+" is already installed.");
                 return true;
@@ -77,9 +71,9 @@ final class NodeAndNPMInstaller {
     }
 
     private boolean nodeIsAlreadyInstalledDefault() {
-        final File nodeFile = new File(targetDir + "/node/node");
+        final File nodeFile = new File(workingDirectory + "/node/node");
         if(nodeFile.exists()){
-            final String version = new NodeExecutor(new File(targetDir), log).executeWithResult("--version");
+            final String version = new NodeExecutor(workingDirectory, Arrays.asList("--version")).executeAndGetResult();
             if(version.equals(nodeVersion)){
                 log.info("Node "+version+" is already installed.");
                 return true;
@@ -95,7 +89,7 @@ final class NodeAndNPMInstaller {
     private boolean npmIsAlreadyInstalled(){
         Scanner scanner = null;
         try {
-            final File npmPackageJson = new File(targetDir + "/node/npm/package.json".replace("/", File.separator));
+            final File npmPackageJson = new File(workingDirectory + "/node/npm/package.json".replace("/", File.separator));
             if(npmPackageJson.exists()){
                 HashMap<String,Object> data = new ObjectMapper().readValue(npmPackageJson, HashMap.class);
                 if(data.containsKey("version")){
@@ -127,12 +121,12 @@ final class NodeAndNPMInstaller {
         try {
             log.info("Installing NPM version " + npmVersion);
             downloadUrl = DOWNLOAD_ROOT+"npm/npm-"+npmVersion+".tgz";
-            String targetName = targetDir + File.separator + "npm.tar.gz";
+            String targetName = workingDirectory + File.separator + "npm.tar.gz";
             downloadFile(downloadUrl, targetName);
 
             final File archive = new File(targetName);
             final Archiver archiver = ArchiverFactory.createArchiver(archive);
-            archiver.extract(archive, new File(targetDir+"/node"));
+            archiver.extract(archive, new File(workingDirectory +"/node"));
 
             new File(targetName).delete();
             log.info("Installed NPM locally.");
@@ -145,33 +139,33 @@ final class NodeAndNPMInstaller {
         String downloadUrl = "";
         try {
             log.info("Installing node version " + nodeVersion);
-            final String osName = getOsName();
+            final String osName = getOsCodeName();
             final String architecture = this.architecture.toString();
             final String longNodeFilename = "node-" + nodeVersion + "-" + osName + "-" + architecture;
             downloadUrl = DOWNLOAD_ROOT + nodeVersion + "/" + longNodeFilename + ".tar.gz";
 
-            new File(targetDir + "/node_tmp").mkdir();
+            new File(workingDirectory + "/node_tmp").mkdir();
 
-            final String targetName = targetDir + "/node_tmp/node.tar.gz";
+            final String targetName = workingDirectory + "/node_tmp/node.tar.gz";
             downloadFile(downloadUrl, targetName);
 
             final File archive = new File(targetName);
             final Archiver archiver = ArchiverFactory.createArchiver(archive);
-            archiver.extract(archive, new File(targetDir + "/node_tmp"));
+            archiver.extract(archive, new File(workingDirectory + "/node_tmp"));
 
             // Search for the node binary
-            File nodeBinary = new File(targetDir + "/node_tmp/"+longNodeFilename+"/bin/node");
+            File nodeBinary = new File(workingDirectory + "/node_tmp/"+longNodeFilename+"/bin/node");
             if(!nodeBinary.exists()){
                 throw new FileNotFoundException("Could not find the downloaded Node.js binary in "+nodeBinary);
             } else {
-                File destination = new File(targetDir + "/node/node");
+                File destination = new File(workingDirectory + "/node/node");
                 nodeBinary.renameTo(destination);
 
                 if(!destination.setExecutable(true, false)){
                     throw new MojoFailureException("Cound not install Node: Was not allowed to make "+destination+" executable.");
                 }
 
-                FileUtils.deleteDirectory(new File(targetDir + File.separator + "node_tmp"));
+                FileUtils.deleteDirectory(new File(workingDirectory + File.separator + "node_tmp"));
 
                 log.info("Installed node locally.");
             }
@@ -190,7 +184,9 @@ final class NodeAndNPMInstaller {
                 downloadUrl = DOWNLOAD_ROOT+nodeVersion+"/node.exe";
             }
 
-            downloadFile(downloadUrl, targetDir+"/node/node.exe");
+            new File(workingDirectory+"\\node").mkdirs();
+
+            downloadFile(downloadUrl, workingDirectory +"\\node\\node.exe");
             log.info("Installed node.exe locally.");
         } catch (MalformedURLException e){
             throw new MojoFailureException("The Node.js download link was invalid", e);
@@ -208,7 +204,8 @@ final class NodeAndNPMInstaller {
         fos.close();
     }
 
-    private String getOsName() {
+    private String getOsCodeName() {
+        OS os = OS.guess();
         if(os == OS.Mac){
             return "darwin";
         } else if(os == OS.SunOS){

@@ -7,6 +7,8 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
+import java.io.File;
+
 @Mojo(name="install-node-and-npm", defaultPhase = LifecyclePhase.GENERATE_RESOURCES)
 public final class InstallNodeAndNpmMojo extends AbstractMojo {
 
@@ -26,20 +28,20 @@ public final class InstallNodeAndNpmMojo extends AbstractMojo {
      * The base directory for running all Node commands. (Usually the directory that contains package.json)
      */
     @Parameter(defaultValue = "${basedir}")
-    private String targetDir;
+    private File workingDirectory;
 
     public InstallNodeAndNpmMojo(){
 
     }
 
-    InstallNodeAndNpmMojo(String nodeVersion, String npmVersion, String targetDir){
+    InstallNodeAndNpmMojo(String nodeVersion, String npmVersion, File workingDirectory){
         this.nodeVersion = nodeVersion;
         this.npmVersion = npmVersion;
-        this.targetDir = targetDir;
+        this.workingDirectory = workingDirectory;
     }
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
-        new NodeAndNPMInstaller(nodeVersion, npmVersion, targetDir, getLog()).install();
+        new NodeAndNPMInstaller(nodeVersion, npmVersion, workingDirectory, getLog()).install();
     }
 }
