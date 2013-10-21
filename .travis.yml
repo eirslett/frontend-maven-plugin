@@ -1,2 +1,2 @@
 language: java
-install: mvn clean install
+script: mvn clean install
