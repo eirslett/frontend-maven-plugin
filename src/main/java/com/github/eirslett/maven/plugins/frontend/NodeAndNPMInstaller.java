@@ -28,7 +28,7 @@ final class NodeAndNPMInstaller {
     public NodeAndNPMInstaller(String nodeVersion, String npmVersion, File workingDirectory, Log log) {
         this.workingDirectory = workingDirectory;
         this.log = log;
-        this.architecture = Architecture.x86;
+        this.architecture = Architecture.guess();
         this.nodeVersion = nodeVersion;
         this.npmVersion = npmVersion;
     }
