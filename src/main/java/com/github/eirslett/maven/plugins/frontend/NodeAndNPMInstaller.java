@@ -162,9 +162,13 @@ final class NodeAndNPMInstaller {
             if(!nodeBinary.exists()){
                 throw new FileNotFoundException("Could not find the downloaded Node.js binary in "+nodeBinary);
             } else {
+                File destinationDirectory = new File(workingDirectory + "/node");
+                destinationDirectory.mkdirs();
                 File destination = new File(workingDirectory + "/node/node");
                 log.info("Moving node binary to "+destination);
-                nodeBinary.renameTo(destination);
+                if(!nodeBinary.renameTo(destination)){
+                    throw new MojoFailureException("Could not install Node: Was not allowed to rename "+nodeBinary+" to "+destination);
+                }
 
                 if(!destination.setExecutable(true, false)){
                     throw new MojoFailureException("Cound not install Node: Was not allowed to make "+destination+" executable.");
