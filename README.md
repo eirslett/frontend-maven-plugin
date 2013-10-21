@@ -17,6 +17,9 @@ laptops, but backend developers can run a clean build without even installing No
 - Not meant to install Node for production uses. The Node usage is intended as part of a frontend build,
 running common javascript tasks such as minification, obfuscation, compression, packaging, testing etc.
 
+## Show me an example!
+[Here is an example for you!](https://github.com/eirslett/frontend-maven-plugin/tree/master/src/it/example)
+
 # Installing
 Include the plugin as a dependency in your Maven project.
 ```<plugins>
