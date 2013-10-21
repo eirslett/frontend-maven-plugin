@@ -144,13 +144,17 @@ final class NodeAndNPMInstaller {
             final String longNodeFilename = "node-" + nodeVersion + "-" + osName + "-" + architecture;
             downloadUrl = DOWNLOAD_ROOT + nodeVersion + "/" + longNodeFilename + ".tar.gz";
 
-            new File(workingDirectory + "/node_tmp").mkdir();
+            final File tmpDirectory = new File(workingDirectory + File.separator + "node_tmp");
+            log.info("Creating temporary directory "+tmpDirectory);
+            tmpDirectory.mkdirs();
 
             final String targetName = workingDirectory + "/node_tmp/node.tar.gz";
+            log.info("Downloading Node.js from "+downloadUrl+" to "+targetName);
             downloadFile(downloadUrl, targetName);
 
             final File archive = new File(targetName);
             final Archiver archiver = ArchiverFactory.createArchiver(archive);
+            log.info("Extracting Node.js files in node_tmp");
             archiver.extract(archive, new File(workingDirectory + "/node_tmp"));
 
             // Search for the node binary
@@ -159,13 +163,16 @@ final class NodeAndNPMInstaller {
                 throw new FileNotFoundException("Could not find the downloaded Node.js binary in "+nodeBinary);
             } else {
                 File destination = new File(workingDirectory + "/node/node");
+                log.info("Moving node binary to "+destination);
                 nodeBinary.renameTo(destination);
 
                 if(!destination.setExecutable(true, false)){
                     throw new MojoFailureException("Cound not install Node: Was not allowed to make "+destination+" executable.");
                 }
 
-                FileUtils.deleteDirectory(new File(workingDirectory + File.separator + "node_tmp"));
+
+                log.info("Deleting temporary directory "+tmpDirectory);
+                FileUtils.deleteDirectory(tmpDirectory);
 
                 log.info("Installed node locally.");
             }
