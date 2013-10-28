@@ -32,7 +32,7 @@ public final class GruntMojo extends AbstractMojo {
 
 	    List<String> commands =  new LinkedList(Arrays.asList(gruntPath));
 	    if(target != null && !target.equals("null") && !target.isEmpty()) {
-		    commands.addAll( Arrays.asList(target.split("\\s+")));
+		    commands.addAll(Arrays.asList(target.split("\\s+")));
 	    }
 
         int result = new NodeExecutor(workingDirectory, commands).executeAndRedirectOutput(logger);
