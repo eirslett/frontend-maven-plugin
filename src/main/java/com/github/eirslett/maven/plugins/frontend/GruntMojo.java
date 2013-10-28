@@ -22,6 +22,8 @@ public final class GruntMojo extends AbstractMojo {
     @Parameter
     private String target;
 
+	@Parameter
+	private String options;
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         Log logger = getLog();
