@@ -10,6 +10,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 @Mojo(name="grunt", defaultPhase = LifecyclePhase.GENERATE_RESOURCES)
@@ -27,12 +28,10 @@ public final class GruntMojo extends AbstractMojo {
         logger.info("Running Grunt in "+workingDirectory.toString());
         final String gruntPath = workingDirectory+"/node_modules/grunt-cli/bin/grunt".replace("/", File.separator);
 
-        List<String> commands;
-        if(target == null || target.equals("null") || target.isEmpty()) {
-            commands = Arrays.asList(gruntPath);
-        } else {
-            commands = Arrays.asList(gruntPath, target);
-        }
+	    List<String> commands =  new LinkedList(Arrays.asList(gruntPath));
+	    if(target != null && !target.equals("null") && !target.isEmpty()) {
+		    commands.addAll(Arrays.asList(target.split("\\s+")));
+	    }
 
         int result = new NodeExecutor(workingDirectory, commands).executeAndRedirectOutput(logger);
         if(result != 0){
