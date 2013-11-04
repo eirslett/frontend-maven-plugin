@@ -7,9 +7,5 @@
     "grunt-karma": "~0.7.0",
     "karma": "~0.10.2",
     "grunt-contrib-jshint": "~0.6.4"
-  },
-  "engines": {
-    "node": ">=0.8.0",
-    "npm": ">=2.0.0"
   }
 }
