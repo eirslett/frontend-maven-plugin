@@ -1,12 +1,5 @@
 package com.github.eirslett.maven.plugins.frontend;
 
-import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugin.logging.Log;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.plexus.util.FileUtils;
-import org.rauschig.jarchivelib.Archiver;
-import org.rauschig.jarchivelib.ArchiverFactory;
-
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -15,6 +8,13 @@ import java.nio.channels.ReadableByteChannel;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Scanner;
+import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugin.logging.Log;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.plexus.archiver.tar.TarGZipUnArchiver;
+import org.codehaus.plexus.logging.Logger;
+import org.codehaus.plexus.logging.console.ConsoleLogger;
+import org.codehaus.plexus.util.FileUtils;
 
 final class NodeAndNPMInstaller {
     private final String nodeVersion;
@@ -125,14 +125,20 @@ final class NodeAndNPMInstaller {
             downloadFile(downloadUrl, targetName);
 
             final File archive = new File(targetName);
-            final Archiver archiver = ArchiverFactory.createArchiver(archive);
-            archiver.extract(archive, new File(workingDirectory +"/node"));
+            extractFile(new File(workingDirectory +"/node"), archive);
 
             new File(targetName).delete();
             log.info("Installed NPM locally.");
         } catch (IOException e) {
             throw new MojoFailureException("Could not download NPM from "+downloadUrl, e);
         }
+    }
+
+    private void extractFile(File destinationDirectory, File archive){
+        final TarGZipUnArchiver unarchiver = new TarGZipUnArchiver(archive);
+        unarchiver.enableLogging(new ConsoleLogger(Logger.LEVEL_INFO, "console" ));
+        unarchiver.setDestDirectory(destinationDirectory);
+        unarchiver.extract();
     }
 
     private void installNodeDefault() throws MojoFailureException {
@@ -153,9 +159,8 @@ final class NodeAndNPMInstaller {
             downloadFile(downloadUrl, targetName);
 
             final File archive = new File(targetName);
-            final Archiver archiver = ArchiverFactory.createArchiver(archive);
             log.info("Extracting Node.js files in node_tmp");
-            archiver.extract(archive, new File(workingDirectory + "/node_tmp"));
+            extractFile(new File(workingDirectory + "/node_tmp"), archive);
 
             // Search for the node binary
             File nodeBinary = new File(workingDirectory + "/node_tmp/"+longNodeFilename+"/bin/node");
