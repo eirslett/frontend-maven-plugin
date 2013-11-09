@@ -22,8 +22,8 @@ final class NodeAndNPMInstaller {
     private final File workingDirectory;
     private final Log log;
     private final Architecture architecture;
-    private static final String DOWNLOAD_ROOT = "http://nodejs.org/dist/";
-
+    private static final String DOWNLOAD_ROOT = "http://nodejs.org/dist/",
+            VERSION = "version";
 
     public NodeAndNPMInstaller(String nodeVersion, String npmVersion, File workingDirectory, Log log) {
         this.workingDirectory = workingDirectory;
@@ -92,8 +92,8 @@ final class NodeAndNPMInstaller {
             final File npmPackageJson = new File(workingDirectory + "/node/npm/package.json".replace("/", File.separator));
             if(npmPackageJson.exists()){
                 HashMap<String,Object> data = new ObjectMapper().readValue(npmPackageJson, HashMap.class);
-                if(data.containsKey("version")){
-                    final String foundNpmVersion = data.get("version").toString();
+                if(data.containsKey(VERSION)){
+                    final String foundNpmVersion = data.get(VERSION).toString();
                     log.info("Found NPM version "+foundNpmVersion);
                     if(foundNpmVersion.equals(npmVersion)) {
                         return true;
