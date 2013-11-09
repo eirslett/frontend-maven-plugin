@@ -140,8 +140,7 @@ final class NodeAndNPMInstaller {
         try {
             log.info("Installing node version " + nodeVersion);
             final String osName = getOsCodeName();
-            final String architecture = this.architecture.toString();
-            final String longNodeFilename = "node-" + nodeVersion + "-" + osName + "-" + architecture;
+            final String longNodeFilename = "node-" + nodeVersion + "-" + osName + "-" + architecture.toString();
             downloadUrl = DOWNLOAD_ROOT + nodeVersion + "/" + longNodeFilename + ".tar.gz";
 
             final File tmpDirectory = new File(workingDirectory + File.separator + "node_tmp");
