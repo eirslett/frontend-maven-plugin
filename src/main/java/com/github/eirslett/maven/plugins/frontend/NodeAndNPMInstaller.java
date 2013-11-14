@@ -1,12 +1,5 @@
 package com.github.eirslett.maven.plugins.frontend;
 
-import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugin.logging.Log;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.plexus.util.FileUtils;
-import org.rauschig.jarchivelib.Archiver;
-import org.rauschig.jarchivelib.ArchiverFactory;
-
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -15,6 +8,13 @@ import java.nio.channels.ReadableByteChannel;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Scanner;
+import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugin.logging.Log;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.plexus.archiver.tar.TarGZipUnArchiver;
+import org.codehaus.plexus.logging.Logger;
+import org.codehaus.plexus.logging.console.ConsoleLogger;
+import org.codehaus.plexus.util.FileUtils;
 
 final class NodeAndNPMInstaller {
     private final String nodeVersion;
@@ -22,8 +22,8 @@ final class NodeAndNPMInstaller {
     private final File workingDirectory;
     private final Log log;
     private final Architecture architecture;
-    private static final String DOWNLOAD_ROOT = "http://nodejs.org/dist/";
-
+    private static final String DOWNLOAD_ROOT = "http://nodejs.org/dist/",
+            VERSION = "version";
 
     public NodeAndNPMInstaller(String nodeVersion, String npmVersion, File workingDirectory, Log log) {
         this.workingDirectory = workingDirectory;
@@ -92,8 +92,8 @@ final class NodeAndNPMInstaller {
             final File npmPackageJson = new File(workingDirectory + "/node/npm/package.json".replace("/", File.separator));
             if(npmPackageJson.exists()){
                 HashMap<String,Object> data = new ObjectMapper().readValue(npmPackageJson, HashMap.class);
-                if(data.containsKey("version")){
-                    final String foundNpmVersion = data.get("version").toString();
+                if(data.containsKey(VERSION)){
+                    final String foundNpmVersion = data.get(VERSION).toString();
                     log.info("Found NPM version "+foundNpmVersion);
                     if(foundNpmVersion.equals(npmVersion)) {
                         return true;
@@ -125,8 +125,7 @@ final class NodeAndNPMInstaller {
             downloadFile(downloadUrl, targetName);
 
             final File archive = new File(targetName);
-            final Archiver archiver = ArchiverFactory.createArchiver(archive);
-            archiver.extract(archive, new File(workingDirectory +"/node"));
+            extractFile(new File(workingDirectory +"/node"), archive);
 
             new File(targetName).delete();
             log.info("Installed NPM locally.");
@@ -135,13 +134,19 @@ final class NodeAndNPMInstaller {
         }
     }
 
+    private void extractFile(File destinationDirectory, File archive){
+        final TarGZipUnArchiver unarchiver = new TarGZipUnArchiver(archive);
+        unarchiver.enableLogging(new ConsoleLogger(Logger.LEVEL_INFO, "console" ));
+        unarchiver.setDestDirectory(destinationDirectory);
+        unarchiver.extract();
+    }
+
     private void installNodeDefault() throws MojoFailureException {
         String downloadUrl = "";
         try {
             log.info("Installing node version " + nodeVersion);
             final String osName = getOsCodeName();
-            final String architecture = this.architecture.toString();
-            final String longNodeFilename = "node-" + nodeVersion + "-" + osName + "-" + architecture;
+            final String longNodeFilename = "node-" + nodeVersion + "-" + osName + "-" + architecture.toString();
             downloadUrl = DOWNLOAD_ROOT + nodeVersion + "/" + longNodeFilename + ".tar.gz";
 
             final File tmpDirectory = new File(workingDirectory + File.separator + "node_tmp");
@@ -153,9 +158,8 @@ final class NodeAndNPMInstaller {
             downloadFile(downloadUrl, targetName);
 
             final File archive = new File(targetName);
-            final Archiver archiver = ArchiverFactory.createArchiver(archive);
             log.info("Extracting Node.js files in node_tmp");
-            archiver.extract(archive, new File(workingDirectory + "/node_tmp"));
+            extractFile(new File(workingDirectory + "/node_tmp"), archive);
 
             // Search for the node binary
             File nodeBinary = new File(workingDirectory + "/node_tmp/"+longNodeFilename+"/bin/node");
