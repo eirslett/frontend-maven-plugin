@@ -1,12 +1,5 @@
 package com.github.eirslett.maven.plugins.frontend;
 
-import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugin.logging.Log;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.plexus.util.FileUtils;
-import org.rauschig.jarchivelib.Archiver;
-import org.rauschig.jarchivelib.ArchiverFactory;
-
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -15,6 +8,13 @@ import java.nio.channels.ReadableByteChannel;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Scanner;
+import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
+import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
+import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
+import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugin.logging.Log;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.plexus.util.FileUtils;
 
 final class NodeAndNPMInstaller {
     private final String nodeVersion;
@@ -124,14 +124,76 @@ final class NodeAndNPMInstaller {
             String targetName = workingDirectory + File.separator + "npm.tar.gz";
             downloadFile(downloadUrl, targetName);
 
-            final File archive = new File(targetName);
-            final Archiver archiver = ArchiverFactory.createArchiver(archive);
-            archiver.extract(archive, new File(workingDirectory +"/node"));
+            extractFile(workingDirectory +"/node", targetName);
 
             new File(targetName).delete();
             log.info("Installed NPM locally.");
         } catch (IOException e) {
             throw new MojoFailureException("Could not download NPM from "+downloadUrl, e);
+        }
+    }
+
+    /**
+     * Based on http://stackoverflow.com/a/14211580/320399
+     *
+     *
+     * @param destinationDirectory
+     * @param archive
+     * @throws MojoFailureException
+     */
+    private void extractFile(String destinationDirectory, String archive) throws MojoFailureException{
+        try {
+            File archiveFile = new File(archive);
+            if (!archiveFile.exists()){
+                throw new MojoFailureException("The archive you're trying to extract ("
+                        + archive
+                        + ") does not exist!");
+            }
+            if (!archiveFile.canRead()){
+                throw new MojoFailureException("The archive you're trying to extract ("
+                        + archive
+                        + ") can not be read!");
+            }
+            FileInputStream fis = new FileInputStream(archiveFile);
+
+            // TarArchiveInputStream can be constructed with a normal FileInputStream if
+            // we ever need to extract regular '.tar' files.
+            TarArchiveInputStream tarIn = new TarArchiveInputStream(new GzipCompressorInputStream(fis));
+
+            TarArchiveEntry tarEntry = tarIn.getNextTarEntry();
+            while (tarEntry != null) {
+                // Create a file for this tarEntry
+                File destPath = new File(destinationDirectory + File.separator + tarEntry.getName());
+                log.debug("Now unpacking: " + destPath.getCanonicalPath());
+                if (tarEntry.isDirectory()) {
+                    destPath.mkdirs();
+                } else {
+                    destPath.createNewFile();
+                    //byte [] btoRead = new byte[(int)tarEntry.getSize()];
+                    byte [] btoRead = new byte[8024];
+                    BufferedOutputStream bout =
+                        new BufferedOutputStream(new FileOutputStream(destPath));
+                    int len = 0;
+
+                    while((len = tarIn.read(btoRead)) != -1)
+                    {
+                        bout.write(btoRead,0,len);
+                    }
+
+                    bout.close();
+                }
+                tarEntry = tarIn.getNextTarEntry();
+            }
+            tarIn.close();
+
+        } catch (FileNotFoundException e) {
+            throw new MojoFailureException("Could not extract archive: '"
+                    + archive
+                    + "'", e);
+        } catch (IOException e) {
+            throw new MojoFailureException("Could not extract archive: '"
+                    + archive
+                    + "'", e);
         }
     }
 
@@ -151,10 +213,8 @@ final class NodeAndNPMInstaller {
             log.info("Downloading Node.js from "+downloadUrl+" to "+targetName);
             downloadFile(downloadUrl, targetName);
 
-            final File archive = new File(targetName);
-            final Archiver archiver = ArchiverFactory.createArchiver(archive);
             log.info("Extracting Node.js files in node_tmp");
-            archiver.extract(archive, new File(workingDirectory + "/node_tmp"));
+            extractFile(workingDirectory + "/node_tmp", targetName);
 
             // Search for the node binary
             File nodeBinary = new File(workingDirectory + "/node_tmp/"+longNodeFilename+"/bin/node");
@@ -172,7 +232,6 @@ final class NodeAndNPMInstaller {
                 if(!destination.setExecutable(true, false)){
                     throw new MojoFailureException("Cound not install Node: Was not allowed to make "+destination+" executable.");
                 }
-
 
                 log.info("Deleting temporary directory "+tmpDirectory);
                 FileUtils.deleteDirectory(tmpDirectory);
