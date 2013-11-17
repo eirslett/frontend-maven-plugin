@@ -134,11 +134,12 @@ final class NodeAndNPMInstaller {
     }
 
     /**
-     * Based on http://stackoverflow.com/a/14211580/320399
+     * Extract the given archive to some destination directory. <br/>
+     * <br/>
+     * Based on http://stackoverflow.com/a/14211580/320399 <br/>
      *
-     *
-     * @param destinationDirectory
-     * @param archive
+     * @param destinationDirectory A place to extract the archive file to on disk.
+     * @param archive A gzip archive file (e.g. node-v0.10.18-linux-x64.tar.gz)
      * @throws MojoFailureException
      */
     private void extractFile(String destinationDirectory, String archive) throws MojoFailureException{
