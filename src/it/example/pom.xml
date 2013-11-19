@@ -40,6 +40,7 @@
                             <goal>grunt</goal>
                         </goals>
                         <configuration>
+                            <arguments>--no-color</arguments>
                         </configuration>
                     </execution>
 
