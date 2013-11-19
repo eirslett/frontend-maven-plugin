@@ -20,7 +20,7 @@ public final class GruntMojo extends AbstractMojo {
     private File workingDirectory;
 
     @Parameter
-    private String target;
+    private String arguments;
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -29,8 +29,8 @@ public final class GruntMojo extends AbstractMojo {
         final String gruntPath = workingDirectory+"/node_modules/grunt-cli/bin/grunt".replace("/", File.separator);
 
 	    List<String> commands =  new LinkedList(Arrays.asList(gruntPath));
-	    if(target != null && !target.equals("null") && !target.isEmpty()) {
-		    commands.addAll(Arrays.asList(target.split("\\s+")));
+	    if(arguments != null && !arguments.equals("null") && !arguments.isEmpty()) {
+		    commands.addAll(Arrays.asList(arguments.split("\\s+")));
 	    }
 
         int result = new NodeExecutor(workingDirectory, commands).executeAndRedirectOutput(logger);
