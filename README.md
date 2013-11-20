@@ -26,7 +26,7 @@ Include the plugin as a dependency in your Maven project.
   <plugin>
     <groupId>com.github.eirslett</groupId>
     <artifactId>frontend-maven-plugin</artifactId>
-    <version>0.0.6</version>
+    <version>0.0.7</version>
   </plugin>
 ```
 
