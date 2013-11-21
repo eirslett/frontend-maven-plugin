@@ -31,8 +31,12 @@
                     <execution>
                         <id>npm install</id>
                         <goals>
-                            <goal>npm-install</goal>
+                            <goal>npm</goal>
                         </goals>
+                        <!-- Optional configuration which provides for running any npm command -->
+                        <configuration>
+                            <command>install</command>
+                        </configuration>
                     </execution>
 
                     <execution>
