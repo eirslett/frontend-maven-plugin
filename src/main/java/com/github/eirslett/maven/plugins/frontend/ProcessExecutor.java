@@ -12,10 +12,17 @@ final class ProcessExecutor {
     private final File workingDirectory;
     private final List<String> command;
     private final ProcessBuilder processBuilder;
+    private final Platform platform;
 
     public ProcessExecutor(File workingDirectory, List<String> command){
+        this(workingDirectory, command, Platform.guess());
+    }
+
+    public ProcessExecutor(File workingDirectory, List<String> command, Platform platform){
         this.workingDirectory = workingDirectory;
         this.command = command;
+        this.platform = platform;
+
         this.processBuilder = createProcessBuilder();
     }
 
@@ -59,7 +66,7 @@ final class ProcessExecutor {
     }
 
     private List<String> getPlatformIndependentCommand(){
-        if(OS.isWindows()){
+        if(platform.isWindows()){
             return merge(Arrays.asList("cmd", "/C"), command);
         } else {
             return command;

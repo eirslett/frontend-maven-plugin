@@ -66,10 +66,11 @@
             <artifactId>maven-plugin-annotations</artifactId>
             <version>3.2</version>
         </dependency>
+
         <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-compress</artifactId>
-                <version>1.5</version>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-compress</artifactId>
+            <version>1.5</version>
         </dependency>
     </dependencies>
 
@@ -103,7 +104,7 @@
                 </executions>
             </plugin>
 
-            <!-- For integration test -->
+            <!-- For the integration test -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-invoker-plugin</artifactId>
