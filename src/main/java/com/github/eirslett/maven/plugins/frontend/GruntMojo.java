@@ -13,6 +13,8 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+import static com.github.eirslett.maven.plugins.frontend.Utils.normalize;
+
 @Mojo(name="grunt", defaultPhase = LifecyclePhase.GENERATE_RESOURCES)
 public final class GruntMojo extends AbstractMojo {
 
@@ -26,7 +28,7 @@ public final class GruntMojo extends AbstractMojo {
     public void execute() throws MojoExecutionException, MojoFailureException {
         Log logger = getLog();
         logger.info("Running Grunt in "+workingDirectory.toString());
-        final String gruntPath = workingDirectory+"/node_modules/grunt-cli/bin/grunt".replace("/", File.separator);
+        final String gruntPath = workingDirectory + normalize("/node_modules/grunt-cli/bin/grunt");
 
 	    List<String> commands =  new LinkedList(Arrays.asList(gruntPath));
 	    if(arguments != null && !arguments.equals("null") && !arguments.isEmpty()) {

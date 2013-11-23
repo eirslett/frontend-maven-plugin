@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
 <settings>
+    <!-- Configuration for the maven-invoker-plugin (integration test) -->
     <profiles>
         <profile>
             <id>it-repo</id>

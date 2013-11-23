@@ -10,6 +10,8 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
+import static com.github.eirslett.maven.plugins.frontend.Utils.normalize;
+
 @Mojo(name="npm-install",  defaultPhase = LifecyclePhase.GENERATE_RESOURCES)
 public final class NpmInstallMojo extends AbstractMojo {
 
@@ -19,7 +21,7 @@ public final class NpmInstallMojo extends AbstractMojo {
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         getLog().info("Running NPM install in "+workingDirectory.toString());
-        final String npmPath = workingDirectory+"/node/npm/bin/npm-cli.js".replace("/", File.separator);
+        final String npmPath = workingDirectory + normalize("/node/npm/bin/npm-cli.js");
         int result = new NodeExecutor(workingDirectory, Arrays.asList(npmPath, "install")).executeAndRedirectOutput(getLog());
         if(result != 0){
             throw new MojoFailureException("NPM install failed.");
