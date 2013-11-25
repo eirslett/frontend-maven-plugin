@@ -144,7 +144,7 @@ final class NodeAndNPMInstaller {
         String downloadUrl = "";
         try {
             log.info("Installing node version " + nodeVersion);
-            final String longNodeFilename = DOWNLOAD_ROOT + platform.getLongNodeFilename(nodeVersion);
+            final String longNodeFilename = platform.getLongNodeFilename(nodeVersion);
             downloadUrl = DOWNLOAD_ROOT + platform.getNodeDownloadFilename(nodeVersion);
 
             final File tmpDirectory = new File(workingDirectory + File.separator + "node_tmp");
