@@ -33,7 +33,7 @@ Include the plugin as a dependency in your Maven project.
 # How to use the plugin?
 Have a look at the example project, to see how it should be set up!
 If you want to know how to configure the plugin, have a look at the example pom.xml:
-https://github.com/eirslett/frontend-maven-plugin/blob/frontend-maven-plugin-0.0.6/src/it/example/pom.xml
+https://github.com/eirslett/frontend-maven-plugin/blob/master/src/it/example/pom.xml
 
 ## To build this project:
 mvn clean install
