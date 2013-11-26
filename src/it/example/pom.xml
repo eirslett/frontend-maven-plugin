@@ -35,7 +35,7 @@
                         </goals>
                         <!-- Optional configuration which provides for running any npm command -->
                         <configuration>
-                            <command>install</command>
+                            <arguments>install</arguments>
                         </configuration>
                     </execution>
 
