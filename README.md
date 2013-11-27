@@ -35,6 +35,10 @@ Have a look at the example project, to see how it should be set up!
 If you want to know how to configure the plugin, have a look at the example pom.xml:
 https://github.com/eirslett/frontend-maven-plugin/blob/master/src/it/example/pom.xml
 
+# Helper scripts
+During development, it's convenient to have the "npm", "grunt" and "karma" commands
+available on the command line. If you want that, use [those helper scripts](https://github.com/eirslett/frontend-maven-plugin/tree/master/src/it/example/helper-scripts)!
+
 ## To build this project:
 mvn clean install
 
