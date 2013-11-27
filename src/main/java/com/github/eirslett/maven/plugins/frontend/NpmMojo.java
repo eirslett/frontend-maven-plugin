@@ -9,7 +9,6 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.slf4j.Logger;
-import org.slf4j.helpers.NOPLogger;
 
 import static com.github.eirslett.maven.plugins.frontend.MojoUtils.getSlf4jLogger;
 
@@ -37,10 +36,5 @@ public final class NpmMojo extends AbstractMojo {
         } catch (TaskRunnerException e) {
             throw new MojoFailureException(e.getMessage());
         }
-    }
-
-    public static void main(String[] args) throws TaskRunnerException {
-        final Logger logger = NOPLogger.NOP_LOGGER;
-        new NpmRunner(logger, Platform.guess(), new File("D:\\workspace\\frontend-maven-plugin\\src\\it\\example")).execute("install");
     }
 }
