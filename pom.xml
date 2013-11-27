@@ -106,6 +106,9 @@
                         <goals>
                             <goal>descriptor</goal>
                         </goals>
+                        <configuration>
+                            <goalPrefix>frontend</goalPrefix>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
