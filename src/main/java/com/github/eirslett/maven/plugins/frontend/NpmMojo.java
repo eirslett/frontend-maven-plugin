@@ -31,7 +31,6 @@ public final class NpmMojo extends AbstractMojo {
     public void execute() throws MojoExecutionException, MojoFailureException {
         try {
             final Logger logger = getSlf4jLogger(getLog(), NpmMojo.class);
-            logger.info("new NpmRunner(logger, "+Platform.guess().toString()+", "+workingDirectory+").execute("+arguments+")");
             new NpmRunner(logger, Platform.guess(), workingDirectory).execute(arguments);
         } catch (TaskRunnerException e) {
             throw new MojoFailureException(e.getMessage());
