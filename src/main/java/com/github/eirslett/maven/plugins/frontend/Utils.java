@@ -19,4 +19,15 @@ final class Utils {
     public static String normalize(String path){
         return path.replace("/", File.separator);
     }
+
+    public static String implode(String separator, List<String> elements){
+        String s = "";
+        for(int i = 0; i < elements.size(); i++){
+            if(i > 0){
+                s += " ";
+            }
+            s += elements.get(i);
+        }
+        return s;
+    }
 }
