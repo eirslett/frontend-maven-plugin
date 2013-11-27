@@ -1,0 +1,1 @@
+Here are some helper scripts. Put them in your working directory (the same directory as your package.json file)
