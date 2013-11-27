@@ -25,10 +25,7 @@ final class DefaultFileDownloader implements FileDownloader {
             new File(FileUtils.dirname(destination)).mkdirs();
             URL link = new URL(downloadUrl);
             ReadableByteChannel rbc = Channels.newChannel(link.openStream());
-            FileOutputStream fos = null;
-
-            fos = new FileOutputStream(destination);
-
+            FileOutputStream fos = new FileOutputStream(destination);
             fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
             fos.close();
         } catch (IOException e) {
