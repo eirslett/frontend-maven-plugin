@@ -1,6 +1,6 @@
 package com.github.eirslett.maven.plugins.frontend;
 
-import org.apache.maven.plugin.logging.Log;
+import org.slf4j.Logger;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -8,23 +8,23 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 final class InputStreamHandler extends Thread {
-    private interface Logger{
+    private interface LogLevelAgnosticLogger {
         public void log(String value);
     }
 
     private final InputStream inputStream;
-    private final Logger logger;
+    private final LogLevelAgnosticLogger logger;
 
-    private InputStreamHandler(InputStream inputStream, Logger logger) {
+    private InputStreamHandler(InputStream inputStream, LogLevelAgnosticLogger logger) {
         this.inputStream = inputStream;
         this.logger = logger;
     }
 
-    public static InputStreamHandler logInfo(InputStream inputStream, Log logger){
+    public static InputStreamHandler logInfo(InputStream inputStream, Logger logger){
         return new InputStreamHandler(inputStream, infoLoggerFor(logger));
     }
 
-    public static InputStreamHandler logError(InputStream inputStream, Log logger){
+    public static InputStreamHandler logError(InputStream inputStream, Logger logger){
         return new InputStreamHandler(inputStream, errorLoggerFor(logger));
     }
 
@@ -40,8 +40,8 @@ final class InputStreamHandler extends Thread {
         }
     }
 
-    private static Logger infoLoggerFor(final Log logger){
-        return new Logger() {
+    private static LogLevelAgnosticLogger infoLoggerFor(final Logger logger){
+        return new LogLevelAgnosticLogger() {
             @Override
             public void log(String value) {
                 logger.info(value);
@@ -49,8 +49,8 @@ final class InputStreamHandler extends Thread {
         };
     }
 
-    private static Logger errorLoggerFor(final Log logger){
-        return new Logger() {
+    private static LogLevelAgnosticLogger errorLoggerFor(final Logger logger){
+        return new LogLevelAgnosticLogger() {
             @Override
             public void log(String value) {
                 logger.error(value);

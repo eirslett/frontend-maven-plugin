@@ -3,49 +3,44 @@ package com.github.eirslett.maven.plugins.frontend;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
-import org.apache.maven.plugin.MojoFailureException;
 
-import java.io.*;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
-class ArchiveExtractor {
-    private String destinationDirectory;
-    private String archive;
-
-    public ArchiveExtractor(String destinationDirectory, String archive) {
-        this.destinationDirectory = destinationDirectory;
-        this.archive = archive;
+class ArchiveExtractionException extends Exception {
+    public ArchiveExtractionException(String message, Throwable cause) {
+        super(message, cause);
     }
+}
 
-    public void extract() throws MojoFailureException {
+interface ArchiveExtractor {
+    public void extract(String archive, String destinationDirectory) throws ArchiveExtractionException;
+}
+
+final class DefaultArchiveExtractor implements ArchiveExtractor {
+    public void extract(String archive, String destinationDirectory) throws ArchiveExtractionException {
         try {
-            File archiveFile = new File(archive);
-            if (!archiveFile.exists()){
-                throw new MojoFailureException("The archive you're trying to extract ("
-                        + archive
-                        + ") does not exist!");
-            }
-            if (!archiveFile.canRead()){
-                throw new MojoFailureException("The archive you're trying to extract ("
-                        + archive
-                        + ") can not be read!");
-            }
+            final File archiveFile = new File(archive);
             FileInputStream fis = new FileInputStream(archiveFile);
 
             // TarArchiveInputStream can be constructed with a normal FileInputStream if
             // we ever need to extract regular '.tar' files.
-            TarArchiveInputStream tarIn = new TarArchiveInputStream(new GzipCompressorInputStream(fis));
+            final TarArchiveInputStream tarIn = new TarArchiveInputStream(new GzipCompressorInputStream(fis));
 
             TarArchiveEntry tarEntry = tarIn.getNextTarEntry();
             while (tarEntry != null) {
                 // Create a file for this tarEntry
-                File destPath = new File(destinationDirectory + File.separator + tarEntry.getName());
+                final File destPath = new File(destinationDirectory + File.separator + tarEntry.getName());
                 if (tarEntry.isDirectory()) {
                     destPath.mkdirs();
                 } else {
                     destPath.createNewFile();
                     //byte [] btoRead = new byte[(int)tarEntry.getSize()];
                     byte [] btoRead = new byte[8024];
-                    BufferedOutputStream bout =
+                    final BufferedOutputStream bout =
                         new BufferedOutputStream(new FileOutputStream(destPath));
                     int len = 0;
 
@@ -59,13 +54,8 @@ class ArchiveExtractor {
                 tarEntry = tarIn.getNextTarEntry();
             }
             tarIn.close();
-
-        } catch (FileNotFoundException e) {
-            throw new MojoFailureException("Could not extract archive: '"
-                    + archive
-                    + "'", e);
         } catch (IOException e) {
-            throw new MojoFailureException("Could not extract archive: '"
+            throw new ArchiveExtractionException("Could not extract archive: '"
                     + archive
                     + "'", e);
         }
