@@ -35,6 +35,11 @@ public final class GruntMojo extends AbstractMojo {
 		    commands.addAll(Arrays.asList(arguments.split("\\s+")));
 	    }
 
+        final String noColor = "--no-color";
+        if(!commands.contains(noColor)){
+            commands.add(noColor);
+        }
+
         int result = new NodeExecutor(workingDirectory, commands).executeAndRedirectOutput(logger);
         if(result != 0){
             throw new MojoFailureException("Grunt build failed.");
