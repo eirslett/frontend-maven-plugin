@@ -1,22 +1,28 @@
 package com.github.eirslett.maven.plugins.frontend;
 
-import org.apache.maven.plugin.logging.Log;
+import org.slf4j.Logger;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.List;
 
 import static com.github.eirslett.maven.plugins.frontend.Utils.merge;
+
+final class ProcessExecutionException extends Exception {
+    public ProcessExecutionException(Throwable cause) {
+        super(cause);
+    }
+}
 
 final class ProcessExecutor {
     private final File workingDirectory;
     private final List<String> command;
     private final ProcessBuilder processBuilder;
     private final Platform platform;
-
-    public ProcessExecutor(File workingDirectory, List<String> command){
-        this(workingDirectory, command, Platform.guess());
-    }
 
     public ProcessExecutor(File workingDirectory, List<String> command, Platform platform){
         this.workingDirectory = workingDirectory;
@@ -26,7 +32,7 @@ final class ProcessExecutor {
         this.processBuilder = createProcessBuilder();
     }
 
-    public String executeAndGetResult(){
+    public String executeAndGetResult() throws ProcessExecutionException {
         try {
             final Process process = processBuilder.start();
             final String result = readString(process.getInputStream());
@@ -39,13 +45,13 @@ final class ProcessExecutor {
                 throw new RuntimeException(error);
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new ProcessExecutionException(e);
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            throw new ProcessExecutionException(e);
         }
     }
 
-    public int executeAndRedirectOutput(final Log logger){
+    public int executeAndRedirectOutput(final Logger logger) throws ProcessExecutionException {
         try {
             processBuilder.redirectErrorStream(true);
             final Process process = processBuilder.start();
@@ -55,9 +61,9 @@ final class ProcessExecutor {
 
             return process.waitFor();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new ProcessExecutionException(e);
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            throw new ProcessExecutionException(e);
         }
     }
 
