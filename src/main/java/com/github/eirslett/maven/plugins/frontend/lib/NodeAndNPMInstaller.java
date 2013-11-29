@@ -1,4 +1,4 @@
-package com.github.eirslett.maven.plugins.frontend;
+package com.github.eirslett.maven.plugins.frontend.lib;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -10,19 +10,8 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.plexus.util.FileUtils;
 import org.slf4j.Logger;
 
-import static com.github.eirslett.maven.plugins.frontend.Utils.normalize;
-
-final class InstallationException extends Exception {
-    public InstallationException(String message){
-        super(message);
-    }
-    public InstallationException(String message, Throwable cause){
-        super(message, cause);
-    }
-}
-
-interface NodeAndNPMInstaller {
-    public void install(String nodeVersion, String npmVersion) throws InstallationException;
+public interface NodeAndNPMInstaller {
+    void install(String nodeVersion, String npmVersion) throws InstallationException;
 }
 
 final class DefaultNodeAndNPMInstaller implements NodeAndNPMInstaller {
@@ -109,7 +98,7 @@ final class DefaultNodeAndNPMInstaller implements NodeAndNPMInstaller {
 
         private boolean npmIsAlreadyInstalled(){
             try {
-                final File npmPackageJson = new File(workingDirectory + normalize("/node/npm/package.json"));
+                final File npmPackageJson = new File(workingDirectory + Utils.normalize("/node/npm/package.json"));
                 if(npmPackageJson.exists()){
                     HashMap<String,Object> data = new ObjectMapper().readValue(npmPackageJson, HashMap.class);
                     if(data.containsKey(VERSION)){

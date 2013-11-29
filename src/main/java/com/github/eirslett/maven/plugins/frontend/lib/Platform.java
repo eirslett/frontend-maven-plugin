@@ -1,4 +1,4 @@
-package com.github.eirslett.maven.plugins.frontend;
+package com.github.eirslett.maven.plugins.frontend.lib;
 
 enum Architecture { x86, x64;
     public static Architecture guess(){

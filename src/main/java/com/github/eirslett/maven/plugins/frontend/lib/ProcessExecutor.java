@@ -1,4 +1,4 @@
-package com.github.eirslett.maven.plugins.frontend;
+package com.github.eirslett.maven.plugins.frontend.lib;
 
 import org.slf4j.Logger;
 
@@ -9,8 +9,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.List;
-
-import static com.github.eirslett.maven.plugins.frontend.Utils.merge;
 
 final class ProcessExecutionException extends Exception {
     public ProcessExecutionException(Throwable cause) {
@@ -73,7 +71,7 @@ final class ProcessExecutor {
 
     private List<String> getPlatformIndependentCommand(){
         if(platform.isWindows()){
-            return merge(Arrays.asList("cmd", "/C"), command);
+            return Utils.merge(Arrays.asList("cmd", "/C"), command);
         } else {
             return command;
         }

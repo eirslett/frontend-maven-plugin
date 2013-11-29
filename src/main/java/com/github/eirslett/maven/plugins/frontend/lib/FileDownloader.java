@@ -1,4 +1,4 @@
-package com.github.eirslett.maven.plugins.frontend;
+package com.github.eirslett.maven.plugins.frontend.lib;
 
 import org.codehaus.plexus.util.FileUtils;
 
@@ -10,7 +10,7 @@ import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 
 final class DownloadException extends Exception {
-    public DownloadException(String message, Throwable cause) {
+    DownloadException(String message, Throwable cause) {
         super(message, cause);
     }
 }

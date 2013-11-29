@@ -1,4 +1,4 @@
-package com.github.eirslett.maven.plugins.frontend;
+package com.github.eirslett.maven.plugins.frontend.lib;
 
 import org.slf4j.Logger;
 
@@ -7,11 +7,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.github.eirslett.maven.plugins.frontend.Utils.implode;
-import static com.github.eirslett.maven.plugins.frontend.Utils.normalize;
-import static com.github.eirslett.maven.plugins.frontend.Utils.prepend;
+import static com.github.eirslett.maven.plugins.frontend.lib.Utils.implode;
+import static com.github.eirslett.maven.plugins.frontend.lib.Utils.normalize;
+import static com.github.eirslett.maven.plugins.frontend.lib.Utils.prepend;
 
-public abstract class NodeTaskExecutor {
+abstract class NodeTaskExecutor {
     private final Logger logger;
     private final String taskName;
     private final String taskLocation;
