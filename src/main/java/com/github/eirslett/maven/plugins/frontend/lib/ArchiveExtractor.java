@@ -1,4 +1,4 @@
-package com.github.eirslett.maven.plugins.frontend;
+package com.github.eirslett.maven.plugins.frontend.lib;
 
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
@@ -11,7 +11,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 class ArchiveExtractionException extends Exception {
-    public ArchiveExtractionException(String message, Throwable cause) {
+    ArchiveExtractionException(String message, Throwable cause) {
         super(message, cause);
     }
 }

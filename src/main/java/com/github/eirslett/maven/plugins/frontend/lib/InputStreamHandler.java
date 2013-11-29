@@ -1,4 +1,4 @@
-package com.github.eirslett.maven.plugins.frontend;
+package com.github.eirslett.maven.plugins.frontend.lib;
 
 import org.slf4j.Logger;
 
