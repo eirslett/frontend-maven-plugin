@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -9,11 +9,15 @@
     </parent>
 
     <groupId>com.github.eirslett</groupId>
-    <artifactId>frontend-maven-plugin</artifactId>
-    <packaging>maven-plugin</packaging>
+    <artifactId>frontend-plugins</artifactId>
     <version>0.0.9-SNAPSHOT</version>
+    <packaging>pom</packaging>
 
-    <name>Maven Frontend Plugin</name>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <name>Frontend Plugins</name>
 
     <description>
         This Maven plugin lets you install Node/NPM locally
@@ -44,100 +48,8 @@
         </developer>
     </developers>
 
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
-
-    <dependencies>
-        <dependency>
-            <groupId>org.codehaus.jackson</groupId>
-            <artifactId>jackson-mapper-asl</artifactId>
-            <version>1.9.13</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.maven</groupId>
-            <artifactId>maven-plugin-api</artifactId>
-            <version>3.1.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.maven.plugin-tools</groupId>
-            <artifactId>maven-plugin-annotations</artifactId>
-            <version>3.2</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.googlecode.slf4j-maven-plugin-log</groupId>
-            <artifactId>slf4j-maven-plugin-log</artifactId>
-            <version>1.0.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-compress</artifactId>
-            <version>1.5</version>
-        </dependency>
-    </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.1</version>
-                <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-plugin-plugin</artifactId>
-                <version>3.2</version>
-                <configuration>
-                    <skipErrorNoDescriptorsFound>true</skipErrorNoDescriptorsFound>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>mojo-descriptor</id>
-                        <phase>process-classes</phase>
-                        <goals>
-                            <goal>descriptor</goal>
-                        </goals>
-                        <configuration>
-                            <goalPrefix>frontend</goalPrefix>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <!-- For the integration test -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-invoker-plugin</artifactId>
-                <version>1.8</version>
-
-                <configuration>
-                    <projectsDirectory>src/it</projectsDirectory>
-                    <cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
-                    <settingsFile>src/it/settings.xml</settingsFile>
-                    <localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
-                    <streamLogs>true</streamLogs>
-                </configuration>
-
-                <executions>
-                    <execution>
-                        <phase>integration-test</phase>
-                        <goals>
-                            <goal>install</goal>
-                            <goal>run</goal>
-                            <goal>verify</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
+    <modules>
+        <module>frontend-plugin-core</module>
+        <module>frontend-maven-plugin</module>
+    </modules>
 </project>
