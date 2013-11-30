@@ -18,7 +18,7 @@ laptops, but backend developers can run a clean build without even installing No
 running common javascript tasks such as minification, obfuscation, compression, packaging, testing etc.
 
 ## Show me an example!
-[Here is an example for you!](https://github.com/eirslett/frontend-maven-plugin/tree/master/src/it/example)
+[Here is an example for you!](https://github.com/eirslett/frontend-maven-plugin/tree/master/frontend-maven-plugin/src/it/example)
 
 # Installing
 Include the plugin as a dependency in your Maven project.
@@ -33,11 +33,11 @@ Include the plugin as a dependency in your Maven project.
 # How to use the plugin?
 Have a look at the example project, to see how it should be set up!
 If you want to know how to configure the plugin, have a look at the example pom.xml:
-https://github.com/eirslett/frontend-maven-plugin/blob/master/src/it/example/pom.xml
+https://github.com/eirslett/frontend-maven-plugin/blob/master/frontend-maven-plugin/src/it/example/pom.xml
 
 # Helper scripts
 During development, it's convenient to have the "npm", "grunt" and "karma" commands
-available on the command line. If you want that, use [those helper scripts](https://github.com/eirslett/frontend-maven-plugin/tree/master/src/it/example/helper-scripts)!
+available on the command line. If you want that, use [those helper scripts](https://github.com/eirslett/frontend-maven-plugin/tree/master/frontend-maven-plugin/src/it/example/helper-scripts)!
 
 ## To build this project:
 mvn clean install
