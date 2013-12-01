@@ -1,18 +1,18 @@
 package com.github.eirslett.maven.plugins.frontend.lib;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.slf4j.helpers.NOPLogger;
 
 import java.io.File;
 
 public final class FrontendPluginFactory {
-    private static final Logger defaultLogger = NOPLogger.NOP_LOGGER;
     private static final Platform defaultPlatform = Platform.guess();
 
     private FrontendPluginFactory(){}
 
     public static NodeAndNPMInstaller getNodeAndNPMInstaller(File workingDirectory){
-        return getNodeAndNPMInstaller(workingDirectory, defaultLogger);
+        return getNodeAndNPMInstaller(workingDirectory, getDefaultLogger());
     }
 
     public static NodeAndNPMInstaller getNodeAndNPMInstaller(File workingDirectory, Logger logger){
@@ -25,7 +25,7 @@ public final class FrontendPluginFactory {
     }
 
     public static NpmRunner getNpmRunner(File workingDirectory){
-        return getNpmRunner(workingDirectory, defaultLogger);
+        return getNpmRunner(workingDirectory, getDefaultLogger());
     }
 
     public static NpmRunner getNpmRunner(File workingDirectory, Logger logger) {
@@ -33,7 +33,7 @@ public final class FrontendPluginFactory {
     }
 
     public static GruntRunner getGruntRunner(File workingDirectory){
-        return getGruntRunner(workingDirectory, defaultLogger);
+        return getGruntRunner(workingDirectory, getDefaultLogger());
     }
 
     public static GruntRunner getGruntRunner(File workingDirectory, Logger logger){
@@ -41,10 +41,14 @@ public final class FrontendPluginFactory {
     }
 
     public static KarmaRunner getKarmaRunner(File workingDirectory){
-        return getKarmaRunner(workingDirectory, defaultLogger);
+        return getKarmaRunner(workingDirectory, getDefaultLogger());
     }
 
     public static KarmaRunner getKarmaRunner(File workingDirectory, Logger logger){
         return new DefaultKarmaRunner(logger, defaultPlatform, workingDirectory);
+    }
+
+    private static Logger getDefaultLogger(){
+        return LoggerFactory.getLogger("Frontend Plugin");
     }
 }
