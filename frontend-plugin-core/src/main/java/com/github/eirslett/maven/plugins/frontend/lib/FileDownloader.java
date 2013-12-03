@@ -1,6 +1,6 @@
 package com.github.eirslett.maven.plugins.frontend.lib;
 
-import org.codehaus.plexus.util.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -22,7 +22,7 @@ interface FileDownloader {
 final class DefaultFileDownloader implements FileDownloader {
     public void download(String downloadUrl, String destination) throws DownloadException {
         try {
-            new File(FileUtils.dirname(destination)).mkdirs();
+            new File(FilenameUtils.getPath(destination)).mkdirs();
             URL link = new URL(downloadUrl);
             ReadableByteChannel rbc = Channels.newChannel(link.openStream());
             FileOutputStream fos = new FileOutputStream(destination);
