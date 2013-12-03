@@ -6,8 +6,8 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 
+import org.apache.commons.io.FileUtils;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.plexus.util.FileUtils;
 import org.slf4j.Logger;
 
 public interface NodeAndNPMInstaller {
