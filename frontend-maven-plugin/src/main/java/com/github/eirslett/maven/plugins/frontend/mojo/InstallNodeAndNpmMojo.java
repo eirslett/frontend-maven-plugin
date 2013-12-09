@@ -18,19 +18,19 @@ public final class InstallNodeAndNpmMojo extends AbstractMojo {
     /**
      * The base directory for running all Node commands. (Usually the directory that contains package.json)
      */
-    @Parameter(defaultValue = "${basedir}")
+    @Parameter(property = "workingDirectory", defaultValue = "${basedir}")
     private File workingDirectory;
 
     /**
      * The version of Node.js to install. IMPORTANT! Most Node.js version names start with 'v', for example 'v0.10.18'
      */
-    @Parameter(required = true)
+    @Parameter(property="nodeVersion", required = true)
     private String nodeVersion;
 
     /**
      * The version of NPM to install.
      */
-    @Parameter(required = true)
+    @Parameter(property = "npmVersion", required = true)
     private String npmVersion;
 
     @Override

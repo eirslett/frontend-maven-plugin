@@ -25,7 +25,7 @@ public final class KarmaRunMojo extends AbstractMojo {
     /**
      * Path to your karma configuration file, relative to the working directory (default is "karma.conf.js")
      */
-    @Parameter(defaultValue = "karma.conf.js")
+    @Parameter(defaultValue = "karma.conf.js", property = "karmaConfPath")
     private String karmaConfPath;
 
     /**

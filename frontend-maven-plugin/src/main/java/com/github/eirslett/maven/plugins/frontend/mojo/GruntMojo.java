@@ -24,7 +24,7 @@ public final class GruntMojo extends AbstractMojo {
     /**
      * Grunt arguments. Default is empty (runs just the "grunt" command).
      */
-    @Parameter
+    @Parameter(property = "arguments")
     private String arguments;
 
     @Override
