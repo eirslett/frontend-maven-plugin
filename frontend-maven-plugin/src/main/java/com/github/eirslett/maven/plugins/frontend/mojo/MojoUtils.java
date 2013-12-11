@@ -17,16 +17,21 @@ class MojoUtils {
     }
 
     static ProxyConfig getProxyConfig(MavenSession mavenSession){
-        Proxy mavenProxy = mavenSession.getSettings().getActiveProxy();
-        if(mavenProxy.isActive()){
+        if(
+                mavenSession == null ||
+                mavenSession.getSettings() == null ||
+                mavenSession.getSettings().getActiveProxy() == null ||
+                !mavenSession.getSettings().getActiveProxy().isActive()
+                ){
+            return null;
+        } else {
+            Proxy mavenProxy = mavenSession.getSettings().getActiveProxy();
             return new ProxyConfig(
                     mavenProxy.getProtocol(),
                     mavenProxy.getHost(),
                     mavenProxy.getPort(),
                     mavenProxy.getUsername(),
                     mavenProxy.getPassword());
-        } else {
-            return null;
         }
     }
 }
