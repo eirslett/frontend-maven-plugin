@@ -2,6 +2,7 @@ package com.github.eirslett.maven.plugins.frontend.mojo;
 
 import com.github.eirslett.maven.plugins.frontend.lib.FrontendPluginFactory;
 import com.github.eirslett.maven.plugins.frontend.lib.InstallationException;
+import com.github.eirslett.maven.plugins.frontend.lib.ProxyConfig;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -9,8 +10,6 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.apache.maven.settings.Proxy;
-import org.slf4j.Logger;
 
 import java.io.File;
 
@@ -42,7 +41,8 @@ public final class InstallNodeAndNpmMojo extends AbstractMojo {
     public void execute() throws MojoExecutionException, MojoFailureException {
         try {
             MojoUtils.setSLF4jLogger(getLog());
-            new FrontendPluginFactory(workingDirectory).getNodeAndNPMInstaller().install(nodeVersion, npmVersion);
+            ProxyConfig proxyConfig = MojoUtils.getProxyConfig(session);
+            new FrontendPluginFactory(workingDirectory, proxyConfig).getNodeAndNPMInstaller().install(nodeVersion, npmVersion);
         } catch (InstallationException e) {
             throw MojoUtils.toMojoFailureException(e);
         }

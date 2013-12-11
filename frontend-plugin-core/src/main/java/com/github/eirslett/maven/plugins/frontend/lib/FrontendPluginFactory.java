@@ -1,17 +1,18 @@
 package com.github.eirslett.maven.plugins.frontend.lib;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.slf4j.helpers.NOPLogger;
-
 import java.io.File;
 
 public final class FrontendPluginFactory {
     private static final Platform defaultPlatform = Platform.guess();
     private final File workingDirectory;
+    private final ProxyConfig proxy;
 
     public FrontendPluginFactory(File workingDirectory){
+        this(workingDirectory, null);
+    }
+    public FrontendPluginFactory(File workingDirectory, ProxyConfig proxy){
         this.workingDirectory = workingDirectory;
+        this.proxy = proxy;
     }
 
     public NodeAndNPMInstaller getNodeAndNPMInstaller(){
@@ -19,7 +20,7 @@ public final class FrontendPluginFactory {
                 workingDirectory,
                 defaultPlatform,
                 new DefaultArchiveExtractor(),
-                new DefaultFileDownloader());
+                new DefaultFileDownloader(proxy));
     }
 
     public NpmRunner getNpmRunner() {
