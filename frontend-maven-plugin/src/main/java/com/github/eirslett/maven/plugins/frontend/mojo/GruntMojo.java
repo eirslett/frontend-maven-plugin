@@ -30,8 +30,8 @@ public final class GruntMojo extends AbstractMojo {
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         try {
-            final Logger logger = MojoUtils.getSlf4jLogger(getLog(), GruntMojo.class);
-            FrontendPluginFactory.getGruntRunner(workingDirectory, logger)
+            MojoUtils.setSLF4jLogger(getLog());
+            new FrontendPluginFactory(workingDirectory).getGruntRunner()
                     .execute(arguments);
         } catch (TaskRunnerException e) {
             throw new MojoFailureException(e.getMessage());

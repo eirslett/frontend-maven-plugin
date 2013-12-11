@@ -9,6 +9,7 @@ import java.util.HashMap;
 import org.apache.commons.io.FileUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public interface NodeAndNPMInstaller {
     void install(String nodeVersion, String npmVersion) throws InstallationException;
@@ -21,9 +22,9 @@ final class DefaultNodeAndNPMInstaller implements NodeAndNPMInstaller {
     private final ArchiveExtractor archiveExtractor;
     private final FileDownloader fileDownloader;
 
-    DefaultNodeAndNPMInstaller(File workingDirectory, Logger logger, Platform platform, ArchiveExtractor archiveExtractor, FileDownloader fileDownloader) {
+    DefaultNodeAndNPMInstaller(File workingDirectory, Platform platform, ArchiveExtractor archiveExtractor, FileDownloader fileDownloader) {
         this.workingDirectory = workingDirectory;
-        this.logger = logger;
+        this.logger = LoggerFactory.getLogger(getClass());
         this.platform = platform;
         this.archiveExtractor = archiveExtractor;
         this.fileDownloader = fileDownloader;

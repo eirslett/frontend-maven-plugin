@@ -2,12 +2,14 @@ package com.github.eirslett.maven.plugins.frontend.mojo;
 
 import com.github.eirslett.maven.plugins.frontend.lib.FrontendPluginFactory;
 import com.github.eirslett.maven.plugins.frontend.lib.InstallationException;
+import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.settings.Proxy;
 import org.slf4j.Logger;
 
 import java.io.File;
@@ -33,11 +35,14 @@ public final class InstallNodeAndNpmMojo extends AbstractMojo {
     @Parameter(property = "npmVersion", required = true)
     private String npmVersion;
 
+    @Parameter(property = "session", defaultValue = "${session}", readonly = true)
+    private MavenSession session;
+
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         try {
-            final Logger logger = MojoUtils.getSlf4jLogger(getLog(), InstallNodeAndNpmMojo.class);
-            FrontendPluginFactory.getNodeAndNPMInstaller(workingDirectory, logger).install(nodeVersion, npmVersion);
+            MojoUtils.setSLF4jLogger(getLog());
+            new FrontendPluginFactory(workingDirectory).getNodeAndNPMInstaller().install(nodeVersion, npmVersion);
         } catch (InstallationException e) {
             throw MojoUtils.toMojoFailureException(e);
         }

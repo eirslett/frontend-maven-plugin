@@ -1,6 +1,7 @@
 package com.github.eirslett.maven.plugins.frontend.lib;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -18,8 +19,8 @@ abstract class NodeTaskExecutor {
     private final Platform platform;
     private final File workingDirectory;
 
-    public NodeTaskExecutor(String taskName, String taskLocation, File workingDirectory, Platform platform, Logger logger) {
-        this.logger = logger;
+    public NodeTaskExecutor(String taskName, String taskLocation, File workingDirectory, Platform platform) {
+        this.logger = LoggerFactory.getLogger(getClass());
         this.taskName = taskName;
         this.taskLocation = taskLocation;
         this.platform = platform;
