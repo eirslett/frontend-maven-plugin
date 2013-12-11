@@ -8,47 +8,29 @@ import java.io.File;
 
 public final class FrontendPluginFactory {
     private static final Platform defaultPlatform = Platform.guess();
+    private final File workingDirectory;
 
-    private FrontendPluginFactory(){}
-
-    public static NodeAndNPMInstaller getNodeAndNPMInstaller(File workingDirectory){
-        return getNodeAndNPMInstaller(workingDirectory, getDefaultLogger());
+    public FrontendPluginFactory(File workingDirectory){
+        this.workingDirectory = workingDirectory;
     }
 
-    public static NodeAndNPMInstaller getNodeAndNPMInstaller(File workingDirectory, Logger logger){
+    public NodeAndNPMInstaller getNodeAndNPMInstaller(){
         return new DefaultNodeAndNPMInstaller(
                 workingDirectory,
-                logger,
                 defaultPlatform,
                 new DefaultArchiveExtractor(),
                 new DefaultFileDownloader());
     }
 
-    public static NpmRunner getNpmRunner(File workingDirectory){
-        return getNpmRunner(workingDirectory, getDefaultLogger());
+    public NpmRunner getNpmRunner() {
+        return new DefaultNpmRunner(defaultPlatform, workingDirectory);
     }
 
-    public static NpmRunner getNpmRunner(File workingDirectory, Logger logger) {
-        return new DefaultNpmRunner(logger, defaultPlatform, workingDirectory);
+    public GruntRunner getGruntRunner(){
+        return new DefaultGruntRunner(defaultPlatform, workingDirectory);
     }
 
-    public static GruntRunner getGruntRunner(File workingDirectory){
-        return getGruntRunner(workingDirectory, getDefaultLogger());
-    }
-
-    public static GruntRunner getGruntRunner(File workingDirectory, Logger logger){
-        return new DefaultGruntRunner(logger, defaultPlatform, workingDirectory);
-    }
-
-    public static KarmaRunner getKarmaRunner(File workingDirectory){
-        return getKarmaRunner(workingDirectory, getDefaultLogger());
-    }
-
-    public static KarmaRunner getKarmaRunner(File workingDirectory, Logger logger){
-        return new DefaultKarmaRunner(logger, defaultPlatform, workingDirectory);
-    }
-
-    private static Logger getDefaultLogger(){
-        return LoggerFactory.getLogger("Frontend Plugin");
+    public KarmaRunner getKarmaRunner(){
+        return new DefaultKarmaRunner(defaultPlatform, workingDirectory);
     }
 }

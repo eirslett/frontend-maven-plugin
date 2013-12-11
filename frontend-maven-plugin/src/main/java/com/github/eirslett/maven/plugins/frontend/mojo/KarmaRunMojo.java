@@ -10,7 +10,7 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 @Mojo(name="karma",  defaultPhase = LifecyclePhase.TEST)
@@ -37,11 +37,11 @@ public final class KarmaRunMojo extends AbstractMojo {
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         try {
-            final Logger logger = MojoUtils.getSlf4jLogger(getLog(), KarmaRunMojo.class);
+            MojoUtils.setSLF4jLogger(getLog());
             if(skipTests){
-                logger.info("Skipping karma tests.");
+                LoggerFactory.getLogger(KarmaRunMojo.class).info("Skipping karma tests.");
             } else {
-                FrontendPluginFactory.getKarmaRunner(workingDirectory, logger)
+                new FrontendPluginFactory(workingDirectory).getKarmaRunner()
                         .execute("start " + karmaConfPath);
             }
         } catch (TaskRunnerException e) {

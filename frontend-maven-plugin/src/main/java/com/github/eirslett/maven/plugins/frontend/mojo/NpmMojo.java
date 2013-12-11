@@ -12,7 +12,7 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.slf4j.Logger;
 
-import static com.github.eirslett.maven.plugins.frontend.mojo.MojoUtils.getSlf4jLogger;
+import static com.github.eirslett.maven.plugins.frontend.mojo.MojoUtils.setSLF4jLogger;
 
 @Mojo(name="npm",  defaultPhase = LifecyclePhase.GENERATE_RESOURCES)
 public final class NpmMojo extends AbstractMojo {
@@ -32,8 +32,8 @@ public final class NpmMojo extends AbstractMojo {
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         try {
-            final Logger logger = getSlf4jLogger(getLog(), NpmMojo.class);
-            FrontendPluginFactory.getNpmRunner(workingDirectory, logger)
+            setSLF4jLogger(getLog());
+            new FrontendPluginFactory(workingDirectory).getNpmRunner()
                     .execute(arguments);
         } catch (TaskRunnerException e) {
             throw new MojoFailureException(e.getMessage());
