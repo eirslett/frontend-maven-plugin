@@ -33,17 +33,4 @@
             </pluginRepositories>
         </profile>
     </profiles>
-
-    <!-- Just to test proxy configuration -->
-    <proxies>
-        <proxy>
-            <active>true</active>
-            <protocol>http</protocol>
-            <host>127.0.0.1</host>
-            <port>8888</port>
-            <username>proxyuser</username>
-            <password>somepassword</password>
-            <nonProxyHosts>www.google.com|*.somewhere.com</nonProxyHosts>
-        </proxy>
-    </proxies>
 </settings>
