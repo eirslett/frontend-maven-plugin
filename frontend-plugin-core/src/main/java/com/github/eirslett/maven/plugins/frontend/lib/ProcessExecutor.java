@@ -76,7 +76,7 @@ final class ProcessExecutor {
         if(platform.isWindows()){
             return Utils.merge(Arrays.asList("cmd", "/C", "set PATH="+workingDirectory+"\\node;%PATH% &"), command);
         } else {
-            return command;
+            return Utils.merge(Arrays.asList("sh", workingDirectory+"/node/with_new_path.sh"), command);
         }
     }
 
