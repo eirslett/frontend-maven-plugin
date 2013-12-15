@@ -71,7 +71,7 @@ final class ProcessExecutor {
 
     private List<String> getPlatformIndependentCommand(){
         if(platform.isWindows()){
-            return Utils.merge(Arrays.asList("cmd", "/C"), command);
+            return Utils.merge(Arrays.asList("cmd", "/C", "set PATH="+workingDirectory+"\\node;%PATH% &"), command);
         } else {
             return command;
         }
