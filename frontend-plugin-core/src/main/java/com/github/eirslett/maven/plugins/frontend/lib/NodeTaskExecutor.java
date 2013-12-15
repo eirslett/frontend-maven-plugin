@@ -18,13 +18,15 @@ abstract class NodeTaskExecutor {
     private final String taskLocation;
     private final Platform platform;
     private final File workingDirectory;
+    private final List<String> additionalArguments;
 
-    public NodeTaskExecutor(String taskName, String taskLocation, File workingDirectory, Platform platform) {
+    public NodeTaskExecutor(String taskName, String taskLocation, File workingDirectory, Platform platform, List<String> additionalArguments) {
         this.logger = LoggerFactory.getLogger(getClass());
         this.taskName = taskName;
         this.taskLocation = taskLocation;
         this.platform = platform;
         this.workingDirectory = workingDirectory;
+        this.additionalArguments = additionalArguments;
     }
 
     public final void execute(String args) throws TaskRunnerException {
@@ -48,9 +50,10 @@ abstract class NodeTaskExecutor {
             arguments.addAll(Arrays.asList(args.split("\\s+")));
         }
 
-        final String noColor = "--no-color";
-        if(!arguments.contains(noColor)){
-            arguments.add(noColor);
+        for(String argument: additionalArguments){
+            if(!arguments.contains(argument)){
+                arguments.add(argument);
+            }
         }
         return arguments;
     }
