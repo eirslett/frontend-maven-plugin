@@ -1,8 +1,6 @@
 package com.github.eirslett.maven.plugins.frontend.lib;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.util.Arrays;
 import java.util.HashMap;
 
@@ -10,6 +8,8 @@ import org.apache.commons.io.FileUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static com.github.eirslett.maven.plugins.frontend.lib.Utils.normalize;
 
 public interface NodeAndNPMInstaller {
     void install(String nodeVersion, String npmVersion) throws InstallationException;
@@ -57,6 +57,9 @@ final class DefaultNodeAndNPMInstaller implements NodeAndNPMInstaller {
             }
             if(!npmIsAlreadyInstalled()) {
                 installNpm();
+            }
+            if(!platform.isWindows() && !hasShortcutScripts()){
+                createShortcutScripts();
             }
         }
 
@@ -209,6 +212,24 @@ final class DefaultNodeAndNPMInstaller implements NodeAndNPMInstaller {
 
         private void downloadFile(String downloadUrl, String destination) throws DownloadException {
             fileDownloader.download(downloadUrl, destination);
+        }
+    }
+
+    private boolean hasShortcutScripts() {
+        return new File(workingDirectory+normalize("/node/with_new_path.sh")).exists();
+    }
+
+    private void createShortcutScripts() throws InstallationException {
+        try {
+            File script = new File(workingDirectory+normalize("/node/with_new_path.sh"));
+            PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(script)));
+            pw.print("#!/bin/sh");
+            pw.print("export PATH=\"$(dirname $(readlink -f $0)):$PATH\"");
+            pw.print("$@");
+            pw.close();
+            logger.info("Created npm script "+script);
+        } catch (IOException e) {
+            throw new InstallationException("Could not create path script", e);
         }
     }
 }
