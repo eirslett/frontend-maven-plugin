@@ -223,9 +223,9 @@ final class DefaultNodeAndNPMInstaller implements NodeAndNPMInstaller {
         try {
             File script = new File(workingDirectory+normalize("/node/with_new_path.sh"));
             PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(script)));
-            pw.print("#!/bin/sh");
-            pw.print("export PATH=\"$(dirname $(readlink -f $0)):$PATH\"");
-            pw.print("$@");
+            pw.println("#!/bin/sh");
+            pw.println("export PATH=\"$(dirname $(readlink -f $0)):$PATH\"");
+            pw.println("\"$@\"");
             pw.close();
             logger.info("Created npm script "+script);
         } catch (IOException e) {
