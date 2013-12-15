@@ -25,8 +25,7 @@ public class ProxyConfig {
                 "protocol='" + protocol + '\'' +
                 ", host='" + host + '\'' +
                 ", port=" + port +
-                ", username='" + username + '\'' +
-                ", password=**********" +
+                (useAuthentication()? ", with username/passport authentication" : "") +
                 '}';
     }
 }
