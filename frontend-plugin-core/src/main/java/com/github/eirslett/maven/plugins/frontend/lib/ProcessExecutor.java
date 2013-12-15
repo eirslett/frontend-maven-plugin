@@ -11,6 +11,9 @@ import java.util.Arrays;
 import java.util.List;
 
 final class ProcessExecutionException extends Exception {
+    public ProcessExecutionException(String message) {
+        super(message);
+    }
     public ProcessExecutionException(Throwable cause) {
         super(cause);
     }
@@ -40,7 +43,7 @@ final class ProcessExecutor {
             if(exitValue == 0){
                 return result;
             } else {
-                throw new RuntimeException(error);
+                throw new ProcessExecutionException(result+" "+error);
             }
         } catch (IOException e) {
             throw new ProcessExecutionException(e);
