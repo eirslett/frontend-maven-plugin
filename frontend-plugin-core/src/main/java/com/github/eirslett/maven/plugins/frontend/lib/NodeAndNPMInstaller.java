@@ -224,7 +224,13 @@ final class DefaultNodeAndNPMInstaller implements NodeAndNPMInstaller {
             File script = new File(workingDirectory+normalize("/node/with_new_path.sh"));
             PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(script)));
             pw.println("#!/bin/sh");
-            pw.println("export PATH=\"$(dirname $(readlink -f $0)):$PATH\"");
+            if(platform.isMac()) {
+                // issue 23: readlink not working on mac osx
+                pw.println("export PATH=\"$(dirname $(python -c 'import os,sys;print os.path.realpath(sys.argv[1])' $0)):$PATH\"");
+            }
+            else {
+                pw.println("export PATH=\"$(dirname $(readlink -f $0)):$PATH\"");
+            }
             pw.println("\"$@\"");
             pw.close();
             logger.info("Created npm script "+script);

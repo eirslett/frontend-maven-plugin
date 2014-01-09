@@ -52,6 +52,10 @@ class Platform {
         return os == OS.Windows;
     }
 
+    public boolean isMac(){
+        return os == OS.Mac;
+    }
+
     public String getLongNodeFilename(String nodeVersion) {
         if(isWindows()){
             return "node.exe";
