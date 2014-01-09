@@ -153,8 +153,6 @@ final class DefaultNodeAndNPMInstaller implements NodeAndNPMInstaller {
                 logger.info("Creating temporary directory " + tmpDirectory);
                 tmpDirectory.mkdirs();
 
-                System.exit(0);
-
                 final String targetName = workingDirectory + "/node_tmp/node.tar.gz";
                 logger.info("Downloading Node.js from " + downloadUrl + " to " + targetName);
                 downloadFile(downloadUrl, targetName);
