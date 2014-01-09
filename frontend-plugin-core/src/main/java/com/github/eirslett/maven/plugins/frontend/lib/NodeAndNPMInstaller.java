@@ -157,8 +157,9 @@ final class DefaultNodeAndNPMInstaller implements NodeAndNPMInstaller {
                 logger.info("Downloading Node.js from " + downloadUrl + " to " + targetName);
                 downloadFile(downloadUrl, targetName);
 
-                logger.info("Extracting Node.js files in node_tmp");
-                extractFile(targetName, workingDirectory + "/node_tmp");
+                final String extractTo = workingDirectory + "/node_tmp";
+                logger.info("Extracting Node.js files to "+extractTo);
+                extractFile(targetName, extractTo);
 
                 // Search for the node binary
                 File nodeBinary = new File(workingDirectory + "/node_tmp/"+longNodeFilename+"/bin/node");
