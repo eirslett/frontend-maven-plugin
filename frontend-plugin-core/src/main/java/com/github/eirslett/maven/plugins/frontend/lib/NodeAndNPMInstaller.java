@@ -153,6 +153,8 @@ final class DefaultNodeAndNPMInstaller implements NodeAndNPMInstaller {
                 logger.info("Creating temporary directory " + tmpDirectory);
                 tmpDirectory.mkdirs();
 
+                System.exit(0);
+
                 final String targetName = workingDirectory + "/node_tmp/node.tar.gz";
                 logger.info("Downloading Node.js from " + downloadUrl + " to " + targetName);
                 downloadFile(downloadUrl, targetName);
@@ -177,8 +179,8 @@ final class DefaultNodeAndNPMInstaller implements NodeAndNPMInstaller {
                         throw new InstallationException("Cound not install Node: Was not allowed to make "+destination+" executable.");
                     }
 
-                    logger.info("Deleting temporary directory " + tmpDirectory);
-                    FileUtils.deleteDirectory(tmpDirectory);
+//                    logger.info("Deleting temporary directory " + tmpDirectory);
+//                    FileUtils.deleteDirectory(tmpDirectory);
 
                     logger.info("Installed node locally.");
                 }
