@@ -41,7 +41,7 @@ final class DefaultFileDownloader implements FileDownloader {
     public void download(String downloadUrl, String destination) throws DownloadException {
         try {
             CloseableHttpResponse response = execute(downloadUrl);
-            new File(FilenameUtils.getPath(destination)).mkdirs();
+            new File(FilenameUtils.getFullPathNoEndSeparator(destination)).mkdirs();
             ReadableByteChannel rbc = Channels.newChannel(response.getEntity().getContent());
             FileOutputStream fos = new FileOutputStream(destination);
             fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
