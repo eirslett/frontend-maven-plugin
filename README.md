@@ -1,7 +1,7 @@
 [![Build Status](https://travis-ci.org/eirslett/frontend-maven-plugin.png?branch=master)](https://travis-ci.org/eirslett/frontend-maven-plugin)
 
 # Frontend maven plugin
-This plugin downloads/installs Node and NPM locally for your project, runs NPM install, Grunt and/or Karma.
+This plugin downloads/installs Node and NPM locally for your project, runs NPM install, Grunt and/or gulp and/or Karma.
 It's supposed to work on Windows, OS X and Linux.
 
 #### What is this plugin meant to do?
@@ -38,7 +38,7 @@ Have a look at the example project, to see how it should be set up!
 https://github.com/eirslett/frontend-maven-plugin/blob/master/frontend-maven-plugin/src/it/example/pom.xml
 
 ### Working directory
-The default  The working directory is where you've put `package.json`, and `Gruntfile.js` etc. The default working directory is your project's base directory (the same directory as your `pom.xml`). You can change the working directory if you want:
+The default  The working directory is where you've put `package.json`, and either `Gruntfile.js` or `gulpfile.js` etc. The default working directory is your project's base directory (the same directory as your `pom.xml`). You can change the working directory if you want:
 ```xml
 <plugin>
     <groupId>com.github.eirslett</groupId>
@@ -75,7 +75,7 @@ Node/npm will only be "installed" locally to your project. It will not be instal
     </configuration>
 </execution>
 ```
-__Proxy settings:__ If you need to download Node/npm through a proxy: [configure your Maven proxy settings](http://maven.apache.org/guides/mini/guide-proxies.html) in ~/.m2/settions.xml. This plugin will use the same proxy settings as Maven.
+__Proxy settings:__ If you need to download Node/npm through a proxy: [configure your Maven proxy settings](http://maven.apache.org/guides/mini/guide-proxies.html) in ~/.m2/settings.xml. This plugin will use the same proxy settings as Maven.
 
 
 ### Running npm
@@ -122,6 +122,27 @@ By default, no colors will be shown in the log.
 </execution>
 ```
 
+### Running gulp
+Very similar to the Grunt execution. It will run gulp according to the `gulpfile.js` in your working directory.
+By default, no colors will be shown in the log.
+```xml
+<execution>
+    <id>gulp build</id>
+    <goals>
+        <goal>gulp</goal>
+    </goals>
+    
+    <!-- optional: the default phase is "generate-resources" -->
+    <phase>generate-resources</phase>
+    
+    <configuration>
+        <!-- optional: if not specified, it will run gulp's default
+        task (and you can remove this whole <configuration> section.) -->
+        <arguments>build</arguments>
+    </configuration>
+</execution>
+```
+
 ### Running Karma
 ```xml
 <execution>
@@ -150,12 +171,12 @@ The idea is that you use `karma.conf.js` while developing (using watch/livereloa
 it should generate xml reports, it should run only in PhantomJS, and/or it should generate
 code coverage reports.
 
-__Running Karma through Grunt:__ You may choose to run [Karma directly through Grunt instead](https://github.com/karma-runner/grunt-karma),
-as part of the `grunt` execution. That will help to separate your frontend and backend builds even more.
+__Running Karma through Grunt or gulp:__ You may choose to run Karma [directly through Grunt](https://github.com/karma-runner/grunt-karma) or [through gulp](https://github.com/lazd/gulp-karma) instead,
+as part of the `grunt` or `gulp` execution. That will help to separate your frontend and backend builds even more.
 
 
 # Helper scripts
-During development, it's convenient to have the "npm", "grunt" and "karma" commands
+During development, it's convenient to have the "npm", "grunt", "gulp" and "karma" commands
 available on the command line. If you want that, use [those helper scripts](https://github.com/eirslett/frontend-maven-plugin/tree/master/frontend-maven-plugin/src/it/example/helper-scripts)!
 
 ## To build this project:
