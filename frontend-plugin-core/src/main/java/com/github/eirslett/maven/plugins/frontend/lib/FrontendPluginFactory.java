@@ -34,4 +34,8 @@ public final class FrontendPluginFactory {
     public KarmaRunner getKarmaRunner(){
         return new DefaultKarmaRunner(defaultPlatform, workingDirectory);
     }
+
+    public GulpRunner getGulpRunner(){
+        return new DefaultGulpRunner(defaultPlatform, workingDirectory);
+    }
 }
