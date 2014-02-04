@@ -22,6 +22,9 @@ import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 
 final class DownloadException extends Exception {
+    public DownloadException(String message){
+        super(message);
+    }
     DownloadException(String message, Throwable cause) {
         super(message, cause);
     }
@@ -41,6 +44,10 @@ final class DefaultFileDownloader implements FileDownloader {
     public void download(String downloadUrl, String destination) throws DownloadException {
         try {
             CloseableHttpResponse response = execute(downloadUrl);
+            int statusCode = response.getStatusLine().getStatusCode();
+            if(statusCode != 200){
+                throw new DownloadException("Got error code "+ statusCode +" from the server.");
+            }
             new File(FilenameUtils.getFullPathNoEndSeparator(destination)).mkdirs();
             ReadableByteChannel rbc = Channels.newChannel(response.getEntity().getContent());
             FileOutputStream fos = new FileOutputStream(destination);
