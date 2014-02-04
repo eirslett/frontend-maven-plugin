@@ -13,9 +13,12 @@ import static com.github.eirslett.maven.plugins.frontend.lib.Utils.normalize;
 
 public interface NodeAndNPMInstaller {
     void install(String nodeVersion, String npmVersion) throws InstallationException;
+    void install(String nodeVersion, String npmVersion, String downloadRoot) throws InstallationException;
 }
 
 final class DefaultNodeAndNPMInstaller implements NodeAndNPMInstaller {
+    private static final String DEFAULT_DOWNLOAD_ROOT = "http://nodejs.org/dist/";
+
     private final File workingDirectory;
     private final Logger logger;
     private final Platform platform;
@@ -32,19 +35,28 @@ final class DefaultNodeAndNPMInstaller implements NodeAndNPMInstaller {
 
     @Override
     public void install(String nodeVersion, String npmVersion) throws InstallationException {
-        new NodeAndNPMInstallAction(nodeVersion, npmVersion).install();
+        new NodeAndNPMInstallAction(nodeVersion, npmVersion, null).install();
+    }
+
+    @Override
+    public void install(String nodeVersion, String npmVersion, String downloadRoot) throws InstallationException {
+        if(downloadRoot == null || downloadRoot.isEmpty()){
+            downloadRoot = DEFAULT_DOWNLOAD_ROOT;
+        }
+        new NodeAndNPMInstallAction(nodeVersion, npmVersion, downloadRoot).install();
     }
 
     private final class NodeAndNPMInstallAction {
-        private final String nodeVersion;
-        private final String npmVersion;
-
-        private static final String DOWNLOAD_ROOT = "http://nodejs.org/dist/";
         private static final String VERSION = "version";
 
-        public NodeAndNPMInstallAction(String nodeVersion, String npmVersion) {
+        private final String nodeVersion;
+        private final String npmVersion;
+        private final String downloadRoot;
+
+        public NodeAndNPMInstallAction(String nodeVersion, String npmVersion, String downloadRoot) {
             this.nodeVersion = nodeVersion;
             this.npmVersion = npmVersion;
+            this.downloadRoot = downloadRoot;
         }
 
         public void install() throws InstallationException {
@@ -129,7 +141,7 @@ final class DefaultNodeAndNPMInstaller implements NodeAndNPMInstaller {
         private void installNpm() throws InstallationException {
             try {
                 logger.info("Installing npm version " + npmVersion);
-                final String downloadUrl = DOWNLOAD_ROOT+"npm/npm-"+npmVersion+".tgz";
+                final String downloadUrl = downloadRoot +"npm/npm-"+npmVersion+".tgz";
                 String targetName = workingDirectory + File.separator + "npm.tar.gz";
                 downloadFile(downloadUrl, targetName);
                 extractFile(targetName, workingDirectory +"/node");
@@ -147,7 +159,7 @@ final class DefaultNodeAndNPMInstaller implements NodeAndNPMInstaller {
             try {
                 logger.info("Installing node version " + nodeVersion);
                 final String longNodeFilename = platform.getLongNodeFilename(nodeVersion);
-                downloadUrl = DOWNLOAD_ROOT + platform.getNodeDownloadFilename(nodeVersion);
+                downloadUrl = downloadRoot + platform.getNodeDownloadFilename(nodeVersion);
 
                 final File tmpDirectory = new File(workingDirectory + File.separator + "node_tmp");
                 logger.info("Creating temporary directory " + tmpDirectory);
@@ -194,7 +206,7 @@ final class DefaultNodeAndNPMInstaller implements NodeAndNPMInstaller {
         private void installNodeForWindows() throws InstallationException {
             try {
                 logger.info("Installing node version " + nodeVersion);
-                final String downloadUrl = DOWNLOAD_ROOT + platform.getNodeDownloadFilename(nodeVersion);
+                final String downloadUrl = downloadRoot + platform.getNodeDownloadFilename(nodeVersion);
 
                 new File(workingDirectory+"\\node").mkdirs();
 

@@ -23,6 +23,12 @@ public final class InstallNodeAndNpmMojo extends AbstractMojo {
     private File workingDirectory;
 
     /**
+     * The base directory for running all Node commands. (Usually the directory that contains package.json)
+     */
+    @Parameter(property = "downloadRoot", required = false, defaultValue = "")
+    private String downloadRoot;
+
+    /**
      * The version of Node.js to install. IMPORTANT! Most Node.js version names start with 'v', for example 'v0.10.18'
      */
     @Parameter(property="nodeVersion", required = true)
@@ -42,7 +48,7 @@ public final class InstallNodeAndNpmMojo extends AbstractMojo {
         try {
             MojoUtils.setSLF4jLogger(getLog());
             ProxyConfig proxyConfig = MojoUtils.getProxyConfig(session);
-            new FrontendPluginFactory(workingDirectory, proxyConfig).getNodeAndNPMInstaller().install(nodeVersion, npmVersion);
+            new FrontendPluginFactory(workingDirectory, proxyConfig).getNodeAndNPMInstaller().install(nodeVersion, npmVersion, downloadRoot);
         } catch (InstallationException e) {
             throw MojoUtils.toMojoFailureException(e);
         }
