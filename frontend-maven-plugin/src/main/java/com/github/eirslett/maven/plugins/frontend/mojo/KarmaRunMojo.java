@@ -35,11 +35,11 @@ public final class KarmaRunMojo extends AbstractMojo {
     private Boolean skipTests;
 
     /**
-     * Set this to 'true' to bypass unit tests entirely. maven.test.skip is supposed to disables both running
-     * the tests and compiling the tests. Since karma tests are not compiled, enabling this property has the
+     * Set this to 'true' to bypass unit tests entirely. maven.test.skip is supposed to disable both running
+     * and compiling the tests. Since karma tests are not compiled, enabling this property has the
      * same effect as skipTests parameter
      */
-    @Parameter( property = "maven.test.skip", defaultValue = "false" )
+    @Parameter(property = "maven.test.skip", defaultValue = "false")
     private Boolean skip;
 
     @Override
