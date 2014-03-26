@@ -79,7 +79,7 @@ final class ProcessExecutor {
 
     private List<String> getPlatformIndependentCommand(){
         if(platform.isWindows()){
-            return Utils.merge(Arrays.asList("cmd", "/C", "set PATH="+workingDirectory+"\\node;%PATH% &"), command);
+            return command;
         } else {
             return Utils.merge(Arrays.asList("sh", workingDirectory+"/node/with_new_path.sh"), command);
         }
