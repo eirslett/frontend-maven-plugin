@@ -57,10 +57,15 @@ final class ProcessExecutor {
             processBuilder.redirectErrorStream(true);
             final Process process = processBuilder.start();
 
-            InputStreamHandler.logInfo(process.getInputStream(), logger).start();
-            InputStreamHandler.logError(process.getErrorStream(), logger).start();
+            final Thread infoLogThread = InputStreamHandler.logInfo(process.getInputStream(), logger);
+            infoLogThread.start();
+            final Thread errorLogThread = InputStreamHandler.logError(process.getErrorStream(), logger);
+            errorLogThread.start();
 
-            return process.waitFor();
+            int result = process.waitFor();
+            infoLogThread.join();
+            errorLogThread.join();
+            return result;
         } catch (IOException e) {
             throw new ProcessExecutionException(e);
         } catch (InterruptedException e) {
