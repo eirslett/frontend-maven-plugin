@@ -24,7 +24,7 @@ public final class FrontendPluginFactory {
     }
 
     public NpmRunner getNpmRunner() {
-        return new DefaultNpmRunner(defaultPlatform, workingDirectory);
+        return new DefaultNpmRunner(defaultPlatform, workingDirectory, proxy);
     }
 
     public GruntRunner getGruntRunner(){

@@ -1,5 +1,8 @@
 package com.github.eirslett.maven.plugins.frontend.lib;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+
 public class ProxyConfig {
     public final String protocol;
     public final String host;
@@ -19,6 +22,15 @@ public class ProxyConfig {
         return username != null && !username.isEmpty();
     }
 
+    public URI getUri() {
+        String authentication = useAuthentication() ? username + ":" + password : null;
+        try {
+            return new URI(protocol, authentication, host, port, null, null, null);
+        } catch (URISyntaxException e) {
+            throw new ProxyConfigException("Invalid proxy settings", e);
+        }
+    }
+
     @Override
     public String toString() {
         return "ProxyConfig{" +
@@ -27,5 +39,13 @@ public class ProxyConfig {
                 ", port=" + port +
                 (useAuthentication()? ", with username/passport authentication" : "") +
                 '}';
+    }
+
+    class ProxyConfigException extends RuntimeException {
+
+        private ProxyConfigException(String message, Exception cause) {
+            super(message, cause);
+        }
+
     }
 }
