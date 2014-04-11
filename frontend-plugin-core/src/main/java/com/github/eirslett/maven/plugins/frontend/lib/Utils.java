@@ -21,13 +21,13 @@ final class Utils {
     }
 
     public static String implode(String separator, List<String> elements){
-        String s = "";
+        StringBuffer s = new StringBuffer();
         for(int i = 0; i < elements.size(); i++){
             if(i > 0){
-                s += " ";
+                s.append(" ");
             }
-            s += elements.get(i);
+            s.append(elements.get(i));
         }
-        return s;
+        return s.toString();
     }
 }
