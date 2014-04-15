@@ -87,11 +87,11 @@ final class ProcessExecutor {
 
     private static String readString(InputStream processInputStream) throws IOException {
         BufferedReader inputStream = new BufferedReader(new InputStreamReader(processInputStream));
-        String result = "";
+        StringBuffer result = new StringBuffer();
         String line;
         while((line = inputStream.readLine()) != null) {
-            result += line + "\n";
+            result.append(line + "\n");
         }
-        return result.trim();
+        return result.toString();
     }
 }
