@@ -18,7 +18,7 @@ laptops, but backend developers can run a clean build without even installing No
 running common javascript tasks such as minification, obfuscation, compression, packaging, testing etc.
 
 ## Show me an example!
-[Here is an example for you!](https://github.com/eirslett/frontend-maven-plugin/tree/master/frontend-maven-plugin/src/it/example)
+[Here is an example for you!](https://github.com/eirslett/frontend-maven-plugin/tree/master/frontend-maven-plugin/src/it/example%20project)
 
 # Installing
 Include the plugin as a dependency in your Maven project.
@@ -35,7 +35,7 @@ Include the plugin as a dependency in your Maven project.
 
 # Usage
 Have a look at the example project, to see how it should be set up!
-https://github.com/eirslett/frontend-maven-plugin/blob/master/frontend-maven-plugin/src/it/example/pom.xml
+https://github.com/eirslett/frontend-maven-plugin/blob/master/frontend-maven-plugin/src/it/example%20project/pom.xml
 
 ### Working directory
 The default  The working directory is where you've put `package.json`, and either `Gruntfile.js` or `gulpfile.js` etc. The default working directory is your project's base directory (the same directory as your `pom.xml`). You can change the working directory if you want:
