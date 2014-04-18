@@ -179,7 +179,7 @@ as part of the `grunt` or `gulp` execution. That will help to separate your fron
 
 # Helper scripts
 During development, it's convenient to have the "npm", "grunt", "gulp" and "karma" commands
-available on the command line. If you want that, use [those helper scripts](https://github.com/eirslett/frontend-maven-plugin/tree/master/frontend-maven-plugin/src/it/example/helper-scripts)!
+available on the command line. If you want that, use [those helper scripts](https://github.com/eirslett/frontend-maven-plugin/tree/master/frontend-maven-plugin/src/it/example%20project/helper-scripts)!
 
 ## To build this project:
 `mvn clean install`
