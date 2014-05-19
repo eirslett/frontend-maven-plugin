@@ -158,6 +158,9 @@ final class DefaultNodeAndNPMInstaller implements NodeAndNPMInstaller {
             String downloadUrl = "";
             try {
                 logger.info("Installing node version " + nodeVersion);
+                if (!nodeVersion.startsWith("v")) {
+                    logger.warn("Node version does not start with naming convention 'v'.");
+                }
                 final String longNodeFilename = platform.getLongNodeFilename(nodeVersion);
                 downloadUrl = downloadRoot + platform.getNodeDownloadFilename(nodeVersion);
 
@@ -204,16 +207,16 @@ final class DefaultNodeAndNPMInstaller implements NodeAndNPMInstaller {
         }
 
         private void installNodeForWindows() throws InstallationException {
+            final String downloadUrl = downloadRoot + platform.getNodeDownloadFilename(nodeVersion);
             try {
-                logger.info("Installing node version " + nodeVersion);
-                final String downloadUrl = downloadRoot + platform.getNodeDownloadFilename(nodeVersion);
+                logger.info("Installing node version " + nodeVersion);                
 
                 new File(workingDirectory+"\\node").mkdirs();
 
                 downloadFile(downloadUrl, workingDirectory +"\\node\\node.exe");
                 logger.info("Installed node.exe locally.");
             } catch (DownloadException e) {
-                throw new InstallationException("Could not download Node.js", e);
+                throw new InstallationException("Could not download Node.js from: " + downloadUrl, e);
             }
         }
 
