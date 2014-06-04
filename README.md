@@ -165,6 +165,9 @@ By default, no colors will be shown in the log.
 ```
 __Skipping tests:__ If you run maven with the `-DskipTests` flag, karma tests will be skipped.
 
+__Ignoring failed tests:__ If you want to ignore test failures run maven with the `-Dmaven-frontend-plugin.testFailureIgnore` flag, karma test results will not stop the build but test results will remain
+in test output files. Suitable for continuous integration tool builds.
+
 __Why karma.conf.ci.js?__ When using Karma, you should have two separate
 configurations: `karma.conf.js` and `karma.conf.ci.js`. (The second one should inherit configuration
 from the first one, and override some options. The example project shows you how to set it up.)

@@ -34,6 +34,12 @@ public final class KarmaRunMojo extends AbstractMojo {
     @Parameter(property = "skipTests", required = false, defaultValue = "false")
     private Boolean skipTests;
 
+    /**
+     * Whether you should continue build when some test will fail (default is false)
+     */
+    @Parameter(property = "maven-frontend-plugin.testFailureIgnore", required = false, defaultValue = "false")
+    private Boolean testFailureIgnore;
+
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         try {
@@ -45,7 +51,11 @@ public final class KarmaRunMojo extends AbstractMojo {
                         .execute("start " + karmaConfPath);
             }
         } catch (TaskRunnerException e) {
-            throw new MojoFailureException(e.getMessage());
+			if (testFailureIgnore) {
+				LoggerFactory.getLogger(KarmaRunMojo.class).warn("There are ignored test failures/errors for: " + workingDirectory);
+			} else {
+            	throw new MojoFailureException(e.getMessage());
+			}
         }
     }
 }
