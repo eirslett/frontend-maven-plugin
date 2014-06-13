@@ -38,6 +38,9 @@ final class DefaultArchiveExtractor implements ArchiveExtractor {
                     destPath.mkdirs();
                 } else {
                     destPath.createNewFile();
+                    boolean isExecutable = (tarEntry.getMode() & 0100) > 0;
+                    destPath.setExecutable(isExecutable);
+
                     //byte [] btoRead = new byte[(int)tarEntry.getSize()];
                     byte [] btoRead = new byte[8024];
                     final BufferedOutputStream bout =
