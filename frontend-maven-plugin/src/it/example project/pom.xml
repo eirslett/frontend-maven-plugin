@@ -13,7 +13,7 @@
                 <groupId>com.github.eirslett</groupId>
                 <artifactId>frontend-maven-plugin</artifactId>
                 <!-- NB! Set <version> to the latest released version of frontend-maven-plugin, like in README.md -->
-                <version>0.0.15-SNAPSHOT</version>
+                <version>0.0.15.1-SNAPSHOT</version>
 
                 <executions>
 

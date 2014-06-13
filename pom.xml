@@ -9,7 +9,7 @@
 
     <groupId>com.github.eirslett</groupId>
     <artifactId>frontend-plugins</artifactId>
-    <version>0.0.15-SNAPSHOT</version>
+    <version>0.0.15.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <properties>
@@ -24,7 +24,7 @@
         run Grunt tasks, and/or run Karma tests.
     </description>
 
-    <url>https://github.com/eirslett/frontend-maven-plugin</url>
+    <url>https://github.com/stevematyas/frontend-maven-plugin</url>
     <licenses>
         <license>
             <name>The Apache Software License, Version 2.0</name>
@@ -34,9 +34,9 @@
     </licenses>
 
     <scm>
-        <url>https://github.com/eirslett/frontend-maven-plugin</url>
-        <connection>scm:git:https://github.com/eirslett/frontend-maven-plugin.git</connection>
-        <developerConnection>scm:git:git@github.com:eirslett/frontend-maven-plugin.git</developerConnection>
+        <url>https://github.com/stevematyas/frontend-maven-plugin</url>
+        <connection>scm:git:https://github.com/stevematyas/frontend-maven-plugin.git</connection>
+        <developerConnection>scm:git:git@github.com:stevematyas/frontend-maven-plugin.git</developerConnection>
     </scm>
 
     <developers>
