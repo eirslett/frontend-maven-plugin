@@ -20,6 +20,7 @@ final class DefaultNpmRunner extends NodeTaskExecutor implements NpmRunner {
         List<String> arguments = new ArrayList<String>();
         arguments.add("--color=false");
         if (proxy != null) {
+            arguments.add("--proxy=" + proxy.getUri().toString());
             arguments.add("--https-proxy=" + proxy.getUri().toString());
         }
         return arguments;
