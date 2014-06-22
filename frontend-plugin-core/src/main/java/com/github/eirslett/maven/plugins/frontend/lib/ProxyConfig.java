@@ -31,6 +31,10 @@ public class ProxyConfig {
         }
     }
 
+    public boolean isSecure(){
+        return "https".equals(protocol);
+    }
+
     @Override
     public String toString() {
         return "ProxyConfig{" +
