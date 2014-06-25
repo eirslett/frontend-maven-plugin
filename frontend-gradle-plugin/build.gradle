@@ -1,0 +1,30 @@
+apply plugin: 'groovy'
+apply plugin: 'maven-publish'
+
+sourceCompatibility = 1.6
+version = '0.0.15'
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+
+dependencies {
+    compile gradleApi()
+    compile localGroovy()
+    compile 'com.github.eirslett:frontend-plugin-core:0.0.15'
+}
+
+publishing {
+    publications {
+        myPublication(MavenPublication) {
+            from components.java
+            groupId = 'com.github.eirslett'
+        }
+    }
+    repositories {
+        maven {
+
+        }
+    }
+}
