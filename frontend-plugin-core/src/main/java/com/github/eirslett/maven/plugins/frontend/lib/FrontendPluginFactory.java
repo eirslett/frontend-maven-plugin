@@ -38,4 +38,9 @@ public final class FrontendPluginFactory {
     public GulpRunner getGulpRunner(){
         return new DefaultGulpRunner(defaultPlatform, workingDirectory);
     }
+
+    public ProtractorRunner getProtractorRunner(){ return new DefaultProtractorRunner(defaultPlatform, workingDirectory);}
+
+    public SeleniumStandaloneRunner getSeleniumRunner(){ return new DefaultSeleniumStandaloneRunner(defaultPlatform,
+            workingDirectory);}
 }
