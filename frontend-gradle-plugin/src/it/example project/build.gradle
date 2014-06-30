@@ -1,0 +1,17 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        mavenLocal()
+    }
+
+    dependencies {
+        classpath 'com.github.eirslett:frontend-gradle-plugin:0.0.15'
+    }
+}
+
+apply plugin: 'frontend-gradle-plugin'
+
+frontend {
+    nodeVersion = 'v.0.10.18'
+    npmVersion = '1.3.5'
+}
