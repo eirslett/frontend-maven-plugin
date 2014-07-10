@@ -45,6 +45,11 @@
             <name>Eirik Sletteberg</name>
             <email>eiriksletteberg@gmail.com</email>
         </developer>
+        <developer>
+            <id>seamus</id>
+            <name>Seamus Malone</name>
+            <email>seamus@seamus.net</email>
+        </developer>
     </developers>
 
     <modules>

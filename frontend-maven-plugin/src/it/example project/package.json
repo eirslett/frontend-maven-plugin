@@ -8,6 +8,10 @@
     "karma": "~0.11.2",
     "grunt-contrib-jshint": "~0.6.4",
     "karma-jasmine": "~0.1.5",
-    "karma-phantomjs-launcher": "~0.1.1"
+    "karma-phantomjs-launcher": "~0.1.1",
+    "protractor": "~0.23.1",
+    "selenium-standalone": "~2.9.0",
+    "pygments": "~0.2.0",
+    "groc": "~0.6.3"
   }
 }

@@ -49,6 +49,13 @@
                         </configuration>
                     </execution>
 
+                    <!--<execution>-->
+                        <!--<id>groc doc</id>-->
+                        <!--<goals>-->
+                            <!--<goal>groc</goal>-->
+                        <!--</goals>-->
+                    <!--</execution>-->
+
                     <execution>
                         <id>javascript tests</id>
                         <goals>
@@ -58,6 +65,23 @@
                             <karmaConfPath>src/test/javascript/karma.conf.ci.js</karmaConfPath>
                         </configuration>
                     </execution>
+
+                    <!--<execution>-->
+                        <!--<id>selenium start</id>-->
+                        <!--<goals>-->
+                            <!--<goal>selenium-start</goal>-->
+                        <!--</goals>-->
+                    <!--</execution>-->
+
+                    <!--<execution>-->
+                        <!--<id>integration tests</id>-->
+                        <!--<goals>-->
+                            <!--<goal>protractor</goal>-->
+                        <!--</goals>-->
+                        <!--<configuration>-->
+                            <!--<protractorConfPath>src/test/e2e/protractor.conf.js</protractorConfPath>-->
+                        <!--</configuration>-->
+                    <!--</execution>-->
 
                 </executions>
             </plugin>
