@@ -1,11 +1,13 @@
 package com.github.eirslett.maven.plugins.frontend.lib;
 
 import java.io.File;
+import java.util.Properties;
 
 public final class FrontendPluginFactory {
     private static final Platform defaultPlatform = Platform.guess();
     private final File workingDirectory;
     private final ProxyConfig proxy;
+    private final Properties environmentVariables;
 
     public FrontendPluginFactory(File workingDirectory){
         this(workingDirectory, null);
@@ -13,6 +15,14 @@ public final class FrontendPluginFactory {
     public FrontendPluginFactory(File workingDirectory, ProxyConfig proxy){
         this.workingDirectory = workingDirectory;
         this.proxy = proxy;
+        this.environmentVariables = new Properties();
+
+    }
+
+    public FrontendPluginFactory(File workingDirectory, ProxyConfig proxy, Properties environmentVariables){
+        this.workingDirectory = workingDirectory;
+        this.proxy = proxy;
+        this.environmentVariables = environmentVariables;
     }
 
     public NodeAndNPMInstaller getNodeAndNPMInstaller(){
@@ -24,7 +34,7 @@ public final class FrontendPluginFactory {
     }
 
     public NpmRunner getNpmRunner() {
-        return new DefaultNpmRunner(defaultPlatform, workingDirectory, proxy);
+        return new DefaultNpmRunner(defaultPlatform, workingDirectory, proxy, this.environmentVariables);
     }
 
     public GruntRunner getGruntRunner(){

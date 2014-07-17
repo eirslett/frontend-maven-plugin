@@ -9,6 +9,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 final class ProcessExecutionException extends Exception {
     public ProcessExecutionException(String message) {
@@ -24,17 +26,39 @@ final class ProcessExecutor {
     private final List<String> command;
     private final ProcessBuilder processBuilder;
     private final Platform platform;
+    private final Properties environmentVariables;
 
     public ProcessExecutor(File workingDirectory, List<String> command, Platform platform){
         this.workingDirectory = workingDirectory;
         this.command = command;
         this.platform = platform;
+        this.environmentVariables = new Properties();
+
+        this.processBuilder = createProcessBuilder();
+    }
+
+    public ProcessExecutor(File workingDirectory, List<String> command, Platform platform, Properties environmentVariables){
+        this.workingDirectory = workingDirectory;
+        this.command = command;
+        this.platform = platform;
+        this.environmentVariables = environmentVariables;
 
         this.processBuilder = createProcessBuilder();
     }
 
     public String executeAndGetResult() throws ProcessExecutionException {
         try {
+            Map<String, String> env = processBuilder.environment();
+            if (env==null)
+                System.out.println("[executeAndGetResult] environment null");
+            else {
+
+                for (String key : environmentVariables.stringPropertyNames())
+                    env.put(key, environmentVariables.getProperty(key));
+
+                    //env.put("NODE_TLS_REJECT_UNAUTHORIZED", "0");
+            }
+
             final Process process = processBuilder.start();
             final String result = readString(process.getInputStream());
             final String error = readString(process.getInputStream());
@@ -55,6 +79,13 @@ final class ProcessExecutor {
     public int executeAndRedirectOutput(final Logger logger) throws ProcessExecutionException {
         try {
             processBuilder.redirectErrorStream(true);
+
+            Map<String, String> env = processBuilder.environment();
+            if (env==null)
+                System.out.println("[executeAndRedirectOutput] environment null");
+            else
+                env.put("NODE_TLS_REJECT_UNAUTHORIZED", "0");
+
             final Process process = processBuilder.start();
 
             final Thread infoLogThread = InputStreamHandler.logInfo(process.getInputStream(), logger);

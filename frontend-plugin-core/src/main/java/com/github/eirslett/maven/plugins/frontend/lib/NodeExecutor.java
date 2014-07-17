@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 
 import java.io.File;
 import java.util.List;
+import java.util.Properties;
 
 final class NodeExecutor {
     private final ProcessExecutor executor;
@@ -11,6 +12,11 @@ final class NodeExecutor {
     public NodeExecutor(File workingDirectory, List<String> arguments, Platform platform){
         final String node = workingDirectory + Utils.normalize("/node/node");
         this.executor = new ProcessExecutor(workingDirectory, Utils.prepend(node, arguments), platform);
+    }
+
+    public NodeExecutor(File workingDirectory, List<String> arguments, Platform platform, Properties environmentVariables){
+        final String node = workingDirectory + Utils.normalize("/node/node");
+        this.executor = new ProcessExecutor(workingDirectory, Utils.prepend(node, arguments), platform, environmentVariables);
     }
 
     public String executeAndGetResult() throws ProcessExecutionException {

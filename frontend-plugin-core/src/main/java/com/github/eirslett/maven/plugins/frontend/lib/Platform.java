@@ -2,7 +2,11 @@ package com.github.eirslett.maven.plugins.frontend.lib;
 
 enum Architecture { x86, x64;
     public static Architecture guess(){
-        return System.getProperty("os.arch").contains("64") ? x64 : x86;
+        final String osArch = System.getProperty("os.arch");
+
+        if (osArch==null) return x64;
+
+        return osArch.contains("64") ? x64 : x86;
     }
 }
 
@@ -10,6 +14,9 @@ enum OS { Windows, Mac, Linux, SunOS;
 
     public static OS guess() {
         final String osName = System.getProperty("os.name");
+
+        if (osName==null) return OS.Windows;
+
         return  osName.contains("Windows") ? OS.Windows :
                 osName.contains("Mac") ? OS.Mac :
                         osName.contains("SunOS") ? OS.SunOS :

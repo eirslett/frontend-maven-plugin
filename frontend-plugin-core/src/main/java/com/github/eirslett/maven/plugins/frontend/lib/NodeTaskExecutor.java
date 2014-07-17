@@ -7,6 +7,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Properties;
 
 import static com.github.eirslett.maven.plugins.frontend.lib.Utils.implode;
 import static com.github.eirslett.maven.plugins.frontend.lib.Utils.normalize;
@@ -19,6 +20,7 @@ abstract class NodeTaskExecutor {
     private final Platform platform;
     private final File workingDirectory;
     private final List<String> additionalArguments;
+    private final Properties environmentVariables;
 
     public NodeTaskExecutor(String taskName, String taskLocation, File workingDirectory, Platform platform, List<String> additionalArguments) {
         this.logger = LoggerFactory.getLogger(getClass());
@@ -27,6 +29,17 @@ abstract class NodeTaskExecutor {
         this.platform = platform;
         this.workingDirectory = workingDirectory;
         this.additionalArguments = additionalArguments;
+        this.environmentVariables = new Properties();
+    }
+
+    public NodeTaskExecutor(String taskName, String taskLocation, File workingDirectory, Platform platform, List<String> additionalArguments,  Properties environmentVariables) {
+        this.logger = LoggerFactory.getLogger(getClass());
+        this.taskName = taskName;
+        this.taskLocation = taskLocation;
+        this.platform = platform;
+        this.workingDirectory = workingDirectory;
+        this.additionalArguments = additionalArguments;
+        this.environmentVariables = environmentVariables;
     }
 
     public final void execute(String args) throws TaskRunnerException {
@@ -35,7 +48,7 @@ abstract class NodeTaskExecutor {
         logger.info("Running " + taskToString(taskName, arguments) + " in " + workingDirectory);
 
         try {
-            final int result = new NodeExecutor(workingDirectory, prepend(absoluteTaskLocation, arguments), platform).executeAndRedirectOutput(logger);
+            final int result = new NodeExecutor(workingDirectory, prepend(absoluteTaskLocation, arguments), platform, environmentVariables).executeAndRedirectOutput(logger);
             if(result != 0){
                 throw new TaskRunnerException(taskToString(taskName, arguments) + " failed. (error code "+result+")");
             }

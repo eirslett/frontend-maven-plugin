@@ -1,6 +1,8 @@
 package com.github.eirslett.maven.plugins.frontend.mojo;
 
 import java.io.File;
+import java.util.Enumeration;
+import java.util.Properties;
 
 import com.github.eirslett.maven.plugins.frontend.lib.FrontendPluginFactory;
 import com.github.eirslett.maven.plugins.frontend.lib.ProxyConfig;
@@ -25,6 +27,12 @@ public final class NpmMojo extends AbstractMojo {
     private File workingDirectory;
 
     /**
+     * environment Variables.
+     */
+    @Parameter(property = "environmentVariables", required = false)
+    private Properties environmentVariables;
+
+    /**
      * npm arguments. Default is "install".
      */
     @Parameter(defaultValue = "install", property = "arguments", required = false)
@@ -39,7 +47,7 @@ public final class NpmMojo extends AbstractMojo {
             setSLF4jLogger(getLog());
 
             ProxyConfig proxyConfig = MojoUtils.getProxyConfig(session);
-            new FrontendPluginFactory(workingDirectory, proxyConfig).getNpmRunner()
+            new FrontendPluginFactory(workingDirectory, proxyConfig, environmentVariables).getNpmRunner()
                     .execute(arguments);
         } catch (TaskRunnerException e) {
             throw new MojoFailureException(e.getMessage());
