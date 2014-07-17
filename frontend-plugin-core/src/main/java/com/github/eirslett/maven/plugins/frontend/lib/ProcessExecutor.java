@@ -49,14 +49,10 @@ final class ProcessExecutor {
     public String executeAndGetResult() throws ProcessExecutionException {
         try {
             Map<String, String> env = processBuilder.environment();
-            if (env==null)
-                System.out.println("[executeAndGetResult] environment null");
-            else {
-
+            if (env!=null)
+            {
                 for (String key : environmentVariables.stringPropertyNames())
                     env.put(key, environmentVariables.getProperty(key));
-
-                    //env.put("NODE_TLS_REJECT_UNAUTHORIZED", "0");
             }
 
             final Process process = processBuilder.start();
@@ -81,10 +77,11 @@ final class ProcessExecutor {
             processBuilder.redirectErrorStream(true);
 
             Map<String, String> env = processBuilder.environment();
-            if (env==null)
-                System.out.println("[executeAndRedirectOutput] environment null");
-            else
-                env.put("NODE_TLS_REJECT_UNAUTHORIZED", "0");
+            if (env!=null)
+            {
+                for (String key : environmentVariables.stringPropertyNames())
+                    env.put(key, environmentVariables.getProperty(key));
+            }
 
             final Process process = processBuilder.start();
 
