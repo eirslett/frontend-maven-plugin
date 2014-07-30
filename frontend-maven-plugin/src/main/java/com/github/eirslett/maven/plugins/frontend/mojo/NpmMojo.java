@@ -42,7 +42,7 @@ public final class NpmMojo extends AbstractMojo {
             new FrontendPluginFactory(workingDirectory, proxyConfig).getNpmRunner()
                     .execute(arguments);
         } catch (TaskRunnerException e) {
-            throw new MojoFailureException(e.getMessage());
+            throw new MojoFailureException("Failed to run task", e);
         }
     }
 }

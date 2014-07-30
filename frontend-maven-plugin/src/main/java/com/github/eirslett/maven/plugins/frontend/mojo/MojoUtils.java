@@ -9,7 +9,7 @@ import org.slf4j.impl.StaticLoggerBinder;
 
 class MojoUtils {
     static <E extends Throwable> MojoFailureException toMojoFailureException(E e){
-        return new MojoFailureException(e.getMessage()+": "+e.getCause().getMessage());
+        return new MojoFailureException(e.getMessage()+": "+e.getCause().getMessage(), e);
     }
 
     static void setSLF4jLogger(Log log){

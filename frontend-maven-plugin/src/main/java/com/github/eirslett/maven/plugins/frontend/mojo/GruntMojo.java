@@ -10,7 +10,6 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.slf4j.Logger;
 
 @Mojo(name="grunt", defaultPhase = LifecyclePhase.GENERATE_RESOURCES)
 public final class GruntMojo extends AbstractMojo {
@@ -34,7 +33,7 @@ public final class GruntMojo extends AbstractMojo {
             new FrontendPluginFactory(workingDirectory).getGruntRunner()
                     .execute(arguments);
         } catch (TaskRunnerException e) {
-            throw new MojoFailureException(e.getMessage());
+            throw new MojoFailureException("Failed to run task", e);
         }
     }
 }
