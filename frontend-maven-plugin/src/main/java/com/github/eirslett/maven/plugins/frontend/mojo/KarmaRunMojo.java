@@ -54,7 +54,7 @@ public final class KarmaRunMojo extends AbstractMojo {
 			if (testFailureIgnore) {
 				LoggerFactory.getLogger(KarmaRunMojo.class).warn("There are ignored test failures/errors for: " + workingDirectory);
 			} else {
-            	throw new MojoFailureException(e.getMessage());
+                throw new MojoFailureException("Failed to run task", e);
 			}
         }
     }
