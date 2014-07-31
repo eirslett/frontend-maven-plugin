@@ -1,16 +1,14 @@
 package com.github.eirslett.maven.plugins.frontend.lib;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.github.eirslett.maven.plugins.frontend.lib.Utils.implode;
-import static com.github.eirslett.maven.plugins.frontend.lib.Utils.normalize;
-import static com.github.eirslett.maven.plugins.frontend.lib.Utils.prepend;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import static com.github.eirslett.maven.plugins.frontend.lib.Utils.*;
 
 abstract class NodeTaskExecutor {
     private final Logger logger;
@@ -40,7 +38,7 @@ abstract class NodeTaskExecutor {
                 throw new TaskRunnerException(taskToString(taskName, arguments) + " failed. (error code "+result+")");
             }
         } catch (ProcessExecutionException e) {
-            throw new TaskRunnerException(taskToString(taskName, arguments) + " failed.");
+            throw new TaskRunnerException(taskToString(taskName, arguments) + " failed.", e);
         }
     }
 
