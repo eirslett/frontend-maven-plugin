@@ -38,4 +38,9 @@ public final class FrontendPluginFactory {
     public GulpRunner getGulpRunner(){
         return new DefaultGulpRunner(defaultPlatform, workingDirectory);
     }
+    
+    public PackageJsonUpdater getPackageJsonUpdater() {
+        return new DefaultPackageJsonUpdater(workingDirectory);
+    }
+    
 }
