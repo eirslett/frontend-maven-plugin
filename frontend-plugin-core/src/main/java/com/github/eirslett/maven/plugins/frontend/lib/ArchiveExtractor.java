@@ -37,6 +37,9 @@ final class DefaultArchiveExtractor implements ArchiveExtractor {
                 if (tarEntry.isDirectory()) {
                     destPath.mkdirs();
                 } else {
+                    if (!destPath.getParentFile().exists()) {
+                        destPath.getParentFile().mkdirs();
+                    }
                     destPath.createNewFile();
                     boolean isExecutable = (tarEntry.getMode() & 0100) > 0;
                     destPath.setExecutable(isExecutable);
