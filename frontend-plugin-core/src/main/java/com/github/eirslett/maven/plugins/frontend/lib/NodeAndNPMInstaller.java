@@ -12,12 +12,15 @@ import org.slf4j.LoggerFactory;
 import static com.github.eirslett.maven.plugins.frontend.lib.Utils.normalize;
 
 public interface NodeAndNPMInstaller {
+
+    String DEFAULT_NODEJS_DOWNLOAD_ROOT = "http://nodejs.org/dist/";
+    String DEFAULT_NPM_DOWNLOAD_ROOT = "http://registry.npmjs.org/npm/-/";
+
     void install(String nodeVersion, String npmVersion) throws InstallationException;
-    void install(String nodeVersion, String npmVersion, String downloadRoot) throws InstallationException;
+    void install(String nodeVersion, String npmVersion, String nodeDownloadRoot, String npmDownloadRoot) throws InstallationException;
 }
 
 final class DefaultNodeAndNPMInstaller implements NodeAndNPMInstaller {
-    private static final String DEFAULT_DOWNLOAD_ROOT = "http://nodejs.org/dist/";
 
     private final File workingDirectory;
     private final Logger logger;
@@ -35,15 +38,18 @@ final class DefaultNodeAndNPMInstaller implements NodeAndNPMInstaller {
 
     @Override
     public void install(String nodeVersion, String npmVersion) throws InstallationException {
-        new NodeAndNPMInstallAction(nodeVersion, npmVersion, null).install();
+        install(nodeVersion, npmVersion, null, null);
     }
 
     @Override
-    public void install(String nodeVersion, String npmVersion, String downloadRoot) throws InstallationException {
-        if(downloadRoot == null || downloadRoot.isEmpty()){
-            downloadRoot = DEFAULT_DOWNLOAD_ROOT;
+    public void install(String nodeVersion, String npmVersion, String nodeDownloadRoot, String npmDownloadRoot) throws InstallationException {
+        if(nodeDownloadRoot == null || nodeDownloadRoot.isEmpty()){
+            nodeDownloadRoot = DEFAULT_NODEJS_DOWNLOAD_ROOT;
         }
-        new NodeAndNPMInstallAction(nodeVersion, npmVersion, downloadRoot).install();
+        if(npmDownloadRoot == null || npmDownloadRoot.isEmpty()){
+            npmDownloadRoot = DEFAULT_NPM_DOWNLOAD_ROOT;
+        }
+        new NodeAndNPMInstallAction(nodeVersion, npmVersion, nodeDownloadRoot, npmDownloadRoot).install();
     }
 
     private final class NodeAndNPMInstallAction {
@@ -51,12 +57,14 @@ final class DefaultNodeAndNPMInstaller implements NodeAndNPMInstaller {
 
         private final String nodeVersion;
         private final String npmVersion;
-        private final String downloadRoot;
+        private final String nodeDownloadRoot;
+        private final String npmDownloadRoot;
 
-        public NodeAndNPMInstallAction(String nodeVersion, String npmVersion, String downloadRoot) {
+        public NodeAndNPMInstallAction(String nodeVersion, String npmVersion, String nodeDownloadRoot, String npmDownloadRoot) {
             this.nodeVersion = nodeVersion;
             this.npmVersion = npmVersion;
-            this.downloadRoot = downloadRoot;
+            this.nodeDownloadRoot = nodeDownloadRoot;
+            this.npmDownloadRoot = npmDownloadRoot;
         }
 
         public void install() throws InstallationException {
@@ -141,11 +149,20 @@ final class DefaultNodeAndNPMInstaller implements NodeAndNPMInstaller {
         private void installNpm() throws InstallationException {
             try {
                 logger.info("Installing npm version " + npmVersion);
-                final String downloadUrl = downloadRoot +"npm/npm-"+npmVersion+".tgz";
+                final String downloadUrl = npmDownloadRoot +"npm-"+npmVersion+".tgz";
                 String targetName = workingDirectory + File.separator + "npm.tar.gz";
+                logger.info("Downloading NPM from " + downloadUrl + " to " + targetName);
                 downloadFile(downloadUrl, targetName);
+                logger.info("Extracting NPM files in node/");
                 extractFile(targetName, workingDirectory +"/node");
                 new File(targetName).delete();
+                File npmDirectory = new File(workingDirectory, "./node/npm");
+                // handles difference between old and new download root (nodejs.org/dist/npm and registry.npmjs.org)
+                // see https://github.com/eirslett/frontend-maven-plugin/issues/65#issuecomment-52024254
+                File packageDirectory = new File(workingDirectory, "./node/package");
+                if (packageDirectory.exists() && !npmDirectory.exists()) {
+                    packageDirectory.renameTo(npmDirectory);
+                }
                 logger.info("Installed NPM locally.");
             } catch (DownloadException e) {
                 throw new InstallationException("Could not download npm", e);
@@ -162,7 +179,7 @@ final class DefaultNodeAndNPMInstaller implements NodeAndNPMInstaller {
                     logger.warn("Node version does not start with naming convention 'v'.");
                 }
                 final String longNodeFilename = platform.getLongNodeFilename(nodeVersion);
-                downloadUrl = downloadRoot + platform.getNodeDownloadFilename(nodeVersion);
+                downloadUrl = nodeDownloadRoot + platform.getNodeDownloadFilename(nodeVersion);
 
                 final File tmpDirectory = new File(workingDirectory + File.separator + "node_tmp");
                 logger.info("Creating temporary directory " + tmpDirectory);
@@ -207,9 +224,9 @@ final class DefaultNodeAndNPMInstaller implements NodeAndNPMInstaller {
         }
 
         private void installNodeForWindows() throws InstallationException {
-            final String downloadUrl = downloadRoot + platform.getNodeDownloadFilename(nodeVersion);
+            final String downloadUrl = nodeDownloadRoot + platform.getNodeDownloadFilename(nodeVersion);
             try {
-                logger.info("Installing node version " + nodeVersion);                
+                logger.info("Installing node version " + nodeVersion);
 
                 new File(workingDirectory+"\\node").mkdirs();
 
