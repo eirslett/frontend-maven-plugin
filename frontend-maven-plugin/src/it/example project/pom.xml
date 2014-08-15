@@ -4,7 +4,7 @@
 
     <groupId>com.github.eirslett</groupId>
     <artifactId>example</artifactId>
-    <version>0.0.14-SNAPSHOT</version>
+    <version>0.0.16-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <build>
@@ -23,8 +23,8 @@
                             <goal>install-node-and-npm</goal>
                         </goals>
                         <configuration>
-                            <nodeVersion>v0.10.18</nodeVersion>
-                            <npmVersion>1.3.8</npmVersion>
+                            <nodeVersion>v0.10.30</nodeVersion>
+                            <npmVersion>1.4.21</npmVersion>
                         </configuration>
                     </execution>
 
