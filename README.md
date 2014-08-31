@@ -47,7 +47,38 @@ The default  The working directory is where you've put `package.json`, and eithe
     
     <!-- optional -->
     <configuration>
+        ...
         <workingDirectory>src/main/frontend</workingDirectory>
+    </configuration>
+    
+    <executions>
+      ...
+    </executions>
+</plugin>
+```
+### Skip plugin execution
+If you want to skip execution in a specific profile, then set _skip.frontend property_ in the profile:
+```xml
+<profile>
+    <id>local</id>
+    <properties>
+        ...
+        <skip.frontend>true</skip.frontend>
+        ...
+    </properties>
+</profile>
+```
+And set in the _skip_ option in the plugin configuration:
+```xml
+<plugin>
+    <groupId>com.github.eirslett</groupId>
+    <artifactId>frontend-maven-plugin</artifactId>
+    <version>...</version>
+    
+    <!-- optional -->
+    <configuration>
+        ...
+        <skip>${skip.frontend}</skip>
     </configuration>
     
     <executions>

@@ -4,7 +4,6 @@ import java.io.File;
 
 import com.github.eirslett.maven.plugins.frontend.lib.FrontendPluginFactory;
 import com.github.eirslett.maven.plugins.frontend.lib.TaskRunnerException;
-import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -12,14 +11,14 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
 @Mojo(name="grunt", defaultPhase = LifecyclePhase.GENERATE_RESOURCES)
-public final class GruntMojo extends AbstractMojo {
+public final class GruntMojo extends FrontendMavenMojo {
 
     /**
      * The base directory for running all Node commands. (Usually the directory that contains package.json)
      */
     @Parameter(defaultValue = "${basedir}", property = "workingDirectory", required = false)
     private File workingDirectory;
-
+    
     /**
      * Grunt arguments. Default is empty (runs just the "grunt" command).
      */
@@ -28,6 +27,10 @@ public final class GruntMojo extends AbstractMojo {
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
+        if (isSkip()) {
+            getLog().info("Frontend Plugin execution skipped");
+            return;
+        }
         try {
             MojoUtils.setSLF4jLogger(getLog());
             new FrontendPluginFactory(workingDirectory).getGruntRunner()
