@@ -6,7 +6,6 @@ import com.github.eirslett.maven.plugins.frontend.lib.FrontendPluginFactory;
 import com.github.eirslett.maven.plugins.frontend.lib.ProxyConfig;
 import com.github.eirslett.maven.plugins.frontend.lib.TaskRunnerException;
 import org.apache.maven.execution.MavenSession;
-import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -16,7 +15,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 import static com.github.eirslett.maven.plugins.frontend.mojo.MojoUtils.setSLF4jLogger;
 
 @Mojo(name="npm",  defaultPhase = LifecyclePhase.GENERATE_RESOURCES)
-public final class NpmMojo extends AbstractMojo {
+public final class NpmMojo extends FrontendMavenMojo {
 
     /**
      * The base directory for running all Node commands. (Usually the directory that contains package.json)
@@ -35,6 +34,10 @@ public final class NpmMojo extends AbstractMojo {
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
+        if (isSkip()) {
+            getLog().info("Frontend Plugin execution skipped");
+            return;
+        }
         try {
             setSLF4jLogger(getLog());
 

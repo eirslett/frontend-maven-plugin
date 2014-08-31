@@ -3,7 +3,6 @@ package com.github.eirslett.maven.plugins.frontend.mojo;
 import java.io.File;
 
 import org.apache.maven.execution.MavenSession;
-import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -16,7 +15,7 @@ import com.github.eirslett.maven.plugins.frontend.lib.NodeAndNPMInstaller;
 import com.github.eirslett.maven.plugins.frontend.lib.ProxyConfig;
 
 @Mojo(name="install-node-and-npm", defaultPhase = LifecyclePhase.GENERATE_RESOURCES)
-public final class InstallNodeAndNpmMojo extends AbstractMojo {
+public final class InstallNodeAndNpmMojo extends FrontendMavenMojo {
 
     /**
      * The base directory for running all Node commands. (Usually the directory that contains package.json)
@@ -62,6 +61,10 @@ public final class InstallNodeAndNpmMojo extends AbstractMojo {
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
+        if (isSkip()) {
+            getLog().info("Frontend Plugin execution skipped");
+            return;
+        }
         try {
             MojoUtils.setSLF4jLogger(getLog());
             ProxyConfig proxyConfig = MojoUtils.getProxyConfig(session);

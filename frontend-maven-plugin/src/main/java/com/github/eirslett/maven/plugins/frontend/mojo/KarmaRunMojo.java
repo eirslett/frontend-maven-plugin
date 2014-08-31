@@ -4,7 +4,6 @@ import java.io.File;
 
 import com.github.eirslett.maven.plugins.frontend.lib.FrontendPluginFactory;
 import com.github.eirslett.maven.plugins.frontend.lib.TaskRunnerException;
-import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -14,7 +13,7 @@ import org.slf4j.LoggerFactory;
 
 
 @Mojo(name="karma",  defaultPhase = LifecyclePhase.TEST)
-public final class KarmaRunMojo extends AbstractMojo {
+public final class KarmaRunMojo extends FrontendMavenMojo {
 
     /**
      * The base directory for running all Node commands. (Usually the directory that contains package.json)
@@ -42,6 +41,10 @@ public final class KarmaRunMojo extends AbstractMojo {
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
+        if (isSkip()) {
+            getLog().info("Frontend Plugin execution skipped");
+            return;
+        }
         try {
             MojoUtils.setSLF4jLogger(getLog());
             if(skipTests){
