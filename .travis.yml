@@ -1,7 +1,7 @@
 os:
   - osx
 language: objective-c
-before_install: jdk_switcher use openjdk7
+before_install: which javac
 script: mvn clean install
 jdk:
   - openjdk6
