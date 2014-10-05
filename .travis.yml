@@ -1,6 +1,6 @@
 os:
   - osx
 language: objective-c
-script: which javac | xargs echo && export JAVA_HOME=/usr/libexec/java_home && mvn clean install
+script: which javac | xargs readlink -f | xargs echo && export JAVA_HOME=/usr/libexec/java_home && mvn clean install
 jdk:
   - openjdk6
