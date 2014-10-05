@@ -1,7 +1,8 @@
 os:
   - osx
 language: objective-c
-before_install: which javac
 script: mvn clean install
 jdk:
   - openjdk6
+env:
+  - JAVA_HOME=/usr/libexec/java_home
