@@ -1,4 +1,4 @@
-Linux Build: (Travis CI): [![Build Status](https://travis-ci.org/eirslett/frontend-maven-plugin.png?branch=master)](https://travis-ci.org/eirslett/frontend-maven-plugin)
+OS X Build: (Travis CI) [![Build Status](https://travis-ci.org/eirslett/frontend-maven-plugin.png?branch=master)](https://travis-ci.org/eirslett/frontend-maven-plugin)
 
 Windows Build: (Appveyor) [![Build status](https://ci.appveyor.com/api/projects/status/vxbccc1t9ceadhi9)](https://ci.appveyor.com/project/eirslett/frontend-maven-plugin)
 
