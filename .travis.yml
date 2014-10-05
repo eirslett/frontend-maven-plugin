@@ -1,3 +1,6 @@
+os:
+  - linux
+  - osx
 language: java
 script: mvn clean install
 jdk:
