@@ -1,4 +1,6 @@
-[![Build Status](https://travis-ci.org/eirslett/frontend-maven-plugin.png?branch=master)](https://travis-ci.org/eirslett/frontend-maven-plugin)
+Linux Build: (Travis CI): [![Build Status](https://travis-ci.org/eirslett/frontend-maven-plugin.png?branch=master)](https://travis-ci.org/eirslett/frontend-maven-plugin)
+
+Windows Build: (Appveyor) [![Build status](https://ci.appveyor.com/api/projects/status/vxbccc1t9ceadhi9)](https://ci.appveyor.com/project/eirslett/frontend-maven-plugin)
 
 # Frontend maven plugin
 This plugin downloads/installs Node and NPM locally for your project, runs NPM install, Grunt and/or gulp and/or Karma.
