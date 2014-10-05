@@ -1,6 +1,6 @@
 os:
   - osx
-language: java
+language: objective-c
 script: mvn clean install
 jdk:
   - openjdk6
