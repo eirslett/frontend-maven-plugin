@@ -1,8 +1,6 @@
 os:
   - osx
 language: objective-c
-script: mvn clean install
+script: export JAVA_HOME=/usr/libexec/java_home && mvn clean install
 jdk:
   - openjdk6
-env:
-  - JAVA_HOME=/usr/libexec/java_home
