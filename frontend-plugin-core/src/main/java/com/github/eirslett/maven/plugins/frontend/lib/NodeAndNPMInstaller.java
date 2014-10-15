@@ -261,7 +261,7 @@ final class DefaultNodeAndNPMInstaller implements NodeAndNPMInstaller {
                 pw.println("export PATH=\"$(dirname $(python -c 'import os,sys;print os.path.realpath(sys.argv[1])' \"$0\")):$PATH\"");
             }
             else {
-                pw.println("export PATH=\"$(dirname $(readlink -f \"$0\")):$PATH\"");
+                pw.println("export PATH=\"`dirname \\\"\\`readlink -f \\\"$0\\\"\\`\\\"`:$PATH\"");
             }
             pw.println("\"$@\"");
             pw.close();

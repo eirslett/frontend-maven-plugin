@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.codehaus.plexus.util.cli.CommandLineUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,18 +43,19 @@ abstract class NodeTaskExecutor {
         }
     }
 
-    private List<String> getArguments(String args) {
-        List<String> arguments =  new ArrayList<String>();
-        if(args != null && !args.equals("null") && !args.isEmpty()) {
-            arguments.addAll(Arrays.asList(args.split("\\s+")));
-        }
-
-        for(String argument: additionalArguments){
-            if(!arguments.contains(argument)){
-                arguments.add(argument);
+    private List<String> getArguments(String args) throws TaskRunnerException {
+        try {
+            List<String> arguments = new ArrayList<String>(Arrays.asList(CommandLineUtils.translateCommandline(args)));
+            for(String argument: additionalArguments){
+                if(!arguments.contains(argument)){
+                    arguments.add(argument);
+                }
             }
+            return arguments;
         }
-        return arguments;
+        catch (Exception e) {
+            throw new TaskRunnerException("bad command args", e);
+        }
     }
 
     private static String taskToString(String taskName, List<String> commands) {
