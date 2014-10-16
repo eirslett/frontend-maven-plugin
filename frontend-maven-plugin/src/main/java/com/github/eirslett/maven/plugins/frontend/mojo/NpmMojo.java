@@ -35,14 +35,28 @@ public final class NpmMojo extends AbstractMojo {
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
+        boolean skipInstall = false;
         try {
-            setSLF4jLogger(getLog());
+            skipInstall = Boolean.parseBoolean((String) System.getProperties().get("skip.npm.install"));
+        }
+        catch (Exception e) {
+            // Ignore
+        }
 
-            ProxyConfig proxyConfig = MojoUtils.getProxyConfig(session);
-            new FrontendPluginFactory(workingDirectory, proxyConfig).getNpmRunner()
-                    .execute(arguments);
-        } catch (TaskRunnerException e) {
-            throw new MojoFailureException("Failed to run task", e);
+        if (skipInstall) {
+        getLog().info("Skipping npm install");
+        }
+        else {
+
+            try {
+                setSLF4jLogger(getLog());
+
+                ProxyConfig proxyConfig = MojoUtils.getProxyConfig(session);
+                new FrontendPluginFactory(workingDirectory, proxyConfig).getNpmRunner()
+                        .execute(arguments);
+            } catch (TaskRunnerException e) {
+                throw new MojoFailureException("Failed to run task", e);
+            }
         }
     }
 }
