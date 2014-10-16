@@ -41,18 +41,28 @@ public final class NpmMojo extends AbstractMojo {
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
-        File packageJson = new File(workingDirectory, "package.json");
-        if (buildContext == null || buildContext.hasDelta(packageJson) || !buildContext.isIncremental()) {
+        boolean skipInstall = false;
+        try {
+            skipInstall = Boolean.parseBoolean((String) System.getProperties().get("skip.npm.install"));
+        }
+        catch (Exception e) {
+            // Ignore
+        }
+
+        if (skipInstall) {
+        getLog().info("Skipping npm install");
+        }
+        else {
+
             try {
                 setSLF4jLogger(getLog());
 
                 ProxyConfig proxyConfig = MojoUtils.getProxyConfig(session);
-                new FrontendPluginFactory(workingDirectory, proxyConfig).getNpmRunner().execute(arguments);
+                new FrontendPluginFactory(workingDirectory, proxyConfig).getNpmRunner()
+                        .execute(arguments);
             } catch (TaskRunnerException e) {
                 throw new MojoFailureException("Failed to run task", e);
             }
-        } else {
-            getLog().info("Skipping npm install as package.json unchanged");
         }
     }
 }
