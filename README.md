@@ -40,7 +40,7 @@ Have a look at the example project, to see how it should be set up!
 https://github.com/eirslett/frontend-maven-plugin/blob/master/frontend-maven-plugin/src/it/example%20project/pom.xml
 
 ### Working directory
-The default  The working directory is where you've put `package.json`, and either `Gruntfile.js` or `gulpfile.js` etc. The default working directory is your project's base directory (the same directory as your `pom.xml`). You can change the working directory if you want:
+The working directory is where you've put `package.json` and your frontend configuration files (`Gruntfile.js` or `gulpfile.js` etc). The default working directory is your project's base directory (the same directory as your `pom.xml`). You can change the working directory if you want:
 ```xml
 <plugin>
     <groupId>com.github.eirslett</groupId>
