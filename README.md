@@ -178,7 +178,7 @@ The idea is that you use `karma.conf.js` while developing (using watch/livereloa
 it should generate xml reports, it should run only in PhantomJS, and/or it should generate
 code coverage reports.
 
-__Running Karma through Grunt or gulp:__ You may choose to run Karma [directly through Grunt](https://github.com/karma-runner/grunt-karma) or [through gulp](https://github.com/lazd/gulp-karma) instead,
+__Running Karma through Grunt or gulp:__ You may choose to run Karma [directly through Grunt](https://github.com/karma-runner/grunt-karma) or [through gulp](https://github.com/karma-runner/gulp-karma) instead,
 as part of the `grunt` or `gulp` execution. That will help to separate your frontend and backend builds even more.
 
 
