@@ -153,10 +153,19 @@ final class DefaultNodeAndNPMInstaller implements NodeAndNPMInstaller {
                 String targetName = workingDirectory + File.separator + "npm.tar.gz";
                 logger.info("Downloading NPM from " + downloadUrl + " to " + targetName);
                 downloadFile(downloadUrl, targetName);
+
+                // We need to delete the existing npm directory first so we clean out any old files, and
+                // so we can rename the package directory below.
+                File npmDirectory = new File(workingDirectory, "./node/npm");
+                try {
+                    FileUtils.deleteDirectory(npmDirectory);
+                } catch (IOException e) {
+                    logger.warn("Failed to delete existing NPM installation.");
+                }
+
                 logger.info("Extracting NPM files in node/");
                 extractFile(targetName, workingDirectory +"/node");
                 new File(targetName).delete();
-                File npmDirectory = new File(workingDirectory, "./node/npm");
                 // handles difference between old and new download root (nodejs.org/dist/npm and registry.npmjs.org)
                 // see https://github.com/eirslett/frontend-maven-plugin/issues/65#issuecomment-52024254
                 File packageDirectory = new File(workingDirectory, "./node/package");
