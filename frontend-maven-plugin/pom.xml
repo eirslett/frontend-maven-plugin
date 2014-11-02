@@ -49,6 +49,12 @@
             <artifactId>slf4j-maven-plugin-log</artifactId>
             <version>1.0.0</version>
         </dependency>
+        
+        <dependency>
+            <groupId>org.sonatype.plexus</groupId>
+            <artifactId>plexus-build-api</artifactId>
+            <version>0.0.7</version>
+        </dependency>
     </dependencies>
 
     <build>

@@ -51,11 +51,11 @@ public final class KarmaRunMojo extends AbstractMojo {
                         .execute("start " + karmaConfPath);
             }
         } catch (TaskRunnerException e) {
-			if (testFailureIgnore) {
-				LoggerFactory.getLogger(KarmaRunMojo.class).warn("There are ignored test failures/errors for: " + workingDirectory);
-			} else {
+            if (testFailureIgnore) {
+                LoggerFactory.getLogger(KarmaRunMojo.class).warn("There are ignored test failures/errors for: " + workingDirectory);
+            } else {
                 throw new MojoFailureException("Failed to run task", e);
-			}
+            }
         }
     }
 }
