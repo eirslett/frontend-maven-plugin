@@ -182,6 +182,14 @@ __Running Karma through Grunt or gulp:__ You may choose to run Karma [directly t
 as part of the `grunt` or `gulp` execution. That will help to separate your frontend and backend builds even more.
 
 
+# Eclipse M2E support
+
+This plugin contains support for M2E, including lifecycle mappings and support for incremental builds in Eclipse. 
+The `install-node-and-npm` goal will only run on a full project build. The other goals support incremental builds 
+to avoid doing unnecessary work. During an incremental build the `npm` goal will only run if the `package.json` file 
+has been changed. The `grunt` and `gulp` goals have new `srcdir` and `triggerfiles` optional configuration options; if
+these are set they check for changes in your source files before being run. See the wiki for more information.
+
 # Helper scripts
 During development, it's convenient to have the "npm", "grunt", "gulp" and "karma" commands
 available on the command line. If you want that, use [those helper scripts](https://github.com/eirslett/frontend-maven-plugin/tree/master/frontend-maven-plugin/src/it/example%20project/helper-scripts)!
