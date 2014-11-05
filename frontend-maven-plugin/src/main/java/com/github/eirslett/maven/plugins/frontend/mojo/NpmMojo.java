@@ -33,21 +33,18 @@ public final class NpmMojo extends AbstractMojo {
     @Parameter(property = "session", defaultValue = "${session}", readonly = true)
     private MavenSession session;
 
+    /**
+     * Skips the npm install
+     */
+    @Parameter(property = "skip.npm", defaultValue = "false", required = false)
+    private Boolean skipNpm;
+
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
-        boolean skipInstall = false;
-        try {
-            skipInstall = Boolean.parseBoolean((String) System.getProperties().get("skip.npm.install"));
-        }
-        catch (Exception e) {
-            // Ignore
-        }
-
-        if (skipInstall) {
-        getLog().info("Skipping npm install");
+        if (skipNpm) {
+            getLog().info("Skipping npm install");
         }
         else {
-
             try {
                 setSLF4jLogger(getLog());
 
