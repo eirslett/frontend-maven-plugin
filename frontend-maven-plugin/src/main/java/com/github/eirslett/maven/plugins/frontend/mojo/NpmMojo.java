@@ -27,7 +27,7 @@ public final class NpmMojo extends AbstractMojo {
     /**
      * npm arguments. Default is "install".
      */
-    @Parameter(defaultValue = "install", property = "arguments", required = false)
+    @Parameter(defaultValue = "install", property = "frontend.arguments", required = false)
     private String arguments;
 
     @Parameter(property = "session", defaultValue = "${session}", readonly = true)
