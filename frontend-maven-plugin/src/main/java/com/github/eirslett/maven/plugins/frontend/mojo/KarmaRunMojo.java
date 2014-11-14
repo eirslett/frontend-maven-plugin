@@ -4,7 +4,7 @@ import java.io.File;
 
 import com.github.eirslett.maven.plugins.frontend.lib.FrontendPluginFactory;
 import com.github.eirslett.maven.plugins.frontend.lib.TaskRunnerException;
-import org.apache.maven.plugin.AbstractMojo;
+
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -14,13 +14,7 @@ import org.slf4j.LoggerFactory;
 
 
 @Mojo(name="karma",  defaultPhase = LifecyclePhase.TEST)
-public final class KarmaRunMojo extends AbstractMojo {
-
-    /**
-     * The base directory for running all Node commands. (Usually the directory that contains package.json)
-     */
-    @Parameter(defaultValue = "${basedir}", property = "workingDirectory", required = false)
-    private File workingDirectory;
+public final class KarmaRunMojo extends AbstractNodeJSMojo {
 
     /**
      * Path to your karma configuration file, relative to the working directory (default is "karma.conf.js")
@@ -47,7 +41,7 @@ public final class KarmaRunMojo extends AbstractMojo {
             if(skipTests){
                 LoggerFactory.getLogger(KarmaRunMojo.class).info("Skipping karma tests.");
             } else {
-                new FrontendPluginFactory(workingDirectory).getKarmaRunner()
+                new FrontendPluginFactory(workingDirectory, useGlobal).getKarmaRunner()
                         .execute("start " + karmaConfPath);
             }
         } catch (TaskRunnerException e) {

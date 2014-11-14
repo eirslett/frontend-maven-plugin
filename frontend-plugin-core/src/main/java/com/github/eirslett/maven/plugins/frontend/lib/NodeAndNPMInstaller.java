@@ -103,7 +103,7 @@ final class DefaultNodeAndNPMInstaller implements NodeAndNPMInstaller {
             try {
                 final File nodeFile = new File(workingDirectory + nodeExeutable);
                 if(nodeFile.exists()){
-                    final String version = new NodeExecutor(workingDirectory, Arrays.asList("--version"), platform).executeAndGetResult();
+                    final String version = new NodeExecutor(workingDirectory, Arrays.asList("--version"), platform, false).executeAndGetResult();
 
                     if(version.equals(nodeVersion)){
                         logger.info("Node " + version + " is already installed.");
