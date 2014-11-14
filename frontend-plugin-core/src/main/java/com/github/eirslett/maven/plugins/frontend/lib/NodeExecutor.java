@@ -8,9 +8,16 @@ import java.util.List;
 final class NodeExecutor {
     private final ProcessExecutor executor;
 
-    public NodeExecutor(File workingDirectory, List<String> arguments, Platform platform){
-        final String node = workingDirectory + Utils.normalize("/node/node");
-        this.executor = new ProcessExecutor(workingDirectory, Utils.prepend(node, arguments), platform);
+    private final boolean local;
+    
+//    public NodeExecutor(File workingDirectory, List<String> arguments, Platform platform){
+//    	this(workingDirectory, arguments, platform, false);
+//    }
+//
+    public NodeExecutor(File workingDirectory, List<String> arguments, Platform platform, boolean local) {
+    	this.local = local;
+		final String node = local ? "node" : workingDirectory + Utils.normalize("/node/node");
+    	this.executor = new ProcessExecutor(workingDirectory, Utils.prepend(node, arguments), platform);
     }
 
     public String executeAndGetResult() throws ProcessExecutionException {

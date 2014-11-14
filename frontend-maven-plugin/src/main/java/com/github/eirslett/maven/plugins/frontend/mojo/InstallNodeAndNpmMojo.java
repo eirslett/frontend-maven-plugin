@@ -3,7 +3,6 @@ package com.github.eirslett.maven.plugins.frontend.mojo;
 import java.io.File;
 
 import org.apache.maven.execution.MavenSession;
-import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -16,13 +15,7 @@ import com.github.eirslett.maven.plugins.frontend.lib.NodeAndNPMInstaller;
 import com.github.eirslett.maven.plugins.frontend.lib.ProxyConfig;
 
 @Mojo(name="install-node-and-npm", defaultPhase = LifecyclePhase.GENERATE_RESOURCES)
-public final class InstallNodeAndNpmMojo extends AbstractMojo {
-
-    /**
-     * The base directory for running all Node commands. (Usually the directory that contains package.json)
-     */
-    @Parameter(property = "workingDirectory", defaultValue = "${basedir}")
-    private File workingDirectory;
+public final class InstallNodeAndNpmMojo extends AbstractNodeJSMojo {
 
     /**
      * Where to download Node.js binary from. Defaults to http://nodejs.org/dist/
@@ -64,10 +57,16 @@ public final class InstallNodeAndNpmMojo extends AbstractMojo {
     public void execute() throws MojoExecutionException, MojoFailureException {
         try {
             MojoUtils.setSLF4jLogger(getLog());
+            
+            if (useGlobal) {
+            	getLog().warn("preinstalled mode is set, skipping downloading of node an npm.");
+            	return;
+            }
+            
             ProxyConfig proxyConfig = MojoUtils.getProxyConfig(session);
             String nodeDownloadRoot = getNodeDownloadRoot();
             String npmDownloadRoot = getNpmDownloadRoot();
-            new FrontendPluginFactory(workingDirectory, proxyConfig).getNodeAndNPMInstaller().install(nodeVersion, npmVersion, nodeDownloadRoot, npmDownloadRoot);
+            new FrontendPluginFactory(workingDirectory, proxyConfig, useGlobal).getNodeAndNPMInstaller().install(nodeVersion, npmVersion, nodeDownloadRoot, npmDownloadRoot);
         } catch (InstallationException e) {
             throw MojoUtils.toMojoFailureException(e);
         }

@@ -17,9 +17,11 @@ abstract class NodeTaskExecutor {
     private final Platform platform;
     private final File workingDirectory;
     private final List<String> additionalArguments;
+	private final boolean local;
 
-    public NodeTaskExecutor(String taskName, String taskLocation, File workingDirectory, Platform platform, List<String> additionalArguments) {
-        this.logger = LoggerFactory.getLogger(getClass());
+    public NodeTaskExecutor(String taskName, String taskLocation, File workingDirectory, Platform platform, List<String> additionalArguments, boolean local) {
+        this.local = local;
+		this.logger = LoggerFactory.getLogger(getClass());
         this.taskName = taskName;
         this.taskLocation = taskLocation;
         this.platform = platform;
@@ -33,7 +35,7 @@ abstract class NodeTaskExecutor {
         logger.info("Running " + taskToString(taskName, arguments) + " in " + workingDirectory);
 
         try {
-            final int result = new NodeExecutor(workingDirectory, prepend(absoluteTaskLocation, arguments), platform).executeAndRedirectOutput(logger);
+            final int result = new NodeExecutor(workingDirectory, prepend(absoluteTaskLocation, arguments), platform, true).executeAndRedirectOutput(logger);
             if(result != 0){
                 throw new TaskRunnerException(taskToString(taskName, arguments) + " failed. (error code "+result+")");
             }
