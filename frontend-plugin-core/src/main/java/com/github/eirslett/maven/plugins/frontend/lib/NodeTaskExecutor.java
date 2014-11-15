@@ -1,12 +1,14 @@
 package com.github.eirslett.maven.plugins.frontend.lib;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.Map;
 
 import static com.github.eirslett.maven.plugins.frontend.lib.Utils.*;
 
@@ -17,6 +19,7 @@ abstract class NodeTaskExecutor {
     private final Platform platform;
     private final File workingDirectory;
     private final List<String> additionalArguments;
+    private Map<String, String> env = new HashMap<String, String>();
 
     public NodeTaskExecutor(String taskName, String taskLocation, File workingDirectory, Platform platform, List<String> additionalArguments) {
         this.logger = LoggerFactory.getLogger(getClass());
@@ -27,13 +30,20 @@ abstract class NodeTaskExecutor {
         this.additionalArguments = additionalArguments;
     }
 
+    public NodeTaskExecutor useEnv(Map<String, String> env) {
+        this.env = env;
+        return this;
+    }
+
     public final void execute(String args) throws TaskRunnerException {
         final String absoluteTaskLocation = workingDirectory + normalize(taskLocation);
         final List<String> arguments = getArguments(args);
         logger.info("Running " + taskToString(taskName, arguments) + " in " + workingDirectory);
 
         try {
-            final int result = new NodeExecutor(workingDirectory, prepend(absoluteTaskLocation, arguments), platform).executeAndRedirectOutput(logger);
+            final int result = new NodeExecutor(workingDirectory, prepend(absoluteTaskLocation, arguments), platform)
+                                    .useEnv(this.env)
+                                    .executeAndRedirectOutput(logger);
             if(result != 0){
                 throw new TaskRunnerException(taskToString(taskName, arguments) + " failed. (error code "+result+")");
             }

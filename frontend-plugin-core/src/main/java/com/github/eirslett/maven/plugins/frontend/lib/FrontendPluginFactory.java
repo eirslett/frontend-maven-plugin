@@ -1,6 +1,7 @@
 package com.github.eirslett.maven.plugins.frontend.lib;
 
 import java.io.File;
+import java.util.Map;
 
 public final class FrontendPluginFactory {
     private static final Platform defaultPlatform = Platform.guess();
@@ -37,5 +38,15 @@ public final class FrontendPluginFactory {
 
     public GulpRunner getGulpRunner(){
         return new DefaultGulpRunner(defaultPlatform, workingDirectory);
+    }
+
+    public BowerRunner getBowerRunner(Map<String, String> env) {
+        DefaultBowerRunner defaultBowerRunner = new DefaultBowerRunner(defaultPlatform, workingDirectory);
+        defaultBowerRunner.useEnv(env);
+        return defaultBowerRunner;
+    }
+
+    public BowerRunner getBowerRunner() {
+        return new DefaultBowerRunner(defaultPlatform, workingDirectory);
     }
 }

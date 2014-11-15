@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 final class ProcessExecutionException extends Exception {
     public ProcessExecutionException(String message) {
@@ -31,6 +32,11 @@ final class ProcessExecutor {
         this.platform = platform;
 
         this.processBuilder = createProcessBuilder();
+    }
+
+    public ProcessExecutor useEnv(Map<String, String> env) {
+        this.processBuilder.environment().putAll(env);
+        return this;
     }
 
     public String executeAndGetResult() throws ProcessExecutionException {
