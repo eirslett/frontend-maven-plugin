@@ -40,21 +40,33 @@ public final class KarmaRunMojo extends AbstractMojo {
     @Parameter(property = "testFailureIgnore", required = false, defaultValue = "false")
     private Boolean testFailureIgnore;
 
+    /**
+     * Skips execution of this mojo.
+     */
+    @Parameter(property = "skip", defaultValue = "${skipTests}")
+    private Boolean skip;
+
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
-        try {
-            MojoUtils.setSLF4jLogger(getLog());
-            if(skipTests){
-                LoggerFactory.getLogger(KarmaRunMojo.class).info("Skipping karma tests.");
-            } else {
-                new FrontendPluginFactory(workingDirectory).getKarmaRunner()
-                        .execute("start " + karmaConfPath);
+        if (!skip) {
+            try {
+                MojoUtils.setSLF4jLogger(getLog());
+                if (skipTests) {
+                    LoggerFactory.getLogger(KarmaRunMojo.class).info("Skipping karma tests.");
+                }
+                else {
+                    new FrontendPluginFactory(workingDirectory).getKarmaRunner()
+                            .execute("start " + karmaConfPath);
+                }
             }
-        } catch (TaskRunnerException e) {
-            if (testFailureIgnore) {
-                LoggerFactory.getLogger(KarmaRunMojo.class).warn("There are ignored test failures/errors for: " + workingDirectory);
-            } else {
-                throw new MojoFailureException("Failed to run task", e);
+            catch (TaskRunnerException e) {
+                if (testFailureIgnore) {
+                    LoggerFactory.getLogger(KarmaRunMojo.class)
+                            .warn("There are ignored test failures/errors for: " + workingDirectory);
+                }
+                else {
+                    throw new MojoFailureException("Failed to run task", e);
+                }
             }
         }
     }
