@@ -60,16 +60,24 @@ public final class InstallNodeAndNpmMojo extends AbstractMojo {
     @Parameter(property = "session", defaultValue = "${session}", readonly = true)
     private MavenSession session;
 
+    /**
+     * Skips execution of this mojo.
+     */
+    @Parameter(property = "skip", defaultValue = "false")
+    private Boolean skip;
+
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
-        try {
-            MojoUtils.setSLF4jLogger(getLog());
-            ProxyConfig proxyConfig = MojoUtils.getProxyConfig(session);
-            String nodeDownloadRoot = getNodeDownloadRoot();
-            String npmDownloadRoot = getNpmDownloadRoot();
-            new FrontendPluginFactory(workingDirectory, proxyConfig).getNodeAndNPMInstaller().install(nodeVersion, npmVersion, nodeDownloadRoot, npmDownloadRoot);
-        } catch (InstallationException e) {
-            throw MojoUtils.toMojoFailureException(e);
+        if (!skip) {
+            try {
+                MojoUtils.setSLF4jLogger(getLog());
+                ProxyConfig proxyConfig = MojoUtils.getProxyConfig(session);
+                String nodeDownloadRoot = getNodeDownloadRoot();
+                String npmDownloadRoot = getNpmDownloadRoot();
+                new FrontendPluginFactory(workingDirectory, proxyConfig).getNodeAndNPMInstaller().install(nodeVersion, npmVersion, nodeDownloadRoot, npmDownloadRoot);
+            } catch (InstallationException e) {
+                throw MojoUtils.toMojoFailureException(e);
+            }
         }
     }
 

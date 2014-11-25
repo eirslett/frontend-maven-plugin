@@ -53,6 +53,12 @@ public final class GulpMojo extends AbstractMojo {
     @Parameter(property = "outputdir")
     private File outputdir;
 
+    /**
+     * Skips execution of this mojo.
+     */
+    @Parameter(property = "skip", defaultValue = "false")
+    private Boolean skip;
+
     @Component
     private BuildContext buildContext;
 
@@ -76,6 +82,10 @@ public final class GulpMojo extends AbstractMojo {
     }
     
     private boolean shouldExecute() {
+        if (skip) {
+            return false;
+        }
+
         // If there is no buildContext, or this is not an incremental build, always execute.
         if (buildContext == null || !buildContext.isIncremental()) {
             return true;
