@@ -78,9 +78,6 @@ final class DefaultNodeAndNPMInstaller implements NodeAndNPMInstaller {
             if(!npmIsAlreadyInstalled()) {
                 installNpm();
             }
-            if(!platform.isWindows() && !hasShortcutScripts()){
-                createShortcutScripts();
-            }
         }
 
         private boolean nodeIsAlreadyInstalled() {
@@ -244,30 +241,6 @@ final class DefaultNodeAndNPMInstaller implements NodeAndNPMInstaller {
 
         private void downloadFile(String downloadUrl, String destination) throws DownloadException {
             fileDownloader.download(downloadUrl, destination);
-        }
-    }
-
-    private boolean hasShortcutScripts() {
-        return new File(workingDirectory+normalize("/node/with_new_path.sh")).exists();
-    }
-
-    private void createShortcutScripts() throws InstallationException {
-        try {
-            File script = new File(workingDirectory+normalize("/node/with_new_path.sh"));
-            PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(script)));
-            pw.println("#!/bin/sh");
-            if(platform.isMac()) {
-                // issue 23: readlink not working on mac osx
-                pw.println("export PATH=\"$(dirname $(python -c 'import os,sys;print os.path.realpath(sys.argv[1])' $0)):$PATH\"");
-            }
-            else {
-                pw.println("export PATH=\"$(dirname $(readlink -f $0)):$PATH\"");
-            }
-            pw.println("\"$@\"");
-            pw.close();
-            logger.info("Created npm script "+script);
-        } catch (IOException e) {
-            throw new InstallationException("Could not create path script", e);
         }
     }
 }
