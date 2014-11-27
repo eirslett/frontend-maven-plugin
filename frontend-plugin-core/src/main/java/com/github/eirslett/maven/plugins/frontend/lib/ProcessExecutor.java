@@ -76,8 +76,16 @@ final class ProcessExecutor {
     private ProcessBuilder createProcessBuilder(){
         ProcessBuilder pbuilder = new ProcessBuilder(command).directory(workingDirectory);
         final Map<String, String> environment = pbuilder.environment();
-        final String pathVarName = "PATH";
-        final String pathVarValue = environment.get(pathVarName);
+        String pathVarName = "PATH";
+        String pathVarValue = environment.get(pathVarName);
+        if (platform.isWindows()) {
+            for (String key:environment.keySet()) {
+                if ("PATH".equalsIgnoreCase(key)) {
+                    pathVarName = key;
+                    pathVarValue = environment.get(key);
+                }
+            }
+        }
         if (pathVarValue == null) {
             environment.put(pathVarName, workingDirectory + File.separator + "node");
         }
