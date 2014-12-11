@@ -1,14 +1,14 @@
 package com.github.eirslett.maven.plugins.frontend.lib;
 
-import org.slf4j.Logger;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+
+import org.slf4j.Logger;
 
 final class ProcessExecutionException extends Exception {
     public ProcessExecutionException(String message) {
@@ -74,15 +74,25 @@ final class ProcessExecutor {
     }
 
     private ProcessBuilder createProcessBuilder(){
-        return new ProcessBuilder(getPlatformIndependentCommand()).directory(workingDirectory);
-    }
-
-    private List<String> getPlatformIndependentCommand(){
-        if(platform.isWindows()){
-            return command;
-        } else {
-            return Utils.merge(Arrays.asList("sh", workingDirectory+"/node/with_new_path.sh"), command);
+        ProcessBuilder pbuilder = new ProcessBuilder(command).directory(workingDirectory);
+        final Map<String, String> environment = pbuilder.environment();
+        String pathVarName = "PATH";
+        String pathVarValue = environment.get(pathVarName);
+        if (platform.isWindows()) {
+            for (String key:environment.keySet()) {
+                if ("PATH".equalsIgnoreCase(key)) {
+                    pathVarName = key;
+                    pathVarValue = environment.get(key);
+                }
+            }
         }
+        if (pathVarValue == null) {
+            environment.put(pathVarName, workingDirectory + File.separator + "node");
+        }
+        else {
+            environment.put(pathVarName, workingDirectory + File.separator + "node" + File.pathSeparator + pathVarValue);
+        }
+        return pbuilder;
     }
 
     private static String readString(InputStream processInputStream) throws IOException {

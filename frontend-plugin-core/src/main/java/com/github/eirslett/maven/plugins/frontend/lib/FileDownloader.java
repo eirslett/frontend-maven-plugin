@@ -1,5 +1,6 @@
 package com.github.eirslett.maven.plugins.frontend.lib;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
@@ -18,6 +19,8 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 
@@ -43,17 +46,26 @@ final class DefaultFileDownloader implements FileDownloader {
 
     public void download(String downloadUrl, String destination) throws DownloadException {
         try {
-            CloseableHttpResponse response = execute(downloadUrl);
-            int statusCode = response.getStatusLine().getStatusCode();
-            if(statusCode != 200){
-                throw new DownloadException("Got error code "+ statusCode +" from the server.");
+            URI downloadURI = new URI(downloadUrl);
+            if ("file".equalsIgnoreCase(downloadURI.getScheme())) {
+                FileUtils.copyFile(new File(downloadURI), new File(destination));
             }
-            new File(FilenameUtils.getFullPathNoEndSeparator(destination)).mkdirs();
-            ReadableByteChannel rbc = Channels.newChannel(response.getEntity().getContent());
-            FileOutputStream fos = new FileOutputStream(destination);
-            fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
-            fos.close();
+            else {
+                CloseableHttpResponse response = execute(downloadUrl);
+                int statusCode = response.getStatusLine().getStatusCode();
+                if(statusCode != 200){
+                    throw new DownloadException("Got error code "+ statusCode +" from the server.");
+                }
+                new File(FilenameUtils.getFullPathNoEndSeparator(destination)).mkdirs();
+                ReadableByteChannel rbc = Channels.newChannel(response.getEntity().getContent());
+                FileOutputStream fos = new FileOutputStream(destination);
+                fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+                fos.close();
+            }
         } catch (IOException e) {
+            throw new DownloadException("Could not download "+downloadUrl, e);
+        }
+        catch (URISyntaxException e) {
             throw new DownloadException("Could not download "+downloadUrl, e);
         }
     }

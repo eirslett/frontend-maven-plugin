@@ -2,6 +2,8 @@ OS X Build: (Travis CI) [![Build Status](https://travis-ci.org/eirslett/frontend
 
 Windows Build: (Appveyor) [![Build status](https://ci.appveyor.com/api/projects/status/vxbccc1t9ceadhi9)](https://ci.appveyor.com/project/eirslett/frontend-maven-plugin)
 
+Linux Build: (CloudBees) [![Build status](https://eirslett.ci.cloudbees.com/buildStatus/icon?job=Frontend%20maven%20plugin)](https://eirslett.ci.cloudbees.com/job/Frontend%20maven%20plugin/)
+
 # Frontend maven plugin
 This plugin downloads/installs Node and NPM locally for your project, runs NPM install, Grunt and/or gulp and/or Karma.
 It's supposed to work on Windows, OS X and Linux.
@@ -29,7 +31,7 @@ Include the plugin as a dependency in your Maven project.
     <plugin>
         <groupId>com.github.eirslett</groupId>
         <artifactId>frontend-maven-plugin</artifactId>
-        <version>0.0.17</version>
+        <version>0.0.19</version>
         ...
     </plugin>
 ...
@@ -40,7 +42,7 @@ Have a look at the example project, to see how it should be set up!
 https://github.com/eirslett/frontend-maven-plugin/blob/master/frontend-maven-plugin/src/it/example%20project/pom.xml
 
 ### Working directory
-The default  The working directory is where you've put `package.json`, and either `Gruntfile.js` or `gulpfile.js` etc. The default working directory is your project's base directory (the same directory as your `pom.xml`). You can change the working directory if you want:
+The working directory is where you've put `package.json` and your frontend configuration files (`Gruntfile.js` or `gulpfile.js` etc). The default working directory is your project's base directory (the same directory as your `pom.xml`). You can change the working directory if you want:
 ```xml
 <plugin>
     <groupId>com.github.eirslett</groupId>
@@ -178,9 +180,17 @@ The idea is that you use `karma.conf.js` while developing (using watch/livereloa
 it should generate xml reports, it should run only in PhantomJS, and/or it should generate
 code coverage reports.
 
-__Running Karma through Grunt or gulp:__ You may choose to run Karma [directly through Grunt](https://github.com/karma-runner/grunt-karma) or [through gulp](https://github.com/lazd/gulp-karma) instead,
+__Running Karma through Grunt or gulp:__ You may choose to run Karma [directly through Grunt](https://github.com/karma-runner/grunt-karma) or [through gulp](https://github.com/karma-runner/gulp-karma) instead,
 as part of the `grunt` or `gulp` execution. That will help to separate your frontend and backend builds even more.
 
+
+# Eclipse M2E support
+
+This plugin contains support for M2E, including lifecycle mappings and support for incremental builds in Eclipse. 
+The `install-node-and-npm` goal will only run on a full project build. The other goals support incremental builds 
+to avoid doing unnecessary work. During an incremental build the `npm` goal will only run if the `package.json` file 
+has been changed. The `grunt` and `gulp` goals have new `srcdir` and `triggerfiles` optional configuration options; if
+these are set they check for changes in your source files before being run. See the wiki for more information.
 
 # Helper scripts
 During development, it's convenient to have the "npm", "grunt", "gulp" and "karma" commands
