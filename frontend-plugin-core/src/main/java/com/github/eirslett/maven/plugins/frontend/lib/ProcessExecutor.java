@@ -32,6 +32,11 @@ final class ProcessExecutor {
 
         this.processBuilder = createProcessBuilder();
     }
+    
+    public ProcessExecutor useEnv(Map<String, String> env) {
+        this.processBuilder.environment().putAll(env);
+        return this;
+    }    
 
     public String executeAndGetResult() throws ProcessExecutionException {
         try {
