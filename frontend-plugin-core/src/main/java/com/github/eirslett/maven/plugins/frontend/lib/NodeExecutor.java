@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 
 import java.io.File;
 import java.util.List;
-import java.util.Map;
 
 final class NodeExecutor {
     private final ProcessExecutor executor;
@@ -20,10 +19,5 @@ final class NodeExecutor {
 
     public int executeAndRedirectOutput(final Logger logger) throws ProcessExecutionException {
         return executor.executeAndRedirectOutput(logger);
-    }
-
-    public NodeExecutor useEnv(Map<String, String> env) {
-        this.executor.useEnv(env);
-        return this;
     }
 }

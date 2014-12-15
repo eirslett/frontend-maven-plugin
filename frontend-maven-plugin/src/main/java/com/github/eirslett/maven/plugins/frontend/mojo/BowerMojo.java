@@ -10,8 +10,6 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
 
 @Mojo(name = "bower", defaultPhase = LifecyclePhase.GENERATE_RESOURCES)
 public final class BowerMojo extends AbstractMojo {
@@ -28,28 +26,13 @@ public final class BowerMojo extends AbstractMojo {
     @Parameter(property = "arguments")
     private String arguments; 
 
-    @Parameter(property = "environmentVariables")
-    private String environmentVariables;
-
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         try {
             MojoUtils.setSLF4jLogger(getLog());
-            new FrontendPluginFactory(workingDirectory).getBowerRunner(processEnvs(environmentVariables)).execute(arguments);
+            new FrontendPluginFactory(workingDirectory).getBowerRunner().execute(arguments);
         } catch (TaskRunnerException e) {
             throw new MojoFailureException("Failed to run task", e);
         }
-    }
-
-    private static Map<String, String> processEnvs(String envs) {
-        HashMap<String, String> mapEnvs = new HashMap<String, String>();
-        if (envs == null || envs.length() == 0) {
-            return mapEnvs;
-        }
-        String[] split = envs.split(" ");
-        for (int i = 0; i < split.length - 1; i++) {
-            mapEnvs.put(split[i], split[i + 1]);
-        }
-        return mapEnvs;
     }
 }
