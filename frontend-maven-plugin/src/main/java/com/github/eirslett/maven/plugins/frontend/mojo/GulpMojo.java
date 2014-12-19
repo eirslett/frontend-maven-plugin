@@ -27,7 +27,7 @@ public final class GulpMojo extends AbstractMojo {
     /**
      * Gulp arguments. Default is empty (runs just the "gulp" command).
      */
-    @Parameter(property = "arguments")
+    @Parameter(property = "frontend.gulp.arguments")
     private String arguments;
     
     /**
