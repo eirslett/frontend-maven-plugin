@@ -44,7 +44,6 @@
                         <goals>
                             <goal>bower</goal>
                         </goals>
-                        <!-- Optional configuration which provides for running any bower command -->
                         <configuration>
                             <arguments>install</arguments>
                         </configuration>
