@@ -21,9 +21,9 @@ public final class BowerMojo extends AbstractMojo {
     private File workingDirectory;
 
     /**
-     * Bower arguments. Default is empty (runs just the "bower" command).
+     * Bower arguments. Default is "install".
      */
-    @Parameter(property = "arguments")
+    @Parameter(defaultValue = "install", property = "arguments", required = false)
     private String arguments; 
 
     @Override
