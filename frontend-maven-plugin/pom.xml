@@ -15,7 +15,8 @@
     <description>
         This Maven plugin lets you install Node/NPM locally
         for your project, install dependencies with NPM,
-        run Grunt tasks, and/or run Karma tests.
+        install dependencies with bower, run Grunt or gulp tasks, 
+        and/or run Karma tests.
     </description>
 
     <dependencies>
