@@ -23,7 +23,7 @@ public final class BowerMojo extends AbstractMojo {
     /**
      * Bower arguments. Default is "install".
      */
-    @Parameter(defaultValue = "install", property = "arguments", required = false)
+    @Parameter(defaultValue = "install", property = "frontend.bower.arguments", required = false)
     private String arguments; 
 
     @Override
