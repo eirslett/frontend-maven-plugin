@@ -1,3 +1,8 @@
 .idea
 *.iml
 target
+.settings
+.classpath
+.project
+.metadata
+.recommenders

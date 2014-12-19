@@ -22,6 +22,10 @@ public final class FrontendPluginFactory {
                 new DefaultArchiveExtractor(),
                 new DefaultFileDownloader(proxy));
     }
+    
+    public BowerRunner getBowerRunner() {
+        return new DefaultBowerRunner(defaultPlatform, workingDirectory);
+    }    
 
     public NpmRunner getNpmRunner() {
         return new DefaultNpmRunner(defaultPlatform, workingDirectory, proxy);
