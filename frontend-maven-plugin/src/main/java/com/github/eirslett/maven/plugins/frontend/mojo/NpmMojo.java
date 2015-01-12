@@ -39,20 +39,31 @@ public final class NpmMojo extends AbstractMojo {
     @Component
     private BuildContext buildContext;
 
+    /**
+     * Skips the npm install
+     */
+    @Parameter(property = "skip.npm", defaultValue = "false", required = false)
+    private Boolean skipNpm;
+
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
-        File packageJson = new File(workingDirectory, "package.json");
-        if (buildContext == null || buildContext.hasDelta(packageJson) || !buildContext.isIncremental()) {
-            try {
-                setSLF4jLogger(getLog());
-
-                ProxyConfig proxyConfig = MojoUtils.getProxyConfig(session);
-                new FrontendPluginFactory(workingDirectory, proxyConfig).getNpmRunner().execute(arguments);
-            } catch (TaskRunnerException e) {
-                throw new MojoFailureException("Failed to run task", e);
+        if (skipNpm) {
+            getLog().info("Skipping npm install");
+        }
+        else {
+            File packageJson = new File(workingDirectory, "package.json");
+            if (buildContext == null || buildContext.hasDelta(packageJson) || !buildContext.isIncremental()) {
+                try {
+                    setSLF4jLogger(getLog());
+    
+                    ProxyConfig proxyConfig = MojoUtils.getProxyConfig(session);
+                    new FrontendPluginFactory(workingDirectory, proxyConfig).getNpmRunner().execute(arguments);
+                } catch (TaskRunnerException e) {
+                    throw new MojoFailureException("Failed to run task", e);
+                }
+            } else {
+                getLog().info("Skipping npm install as package.json unchanged");
             }
-        } else {
-            getLog().info("Skipping npm install as package.json unchanged");
         }
     }
 }
