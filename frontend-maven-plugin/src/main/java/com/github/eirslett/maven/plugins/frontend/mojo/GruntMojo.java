@@ -19,6 +19,12 @@ import org.sonatype.plexus.build.incremental.BuildContext;
 public final class GruntMojo extends AbstractMojo {
 
     /**
+     * The directory to install Node and related executables.
+     */
+    @Parameter(defaultValue = "${basedir}", property = "nodeInstallDirectory", required = false)
+    private File nodeInstallDirectory;
+
+    /**
      * The base directory for running all Node commands. (Usually the directory that contains package.json)
      */
     @Parameter(defaultValue = "${basedir}", property = "workingDirectory", required = false)
@@ -61,7 +67,7 @@ public final class GruntMojo extends AbstractMojo {
         if (shouldExecute()) {
             try {
                 MojoUtils.setSLF4jLogger(getLog());
-                new FrontendPluginFactory(workingDirectory).getGruntRunner().execute(arguments);
+                new FrontendPluginFactory(nodeInstallDirectory, workingDirectory).getGruntRunner().execute(arguments);
             } catch (TaskRunnerException e) {
                 throw new MojoFailureException("Failed to run task", e);
             }

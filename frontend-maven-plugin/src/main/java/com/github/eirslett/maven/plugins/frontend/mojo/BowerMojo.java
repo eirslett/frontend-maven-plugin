@@ -15,6 +15,12 @@ import java.io.File;
 public final class BowerMojo extends AbstractMojo {
 
     /**
+     * The directory to install Node and related executables.
+     */
+    @Parameter(defaultValue = "${basedir}", property = "nodeInstallDirectory", required = false)
+    private File nodeInstallDirectory;
+
+    /**
      * The base directory for running all Node commands. (Usually the directory that contains package.json)
      */
     @Parameter(defaultValue = "${basedir}", property = "workingDirectory", required = false)
@@ -30,7 +36,7 @@ public final class BowerMojo extends AbstractMojo {
     public void execute() throws MojoExecutionException, MojoFailureException {
         try {
             MojoUtils.setSLF4jLogger(getLog());
-            new FrontendPluginFactory(workingDirectory).getBowerRunner().execute(arguments);
+            new FrontendPluginFactory(nodeInstallDirectory, workingDirectory).getBowerRunner().execute(arguments);
         } catch (TaskRunnerException e) {
             throw new MojoFailureException("Failed to run task", e);
         }

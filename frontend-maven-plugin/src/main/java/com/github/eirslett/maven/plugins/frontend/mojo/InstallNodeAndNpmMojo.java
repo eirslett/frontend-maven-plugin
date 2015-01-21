@@ -19,6 +19,12 @@ import com.github.eirslett.maven.plugins.frontend.lib.ProxyConfig;
 public final class InstallNodeAndNpmMojo extends AbstractMojo {
 
     /**
+     * The directory to install Node and related executables.
+     */
+    @Parameter(defaultValue = "${basedir}", property = "nodeInstallDirectory", required = false)
+    private File nodeInstallDirectory;
+
+    /**
      * The base directory for running all Node commands. (Usually the directory that contains package.json)
      */
     @Parameter(property = "workingDirectory", defaultValue = "${basedir}")
@@ -67,7 +73,7 @@ public final class InstallNodeAndNpmMojo extends AbstractMojo {
             ProxyConfig proxyConfig = MojoUtils.getProxyConfig(session);
             String nodeDownloadRoot = getNodeDownloadRoot();
             String npmDownloadRoot = getNpmDownloadRoot();
-            new FrontendPluginFactory(workingDirectory, proxyConfig).getNodeAndNPMInstaller().install(nodeVersion, npmVersion, nodeDownloadRoot, npmDownloadRoot);
+            new FrontendPluginFactory(nodeInstallDirectory, workingDirectory, proxyConfig).getNodeAndNPMInstaller().install(nodeVersion, npmVersion, nodeDownloadRoot, npmDownloadRoot);
         } catch (InstallationException e) {
             throw MojoUtils.toMojoFailureException(e);
         }

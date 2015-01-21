@@ -20,6 +20,12 @@ import static com.github.eirslett.maven.plugins.frontend.mojo.MojoUtils.setSLF4j
 
 @Mojo(name="npm",  defaultPhase = LifecyclePhase.GENERATE_RESOURCES)
 public final class NpmMojo extends AbstractMojo {
+    
+    /**
+     * The directory to install Node and related executables.
+     */
+    @Parameter(defaultValue = "${basedir}", property = "nodeInstallDirectory", required = false)
+    private File nodeInstallDirectory;
 
     /**
      * The base directory for running all Node commands. (Usually the directory that contains package.json)
@@ -57,7 +63,7 @@ public final class NpmMojo extends AbstractMojo {
                     setSLF4jLogger(getLog());
     
                     ProxyConfig proxyConfig = MojoUtils.getProxyConfig(session);
-                    new FrontendPluginFactory(workingDirectory, proxyConfig).getNpmRunner().execute(arguments);
+                    new FrontendPluginFactory(nodeInstallDirectory, workingDirectory, proxyConfig).getNpmRunner().execute(arguments);
                 } catch (TaskRunnerException e) {
                     throw new MojoFailureException("Failed to run task", e);
                 }

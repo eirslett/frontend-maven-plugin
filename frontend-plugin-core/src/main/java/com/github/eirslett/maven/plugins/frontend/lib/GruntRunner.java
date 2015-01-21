@@ -7,11 +7,11 @@ public interface GruntRunner {
     public void execute(String args) throws TaskRunnerException;
 }
 
-final class DefaultGruntRunner extends NodeTaskExecutor implements GruntRunner {
+final class DefaultGruntRunner extends WorkingDirTaskExecutor implements GruntRunner {
     private static final String TASK_NAME = "grunt";
     private static final String TASK_LOCATION = "/node_modules/grunt-cli/bin/grunt";
 
-    DefaultGruntRunner(Platform platform, File workingDirectory) {
-        super(TASK_NAME, TASK_LOCATION, workingDirectory, platform, Arrays.asList("--no-color"));
+    DefaultGruntRunner(Platform platform, File nodeInstallDirectory, File workingDirectory) {
+        super(TASK_NAME, TASK_LOCATION, nodeInstallDirectory, workingDirectory, platform, Arrays.asList("--no-color"));
     }
 }

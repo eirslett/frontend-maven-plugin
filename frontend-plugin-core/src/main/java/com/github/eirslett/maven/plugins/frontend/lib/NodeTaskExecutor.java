@@ -15,31 +15,37 @@ abstract class NodeTaskExecutor {
     private final String taskName;
     private final String taskLocation;
     private final Platform platform;
+    private final File nodeInstallDirectory;
     private final File workingDirectory;
     private final List<String> additionalArguments;
 
-    public NodeTaskExecutor(String taskName, String taskLocation, File workingDirectory, Platform platform, List<String> additionalArguments) {
+    public NodeTaskExecutor(String taskName, String taskLocation, File nodeInstallDirectory, File workingDirectory, Platform platform, List<String> additionalArguments) {
         this.logger = LoggerFactory.getLogger(getClass());
         this.taskName = taskName;
         this.taskLocation = taskLocation;
         this.platform = platform;
+        this.nodeInstallDirectory = nodeInstallDirectory;
         this.workingDirectory = workingDirectory;
         this.additionalArguments = additionalArguments;
     }
 
     public final void execute(String args) throws TaskRunnerException {
-        final String absoluteTaskLocation = workingDirectory + normalize(taskLocation);
+        final String absoluteTaskLocation = getTaskInstallDirectory() + normalize(taskLocation);
         final List<String> arguments = getArguments(args);
         logger.info("Running " + taskToString(taskName, arguments) + " in " + workingDirectory);
 
         try {
-            final int result = new NodeExecutor(workingDirectory, prepend(absoluteTaskLocation, arguments), platform).executeAndRedirectOutput(logger);
+            final int result = new NodeExecutor(nodeInstallDirectory, workingDirectory, prepend(absoluteTaskLocation, arguments), platform).executeAndRedirectOutput(logger);
             if(result != 0){
                 throw new TaskRunnerException(taskToString(taskName, arguments) + " failed. (error code "+result+")");
             }
         } catch (ProcessExecutionException e) {
             throw new TaskRunnerException(taskToString(taskName, arguments) + " failed.", e);
         }
+    }
+    
+    protected File getTaskInstallDirectory() {
+        return nodeInstallDirectory;
     }
 
     private List<String> getArguments(String args) {
