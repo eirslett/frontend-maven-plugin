@@ -13,7 +13,7 @@ final class DefaultBowerRunner extends NodeTaskExecutor implements BowerRunner {
     private static final String TASK_NAME = "bower";
     private static final String TASK_LOCATION = "/node_modules/bower/bin/bower";
 
-    DefaultBowerRunner(Platform platform, File workingDirectory) {
-        super(TASK_NAME, TASK_LOCATION, workingDirectory, platform, new ArrayList<String>());
+    DefaultBowerRunner(Platform platform, File nodeInstallDirectory, File workingDirectory) {
+        super(TASK_NAME, TASK_LOCATION, nodeInstallDirectory, workingDirectory, platform, new ArrayList<String>());
     }
 }

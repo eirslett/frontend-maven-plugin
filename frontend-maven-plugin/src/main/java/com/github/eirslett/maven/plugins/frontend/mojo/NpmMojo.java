@@ -20,12 +20,24 @@ import static com.github.eirslett.maven.plugins.frontend.mojo.MojoUtils.setSLF4j
 
 @Mojo(name="npm",  defaultPhase = LifecyclePhase.GENERATE_RESOURCES)
 public final class NpmMojo extends AbstractMojo {
+    
+    /**
+     * The directory to install Node and related executables.
+     */
+    @Parameter(defaultValue = "${basedir}", property = "nodeInstallDirectory", required = false)
+    private File nodeInstallDirectory;
 
     /**
      * The base directory for running all Node commands. (Usually the directory that contains package.json)
      */
     @Parameter(defaultValue = "${basedir}", property = "workingDirectory", required = false)
     private File workingDirectory;
+    
+    /**
+     * Run only if this path exists. 
+     */
+    @Parameter(property = "ifExists", required = false)
+    private File ifExists;
 
     /**
      * npm arguments. Default is "install".
@@ -39,16 +51,11 @@ public final class NpmMojo extends AbstractMojo {
     @Component
     private BuildContext buildContext;
 
-    /**
-     * Skips the npm install
-     */
-    @Parameter(property = "skip.npm", defaultValue = "false", required = false)
-    private Boolean skipNpm;
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
-        if (skipNpm) {
-            getLog().info("Skipping npm install");
+        if (ifExists != null && !ifExists.exists()) {
+            getLog().info("Skipping npm install because "+ifExists.getPath()+" does not exist.");
         }
         else {
             File packageJson = new File(workingDirectory, "package.json");
@@ -57,7 +64,7 @@ public final class NpmMojo extends AbstractMojo {
                     setSLF4jLogger(getLog());
     
                     ProxyConfig proxyConfig = MojoUtils.getProxyConfig(session);
-                    new FrontendPluginFactory(workingDirectory, proxyConfig).getNpmRunner().execute(arguments);
+                    new FrontendPluginFactory(nodeInstallDirectory, workingDirectory, proxyConfig).getNpmRunner().execute(arguments);
                 } catch (TaskRunnerException e) {
                     throw new MojoFailureException("Failed to run task", e);
                 }

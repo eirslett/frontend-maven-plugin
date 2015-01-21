@@ -19,10 +19,22 @@ import com.github.eirslett.maven.plugins.frontend.lib.TaskRunnerException;
 public final class GulpMojo extends AbstractMojo {
 
     /**
+     * The directory to install Node and related executables.
+     */
+    @Parameter(defaultValue = "${basedir}", property = "nodeInstallDirectory", required = false)
+    private File nodeInstallDirectory;
+
+    /**
      * The base directory for running all Node commands. (Usually the directory that contains package.json)
      */
     @Parameter(defaultValue = "${basedir}", property = "workingDirectory", required = false)
     private File workingDirectory;
+    
+    /**
+     * Run only if this path exists. 
+     */
+    @Parameter(property = "ifExists", required = false)
+    private File ifExists;
 
     /**
      * Gulp arguments. Default is empty (runs just the "gulp" command).
@@ -58,10 +70,14 @@ public final class GulpMojo extends AbstractMojo {
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
+        if (ifExists != null && !ifExists.exists()) {
+            getLog().info("Skipping gulp because "+ifExists.getPath()+" does not exist.");
+            return;
+        }
         if (shouldExecute()) {
             try {
                 MojoUtils.setSLF4jLogger(getLog());
-                new FrontendPluginFactory(workingDirectory).getGulpRunner().execute(arguments);
+                new FrontendPluginFactory(nodeInstallDirectory, workingDirectory).getGulpRunner().execute(arguments);
             } catch (TaskRunnerException e) {
                 throw new MojoFailureException("Failed to run task", e);
             }

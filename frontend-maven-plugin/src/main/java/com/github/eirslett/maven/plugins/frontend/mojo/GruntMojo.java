@@ -19,10 +19,22 @@ import org.sonatype.plexus.build.incremental.BuildContext;
 public final class GruntMojo extends AbstractMojo {
 
     /**
+     * The directory to install Node and related executables.
+     */
+    @Parameter(defaultValue = "${basedir}", property = "nodeInstallDirectory", required = false)
+    private File nodeInstallDirectory;
+
+    /**
      * The base directory for running all Node commands. (Usually the directory that contains package.json)
      */
     @Parameter(defaultValue = "${basedir}", property = "workingDirectory", required = false)
     private File workingDirectory;
+    
+    /**
+     * Run only if this path exists. 
+     */
+    @Parameter(property = "ifExists", required = false)
+    private File ifExists;
 
     /**
      * Grunt arguments. Default is empty (runs just the "grunt" command).
@@ -58,10 +70,14 @@ public final class GruntMojo extends AbstractMojo {
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
+        if (ifExists != null && !ifExists.exists()) {
+            getLog().info("Skipping grunt because "+ifExists.getPath()+" does not exist.");
+            return;
+        }
         if (shouldExecute()) {
             try {
                 MojoUtils.setSLF4jLogger(getLog());
-                new FrontendPluginFactory(workingDirectory).getGruntRunner().execute(arguments);
+                new FrontendPluginFactory(nodeInstallDirectory, workingDirectory).getGruntRunner().execute(arguments);
             } catch (TaskRunnerException e) {
                 throw new MojoFailureException("Failed to run task", e);
             }
