@@ -29,6 +29,12 @@ public final class GruntMojo extends AbstractMojo {
      */
     @Parameter(defaultValue = "${basedir}", property = "workingDirectory", required = false)
     private File workingDirectory;
+    
+    /**
+     * Run only if this path exists. 
+     */
+    @Parameter(property = "ifExists", required = false)
+    private File ifExists;
 
     /**
      * Grunt arguments. Default is empty (runs just the "grunt" command).
@@ -64,6 +70,10 @@ public final class GruntMojo extends AbstractMojo {
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
+        if (ifExists != null && !ifExists.exists()) {
+            getLog().info("Skipping grunt because "+ifExists.getPath()+" does not exist.");
+            return;
+        }
         if (shouldExecute()) {
             try {
                 MojoUtils.setSLF4jLogger(getLog());

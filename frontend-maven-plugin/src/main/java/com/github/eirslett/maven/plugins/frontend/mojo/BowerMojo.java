@@ -25,6 +25,12 @@ public final class BowerMojo extends AbstractMojo {
      */
     @Parameter(defaultValue = "${basedir}", property = "workingDirectory", required = false)
     private File workingDirectory;
+    
+    /**
+     * Run only if this path exists. 
+     */
+    @Parameter(property = "ifExists", required = false)
+    private File ifExists;
 
     /**
      * Bower arguments. Default is "install".
@@ -34,6 +40,10 @@ public final class BowerMojo extends AbstractMojo {
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
+        if (ifExists != null && !ifExists.exists()) {
+            getLog().info("Skipping bower because "+ifExists.getPath()+" does not exist.");
+            return;
+        }
         try {
             MojoUtils.setSLF4jLogger(getLog());
             new FrontendPluginFactory(nodeInstallDirectory, workingDirectory).getBowerRunner().execute(arguments);
