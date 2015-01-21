@@ -17,6 +17,12 @@ import org.slf4j.LoggerFactory;
 public final class KarmaRunMojo extends AbstractMojo {
 
     /**
+     * The directory to install Node and related executables.
+     */
+    @Parameter(defaultValue = "${basedir}", property = "nodeInstallDirectory", required = false)
+    private File nodeInstallDirectory;
+
+    /**
      * The base directory for running all Node commands. (Usually the directory that contains package.json)
      */
     @Parameter(defaultValue = "${basedir}", property = "workingDirectory", required = false)
@@ -47,7 +53,7 @@ public final class KarmaRunMojo extends AbstractMojo {
             if(skipTests){
                 LoggerFactory.getLogger(KarmaRunMojo.class).info("Skipping karma tests.");
             } else {
-                new FrontendPluginFactory(workingDirectory).getKarmaRunner()
+                new FrontendPluginFactory(nodeInstallDirectory, workingDirectory).getKarmaRunner()
                         .execute("start " + karmaConfPath);
             }
         } catch (TaskRunnerException e) {

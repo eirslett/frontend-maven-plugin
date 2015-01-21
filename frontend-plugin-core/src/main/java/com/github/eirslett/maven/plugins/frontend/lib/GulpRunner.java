@@ -11,7 +11,7 @@ final class DefaultGulpRunner extends NodeTaskExecutor implements GulpRunner {
     private static final String TASK_NAME = "gulp";
     private static final String TASK_LOCATION = "/node_modules/gulp/bin/gulp.js";
 
-    DefaultGulpRunner(Platform platform, File workingDirectory) {
-        super(TASK_NAME, TASK_LOCATION, workingDirectory, platform, Arrays.asList("--no-color"));
+    DefaultGulpRunner(Platform platform, File nodeInstallDirectory, File workingDirectory) {
+        super(TASK_NAME, TASK_LOCATION, nodeInstallDirectory, workingDirectory, platform, Arrays.asList("--no-color"));
     }
 }

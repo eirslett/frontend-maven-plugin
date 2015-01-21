@@ -11,7 +11,7 @@ final class DefaultKarmaRunner extends NodeTaskExecutor implements KarmaRunner {
     static final String TASK_NAME = "karma";
     static final String TASK_LOCATION = "/node_modules/karma/bin/karma";
 
-    DefaultKarmaRunner(Platform platform, File workingDirectory) {
-        super(TASK_NAME, TASK_LOCATION, workingDirectory, platform, Arrays.asList("--no-colors"));
+    DefaultKarmaRunner(Platform platform, File nodeInstallDirectory, File workingDirectory) {
+        super(TASK_NAME, TASK_LOCATION, nodeInstallDirectory, workingDirectory, platform, Arrays.asList("--no-colors"));
     }
 }
