@@ -25,6 +25,12 @@ public final class InstallNodeAndNpmMojo extends AbstractMojo {
     private File workingDirectory;
 
     /**
+     * Run only if this path exists. 
+     */
+    @Parameter(property = "ifExists", required = false)
+    private File ifExists;
+
+    /**
      * Where to download Node.js binary from. Defaults to http://nodejs.org/dist/
      */
     @Parameter(property = "nodeDownloadRoot", required = false, defaultValue = NodeAndNPMInstaller.DEFAULT_NODEJS_DOWNLOAD_ROOT)
@@ -62,6 +68,10 @@ public final class InstallNodeAndNpmMojo extends AbstractMojo {
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
+        if (ifExists != null && !ifExists.exists()) {
+            getLog().info("Skipping node and npm installation because "+ifExists.getPath()+" does not exist.");
+            return;
+        }
         try {
             MojoUtils.setSLF4jLogger(getLog());
             ProxyConfig proxyConfig = MojoUtils.getProxyConfig(session);

@@ -26,6 +26,12 @@ public final class NpmMojo extends AbstractMojo {
      */
     @Parameter(defaultValue = "${basedir}", property = "workingDirectory", required = false)
     private File workingDirectory;
+    
+    /**
+     * Run only if this path exists. 
+     */
+    @Parameter(property = "ifExists", required = false)
+    private File ifExists;
 
     /**
      * npm arguments. Default is "install".
@@ -39,16 +45,11 @@ public final class NpmMojo extends AbstractMojo {
     @Component
     private BuildContext buildContext;
 
-    /**
-     * Skips the npm install
-     */
-    @Parameter(property = "skip.npm", defaultValue = "false", required = false)
-    private Boolean skipNpm;
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
-        if (skipNpm) {
-            getLog().info("Skipping npm install");
+        if (ifExists != null && !ifExists.exists()) {
+            getLog().info("Skipping npm install because "+ifExists.getPath()+" does not exist.");
         }
         else {
             File packageJson = new File(workingDirectory, "package.json");
