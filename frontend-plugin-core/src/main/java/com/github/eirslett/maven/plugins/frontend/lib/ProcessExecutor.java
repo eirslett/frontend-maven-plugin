@@ -37,7 +37,7 @@ final class ProcessExecutor {
         try {
             final Process process = processBuilder.start();
             final String result = readString(process.getInputStream());
-            final String error = readString(process.getInputStream());
+            final String error = readString(process.getErrorStream());
             final int exitValue = process.waitFor();
 
             if(exitValue == 0){
