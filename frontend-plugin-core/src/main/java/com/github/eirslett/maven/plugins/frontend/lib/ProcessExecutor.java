@@ -54,7 +54,6 @@ final class ProcessExecutor {
 
     public int executeAndRedirectOutput(final Logger logger) throws ProcessExecutionException {
         try {
-            processBuilder.redirectErrorStream(true);
             final Process process = processBuilder.start();
 
             final Thread infoLogThread = InputStreamHandler.logInfo(process.getInputStream(), logger);
@@ -97,10 +96,10 @@ final class ProcessExecutor {
 
     private static String readString(InputStream processInputStream) throws IOException {
         BufferedReader inputStream = new BufferedReader(new InputStreamReader(processInputStream));
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
         String line;
         while((line = inputStream.readLine()) != null) {
-            result.append(line + "\n");
+            result.append(line).append("\n");
         }
         return result.toString().trim();
     }
