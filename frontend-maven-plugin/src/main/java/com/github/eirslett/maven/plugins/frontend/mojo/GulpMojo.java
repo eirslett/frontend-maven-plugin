@@ -23,6 +23,12 @@ public final class GulpMojo extends AbstractMojo {
      */
     @Parameter(defaultValue = "${basedir}", property = "workingDirectory", required = false)
     private File workingDirectory;
+    
+    /**
+     * Run only if this path exists. 
+     */
+    @Parameter(property = "ifExists", required = false)
+    private File ifExists;
 
     /**
      * Gulp arguments. Default is empty (runs just the "gulp" command).
@@ -58,6 +64,10 @@ public final class GulpMojo extends AbstractMojo {
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
+        if (ifExists != null && !ifExists.exists()) {
+            getLog().info("Skipping gulp because "+ifExists.getPath()+" does not exist.");
+            return;
+        }
         if (shouldExecute()) {
             try {
                 MojoUtils.setSLF4jLogger(getLog());
