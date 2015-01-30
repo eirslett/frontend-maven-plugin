@@ -22,13 +22,15 @@ public interface NodeAndNPMInstaller {
 
 final class DefaultNodeAndNPMInstaller implements NodeAndNPMInstaller {
 
+    private final File nodeInstallDirectory;
     private final File workingDirectory;
     private final Logger logger;
     private final Platform platform;
     private final ArchiveExtractor archiveExtractor;
     private final FileDownloader fileDownloader;
 
-    DefaultNodeAndNPMInstaller(File workingDirectory, Platform platform, ArchiveExtractor archiveExtractor, FileDownloader fileDownloader) {
+    DefaultNodeAndNPMInstaller(File nodeInstallDirectory, File workingDirectory, Platform platform, ArchiveExtractor archiveExtractor, FileDownloader fileDownloader) {
+        this.nodeInstallDirectory = nodeInstallDirectory;
         this.workingDirectory = workingDirectory;
         this.logger = LoggerFactory.getLogger(getClass());
         this.platform = platform;
@@ -98,9 +100,9 @@ final class DefaultNodeAndNPMInstaller implements NodeAndNPMInstaller {
 
         private boolean nodeIsAlreadyInstalled(String nodeExeutable) {
             try {
-                final File nodeFile = new File(workingDirectory + nodeExeutable);
+                final File nodeFile = new File(nodeInstallDirectory + nodeExeutable);
                 if(nodeFile.exists()){
-                    final String version = new NodeExecutor(workingDirectory, Arrays.asList("--version"), platform).executeAndGetResult();
+                    final String version = new NodeExecutor(nodeInstallDirectory, workingDirectory, Arrays.asList("--version"), platform).executeAndGetResult();
 
                     if(version.equals(nodeVersion)){
                         logger.info("Node " + version + " is already installed.");
@@ -119,7 +121,7 @@ final class DefaultNodeAndNPMInstaller implements NodeAndNPMInstaller {
 
         private boolean npmIsAlreadyInstalled(){
             try {
-                final File npmPackageJson = new File(workingDirectory + Utils.normalize("/node/npm/package.json"));
+                final File npmPackageJson = new File(nodeInstallDirectory + Utils.normalize("/node/npm/package.json"));
                 if(npmPackageJson.exists()){
                     HashMap<String,Object> data = new ObjectMapper().readValue(npmPackageJson, HashMap.class);
                     if(data.containsKey(VERSION)){
@@ -147,13 +149,13 @@ final class DefaultNodeAndNPMInstaller implements NodeAndNPMInstaller {
             try {
                 logger.info("Installing npm version " + npmVersion);
                 final String downloadUrl = npmDownloadRoot +"npm-"+npmVersion+".tgz";
-                String targetName = workingDirectory + File.separator + "npm.tar.gz";
+                String targetName = nodeInstallDirectory + File.separator + "npm.tar.gz";
                 logger.info("Downloading NPM from " + downloadUrl + " to " + targetName);
                 downloadFile(downloadUrl, targetName);
 
                 // We need to delete the existing npm directory first so we clean out any old files, and
                 // so we can rename the package directory below.
-                File npmDirectory = new File(workingDirectory, "./node/npm");
+                File npmDirectory = new File(nodeInstallDirectory, "./node/npm");
                 try {
                     FileUtils.deleteDirectory(npmDirectory);
                 } catch (IOException e) {
@@ -161,11 +163,11 @@ final class DefaultNodeAndNPMInstaller implements NodeAndNPMInstaller {
                 }
 
                 logger.info("Extracting NPM files in node/");
-                extractFile(targetName, workingDirectory +"/node");
+                extractFile(targetName, nodeInstallDirectory +"/node");
                 new File(targetName).delete();
                 // handles difference between old and new download root (nodejs.org/dist/npm and registry.npmjs.org)
                 // see https://github.com/eirslett/frontend-maven-plugin/issues/65#issuecomment-52024254
-                File packageDirectory = new File(workingDirectory, "./node/package");
+                File packageDirectory = new File(nodeInstallDirectory, "./node/package");
                 if (packageDirectory.exists() && !npmDirectory.exists()) {
                     packageDirectory.renameTo(npmDirectory);
                 }
@@ -187,25 +189,25 @@ final class DefaultNodeAndNPMInstaller implements NodeAndNPMInstaller {
                 final String longNodeFilename = platform.getLongNodeFilename(nodeVersion);
                 downloadUrl = nodeDownloadRoot + platform.getNodeDownloadFilename(nodeVersion);
 
-                final File tmpDirectory = new File(workingDirectory + File.separator + "node_tmp");
+                final File tmpDirectory = new File(nodeInstallDirectory + File.separator + "node_tmp");
                 logger.info("Creating temporary directory " + tmpDirectory);
                 tmpDirectory.mkdirs();
 
-                final String targetName = workingDirectory + "/node_tmp/node.tar.gz";
+                final String targetName = nodeInstallDirectory + "/node_tmp/node.tar.gz";
                 logger.info("Downloading Node.js from " + downloadUrl + " to " + targetName);
                 downloadFile(downloadUrl, targetName);
 
                 logger.info("Extracting Node.js files in node_tmp");
-                extractFile(targetName, workingDirectory + "/node_tmp");
+                extractFile(targetName, nodeInstallDirectory + "/node_tmp");
 
                 // Search for the node binary
-                File nodeBinary = new File(workingDirectory + "/node_tmp/"+longNodeFilename+"/bin/node");
+                File nodeBinary = new File(nodeInstallDirectory + "/node_tmp/"+longNodeFilename+"/bin/node");
                 if(!nodeBinary.exists()){
                     throw new FileNotFoundException("Could not find the downloaded Node.js binary in "+nodeBinary);
                 } else {
-                    File destinationDirectory = new File(workingDirectory + "/node");
+                    File destinationDirectory = new File(nodeInstallDirectory + "/node");
                     destinationDirectory.mkdirs();
-                    File destination = new File(workingDirectory + "/node/node");
+                    File destination = new File(nodeInstallDirectory + "/node/node");
                     logger.info("Moving node binary to " + destination);
                     if(!nodeBinary.renameTo(destination)){
                         throw new InstallationException("Could not install Node: Was not allowed to rename "+nodeBinary+" to "+destination);
@@ -234,9 +236,9 @@ final class DefaultNodeAndNPMInstaller implements NodeAndNPMInstaller {
             try {
                 logger.info("Installing node version " + nodeVersion);
 
-                new File(workingDirectory+"\\node").mkdirs();
+                new File(nodeInstallDirectory+"\\node").mkdirs();
 
-                downloadFile(downloadUrl, workingDirectory +"\\node\\node.exe");
+                downloadFile(downloadUrl, nodeInstallDirectory +"\\node\\node.exe");
                 logger.info("Installed node.exe locally.");
             } catch (DownloadException e) {
                 throw new InstallationException("Could not download Node.js from: " + downloadUrl, e);

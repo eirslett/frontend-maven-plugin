@@ -8,8 +8,8 @@ import java.util.List;
 final class NodeExecutor {
     private final ProcessExecutor executor;
 
-    public NodeExecutor(File workingDirectory, List<String> arguments, Platform platform){
-        final String node = workingDirectory + Utils.normalize("/node/node");
+    public NodeExecutor(File nodeInstallDirectory, File workingDirectory, List<String> arguments, Platform platform){
+        final String node = nodeInstallDirectory + Utils.normalize("/node/node");
         this.executor = new ProcessExecutor(workingDirectory, Utils.prepend(node, arguments), platform);
     }
 

@@ -12,8 +12,8 @@ final class DefaultNpmRunner extends NodeTaskExecutor implements NpmRunner {
     static final String TASK_NAME = "npm";
     static final String TASK_LOCATION = "/node/npm/bin/npm-cli.js";
 
-    public DefaultNpmRunner(Platform platform, File workingDirectory, ProxyConfig proxy) {
-        super(TASK_NAME, TASK_LOCATION, workingDirectory, platform, buildArguments(proxy));
+    public DefaultNpmRunner(Platform platform, File nodeInstallDirectory, File workingDirectory, ProxyConfig proxy) {
+        super(TASK_NAME, TASK_LOCATION, nodeInstallDirectory, workingDirectory, platform, buildArguments(proxy));
     }
 
     private static List<String> buildArguments(ProxyConfig proxy) {
