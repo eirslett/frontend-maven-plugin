@@ -24,15 +24,23 @@ public final class BowerMojo extends AbstractMojo {
      * Bower arguments. Default is "install".
      */
     @Parameter(defaultValue = "install", property = "frontend.bower.arguments", required = false)
-    private String arguments; 
+    private String arguments;
+
+    /**
+     * Skips execution of this mojo.
+     */
+    @Parameter(property = "skip.bower", defaultValue = "false")
+    private Boolean skip;
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
-        try {
-            MojoUtils.setSLF4jLogger(getLog());
-            new FrontendPluginFactory(workingDirectory).getBowerRunner().execute(arguments);
-        } catch (TaskRunnerException e) {
-            throw new MojoFailureException("Failed to run task", e);
+        if(!skip) {
+            try {
+                MojoUtils.setSLF4jLogger(getLog());
+                new FrontendPluginFactory(workingDirectory).getBowerRunner().execute(arguments);
+            } catch (TaskRunnerException e) {
+                throw new MojoFailureException("Failed to run task", e);
+            }
         }
     }
 }

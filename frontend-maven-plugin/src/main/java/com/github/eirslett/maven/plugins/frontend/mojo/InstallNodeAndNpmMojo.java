@@ -63,7 +63,7 @@ public final class InstallNodeAndNpmMojo extends AbstractMojo {
     /**
      * Skips execution of this mojo.
      */
-    @Parameter(property = "skip", defaultValue = "false")
+    @Parameter(property = "skip.installnodenpm", defaultValue = "false")
     private Boolean skip;
 
     @Override

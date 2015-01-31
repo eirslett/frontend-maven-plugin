@@ -39,6 +39,9 @@ public final class NpmMojo extends AbstractMojo {
     @Component
     private BuildContext buildContext;
 
+    /**
+     * Skips execution of this mojo.
+     */
     @Parameter(property = "skip.npm", defaultValue = "false")
     private Boolean skip;
 
