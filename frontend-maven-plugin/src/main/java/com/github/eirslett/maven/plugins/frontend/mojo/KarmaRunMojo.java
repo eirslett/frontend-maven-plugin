@@ -43,7 +43,7 @@ public final class KarmaRunMojo extends AbstractMojo {
     /**
      * Skips execution of this mojo.
      */
-    @Parameter(property = "skip.karma", defaultValue = "${skipTests}")
+    @Parameter(property = "skip.karma", defaultValue = "false")
     private Boolean skip;
 
     @Override
