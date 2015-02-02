@@ -4,13 +4,15 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 public class ProxyConfig {
+    public final String id;
     public final String protocol;
     public final String host;
     public final int port;
     public final String username;
     public final String password;
 
-    public ProxyConfig(String protocol, String host, int port, String username, String password) {
+    public ProxyConfig(String id, String protocol, String host, int port, String username, String password) {
+        this.id = id;
         this.protocol = protocol;
         this.host = host;
         this.port = port;
@@ -37,7 +39,7 @@ public class ProxyConfig {
 
     @Override
     public String toString() {
-        return "ProxyConfig{" +
+        return id + "{" +
                 "protocol='" + protocol + '\'' +
                 ", host='" + host + '\'' +
                 ", port=" + port +

@@ -21,10 +21,13 @@ class MojoUtils {
             return null;
         } else {
             Proxy mavenProxy = mavenSession.getSettings().getActiveProxy();
-            final DefaultSettingsDecryptionRequest decryptionRequest = new DefaultSettingsDecryptionRequest(mavenProxy);
-            SettingsDecryptionResult decryptedResult = decrypter.decrypt(decryptionRequest);
-            mavenProxy = decryptedResult.getProxy();
-            return new ProxyConfig(mavenProxy.getProtocol(), mavenProxy.getHost(), mavenProxy.getPort(), mavenProxy.getUsername(), mavenProxy.getPassword());
+            return new ProxyConfig(
+                    mavenProxy.getId(),
+                    mavenProxy.getProtocol(),
+                    mavenProxy.getHost(),
+                    mavenProxy.getPort(),
+                    mavenProxy.getUsername(),
+                    mavenProxy.getPassword());
         }
     }
 }
