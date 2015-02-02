@@ -27,6 +27,7 @@ class MojoUtils {
         } else {
             Proxy mavenProxy = mavenSession.getSettings().getActiveProxy();
             return new ProxyConfig(
+                    mavenProxy.getId(),
                     mavenProxy.getProtocol(),
                     mavenProxy.getHost(),
                     mavenProxy.getPort(),
