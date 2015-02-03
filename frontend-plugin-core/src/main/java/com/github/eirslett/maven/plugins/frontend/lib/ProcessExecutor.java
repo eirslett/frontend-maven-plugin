@@ -91,7 +91,7 @@ final class ProcessExecutor {
             pathBuilder.append(pathVarValue).append(File.pathSeparator);
         }
         pathBuilder.append(workingDirectory + File.separator + "node").append(File.pathSeparator);
-        pathBuilder.append(workingDirectory + File.separator + "node/npm/bin");
+        pathBuilder.append(workingDirectory + File.separator + "node" + File.separator + "npm" + File.separator + "bin");
         environment.put(pathVarName, pathBuilder.toString());
 
         return pbuilder;
