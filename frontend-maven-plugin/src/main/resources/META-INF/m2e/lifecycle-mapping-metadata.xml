@@ -21,6 +21,7 @@
                     <goal>gulp</goal>
                     <goal>grunt</goal>
                     <goal>bower</goal>
+                    <goal>ember</goal>
                 </goals>
             </pluginExecutionFilter>
             <action>

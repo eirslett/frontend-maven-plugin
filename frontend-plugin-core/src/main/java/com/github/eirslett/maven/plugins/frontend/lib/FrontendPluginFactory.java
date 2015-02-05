@@ -35,6 +35,10 @@ public final class FrontendPluginFactory {
         return new DefaultGruntRunner(defaultPlatform, workingDirectory);
     }
 
+    public EmberRunner getEmberRunner() {
+        return new DefaultEmberRunner(defaultPlatform, workingDirectory);
+    }
+
     public KarmaRunner getKarmaRunner(){
         return new DefaultKarmaRunner(defaultPlatform, workingDirectory);
     }
