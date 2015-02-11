@@ -1,5 +1,7 @@
 package com.github.eirslett.maven.plugins.frontend.lib;
 
+import static com.github.eirslett.maven.plugins.frontend.lib.Utils.*;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -7,8 +9,6 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static com.github.eirslett.maven.plugins.frontend.lib.Utils.*;
 
 abstract class NodeTaskExecutor {
     private final Logger logger;
@@ -43,20 +43,29 @@ abstract class NodeTaskExecutor {
     }
 
     private List<String> getArguments(String args) {
-        List<String> arguments =  new ArrayList<String>();
-        if(args != null && !args.equals("null") && !args.isEmpty()) {
+        List<String> arguments = new ArrayList<String>();
+        if (args != null && !args.equals("null") && !args.isEmpty()) {
             arguments.addAll(Arrays.asList(args.split("\\s+")));
         }
 
-        for(String argument: additionalArguments){
-            if(!arguments.contains(argument)){
+        for (String argument : additionalArguments) {
+            if (!arguments.contains(argument)) {
                 arguments.add(argument);
             }
         }
         return arguments;
     }
 
-    private static String taskToString(String taskName, List<String> commands) {
-        return "'" + taskName + " " + implode(" ",commands) + "'";
+    private static String taskToString(String taskName, List<String> arguments) {
+        List<String> clonedArguments = new ArrayList<String>(arguments);
+        for (int i = 0; i < clonedArguments.size(); i++) {
+            final String s = clonedArguments.get(i);
+            final boolean maskMavenProxyPassword = s.contains("proxy=");
+            if (maskMavenProxyPassword) {
+                final String first = s.replaceFirst("//(?<keep>.*):.*@", "//${keep}:***@");
+                clonedArguments.set(i, first);
+            }
+        }
+        return "'" + taskName + " " + implode(" ", clonedArguments) + "'";
     }
 }
