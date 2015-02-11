@@ -14,6 +14,8 @@ import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.settings.crypto.SettingsDecrypter;
+import org.codehaus.plexus.component.annotations.Requirement;
 import org.sonatype.plexus.build.incremental.BuildContext;
 
 import static com.github.eirslett.maven.plugins.frontend.mojo.MojoUtils.setSLF4jLogger;
@@ -39,6 +41,9 @@ public final class NpmMojo extends AbstractMojo {
     @Component
     private BuildContext buildContext;
 
+    @Component(role = SettingsDecrypter.class)
+    private SettingsDecrypter decrypter;
+
     /**
      * Skips execution of this mojo.
      */
@@ -54,7 +59,7 @@ public final class NpmMojo extends AbstractMojo {
                 try {
                     setSLF4jLogger(getLog());
 
-                    ProxyConfig proxyConfig = MojoUtils.getProxyConfig(session);
+                    ProxyConfig proxyConfig = MojoUtils.getProxyConfig(session, decrypter);
                     new FrontendPluginFactory(workingDirectory, proxyConfig).getNpmRunner()
                             .execute(arguments);
                 }
