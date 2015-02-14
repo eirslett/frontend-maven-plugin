@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.Arrays;
 
 public interface EmberRunner {
-    public void execute(String args) throws TaskRunnerException;
+    public void execute(String arguments) throws TaskRunnerException;
 }
 
 final class DefaultEmberRunner extends NodeTaskExecutor implements EmberRunner {

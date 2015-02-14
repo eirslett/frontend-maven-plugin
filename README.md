@@ -5,7 +5,7 @@ Windows Build: (Appveyor) [![Build status](https://ci.appveyor.com/api/projects/
 Linux Build: (CloudBees) [![Build status](https://eirslett.ci.cloudbees.com/buildStatus/icon?job=Frontend%20maven%20plugin)](https://eirslett.ci.cloudbees.com/job/Frontend%20maven%20plugin/)
 
 # Frontend maven plugin
-This plugin downloads/installs Node and NPM locally for your project, runs NPM install, installs bower dependencies, run Grunt and/or gulp and/or Karma.
+This plugin downloads/installs Node and NPM locally for your project, runs NPM install, installs bower dependencies and can run Grunt, gulp, ember-cli and/or Karma.
 It's supposed to work on Windows, OS X and Linux.
 
 #### What is this plugin meant to do?
@@ -22,7 +22,7 @@ laptops, but backend developers can run a clean build without even installing No
 running common javascript tasks such as minification, obfuscation, compression, packaging, testing etc.
 
 ## Show me an example!
-[Here is an example for you!](https://github.com/eirslett/frontend-maven-plugin/tree/master/frontend-maven-plugin/src/it/example%20project)
+[Here is an example grunt project for you!](https://github.com/eirslett/frontend-maven-plugin/tree/master/frontend-maven-plugin/src/it/example/grunt-project)
 
 # Installing
 Include the plugin as a dependency in your Maven project.
@@ -39,7 +39,7 @@ Include the plugin as a dependency in your Maven project.
 
 # Usage
 Have a look at the example project, to see how it should be set up!
-https://github.com/eirslett/frontend-maven-plugin/blob/master/frontend-maven-plugin/src/it/example%20project/pom.xml
+https://github.com/eirslett/frontend-maven-plugin/blob/master/frontend-maven-plugin/src/it/example/grunt-project/pom.xml
 
 ### Working directory
 The working directory is where you've put `package.json` and your frontend configuration files (`Gruntfile.js` or `gulpfile.js` etc). The default working directory is your project's base directory (the same directory as your `pom.xml`). You can change the working directory if you want:
@@ -63,6 +63,7 @@ The working directory is where you've put `package.json` and your frontend confi
 ### Installing node and npm
 The versions of Node and npm are downloaded from http://nodejs.org/dist, extracted and put into a `node` folder created in your working directory. (Remember to gitignore the `node` folder, unless you actually want to commit it)
 Node/npm will only be "installed" locally to your project. It will not be installed globally on the whole system (and it will not interfere with any Node/npm installations already present.)
+
 ```xml
 <execution>
     <!-- optional: you don't really need execution ids,
@@ -81,6 +82,7 @@ Node/npm will only be "installed" locally to your project. It will not be instal
     </configuration>
 </execution>
 ```
+
 __Proxy settings:__ If you need to download Node/npm through a proxy: [configure your Maven proxy settings](http://maven.apache.org/guides/mini/guide-proxies.html) in ~/.m2/settings.xml. This plugin will use the same proxy settings as Maven.
 
 
@@ -168,6 +170,54 @@ By default, no colors will be shown in the log.
 </execution>
 ```
 
+### Running [ember-cli](http://www.ember-cli.com/)
+
+Make sure you have installed bower in your local ember-cli project (`npm install --save-dev bower`). You can find an ember-cli [example project](https://github.com/eirslett/frontend-maven-plugin/blob/master/frontend-maven-plugin/src/it/example/ember-cli-project/) which uses the `ember-build` and `ember-test` goals in [pom.xml](https://github.com/eirslett/frontend-maven-plugin/blob/master/frontend-maven-plugin/src/it/example/ember-cli-project/pom.xml). 
+
+#### ember-build goal
+
+This goal will run the ember-cli build. You can configure a specific [environment](http://www.ember-cli.com/#Environments) and also the output-path for the generated ember project files.
+
+```xml
+<execution>
+    <id>ember build</id>
+    <goals>
+        <goal>ember-build</goal>
+    </goals>
+
+    <!-- optional: the default phase is "generate-resources" -->
+    <phase>generate-resources</phase>
+
+    <configuration>
+        <!-- optional: if not specified, it will run with "production" -->
+        <environment>production</environment>
+        <!-- optional: if not specified, it will run with "dist/" -->
+        <outputPath>dist/</outputPath>
+    </configuration>
+</execution>
+```
+
+#### ember-test goal
+
+This goal will run the [ember-cli testsuite](http://www.ember-cli.com/#testing) for the `test` phase. You can specify an different environment and skip the tests with `-DskipTests=true`.
+
+```xml
+<execution>
+    <id>ember test</id>
+    <goals>
+        <goal>ember-test</goal>
+    </goals>
+
+    <!-- optional: the default phase is "test" -->
+    <phase>test</phase>
+
+    <configuration>
+        <!-- optional: if not specified, it will run with "test" -->
+        <environment>test</environment>
+    </configuration>
+</execution>
+```
+
 ### Running Karma
 ```xml
 <execution>
@@ -213,7 +263,7 @@ these are set they check for changes in your source files before being run. See 
 
 # Helper scripts
 During development, it's convenient to have the "npm", "bower", "grunt", "gulp" and "karma" commands
-available on the command line. If you want that, use [those helper scripts](https://github.com/eirslett/frontend-maven-plugin/tree/master/frontend-maven-plugin/src/it/example%20project/helper-scripts)!
+available on the command line. If you want that, use [those helper scripts](https://github.com/eirslett/frontend-maven-plugin/tree/master/frontend-maven-plugin/src/it/example/grunt-project/helper-scripts)!
 
 ## To build this project:
 `mvn clean install`

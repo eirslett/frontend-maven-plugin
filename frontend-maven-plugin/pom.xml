@@ -88,7 +88,7 @@
                 <version>1.8</version>
 
                 <configuration>
-                    <projectsDirectory>src/it</projectsDirectory>
+                    <projectsDirectory>src/it/example</projectsDirectory>
                     <cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
                     <settingsFile>src/it/settings.xml</settingsFile>
                     <localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
