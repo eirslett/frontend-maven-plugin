@@ -16,7 +16,7 @@
         <configuration>
           <filesets>
             <fileset>
-              <directory>./</directory>
+              <directory>${pom.basedir}</directory>
 
               <!-- copied from .gitignore -->
               <includes>
@@ -48,7 +48,7 @@
         <groupId>com.github.eirslett</groupId>
         <artifactId>frontend-maven-plugin</artifactId>
         <!-- NB! Set <version> to the latest released version of frontend-maven-plugin, like in README.md -->
-        <version>@project.version@</version>
+        <version>0.0.23-SNAPSHOT</version>
 
         <executions>
           <execution>
@@ -80,15 +80,21 @@
             <id>ember build</id>
             <phase>prepare-package</phase>
             <goals>
-              <goal>ember-build</goal>
+              <goal>ember</goal>
             </goals>
+            <configuration>
+              <command>build</command>
+            </configuration>
           </execution>
 
           <execution>
             <id>ember test</id>
             <goals>
-              <goal>ember-test</goal>
+              <goal>ember</goal>
             </goals>
+            <configuration>
+              <command>test</command>
+            </configuration>
           </execution>
 
         </executions>

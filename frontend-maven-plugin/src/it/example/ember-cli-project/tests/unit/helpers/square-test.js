@@ -1,5 +1,5 @@
-import { test, module } from 'ember-qunit';
-import { square } from 'ember-cli-project/helpers/square';
+import { square } from '../../../helpers/square';
+import { module, test } from 'qunit';
 
 module('SquareHelper');
 

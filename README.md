@@ -172,48 +172,37 @@ By default, no colors will be shown in the log.
 
 ### Running [ember-cli](http://www.ember-cli.com/)
 
-Make sure you have installed bower in your local ember-cli project (`npm install --save-dev bower`). You can find an ember-cli [example project](https://github.com/eirslett/frontend-maven-plugin/blob/master/frontend-maven-plugin/src/it/example/ember-cli-project/) which uses the `ember-build` and `ember-test` goals in [pom.xml](https://github.com/eirslett/frontend-maven-plugin/blob/master/frontend-maven-plugin/src/it/example/ember-cli-project/pom.xml). 
+Make sure you have installed bower in your local ember-cli project (`npm install --save-dev bower`). You can find an ember-cli [example project](https://github.com/eirslett/frontend-maven-plugin/blob/master/frontend-maven-plugin/src/it/example/ember-cli-project/) which uses the `ember` goals in [pom.xml](https://github.com/eirslett/frontend-maven-plugin/blob/master/frontend-maven-plugin/src/it/example/ember-cli-project/pom.xml) for build and tests.
 
-#### ember-build goal
-
-This goal will run the ember-cli build. You can configure a specific [environment](http://www.ember-cli.com/#Environments) and also the output-path for the generated ember project files.
+The `ember` goal will run the ember-cli tool with the specified command. You can configure the command and provide additional arguments.
+If you are using the `test` command you can skip the execution with `-DskipTests=true`.
 
 ```xml
 <execution>
     <id>ember build</id>
     <goals>
-        <goal>ember-build</goal>
+        <goal>ember</goal>
     </goals>
 
     <!-- optional: the default phase is "generate-resources" -->
     <phase>generate-resources</phase>
 
     <configuration>
-        <!-- optional: if not specified, it will run with "production" -->
-        <environment>production</environment>
+        <command>build</command>
+        <arguments>--environment=production</arguments>
+        
         <!-- optional: if not specified, it will run with "dist/" -->
         <outputPath>dist/</outputPath>
     </configuration>
 </execution>
-```
-
-#### ember-test goal
-
-This goal will run the [ember-cli testsuite](http://www.ember-cli.com/#testing) for the `test` phase. You can specify an different environment and skip the tests with `-DskipTests=true`.
-
-```xml
 <execution>
     <id>ember test</id>
     <goals>
-        <goal>ember-test</goal>
+        <goal>ember</goal>
     </goals>
-
-    <!-- optional: the default phase is "test" -->
     <phase>test</phase>
-
     <configuration>
-        <!-- optional: if not specified, it will run with "test" -->
-        <environment>test</environment>
+        <command>test</command>
     </configuration>
 </execution>
 ```

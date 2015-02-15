@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.google.common.base.Joiner;
+import com.google.common.base.Splitter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,6 +59,7 @@ abstract class NodeTaskExecutor {
     }
 
     private static String taskToString(String taskName, List<String> commands) {
-        return "'" + taskName + " " + implode(" ",commands) + "'";
+        String commandLine = Joiner.on(" ").join(commands);
+        return "'" + taskName + " " + commandLine + "'";
     }
 }
