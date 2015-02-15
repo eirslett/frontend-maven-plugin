@@ -92,8 +92,8 @@ public final class GruntMojo extends AbstractMojo {
         }
         
         if (triggerfiles != null) {
-            for (int i = 0; i < triggerfiles.length; i++) {
-                if (buildContext.hasDelta(triggerfiles[i])) {
+            for (File triggerFile : triggerfiles) {
+                if (buildContext.hasDelta(triggerFile)) {
                     return true;
                 }
             }

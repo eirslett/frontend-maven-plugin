@@ -83,6 +83,7 @@ public final class InstallNodeAndNpmMojo extends AbstractMojo {
 
     private String getNodeDownloadRoot() {
         if (downloadRoot != null && !"".equals(downloadRoot) && NodeAndNPMInstaller.DEFAULT_NODEJS_DOWNLOAD_ROOT.equals(nodeDownloadRoot)) {
+            getLog().warn("The configuration option 'downloadRoot' is deprecated. Use 'nodeDownloadRoot' instead.");
             return downloadRoot;
         }
         return nodeDownloadRoot;
@@ -90,6 +91,7 @@ public final class InstallNodeAndNpmMojo extends AbstractMojo {
 
     private String getNpmDownloadRoot() {
         if (downloadRoot != null && !"".equals(downloadRoot) && NodeAndNPMInstaller.DEFAULT_NPM_DOWNLOAD_ROOT.equals(npmDownloadRoot)) {
+            getLog().warn("The configuration option 'downloadRoot' is deprecated. Use 'npmDownloadRoot' instead.");
             return downloadRoot;
         }
         return npmDownloadRoot;

@@ -1,5 +1,7 @@
 package com.github.eirslett.maven.plugins.frontend.lib;
 
+import com.google.common.base.Joiner;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;

@@ -9,48 +9,40 @@ import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.codehaus.plexus.util.Scanner;
 import org.sonatype.plexus.build.incremental.BuildContext;
 
 import java.io.File;
 
-@Mojo(name="ember", defaultPhase = LifecyclePhase.GENERATE_RESOURCES)
+import static com.google.common.base.Strings.isNullOrEmpty;
+
+@Mojo(name = "ember", defaultPhase = LifecyclePhase.GENERATE_RESOURCES)
 public final class EmberMojo extends AbstractMojo {
+    private static final String TEST_COMMAND = "test";
 
     /**
      * The base directory for running all Node commands. (Usually the directory that contains package.json)
      */
-    @Parameter(defaultValue = "${basedir}", property = "workingDirectory", required = false)
+    @Parameter(property = "workingDirectory", defaultValue = "${basedir}", required = false)
     private File workingDirectory;
 
     /**
-     * Grunt arguments. Default is empty (runs just the "grunt" command).
+     * The ember-cli command to execute.
      */
-    @Parameter(property = "frontend.ember.arguments")
-    private String arguments;
-    
-    /**
-     * Files that should be checked for changes, in addition to the srcdir files.
-     * {@link #workingDirectory}.
-     */
-    @Parameter(property = "triggerfiles")
-    private File[] triggerfiles;
-    
-    /**
-     * The directory containing front end files that will be processed by grunt.
-     * If this is set then files in the directory will be checked for
-     * modifications before running grunt.
-     */
-    @Parameter(property = "srcdir")
-    private File srcdir;
+    @Parameter(property = "command", required = true)
+    private String command;
 
     /**
-     * The directory where front end files will be output by grunt. If this is
-     * set then they will be refreshed so they correctly show as modified in
-     * Eclipse.
+     * Additional arguments passed to the specified {@link EmberMojo#command}
      */
-    @Parameter(property = "outputdir")
-    private File outputdir;
+    @Parameter(property = "arguments", required = false)
+    private String arguments;
+
+    /**
+     * The directory where ember-cli places the generated project files. This option depends
+     * on your ember-cli arguments. You should define this if you want to notify Eclipse about changes.
+     */
+    @Parameter(property = "outputPath", required = false)
+    private File outputPath;
 
     /**
      * Skips execution of this mojo.
@@ -58,61 +50,45 @@ public final class EmberMojo extends AbstractMojo {
     @Parameter(property = "skip.ember", defaultValue = "false")
     private Boolean skip;
 
+    /**
+     * Skips execution of ember test command
+     */
+    @Parameter(property = "skipTests", defaultValue = "false")
+    private Boolean skipTests;
+
     @Component
     private BuildContext buildContext;
 
+
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
-        if (shouldExecute()) {
-            try {
-                MojoUtils.setSLF4jLogger(getLog());
-                new FrontendPluginFactory(workingDirectory).getEmberRunner().execute(arguments);
-            } catch (TaskRunnerException e) {
-                throw new MojoFailureException("Failed to run task", e);
-            }
-
-            if (outputdir != null) {
-                getLog().info("Refreshing files after ember: " + outputdir);
-                buildContext.refresh(outputdir);
-            }
-        } else {
-            getLog().info("Skipping ember as no modified files in " + srcdir);
-        }
-    }
-
-    private boolean shouldExecute() {
         if (skip) {
-            return false;
+            getLog().info("Skipping ember execution");
+            return;
+        } else if (TEST_COMMAND.equals(command) && skipTests) {
+            getLog().info("Skipping ember test execution");
+            return;
         }
 
-        // If there is no buildContext, or this is not an incremental build, always execute.
-        if (buildContext == null || !buildContext.isIncremental()) {
-            return true;
-        }
-        
-        if (triggerfiles != null) {
-            for (int i = 0; i < triggerfiles.length; i++) {
-                if (buildContext.hasDelta(triggerfiles[i])) {
-                    return true;
-                }
+        try {
+            MojoUtils.setSLF4jLogger(getLog());
+            new FrontendPluginFactory(workingDirectory)
+                    .getEmberRunner()
+                    .execute(getArguments());
+            if (outputPath != null) {
+                buildContext.refresh(outputPath);
             }
-        } else {
-            // Check for changes in the Gruntfile.js
-            if (buildContext.hasDelta(new File(workingDirectory, "Gruntfile.js"))) {
-                return true;
-            }
+        } catch (TaskRunnerException e) {
+            throw new MojoFailureException("Failed to run task", e);
         }
-
-        if (srcdir == null) {
-            getLog().info("ember goal doesn't have srcdir set: not checking for modified files");
-            return true;
-        }
-
-        // Check for changes in the srcdir
-        Scanner scanner = buildContext.newScanner(srcdir);
-        scanner.scan();
-        String[] includedFiles = scanner.getIncludedFiles();
-        return (includedFiles != null && includedFiles.length > 0);
     }
-    
+
+    private String getArguments() {
+        String commandLine = command;
+        if (!isNullOrEmpty(arguments)) {
+            commandLine += " " + arguments;
+        }
+
+        return commandLine;
+    }
 }
