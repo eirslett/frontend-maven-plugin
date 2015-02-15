@@ -1,10 +1,9 @@
-import {
-  square
-} from 'ember-cli-project/helpers/square';
+import { test, module } from 'ember-qunit';
+import { square } from 'ember-cli-project/helpers/square';
 
 module('SquareHelper');
 
-test('should square a number', function() {
+test('should square a number', function(assert) {
   var result = square(3);
-  equal(result, 9);
+  assert.equal(result, 9);
 });
