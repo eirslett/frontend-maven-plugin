@@ -1,6 +1,13 @@
 <?xml version="1.0"?>
 <settings>
-    <!-- Configuration for the maven-invoker-plugin (integration test) -->
+  <mirrors>
+    <mirror>
+      <id>mrm-maven-plugin</id>
+      <name>Mock Repository Manager</name>
+      <url>@repository.proxy.url@</url>
+      <mirrorOf>*</mirrorOf>
+    </mirror>
+  </mirrors>
     <profiles>
         <profile>
             <id>it-repo</id>
@@ -10,7 +17,7 @@
             <repositories>
                 <repository>
                     <id>local.central</id>
-                    <url>@localRepositoryUrl@</url>
+                    <url>@repository.proxy.url@</url>
                     <releases>
                         <enabled>true</enabled>
                     </releases>
@@ -22,7 +29,7 @@
             <pluginRepositories>
                 <pluginRepository>
                     <id>local.central</id>
-                    <url>@localRepositoryUrl@</url>
+                    <url>@repository.proxy.url@</url>
                     <releases>
                         <enabled>true</enabled>
                     </releases>
