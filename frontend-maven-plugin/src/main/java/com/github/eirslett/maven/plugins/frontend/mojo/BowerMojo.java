@@ -36,7 +36,6 @@ public final class BowerMojo extends AbstractMojo {
     public void execute() throws MojoExecutionException, MojoFailureException {
         if(!skip) {
             try {
-                MojoUtils.setSLF4jLogger(getLog());
                 new FrontendPluginFactory(workingDirectory).getBowerRunner().execute(arguments);
             } catch (TaskRunnerException e) {
                 throw new MojoFailureException("Failed to run task", e);

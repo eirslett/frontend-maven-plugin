@@ -75,7 +75,6 @@ public final class InstallNodeAndNpmMojo extends AbstractMojo {
     public void execute() throws MojoExecutionException, MojoFailureException {
         if (!skip) {
             try {
-                MojoUtils.setSLF4jLogger(getLog());
                 ProxyConfig proxyConfig = MojoUtils.getProxyConfig(session, decrypter);
                 String nodeDownloadRoot = getNodeDownloadRoot();
                 String npmDownloadRoot = getNpmDownloadRoot();
