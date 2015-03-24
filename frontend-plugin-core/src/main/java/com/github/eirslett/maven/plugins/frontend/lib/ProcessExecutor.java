@@ -85,12 +85,15 @@ final class ProcessExecutor {
                 }
             }
         }
-        if (pathVarValue == null) {
-            environment.put(pathVarName, workingDirectory + File.separator + "node");
+
+        StringBuilder pathBuilder = new StringBuilder();
+        if (pathVarValue != null) {
+            pathBuilder.append(pathVarValue).append(File.pathSeparator);
         }
-        else {
-            environment.put(pathVarName, workingDirectory + File.separator + "node" + File.pathSeparator + pathVarValue);
-        }
+        pathBuilder.append(workingDirectory + File.separator + "node").append(File.pathSeparator);
+        pathBuilder.append(workingDirectory + File.separator + "node" + File.separator + "npm" + File.separator + "bin");
+        environment.put(pathVarName, pathBuilder.toString());
+
         return pbuilder;
     }
 
