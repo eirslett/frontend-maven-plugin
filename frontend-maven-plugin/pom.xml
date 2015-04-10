@@ -4,18 +4,21 @@
     <parent>
         <artifactId>frontend-plugins</artifactId>
         <groupId>com.github.eirslett</groupId>
-        <version>0.0.22-SNAPSHOT</version>
+        <version>0.0.24-SNAPSHOT</version>
     </parent>
 
     <artifactId>frontend-maven-plugin</artifactId>
     <packaging>maven-plugin</packaging>
 
     <name>Maven Frontend Plugin</name>
+    <prerequisites>
+        <maven>3.1.0</maven>
+    </prerequisites>
 
     <description>
         This Maven plugin lets you install Node/NPM locally
         for your project, install dependencies with NPM,
-        install dependencies with bower, run Grunt or gulp tasks, 
+        install dependencies with bower, run Grunt or gulp tasks,
         and/or run Karma tests.
     </description>
 
@@ -45,12 +48,6 @@
             <version>3.2</version>
         </dependency>
 
-        <dependency>
-            <groupId>com.googlecode.slf4j-maven-plugin-log</groupId>
-            <artifactId>slf4j-maven-plugin-log</artifactId>
-            <version>1.0.0</version>
-        </dependency>
-        
         <dependency>
             <groupId>org.sonatype.plexus</groupId>
             <artifactId>plexus-build-api</artifactId>
@@ -83,6 +80,22 @@
 
             <!-- For the integration test -->
             <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>mrm-maven-plugin</artifactId>
+                <version>1.0-beta-2</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>start</goal>
+                            <goal>stop</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                  <propertyName>repository.proxy.url</propertyName>
+                </configuration>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-invoker-plugin</artifactId>
                 <version>1.8</version>
@@ -93,6 +106,9 @@
                     <settingsFile>src/it/settings.xml</settingsFile>
                     <localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
                     <streamLogs>true</streamLogs>
+                    <filterProperties>
+                        <repository.proxy.url>${repository.proxy.url}</repository.proxy.url>
+                    </filterProperties>
                 </configuration>
 
                 <executions>

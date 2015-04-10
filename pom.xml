@@ -9,7 +9,7 @@
 
     <groupId>com.github.eirslett</groupId>
     <artifactId>frontend-plugins</artifactId>
-    <version>0.0.22-SNAPSHOT</version>
+    <version>0.0.24-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <properties>

@@ -45,13 +45,15 @@ final class DefaultFileDownloader implements FileDownloader {
     }
 
     public void download(String downloadUrl, String destination) throws DownloadException {
+        String fixedDownloadUrl = downloadUrl;
         try {
-            URI downloadURI = new URI(downloadUrl);
+            fixedDownloadUrl = FilenameUtils.separatorsToUnix(fixedDownloadUrl);
+            URI downloadURI = new URI(fixedDownloadUrl);
             if ("file".equalsIgnoreCase(downloadURI.getScheme())) {
                 FileUtils.copyFile(new File(downloadURI), new File(destination));
             }
             else {
-                CloseableHttpResponse response = execute(downloadUrl);
+                CloseableHttpResponse response = execute(fixedDownloadUrl);
                 int statusCode = response.getStatusLine().getStatusCode();
                 if(statusCode != 200){
                     throw new DownloadException("Got error code "+ statusCode +" from the server.");
@@ -63,10 +65,10 @@ final class DefaultFileDownloader implements FileDownloader {
                 fos.close();
             }
         } catch (IOException e) {
-            throw new DownloadException("Could not download "+downloadUrl, e);
+            throw new DownloadException("Could not download "+fixedDownloadUrl, e);
         }
         catch (URISyntaxException e) {
-            throw new DownloadException("Could not download "+downloadUrl, e);
+            throw new DownloadException("Could not download "+fixedDownloadUrl, e);
         }
     }
 

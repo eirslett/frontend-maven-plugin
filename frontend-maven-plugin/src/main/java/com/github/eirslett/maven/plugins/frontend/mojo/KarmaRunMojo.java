@@ -50,7 +50,6 @@ public final class KarmaRunMojo extends AbstractMojo {
     public void execute() throws MojoExecutionException, MojoFailureException {
         if (!skip) {
             try {
-                MojoUtils.setSLF4jLogger(getLog());
                 if (skipTests) {
                     LoggerFactory.getLogger(KarmaRunMojo.class).info("Skipping karma tests.");
                 }

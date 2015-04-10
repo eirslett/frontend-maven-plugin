@@ -6,6 +6,7 @@ import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
@@ -14,6 +15,7 @@ import com.github.eirslett.maven.plugins.frontend.lib.FrontendPluginFactory;
 import com.github.eirslett.maven.plugins.frontend.lib.InstallationException;
 import com.github.eirslett.maven.plugins.frontend.lib.NodeAndNPMInstaller;
 import com.github.eirslett.maven.plugins.frontend.lib.ProxyConfig;
+import org.apache.maven.settings.crypto.SettingsDecrypter;
 
 @Mojo(name="install-node-and-npm", defaultPhase = LifecyclePhase.GENERATE_RESOURCES)
 public final class InstallNodeAndNpmMojo extends AbstractMojo {
@@ -66,12 +68,14 @@ public final class InstallNodeAndNpmMojo extends AbstractMojo {
     @Parameter(property = "skip.installnodenpm", defaultValue = "false")
     private Boolean skip;
 
+    @Component(role = SettingsDecrypter.class)
+    private SettingsDecrypter decrypter;
+
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         if (!skip) {
             try {
-                MojoUtils.setSLF4jLogger(getLog());
-                ProxyConfig proxyConfig = MojoUtils.getProxyConfig(session);
+                ProxyConfig proxyConfig = MojoUtils.getProxyConfig(session, decrypter);
                 String nodeDownloadRoot = getNodeDownloadRoot();
                 String npmDownloadRoot = getNpmDownloadRoot();
                 new FrontendPluginFactory(workingDirectory, proxyConfig).getNodeAndNPMInstaller().install(nodeVersion, npmVersion, nodeDownloadRoot, npmDownloadRoot);

@@ -1,7 +1,7 @@
 package com.github.eirslett.maven.plugins.frontend.mojo;
 
-import java.io.File;
-
+import com.github.eirslett.maven.plugins.frontend.lib.FrontendPluginFactory;
+import com.github.eirslett.maven.plugins.frontend.lib.TaskRunnerException;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -12,11 +12,10 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.codehaus.plexus.util.Scanner;
 import org.sonatype.plexus.build.incremental.BuildContext;
 
-import com.github.eirslett.maven.plugins.frontend.lib.FrontendPluginFactory;
-import com.github.eirslett.maven.plugins.frontend.lib.TaskRunnerException;
+import java.io.File;
 
-@Mojo(name="gulp", defaultPhase = LifecyclePhase.GENERATE_RESOURCES)
-public final class GulpMojo extends AbstractMojo {
+@Mojo(name="ember", defaultPhase = LifecyclePhase.GENERATE_RESOURCES)
+public final class EmberMojo extends AbstractMojo {
 
     /**
      * The base directory for running all Node commands. (Usually the directory that contains package.json)
@@ -25,28 +24,28 @@ public final class GulpMojo extends AbstractMojo {
     private File workingDirectory;
 
     /**
-     * Gulp arguments. Default is empty (runs just the "gulp" command).
+     * Grunt arguments. Default is empty (runs just the "grunt" command).
      */
-    @Parameter(property = "frontend.gulp.arguments")
+    @Parameter(property = "frontend.ember.arguments")
     private String arguments;
 
     /**
      * Files that should be checked for changes, in addition to the srcdir files.
-     * Defaults to gulpfile.js in the {@link #workingDirectory}.
+     * {@link #workingDirectory}.
      */
     @Parameter(property = "triggerfiles")
     private File[] triggerfiles;
 
     /**
-     * The directory containing front end files that will be processed by gulp.
+     * The directory containing front end files that will be processed by grunt.
      * If this is set then files in the directory will be checked for
-     * modifications before running gulp.
+     * modifications before running grunt.
      */
     @Parameter(property = "srcdir")
     private File srcdir;
 
     /**
-     * The directory where front end files will be output by gulp. If this is
+     * The directory where front end files will be output by grunt. If this is
      * set then they will be refreshed so they correctly show as modified in
      * Eclipse.
      */
@@ -56,7 +55,7 @@ public final class GulpMojo extends AbstractMojo {
     /**
      * Skips execution of this mojo.
      */
-    @Parameter(property = "skip.gulp", defaultValue = "false")
+    @Parameter(property = "skip.ember", defaultValue = "false")
     private Boolean skip;
 
     @Component
@@ -66,17 +65,17 @@ public final class GulpMojo extends AbstractMojo {
     public void execute() throws MojoExecutionException, MojoFailureException {
         if (shouldExecute()) {
             try {
-                new FrontendPluginFactory(workingDirectory).getGulpRunner().execute(arguments);
+                new FrontendPluginFactory(workingDirectory).getEmberRunner().execute(arguments);
             } catch (TaskRunnerException e) {
                 throw new MojoFailureException("Failed to run task", e);
             }
 
             if (outputdir != null) {
-                getLog().info("Refreshing files after gulp: " + outputdir);
+                getLog().info("Refreshing files after ember: " + outputdir);
                 buildContext.refresh(outputdir);
             }
         } else {
-            getLog().info("Skipping gulp as no modified files in " + srcdir);
+            getLog().info("Skipping ember as no modified files in " + srcdir);
         }
     }
 
@@ -97,14 +96,14 @@ public final class GulpMojo extends AbstractMojo {
                 }
             }
         } else {
-            // Check for changes in the gulpfile.js
-            if (buildContext.hasDelta(new File(workingDirectory, "gulpfile.js"))) {
+            // Check for changes in the Gruntfile.js
+            if (buildContext.hasDelta(new File(workingDirectory, "Gruntfile.js"))) {
                 return true;
             }
         }
 
         if (srcdir == null) {
-            getLog().info("gulp goal doesn't have srcdir set: not checking for modified files");
+            getLog().info("ember goal doesn't have srcdir set: not checking for modified files");
             return true;
         }
 

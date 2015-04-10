@@ -29,14 +29,14 @@ public final class GruntMojo extends AbstractMojo {
      */
     @Parameter(property = "frontend.grunt.arguments")
     private String arguments;
-    
+
     /**
      * Files that should be checked for changes, in addition to the srcdir files.
      * Defaults to Gruntfile.js in the {@link #workingDirectory}.
      */
     @Parameter(property = "triggerfiles")
     private File[] triggerfiles;
-    
+
     /**
      * The directory containing front end files that will be processed by grunt.
      * If this is set then files in the directory will be checked for
@@ -66,7 +66,6 @@ public final class GruntMojo extends AbstractMojo {
     public void execute() throws MojoExecutionException, MojoFailureException {
         if (shouldExecute()) {
             try {
-                MojoUtils.setSLF4jLogger(getLog());
                 new FrontendPluginFactory(workingDirectory).getGruntRunner().execute(arguments);
             } catch (TaskRunnerException e) {
                 throw new MojoFailureException("Failed to run task", e);
@@ -90,7 +89,7 @@ public final class GruntMojo extends AbstractMojo {
         if (buildContext == null || !buildContext.isIncremental()) {
             return true;
         }
-        
+
         if (triggerfiles != null) {
             for (int i = 0; i < triggerfiles.length; i++) {
                 if (buildContext.hasDelta(triggerfiles[i])) {
@@ -115,5 +114,5 @@ public final class GruntMojo extends AbstractMojo {
         String[] includedFiles = scanner.getIncludedFiles();
         return (includedFiles != null && includedFiles.length > 0);
     }
-    
+
 }

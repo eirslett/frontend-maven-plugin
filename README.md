@@ -31,7 +31,7 @@ Include the plugin as a dependency in your Maven project.
     <plugin>
         <groupId>com.github.eirslett</groupId>
         <artifactId>frontend-maven-plugin</artifactId>
-        <version>0.0.20</version>
+        <version>0.0.23</version>
         ...
     </plugin>
 ...
@@ -81,6 +81,20 @@ Node/npm will only be "installed" locally to your project. It will not be instal
     </configuration>
 </execution>
 ```
+
+You can also specify seperate download roots for npm and node as they are now stored in seperate repos.
+```xml
+<execution>
+    ...
+    <configuration>
+        <nodeVersion>v0.12.1</nodeVersion>
+        <npmVersion>2.7.1</npmVersion>
+        <nodeDownloadRoot>http://artifactory/nodejs/</nodeDownloadRoot>
+        <npmDownloadRoot>http://artifactory/npm/-/</npmDownloadRoot>
+    </configuration>
+</execution>
+```
+
 __Proxy settings:__ If you need to download Node/npm through a proxy: [configure your Maven proxy settings](http://maven.apache.org/guides/mini/guide-proxies.html) in ~/.m2/settings.xml. This plugin will use the same proxy settings as Maven.
 
 
