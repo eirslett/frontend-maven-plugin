@@ -216,6 +216,24 @@ code coverage reports.
 __Running Karma through Grunt or gulp:__ You may choose to run Karma [directly through Grunt](https://github.com/karma-runner/grunt-karma) or [through gulp](https://github.com/karma-runner/gulp-karma) instead,
 as part of the `grunt` or `gulp` execution. That will help to separate your frontend and backend builds even more.
 
+### Running Webpack
+```xml
+<execution>
+    <id>webpack build</id>
+    <goals>
+        <goal>webpack</goal>
+    </goals>
+
+    <!-- optional: the default phase is "generate-resources" -->
+    <phase>generate-resources</phase>
+
+    <configuration>
+        <!-- optional: if not specified, it will run webpack's default
+        build (and you can remove this whole <configuration> section.) -->
+        <arguments>-p</arguments>
+    </configuration>
+</execution>
+```
 
 # Eclipse M2E support
 
