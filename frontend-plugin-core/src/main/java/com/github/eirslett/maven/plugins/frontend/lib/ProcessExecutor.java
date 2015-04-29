@@ -87,11 +87,12 @@ final class ProcessExecutor {
         }
 
         StringBuilder pathBuilder = new StringBuilder();
-        if (pathVarValue != null) {
-            pathBuilder.append(pathVarValue).append(File.pathSeparator);
-        }
+
         pathBuilder.append(workingDirectory + File.separator + "node").append(File.pathSeparator);
         pathBuilder.append(workingDirectory + File.separator + "node" + File.separator + "npm" + File.separator + "bin");
+        if (pathVarValue != null) {
+            pathBuilder.append(File.pathSeparator).append(pathVarValue);
+        }
         environment.put(pathVarName, pathBuilder.toString());
 
         return pbuilder;
