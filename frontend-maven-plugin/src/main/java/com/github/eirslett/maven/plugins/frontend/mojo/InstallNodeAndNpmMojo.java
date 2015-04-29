@@ -68,6 +68,12 @@ public final class InstallNodeAndNpmMojo extends AbstractMojo {
     @Parameter(property = "skip.installnodenpm", defaultValue = "false")
     private Boolean skip;
 
+    /**
+     * If true, will replace the standard npm helper script with one that matches the directory structure of the node+npm installation.
+     */
+    @Parameter(property = "withNpmHelperScripts", required = false, defaultValue = "false")
+    private boolean withNpmHelperScripts;
+
     @Component(role = SettingsDecrypter.class)
     private SettingsDecrypter decrypter;
 
@@ -78,7 +84,7 @@ public final class InstallNodeAndNpmMojo extends AbstractMojo {
                 ProxyConfig proxyConfig = MojoUtils.getProxyConfig(session, decrypter);
                 String nodeDownloadRoot = getNodeDownloadRoot();
                 String npmDownloadRoot = getNpmDownloadRoot();
-                new FrontendPluginFactory(workingDirectory, proxyConfig).getNodeAndNPMInstaller().install(nodeVersion, npmVersion, nodeDownloadRoot, npmDownloadRoot);
+                new FrontendPluginFactory(workingDirectory, proxyConfig).getNodeAndNPMInstaller().install(nodeVersion, npmVersion, nodeDownloadRoot, npmDownloadRoot, withNpmHelperScripts);
             } catch (InstallationException e) {
                 throw MojoUtils.toMojoFailureException(e);
             }

@@ -1,6 +1,9 @@
 package com.github.eirslett.maven.plugins.frontend.lib;
 
 import java.io.*;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
 
@@ -9,15 +12,13 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static com.github.eirslett.maven.plugins.frontend.lib.Utils.normalize;
-
 public interface NodeAndNPMInstaller {
 
     String DEFAULT_NODEJS_DOWNLOAD_ROOT = "http://nodejs.org/dist/";
     String DEFAULT_NPM_DOWNLOAD_ROOT = "http://registry.npmjs.org/npm/-/";
 
-    void install(String nodeVersion, String npmVersion) throws InstallationException;
-    void install(String nodeVersion, String npmVersion, String nodeDownloadRoot, String npmDownloadRoot) throws InstallationException;
+    void install(String nodeVersion, String npmVersion, boolean withNpmHelperScript) throws InstallationException;
+    void install(String nodeVersion, String npmVersion, String nodeDownloadRoot, String npmDownloadRoot, boolean withNpmHelperScripts) throws InstallationException;
 }
 
 final class DefaultNodeAndNPMInstaller implements NodeAndNPMInstaller {
@@ -37,19 +38,19 @@ final class DefaultNodeAndNPMInstaller implements NodeAndNPMInstaller {
     }
 
     @Override
-    public void install(String nodeVersion, String npmVersion) throws InstallationException {
-        install(nodeVersion, npmVersion, null, null);
+    public void install(String nodeVersion, String npmVersion, boolean withNpmHelperScript) throws InstallationException {
+        install(nodeVersion, npmVersion, null, null, withNpmHelperScript);
     }
 
     @Override
-    public void install(String nodeVersion, String npmVersion, String nodeDownloadRoot, String npmDownloadRoot) throws InstallationException {
+    public void install(String nodeVersion, String npmVersion, String nodeDownloadRoot, String npmDownloadRoot, boolean withNpmHelperScripts) throws InstallationException {
         if(nodeDownloadRoot == null || nodeDownloadRoot.isEmpty()){
             nodeDownloadRoot = DEFAULT_NODEJS_DOWNLOAD_ROOT;
         }
         if(npmDownloadRoot == null || npmDownloadRoot.isEmpty()){
             npmDownloadRoot = DEFAULT_NPM_DOWNLOAD_ROOT;
         }
-        new NodeAndNPMInstallAction(nodeVersion, npmVersion, nodeDownloadRoot, npmDownloadRoot).install();
+        new NodeAndNPMInstallAction(nodeVersion, npmVersion, nodeDownloadRoot, npmDownloadRoot, withNpmHelperScripts).install();
     }
 
     private final class NodeAndNPMInstallAction {
@@ -59,12 +60,14 @@ final class DefaultNodeAndNPMInstaller implements NodeAndNPMInstaller {
         private final String npmVersion;
         private final String nodeDownloadRoot;
         private final String npmDownloadRoot;
+        private final boolean withNpmHelperScripts;
 
-        public NodeAndNPMInstallAction(String nodeVersion, String npmVersion, String nodeDownloadRoot, String npmDownloadRoot) {
+        public NodeAndNPMInstallAction(String nodeVersion, String npmVersion, String nodeDownloadRoot, String npmDownloadRoot, boolean withNpmHelperScripts) {
             this.nodeVersion = nodeVersion;
             this.npmVersion = npmVersion;
             this.nodeDownloadRoot = nodeDownloadRoot;
             this.npmDownloadRoot = npmDownloadRoot;
+            this.withNpmHelperScripts = withNpmHelperScripts;
         }
 
         public void install() throws InstallationException {
@@ -77,6 +80,9 @@ final class DefaultNodeAndNPMInstaller implements NodeAndNPMInstaller {
             }
             if(!npmIsAlreadyInstalled()) {
                 installNpm();
+            }
+            if(withNpmHelperScripts) {
+                installNpmHelperScripts();
             }
         }
 
@@ -250,6 +256,32 @@ final class DefaultNodeAndNPMInstaller implements NodeAndNPMInstaller {
 
         private void downloadFile(String downloadUrl, String destination) throws DownloadException {
             fileDownloader.download(downloadUrl, destination);
+        }
+
+        /**
+         * By default the npm helper script is located under the node/npm/bin directory. This script
+         * cannot be used as-is because it does not match the directory structure used by the frontend-maven-plugin.
+         * This method removes the old script, and installs a new one at the root of the project.
+         * See also: https://github.com/eirslett/frontend-maven-plugin/issues/204
+         */
+        private void installNpmHelperScripts() throws InstallationException {
+            try {
+                logger.info("Installing npm helper scripts");
+                URL u1 = getClass().getResource("/com/github/eirslett/maven/plugins/frontend/helper-scripts/npm.cmd");
+                URL u2 = getClass().getResource("/com/github/eirslett/maven/plugins/frontend/helper-scripts/npm");
+                File f1 = new File(workingDirectory, "npm.cmd");
+                File f2 = new File(workingDirectory, "npm");
+                FileUtils.copyURLToFile(u1, f1);
+                FileUtils.copyURLToFile(u2, f2);
+                logger.info("Installed npm helper scripts locally.");
+
+                logger.info("Removing npm standard helper scripts");
+                Files.deleteIfExists(Paths.get(workingDirectory.getAbsolutePath(), new String[]{"node", "npm", "bin", "npm.cmd"}));
+                Files.deleteIfExists(Paths.get(workingDirectory.getAbsolutePath(), new String[]{"node", "npm", "bin", "npm"}));
+                logger.info("Removed npm standard helper scripts.");
+            } catch (IOException e) {
+                throw new InstallationException("Could not install the npm helper scripts", e);
+            }
         }
     }
 }
