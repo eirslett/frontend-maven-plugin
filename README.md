@@ -78,6 +78,8 @@ Node/npm will only be "installed" locally to your project. It will not be instal
         <npmVersion>1.3.8</npmVersion>
         <!-- optional: where to download node and npm from. Defaults to http://nodejs.org/dist/ -->
         <downloadRoot>http://myproxy.example.org/nodejs/dist/</downloadRoot>
+	<!-- optional: install npm helper scripts that match the directory structure -->
+	<withNpmHelperScripts>true</withNpmHelperScripts>
     </configuration>
 </execution>
 ```
