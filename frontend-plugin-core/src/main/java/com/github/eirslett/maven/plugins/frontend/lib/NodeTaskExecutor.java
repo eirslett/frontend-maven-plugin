@@ -1,5 +1,6 @@
 package com.github.eirslett.maven.plugins.frontend.lib;
 
+import org.codehaus.plexus.util.cli.CommandLineUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,7 +14,7 @@ import static com.github.eirslett.maven.plugins.frontend.lib.Utils.*;
 abstract class NodeTaskExecutor {
     private static final String DS = "//";
     private static final String AT = "@";
-    
+
     private final Logger logger;
     private final String taskName;
     private final String taskLocation;
@@ -45,18 +46,19 @@ abstract class NodeTaskExecutor {
         }
     }
 
-    private List<String> getArguments(String args) {
-        List<String> arguments = new ArrayList<String>();
-        if (args != null && !args.equals("null") && !args.isEmpty()) {
-            arguments.addAll(Arrays.asList(args.split("\\s+")));
-        }
-
-        for (String argument : additionalArguments) {
-            if (!arguments.contains(argument)) {
-                arguments.add(argument);
+    private List<String> getArguments(String args) throws TaskRunnerException {
+        try {
+            List<String> arguments = new ArrayList<String>(Arrays.asList(CommandLineUtils.translateCommandline(args)));
+            for(String argument: additionalArguments){
+                if(!arguments.contains(argument)){
+                    arguments.add(argument);
+                }
             }
+            return arguments;
         }
-        return arguments;
+        catch (Exception e) {
+            throw new TaskRunnerException("bad command args", e);
+        }
     }
 
     private static String taskToString(String taskName, List<String> arguments) {
