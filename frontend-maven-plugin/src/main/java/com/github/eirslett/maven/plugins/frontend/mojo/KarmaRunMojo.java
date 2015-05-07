@@ -13,7 +13,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.slf4j.LoggerFactory;
 
 
-@Mojo(name="karma",  defaultPhase = LifecyclePhase.TEST)
+@Mojo(name="karma",  defaultPhase = LifecyclePhase.PROCESS_TEST_CLASSES)
 public final class KarmaRunMojo extends AbstractMojo {
 
     /**
