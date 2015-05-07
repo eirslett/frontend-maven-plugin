@@ -37,7 +37,7 @@ public final class KarmaRunMojo extends AbstractMojo {
     /**
      * Whether you should continue build when some test will fail (default is false)
      */
-    @Parameter(property = "testFailureIgnore", required = false, defaultValue = "false")
+    @Parameter(property = "maven.test.failure.ignore", required = false, defaultValue = "false")
     private Boolean testFailureIgnore;
 
     /**
