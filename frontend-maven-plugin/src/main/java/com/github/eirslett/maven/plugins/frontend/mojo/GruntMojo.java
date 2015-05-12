@@ -61,7 +61,7 @@ public final class GruntMojo extends AbstractFrontendMojo {
     @Override
     public void execute(FrontendPluginFactory factory) throws TaskRunnerException {
         if (shouldExecute()) {
-            factory.getGruntRunner().execute(arguments);
+            factory.getGruntRunner().execute(arguments, environmentVariables);
 
             if (outputdir != null) {
                 getLog().info("Refreshing files after grunt: " + outputdir);
