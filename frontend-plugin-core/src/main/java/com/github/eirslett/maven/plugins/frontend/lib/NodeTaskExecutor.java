@@ -12,6 +12,7 @@ import java.util.List;
 import static com.github.eirslett.maven.plugins.frontend.lib.Utils.implode;
 import static com.github.eirslett.maven.plugins.frontend.lib.Utils.normalize;
 import static com.github.eirslett.maven.plugins.frontend.lib.Utils.prepend;
+import java.util.Map;
 
 abstract class NodeTaskExecutor {
     private static final String DS = "//";
@@ -48,13 +49,13 @@ abstract class NodeTaskExecutor {
     }
 
 
-    public final void execute(String args) throws TaskRunnerException {
+    public final void execute(String args, Map<String, String> environment) throws TaskRunnerException {
         final String absoluteTaskLocation = getAbsoluteTaskLocation();
         final List<String> arguments = getArguments(args);
         logger.info("Running " + taskToString(taskName, arguments) + " in " + config.getWorkingDirectory());
 
         try {
-            final int result = new NodeExecutor(config, prepend(absoluteTaskLocation, arguments)).executeAndRedirectOutput(logger);
+            final int result = new NodeExecutor(config, prepend(absoluteTaskLocation, arguments), environment).executeAndRedirectOutput(logger);
             if (result != 0) {
                 throw new TaskRunnerException(taskToString(taskName, arguments) + " failed. (error code " + result + ")");
             }

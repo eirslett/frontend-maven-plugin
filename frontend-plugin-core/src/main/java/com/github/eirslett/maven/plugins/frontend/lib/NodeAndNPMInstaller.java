@@ -77,7 +77,7 @@ final class DefaultNodeAndNPMInstaller implements NodeAndNPMInstaller {
                 NodeExecutorConfig executorConfig = new InstallNodeExecutorConfig(config);
                 File nodeFile = executorConfig.getNodePath();
                 if(nodeFile.exists()){
-                    final String version = new NodeExecutor(executorConfig, Arrays.asList("--version")).executeAndGetResult();
+                    final String version = new NodeExecutor(executorConfig, Arrays.asList("--version"), null).executeAndGetResult();
 
                     if(version.equals(nodeVersion)){
                         logger.info("Node " + version + " is already installed.");

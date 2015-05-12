@@ -4,11 +4,12 @@ import org.slf4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 final class NodeExecutor {
     private final ProcessExecutor executor;
 
-    public NodeExecutor(NodeExecutorConfig config, List<String> arguments){
+    public NodeExecutor(NodeExecutorConfig config, List<String> arguments, Map<String, String> additionalEnvironment){
         final String node = config.getNodePath().getAbsolutePath();
         List<String> localPaths = new ArrayList<String>();
         localPaths.add(config.getNodePath().getParent());
@@ -17,7 +18,7 @@ final class NodeExecutor {
             localPaths,
             Utils.prepend(node, arguments),
             config.getPlatform(),
-            null);
+            additionalEnvironment);
     }
 
     public String executeAndGetResult() throws ProcessExecutionException {
