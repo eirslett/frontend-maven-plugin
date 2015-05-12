@@ -16,7 +16,8 @@ final class NodeExecutor {
             config.getWorkingDirectory(),
             localPaths,
             Utils.prepend(node, arguments),
-            config.getPlatform());
+            config.getPlatform(),
+            null);
     }
 
     public String executeAndGetResult() throws ProcessExecutionException {
