@@ -47,7 +47,7 @@ public final class NpmMojo extends AbstractFrontendMojo {
         File packageJson = new File(workingDirectory, "package.json");
         if (buildContext == null || buildContext.hasDelta(packageJson) || !buildContext.isIncremental()) {
             ProxyConfig proxyConfig = MojoUtils.getProxyConfig(session, decrypter);
-            factory.getNpmRunner(proxyConfig).execute(arguments);
+            factory.getNpmRunner(proxyConfig).execute(arguments, environmentVariables);
         } else {
             getLog().info("Skipping npm install as package.json unchanged");
         }

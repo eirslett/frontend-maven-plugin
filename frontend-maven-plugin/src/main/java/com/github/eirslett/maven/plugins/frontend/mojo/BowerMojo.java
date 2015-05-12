@@ -28,6 +28,6 @@ public final class BowerMojo extends AbstractFrontendMojo {
 
     @Override
     protected void execute(FrontendPluginFactory factory) throws TaskRunnerException {
-        factory.getBowerRunner().execute(arguments);
+        factory.getBowerRunner().execute(arguments, environmentVariables);
     }
 }
