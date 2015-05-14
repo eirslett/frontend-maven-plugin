@@ -167,13 +167,18 @@ final class DefaultNodeAndNPMInstaller implements NodeAndNPMInstaller {
                 // see https://github.com/eirslett/frontend-maven-plugin/issues/65#issuecomment-52024254
                 File packageDirectory = new File(workingDirectory, "./node/package");
                 if (packageDirectory.exists() && !npmDirectory.exists()) {
-                    packageDirectory.renameTo(npmDirectory);
+                    if (! packageDirectory.renameTo(npmDirectory)) {
+                        logger.warn("Cannot rename NPM directory, making a copy.");
+                        FileUtils.copyDirectory(packageDirectory, npmDirectory);
+                    }
                 }
                 logger.info("Installed NPM locally.");
             } catch (DownloadException e) {
                 throw new InstallationException("Could not download npm", e);
             } catch (ArchiveExtractionException e) {
                 throw new InstallationException("Could not extract the npm archive", e);
+            } catch (IOException e) {
+                throw new InstallationException("Could not copy npm", e);
             }
         }
 
