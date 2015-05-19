@@ -27,6 +27,12 @@ public final class InstallNodeAndNpmMojo extends AbstractFrontendMojo {
     private String npmDownloadRoot;
 
     /**
+     * Registry override, passed as the registry option during npm install if set.
+     */
+    @Parameter(property = "npmRegistryURL", required = false, defaultValue = "")
+    private String npmRegistryURL;
+
+    /**
      * Where to download Node.js and NPM binaries from.
      *
      * @deprecated use {@link #nodeDownloadRoot} and {@link #npmDownloadRoot} instead, this configuration will be used only when no {@link #nodeDownloadRoot} or {@link #npmDownloadRoot} is specified.
