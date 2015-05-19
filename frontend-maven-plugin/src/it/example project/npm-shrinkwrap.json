@@ -338,7 +338,7 @@
                   "from": "deep-equal@*"
                 },
                 "i": {
-                  "version": "0.3.2",
+                  "version": "0.3.3",
                   "from": "i@0.3.x"
                 },
                 "mkdirp": {
