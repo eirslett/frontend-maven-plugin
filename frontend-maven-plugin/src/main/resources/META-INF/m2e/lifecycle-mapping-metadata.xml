@@ -22,6 +22,7 @@
                     <goal>grunt</goal>
                     <goal>bower</goal>
                     <goal>ember</goal>
+                    <goal>webpack</goal>
                 </goals>
             </pluginExecutionFilter>
             <action>

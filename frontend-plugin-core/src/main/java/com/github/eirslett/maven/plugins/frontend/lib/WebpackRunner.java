@@ -1,6 +1,6 @@
 package com.github.eirslett.maven.plugins.frontend.lib;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 
 public interface WebpackRunner {
     void execute(String args) throws TaskRunnerException;
@@ -11,6 +11,6 @@ final class DefaultWebpackRunner extends NodeTaskExecutor implements WebpackRunn
     private static final String TASK_LOCATION = "node_modules/webpack/bin/webpack.js";
 
     DefaultWebpackRunner(NodeExecutorConfig config) {
-        super(config, TASK_LOCATION, Arrays.asList("--no-color"));
+        super(config, TASK_LOCATION, new ArrayList<String>());
     }
 }
