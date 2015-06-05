@@ -25,7 +25,11 @@ public final class FrontendPluginFactory {
     
     public BowerRunner getBowerRunner() {
         return new DefaultBowerRunner(defaultPlatform, workingDirectory);
-    }    
+    }
+
+    public JspmRunner getJspmRunner() {
+        return new DefaultJspmRunner(defaultPlatform, workingDirectory);
+    }
 
     public NpmRunner getNpmRunner() {
         return new DefaultNpmRunner(defaultPlatform, workingDirectory, proxy);
