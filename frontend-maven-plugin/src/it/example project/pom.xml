@@ -55,7 +55,7 @@
                             <goal>jspm</goal>
                         </goals>
                         <configuration>
-                            <arguments>install</arguments>
+                            <arguments>--version</arguments>
                         </configuration>
                     </execution>
 
