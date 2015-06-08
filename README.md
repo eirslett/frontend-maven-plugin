@@ -140,6 +140,25 @@ All bower dependencies will be installed in the `bower_components` folder in you
 </execution>   
 ```
 
+### Running jspm
+All jspm dependencies will be installed in the `jspm_packages` folder in your working directory.
+```xml
+<execution>
+    <id>jspm install</id>
+    <goals>
+        <goal>jspm</goal>
+    </goals>
+    
+    <configuration>
+	    <!-- optional: The default argument is actually
+	    "install", so unless you need to run some other jspm command,
+	    you can remove this whole <configuration> section.
+	    -->
+        <arguments>install</arguments>
+    </configuration>
+</execution>   
+```
+
 ### Running Grunt
 It will run Grunt according to the `Gruntfile.js` in your working directory.
 By default, no colors will be shown in the log.
