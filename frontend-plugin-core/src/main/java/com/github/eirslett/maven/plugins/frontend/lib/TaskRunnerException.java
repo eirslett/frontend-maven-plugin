@@ -1,6 +1,6 @@
 package com.github.eirslett.maven.plugins.frontend.lib;
 
-public class TaskRunnerException extends Exception {
+public class TaskRunnerException extends FrontendException {
     TaskRunnerException(String message) {
         super(message);
     }

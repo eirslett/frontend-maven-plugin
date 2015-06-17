@@ -1,15 +1,9 @@
 package com.github.eirslett.maven.plugins.frontend.mojo;
 
-import java.io.File;
-
 import com.github.eirslett.maven.plugins.frontend.lib.FrontendPluginFactory;
 import com.github.eirslett.maven.plugins.frontend.lib.ProxyConfig;
 import com.github.eirslett.maven.plugins.frontend.lib.TaskRunnerException;
-
 import org.apache.maven.execution.MavenSession;
-import org.apache.maven.plugin.AbstractMojo;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -17,14 +11,10 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.settings.crypto.SettingsDecrypter;
 import org.sonatype.plexus.build.incremental.BuildContext;
 
-@Mojo(name="npm",  defaultPhase = LifecyclePhase.GENERATE_RESOURCES)
-public final class NpmMojo extends AbstractMojo {
+import java.io.File;
 
-    /**
-     * The base directory for running all Node commands. (Usually the directory that contains package.json)
-     */
-    @Parameter(defaultValue = "${basedir}", property = "workingDirectory", required = false)
-    private File workingDirectory;
+@Mojo(name="npm",  defaultPhase = LifecyclePhase.GENERATE_RESOURCES)
+public final class NpmMojo extends AbstractFrontendMojo {
 
     /**
      * npm arguments. Default is "install".
@@ -48,22 +38,18 @@ public final class NpmMojo extends AbstractMojo {
     private Boolean skip;
 
     @Override
-    public void execute() throws MojoExecutionException, MojoFailureException {
-        if (!skip) {
-            File packageJson = new File(workingDirectory, "package.json");
-            if (buildContext == null || buildContext.hasDelta(packageJson) || !buildContext
-                    .isIncremental()) {
-                try {
-                    ProxyConfig proxyConfig = MojoUtils.getProxyConfig(session, decrypter);
-                    new FrontendPluginFactory(workingDirectory, proxyConfig).getNpmRunner()
-                            .execute(arguments);
-                }
-                catch (TaskRunnerException e) {
-                    throw new MojoFailureException("Failed to run task", e);
-                }
-            } else {
-                getLog().info("Skipping npm install as package.json unchanged");
-            }
+    protected boolean isSkipped() {
+        return this.skip;
+    }
+
+    @Override
+    public void execute(FrontendPluginFactory factory) throws TaskRunnerException {
+        File packageJson = new File(workingDirectory, "package.json");
+        if (buildContext == null || buildContext.hasDelta(packageJson) || !buildContext.isIncremental()) {
+            ProxyConfig proxyConfig = MojoUtils.getProxyConfig(session, decrypter);
+            factory.getNpmRunner(proxyConfig).execute(arguments);
+        } else {
+            getLog().info("Skipping npm install as package.json unchanged");
         }
     }
 }

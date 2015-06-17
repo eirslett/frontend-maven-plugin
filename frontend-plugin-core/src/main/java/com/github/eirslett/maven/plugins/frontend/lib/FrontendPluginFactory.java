@@ -4,54 +4,55 @@ import java.io.File;
 
 public final class FrontendPluginFactory {
     private static final Platform defaultPlatform = Platform.guess();
+
     private final File workingDirectory;
-    private final ProxyConfig proxy;
+    private final File installDirectory;
 
-    public FrontendPluginFactory(File workingDirectory){
-        this(workingDirectory, null);
-    }
-    public FrontendPluginFactory(File workingDirectory, ProxyConfig proxy){
+    public FrontendPluginFactory(File workingDirectory, File installDirectory){
         this.workingDirectory = workingDirectory;
-        this.proxy = proxy;
+        this.installDirectory = installDirectory;
     }
 
-    public NodeAndNPMInstaller getNodeAndNPMInstaller(){
+    public NodeAndNPMInstaller getNodeAndNPMInstaller(ProxyConfig proxy){
         return new DefaultNodeAndNPMInstaller(
-                workingDirectory,
-                defaultPlatform,
+                getInstallConfig(),
                 new DefaultArchiveExtractor(),
                 new DefaultFileDownloader(proxy));
     }
     
     public BowerRunner getBowerRunner() {
-        return new DefaultBowerRunner(defaultPlatform, workingDirectory);
-    }
+        return new DefaultBowerRunner(getExecutorConfig());
+    }    
 
-    public JspmRunner getJspmRunner() {
-        return new DefaultJspmRunner(defaultPlatform, workingDirectory);
-    }
-
-    public NpmRunner getNpmRunner() {
-        return new DefaultNpmRunner(defaultPlatform, workingDirectory, proxy);
+    public NpmRunner getNpmRunner(ProxyConfig proxy) {
+        return new DefaultNpmRunner(getExecutorConfig(), proxy);
     }
 
     public GruntRunner getGruntRunner(){
-        return new DefaultGruntRunner(defaultPlatform, workingDirectory);
+        return new DefaultGruntRunner(getExecutorConfig());
     }
 
     public EmberRunner getEmberRunner() {
-        return new DefaultEmberRunner(defaultPlatform, workingDirectory);
+        return new DefaultEmberRunner(getExecutorConfig());
     }
 
     public KarmaRunner getKarmaRunner(){
-        return new DefaultKarmaRunner(defaultPlatform, workingDirectory);
+        return new DefaultKarmaRunner(getExecutorConfig());
     }
 
     public GulpRunner getGulpRunner(){
-        return new DefaultGulpRunner(defaultPlatform, workingDirectory);
+        return new DefaultGulpRunner(getExecutorConfig());
     }
 
     public WebpackRunner getWebpackRunner(){
-        return new DefaultWebpackRunner(defaultPlatform, workingDirectory);
+        return new DefaultWebpackRunner(getExecutorConfig());
+    }
+
+    private NodeExecutorConfig getExecutorConfig() {
+        return new InstallNodeExecutorConfig(getInstallConfig());
+    }
+
+    private InstallConfig getInstallConfig() {
+        return new DefaultInstallConfig(installDirectory, workingDirectory, defaultPlatform);
     }
 }

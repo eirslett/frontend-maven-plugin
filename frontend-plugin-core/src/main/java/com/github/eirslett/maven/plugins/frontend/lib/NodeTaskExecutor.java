@@ -6,9 +6,12 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
-import static com.github.eirslett.maven.plugins.frontend.lib.Utils.*;
+import static com.github.eirslett.maven.plugins.frontend.lib.Utils.implode;
+import static com.github.eirslett.maven.plugins.frontend.lib.Utils.normalize;
+import static com.github.eirslett.maven.plugins.frontend.lib.Utils.prepend;
 
 abstract class NodeTaskExecutor {
     private static final String DS = "//";
@@ -17,26 +20,41 @@ abstract class NodeTaskExecutor {
     private final Logger logger;
     private final String taskName;
     private final String taskLocation;
-    private final Platform platform;
-    private final File workingDirectory;
     private final List<String> additionalArguments;
+    private final NodeExecutorConfig config;
 
-    public NodeTaskExecutor(String taskName, String taskLocation, File workingDirectory, Platform platform, List<String> additionalArguments) {
+    public NodeTaskExecutor(NodeExecutorConfig config, String taskLocation) {
+        this(config, taskLocation, Collections.<String>emptyList());
+    }
+
+    public NodeTaskExecutor(NodeExecutorConfig config, String taskName, String taskLocation) {
+        this(config, taskName, taskLocation, Collections.<String>emptyList());
+    }
+
+    public NodeTaskExecutor(NodeExecutorConfig config, String taskLocation, List<String> additionalArguments) {
+        this(config, getTaskNameFromLocation(taskLocation), taskLocation, additionalArguments);
+    }
+
+    public NodeTaskExecutor(NodeExecutorConfig config, String taskName, String taskLocation, List<String> additionalArguments) {
         this.logger = LoggerFactory.getLogger(getClass());
+        this.config = config;
         this.taskName = taskName;
         this.taskLocation = taskLocation;
-        this.platform = platform;
-        this.workingDirectory = workingDirectory;
         this.additionalArguments = additionalArguments;
     }
 
+    private static String getTaskNameFromLocation(String taskLocation) {
+        return taskLocation.replaceAll("^.*/([^/]+)(?:\\.js)?$","$1");
+    }
+
+
     public final void execute(String args) throws TaskRunnerException {
-        final String absoluteTaskLocation = workingDirectory + normalize(taskLocation);
+        final String absoluteTaskLocation = getAbsoluteTaskLocation();
         final List<String> arguments = getArguments(args);
-        logger.info("Running " + taskToString(taskName, arguments) + " in " + workingDirectory);
+        logger.info("Running " + taskToString(taskName, arguments) + " in " + config.getWorkingDirectory());
 
         try {
-            final int result = new NodeExecutor(workingDirectory, prepend(absoluteTaskLocation, arguments), platform).executeAndRedirectOutput(logger);
+            final int result = new NodeExecutor(config, prepend(absoluteTaskLocation, arguments)).executeAndRedirectOutput(logger);
             if (result != 0) {
                 throw new TaskRunnerException(taskToString(taskName, arguments) + " failed. (error code " + result + ")");
             }
@@ -44,6 +62,16 @@ abstract class NodeTaskExecutor {
             throw new TaskRunnerException(taskToString(taskName, arguments) + " failed.", e);
         }
     }
+
+    private String getAbsoluteTaskLocation() {
+        String location = normalize(taskLocation);
+        if (Utils.isRelative(taskLocation)) {
+            location = new File(config.getWorkingDirectory(), location).getAbsolutePath();
+        }
+        return location;
+    }
+
+
 
     private List<String> getArguments(String args) {
         List<String> arguments = new ArrayList<String>();
