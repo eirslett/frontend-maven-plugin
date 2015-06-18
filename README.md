@@ -82,7 +82,7 @@ Node/npm will only be "installed" locally to your project. It will not be instal
 </execution>
 ```
 
-You can also specify separate download roots for npm and node as they are now stored in separate repos.
+You can also specify separate download roots for npm and node as long as they are stored in the same repo.
 ```xml
 <execution>
     ...
