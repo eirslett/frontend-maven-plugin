@@ -89,8 +89,8 @@ You can also specify separate download roots for npm and node as they are now st
     <configuration>
         <nodeVersion>v0.12.1</nodeVersion>
         <npmVersion>2.7.1</npmVersion>
-        <nodeDownloadRoot>http://artifactory/nodejs/</nodeDownloadRoot>
-        <npmDownloadRoot>http://artifactory/npm/-/</npmDownloadRoot>
+        <nodeDownloadRoot>http://nodejs.org/nodejs/dist/</nodeDownloadRoot
+        <npmDownloadRoot>http://npm.org/npm/-/</npmDownloadRoot>
     </configuration>
 </execution>
 ```
