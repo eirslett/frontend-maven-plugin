@@ -2,15 +2,17 @@ package com.github.eirslett.maven.plugins.frontend.lib;
 
 import org.slf4j.Logger;
 
-import java.io.File;
 import java.util.List;
 
 final class NodeExecutor {
     private final ProcessExecutor executor;
 
-    public NodeExecutor(File workingDirectory, List<String> arguments, Platform platform){
-        final String node = workingDirectory + Utils.normalize("/node/node");
-        this.executor = new ProcessExecutor(workingDirectory, Utils.prepend(node, arguments), platform);
+    public NodeExecutor(NodeExecutorConfig config, List<String> arguments){
+        final String node = config.getNodePath().getAbsolutePath();
+        this.executor = new ProcessExecutor(
+            config.getWorkingDirectory(),
+            Utils.prepend(node, arguments),
+            config.getPlatform());
     }
 
     public String executeAndGetResult() throws ProcessExecutionException {
