@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <lifecycleMappingMetadata>
-    <pluginExecutions>
-        <pluginExecution>
-            <pluginExecutionFilter>
-                <goals>
-                    <goal>install-node-and-npm</goal>
-                </goals>
-            </pluginExecutionFilter>
-            <action>
-                <execute>
-                    <runOnIncremental>false</runOnIncremental>
-                    <runOnConfiguration>true</runOnConfiguration>
-                </execute>
-            </action>
-        </pluginExecution>
+	<pluginExecutions>
+		<pluginExecution>
+			<pluginExecutionFilter>
+				<goals>
+					<goal>install-node-and-npm</goal>
+				</goals>
+			</pluginExecutionFilter>
+			<action>
+				<execute>
+					<runOnIncremental>false</runOnIncremental>
+					<runOnConfiguration>true</runOnConfiguration>
+				</execute>
+			</action>
+		</pluginExecution>
         <pluginExecution>
             <pluginExecutionFilter>
                 <goals>
@@ -33,5 +33,5 @@
                 </execute>
             </action>
         </pluginExecution>
-    </pluginExecutions>
+	</pluginExecutions>
 </lifecycleMappingMetadata>
