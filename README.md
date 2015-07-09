@@ -188,14 +188,14 @@ Very similar to the Grunt and Gulp execution. It will run brunch according to th
 <execution>
     <id>brunch build</id>
     <goals>
-        <goal>gulp</goal>
+        <goal>brunch</goal>
     </goals>
 
     <!-- optional: the default phase is "generate-resources" -->
     <phase>generate-resources</phase>
 
     <configuration>
-        <!-- optional: if not specified, it will run gulp's default
+        <!-- optional: if not specified, it will run brunch's build --production
         task (and you can remove this whole <configuration> section.) -->
         <arguments>build --production</arguments>
     </configuration>
