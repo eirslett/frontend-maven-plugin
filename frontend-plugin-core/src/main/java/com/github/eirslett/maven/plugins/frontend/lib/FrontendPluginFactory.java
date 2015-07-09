@@ -8,43 +8,47 @@ public final class FrontendPluginFactory {
     private final File workingDirectory;
     private final File installDirectory;
 
-    public FrontendPluginFactory(File workingDirectory, File installDirectory){
+    public FrontendPluginFactory(File workingDirectory, File installDirectory) {
         this.workingDirectory = workingDirectory;
         this.installDirectory = installDirectory;
     }
 
-    public NodeAndNPMInstaller getNodeAndNPMInstaller(ProxyConfig proxy){
+    public NodeAndNPMInstaller getNodeAndNPMInstaller(ProxyConfig proxy) {
         return new DefaultNodeAndNPMInstaller(
                 getInstallConfig(),
                 new DefaultArchiveExtractor(),
                 new DefaultFileDownloader(proxy));
     }
-    
+
     public BowerRunner getBowerRunner() {
         return new DefaultBowerRunner(getExecutorConfig());
-    }    
+    }
 
     public NpmRunner getNpmRunner(ProxyConfig proxy) {
         return new DefaultNpmRunner(getExecutorConfig(), proxy);
     }
 
-    public GruntRunner getGruntRunner(){
+    public GruntRunner getGruntRunner() {
         return new DefaultGruntRunner(getExecutorConfig());
+    }
+
+    public BrunchRunner getBrunchRunner() {
+        return new DefaultBrunchRunner(getExecutorConfig());
     }
 
     public EmberRunner getEmberRunner() {
         return new DefaultEmberRunner(getExecutorConfig());
     }
 
-    public KarmaRunner getKarmaRunner(){
+    public KarmaRunner getKarmaRunner() {
         return new DefaultKarmaRunner(getExecutorConfig());
     }
 
-    public GulpRunner getGulpRunner(){
+    public GulpRunner getGulpRunner() {
         return new DefaultGulpRunner(getExecutorConfig());
     }
 
-    public WebpackRunner getWebpackRunner(){
+    public WebpackRunner getWebpackRunner() {
         return new DefaultWebpackRunner(getExecutorConfig());
     }
 

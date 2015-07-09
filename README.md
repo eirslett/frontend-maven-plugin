@@ -182,6 +182,26 @@ By default, no colors will be shown in the log.
 </execution>
 ```
 
+### Running brunch
+Very similar to the Grunt and Gulp execution. It will run brunch according to the `config.coffee` in your working directory.
+```xml
+<execution>
+    <id>brunch build</id>
+    <goals>
+        <goal>gulp</goal>
+    </goals>
+
+    <!-- optional: the default phase is "generate-resources" -->
+    <phase>generate-resources</phase>
+
+    <configuration>
+        <!-- optional: if not specified, it will run gulp's default
+        task (and you can remove this whole <configuration> section.) -->
+        <arguments>build --production</arguments>
+    </configuration>
+</execution>
+```
+
 ### Running Karma
 ```xml
 <execution>
