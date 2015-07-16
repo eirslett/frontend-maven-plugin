@@ -23,6 +23,7 @@
                     <goal>bower</goal>
                     <goal>jspm</goal>
                     <goal>ember</goal>
+                    <goal>webpack</goal>
                 </goals>
             </pluginExecutionFilter>
             <action>

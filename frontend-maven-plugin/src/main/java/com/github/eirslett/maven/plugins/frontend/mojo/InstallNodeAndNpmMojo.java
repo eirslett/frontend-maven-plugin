@@ -1,30 +1,18 @@
 package com.github.eirslett.maven.plugins.frontend.mojo;
 
-import java.io.File;
-
-import org.apache.maven.execution.MavenSession;
-import org.apache.maven.plugin.AbstractMojo;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugins.annotations.Component;
-import org.apache.maven.plugins.annotations.LifecyclePhase;
-import org.apache.maven.plugins.annotations.Mojo;
-import org.apache.maven.plugins.annotations.Parameter;
-
 import com.github.eirslett.maven.plugins.frontend.lib.FrontendPluginFactory;
 import com.github.eirslett.maven.plugins.frontend.lib.InstallationException;
 import com.github.eirslett.maven.plugins.frontend.lib.NodeAndNPMInstaller;
 import com.github.eirslett.maven.plugins.frontend.lib.ProxyConfig;
+import org.apache.maven.execution.MavenSession;
+import org.apache.maven.plugins.annotations.Component;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.settings.crypto.SettingsDecrypter;
 
 @Mojo(name="install-node-and-npm", defaultPhase = LifecyclePhase.GENERATE_RESOURCES)
-public final class InstallNodeAndNpmMojo extends AbstractMojo {
-
-    /**
-     * The base directory for running all Node commands. (Usually the directory that contains package.json)
-     */
-    @Parameter(property = "workingDirectory", defaultValue = "${basedir}")
-    private File workingDirectory;
+public final class InstallNodeAndNpmMojo extends AbstractFrontendMojo {
 
     /**
      * Where to download Node.js binary from. Defaults to http://nodejs.org/dist/
@@ -72,17 +60,16 @@ public final class InstallNodeAndNpmMojo extends AbstractMojo {
     private SettingsDecrypter decrypter;
 
     @Override
-    public void execute() throws MojoExecutionException, MojoFailureException {
-        if (!skip) {
-            try {
-                ProxyConfig proxyConfig = MojoUtils.getProxyConfig(session, decrypter);
-                String nodeDownloadRoot = getNodeDownloadRoot();
-                String npmDownloadRoot = getNpmDownloadRoot();
-                new FrontendPluginFactory(workingDirectory, proxyConfig).getNodeAndNPMInstaller().install(nodeVersion, npmVersion, nodeDownloadRoot, npmDownloadRoot);
-            } catch (InstallationException e) {
-                throw MojoUtils.toMojoFailureException(e);
-            }
-        }
+    protected boolean isSkipped() {
+        return this.skip;
+    }
+
+    @Override
+    public void execute(FrontendPluginFactory factory) throws InstallationException {
+        ProxyConfig proxyConfig = MojoUtils.getProxyConfig(session, decrypter);
+        String nodeDownloadRoot = getNodeDownloadRoot();
+        String npmDownloadRoot = getNpmDownloadRoot();
+        factory.getNodeAndNPMInstaller(proxyConfig).install(nodeVersion, npmVersion, nodeDownloadRoot, npmDownloadRoot);
     }
 
     private String getNodeDownloadRoot() {
