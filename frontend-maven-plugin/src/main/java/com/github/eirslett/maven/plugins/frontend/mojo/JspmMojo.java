@@ -12,13 +12,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 import java.io.File;
 
 @Mojo(name="jspm",  defaultPhase = LifecyclePhase.GENERATE_RESOURCES)
-public class JspmMojo extends AbstractMojo {
-
-    /**
-     * The base directory for running all Node commands. (Usually the directory that contains package.json)
-     */
-    @Parameter(defaultValue = "${basedir}", property = "workingDirectory", required = false)
-    private File workingDirectory;
+public class JspmMojo extends AbstractFrontendMojo {
 
     /**
      * JSPM arguments. Default is "install".
@@ -33,14 +27,13 @@ public class JspmMojo extends AbstractMojo {
     private Boolean skip;
 
     @Override
-    public void execute() throws MojoExecutionException, MojoFailureException {
-        if(!skip) {
-            try {
-                new FrontendPluginFactory(workingDirectory).getJspmRunner().execute(arguments);
-            } catch (TaskRunnerException e) {
-                throw new MojoFailureException("Failed to run task", e);
-            }
-        }
+    protected boolean isSkipped() {
+        return this.skip;
+    }
+
+    @Override
+    protected void execute(FrontendPluginFactory factory) throws TaskRunnerException {
+        factory.getJspmRunner().execute(arguments);
     }
 
 }

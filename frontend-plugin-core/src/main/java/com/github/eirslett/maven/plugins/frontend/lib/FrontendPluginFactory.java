@@ -25,7 +25,7 @@ public final class FrontendPluginFactory {
     }    
 
     public JspmRunner getJspmRunner() {
-        return new DefaultJspmRunner(defaultPlatform, workingDirectory);
+        return new DefaultJspmRunner(getExecutorConfig());
     }
 
     public NpmRunner getNpmRunner(ProxyConfig proxy) {
