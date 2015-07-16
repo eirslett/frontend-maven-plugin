@@ -5,7 +5,7 @@ Windows Build: (Appveyor) [![Build status](https://ci.appveyor.com/api/projects/
 Linux Build: (CloudBees) [![Build status](https://eirslett.ci.cloudbees.com/buildStatus/icon?job=Frontend%20maven%20plugin)](https://eirslett.ci.cloudbees.com/job/Frontend%20maven%20plugin/)
 
 # Frontend maven plugin
-This plugin downloads/installs Node and NPM locally for your project, runs NPM install, and then any combination of [Bower](http://bower.io/), [Grunt](http://gruntjs.com/), [Gulp](http://gulpjs.com/), [Karma](http://karma-runner.github.io/), or [Webpack](http://webpack.github.io/).
+This plugin downloads/installs Node and NPM locally for your project, runs NPM install, and then any combination of [Bower](http://bower.io/), [Grunt](http://gruntjs.com/), [Gulp](http://gulpjs.com/), [Jspm](http://jspm.io), [Karma](http://karma-runner.github.io/), or [Webpack](http://webpack.github.io/).
 It's supposed to work on Windows, OS X and Linux.
 
 #### What is this plugin meant to do?
