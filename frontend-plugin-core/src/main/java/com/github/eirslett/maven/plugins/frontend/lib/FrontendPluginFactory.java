@@ -24,6 +24,10 @@ public final class FrontendPluginFactory {
         return new DefaultBowerRunner(getExecutorConfig());
     }    
 
+    public JspmRunner getJspmRunner() {
+        return new DefaultJspmRunner(getExecutorConfig());
+    }
+
     public NpmRunner getNpmRunner(ProxyConfig proxy) {
         return new DefaultNpmRunner(getExecutorConfig(), proxy);
     }

@@ -47,7 +47,17 @@
                         <configuration>
                             <arguments>install</arguments>
                         </configuration>
-                    </execution>                    
+                    </execution>
+
+                    <execution>
+                        <id>jspm install</id>
+                        <goals>
+                            <goal>jspm</goal>
+                        </goals>
+                        <configuration>
+                            <arguments>--version</arguments>
+                        </configuration>
+                    </execution>
 
                     <execution>
                         <id>grunt build</id>
