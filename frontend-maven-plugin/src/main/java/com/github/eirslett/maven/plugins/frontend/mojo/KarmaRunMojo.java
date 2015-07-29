@@ -18,12 +18,6 @@ public final class KarmaRunMojo extends AbstractFrontendMojo {
     private String karmaConfPath;
 
     /**
-     * Whether you should skip running the tests (default is false)
-     */
-    @Parameter(property = "skipTests", required = false, defaultValue = "false")
-    private Boolean skipTests;
-
-    /**
      * Whether you should continue build when some test will fail (default is false)
      */
     @Parameter(property = "testFailureIgnore", required = false, defaultValue = "false")
@@ -36,19 +30,14 @@ public final class KarmaRunMojo extends AbstractFrontendMojo {
     private Boolean skip;
 
     @Override
-    protected boolean isSkipped() {
+    protected boolean skipExecution() {
         return this.skip;
     }
 
     @Override
     public void execute(FrontendPluginFactory factory) throws TaskRunnerException {
         try {
-            if (skipTests) {
-                LoggerFactory.getLogger(KarmaRunMojo.class).info("Skipping karma tests.");
-            }
-            else {
-                factory.getKarmaRunner().execute("start " + karmaConfPath);
-            }
+            factory.getKarmaRunner().execute("start " + karmaConfPath);
         }
         catch (TaskRunnerException e) {
             if (testFailureIgnore) {

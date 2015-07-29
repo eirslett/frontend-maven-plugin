@@ -22,7 +22,7 @@ public final class BowerMojo extends AbstractFrontendMojo {
     private Boolean skip;
 
     @Override
-    protected boolean isSkipped() {
+    protected boolean skipExecution() {
         return this.skip;
     }
 
