@@ -96,7 +96,7 @@ final class DefaultNodeAndNPMInstaller implements NodeAndNPMInstaller {
 
         private boolean npmIsAlreadyInstalled(){
             try {
-                final File npmPackageJson = new File(config.getInstallDirectory() + Utils.normalize("/node/npm/package.json"));
+                final File npmPackageJson = new File(config.getInstallDirectory() + Utils.normalize("/node/node_modules/npm/package.json"));
                 if(npmPackageJson.exists()){
                     HashMap<String,Object> data = new ObjectMapper().readValue(npmPackageJson, HashMap.class);
                     if(data.containsKey(VERSION)){
@@ -130,25 +130,40 @@ final class DefaultNodeAndNPMInstaller implements NodeAndNPMInstaller {
 
                 // We need to delete the existing npm directory first so we clean out any old files, and
                 // so we can rename the package directory below.
-                File npmDirectory = new File(config.getInstallDirectory(), "./node/npm");
+                File oldNpmDirectory = new File(config.getInstallDirectory(), "./node/npm");
+                File npmDirectory = new File(config.getInstallDirectory(), "./node/node_modules/npm");
                 try {
+                    if (oldNpmDirectory.isDirectory()) {
+                        FileUtils.deleteDirectory(oldNpmDirectory);
+                    }
                     FileUtils.deleteDirectory(npmDirectory);
                 } catch (IOException e) {
                     logger.warn("Failed to delete existing NPM installation.");
                 }
 
                 logger.info("Extracting NPM files in node/");
-                extractFile(targetName, config.getInstallDirectory() +"/node");
+                extractFile(targetName, config.getInstallDirectory() +"/node/node_modules");
                 new File(targetName).delete();
                 // handles difference between old and new download root (nodejs.org/dist/npm and registry.npmjs.org)
                 // see https://github.com/eirslett/frontend-maven-plugin/issues/65#issuecomment-52024254
-                File packageDirectory = new File(config.getInstallDirectory(), "./node/package");
+                File packageDirectory = new File(config.getInstallDirectory(), "./node/node_modules/package");
                 if (packageDirectory.exists() && !npmDirectory.exists()) {
                     if (! packageDirectory.renameTo(npmDirectory)) {
                         logger.warn("Cannot rename NPM directory, making a copy.");
                         FileUtils.copyDirectory(packageDirectory, npmDirectory);
                     }
                 }
+                
+                // create a copy of the npm scripts next to the node executable
+                for (String script : Arrays.asList("npm", "npm.cmd")) {
+                    File scriptFile = new File(npmDirectory, "bin/"+script);
+                    if (scriptFile.exists()) {
+                        File copy = new File(config.getInstallDirectory(), "/node/"+script);
+                        FileUtils.copyFile(scriptFile, copy);
+                        copy.setExecutable(true);
+                    }   
+                }
+                
                 logger.info("Installed NPM locally.");
             } catch (DownloadException e) {
                 throw new InstallationException("Could not download npm", e);
