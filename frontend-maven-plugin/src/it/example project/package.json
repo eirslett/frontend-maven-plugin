@@ -2,15 +2,16 @@
   "name": "example",
   "version": "0.0.1",
   "dependencies": {
+    "bower": "~1.3.12",
     "grunt": "~0.4.1",
     "grunt-cli": "~0.1.9",
-    "grunt-karma": "~0.7.0",
-    "karma": "~0.12.0",
     "grunt-contrib-jshint": "~0.6.4",
+    "grunt-karma": "~0.7.0",
+    "gulp": "^3.9.0",
+    "jspm": "~0.15.6",
+    "karma": "~0.12.0",
     "karma-jasmine": "~0.1.5",
-    "karma-phantomjs-launcher": "~0.1.1",
-    "bower": "~1.3.12",
-    "jspm": "~0.15.6"
+    "karma-phantomjs-launcher": "~0.1.1"
   },
   "jspm": {
     "dependencies": {
@@ -20,5 +21,9 @@
       "traceur": "github:jmcriffey/bower-traceur@0.0.88",
       "traceur-runtime": "github:jmcriffey/bower-traceur-runtime@0.0.88"
     }
+  },
+  "scripts": {
+    "prebuild": "npm install",
+    "build": "gulp"
   }
 }

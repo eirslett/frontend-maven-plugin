@@ -101,11 +101,13 @@
                 <version>1.8</version>
 
                 <configuration>
+                    <debug>true</debug>
                     <projectsDirectory>src/it</projectsDirectory>
                     <cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
                     <settingsFile>src/it/settings.xml</settingsFile>
                     <localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
                     <streamLogs>true</streamLogs>
+                    <postBuildHookScript>verify</postBuildHookScript>
                     <filterProperties>
                         <repository.proxy.url>${repository.proxy.url}</repository.proxy.url>
                     </filterProperties>
