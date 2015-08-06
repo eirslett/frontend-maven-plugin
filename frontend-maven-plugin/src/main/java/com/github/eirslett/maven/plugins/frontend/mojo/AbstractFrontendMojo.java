@@ -39,7 +39,15 @@ public abstract class AbstractFrontendMojo extends AbstractMojo {
    * Determines if this execution should be skipped.
    */
   private boolean skipTestPhase() {
-    return skipTests && execution.getLifecyclePhase().equals("test");
+    return skipTests && isTestingPhase();
+  }
+
+  /**
+   * Determines if the current execution is during a testing phase (e.g., "test" or "integration-test").
+   */
+  private boolean isTestingPhase() {
+    String phase = execution.getLifecyclePhase();
+    return phase.equals("test") || phase.equals("integration-test");
   }
 
   protected abstract void execute(FrontendPluginFactory factory) throws FrontendException;
