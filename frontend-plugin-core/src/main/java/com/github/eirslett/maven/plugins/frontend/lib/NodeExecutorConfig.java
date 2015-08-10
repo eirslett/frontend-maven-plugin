@@ -13,7 +13,7 @@ final class InstallNodeExecutorConfig implements NodeExecutorConfig {
 
   private static final String NODE_WINDOWS = "\\node\\node.exe";
   private static final String NODE_DEFAULT = "/node/node";
-  private static final String NPM = "/node/npm/bin/npm-cli.js";
+  private static final String NPM = "/node/node_modules/npm/bin/npm-cli.js";
 
   private final InstallConfig installConfig;
 

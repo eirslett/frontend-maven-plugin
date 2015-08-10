@@ -12,7 +12,6 @@ final class NodeExecutor {
         final String node = config.getNodePath().getAbsolutePath();
         List<String> localPaths = new ArrayList<String>();
         localPaths.add(config.getNodePath().getParent());
-        localPaths.add(config.getNpmPath().getParent());
         this.executor = new ProcessExecutor(
             config.getWorkingDirectory(),
             localPaths,
