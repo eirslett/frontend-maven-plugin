@@ -262,9 +262,21 @@ to avoid doing unnecessary work. During an incremental build the `npm` goal will
 has been changed. The `grunt` and `gulp` goals have new `srcdir` and `triggerfiles` optional configuration options; if
 these are set they check for changes in your source files before being run. See the wiki for more information.
 
-# Helper scripts
+# Setting up path
 During development, it's convenient to have the "npm", "bower", "grunt", "gulp" and "karma" commands
-available on the command line. If you want that, use [those helper scripts](https://github.com/eirslett/frontend-maven-plugin/tree/master/frontend-maven-plugin/src/it/example%20project/helper-scripts)!
+available on the command line. If you want that, you can add `./node` and `./node_modules/.bin` to your PATH variable:
+
+* Linux / OS X
+
+  ```sh
+  PATH=./node:./node_modules/.bin:$PATH
+  ```
+
+* Windows
+
+  ```cmd
+  set PATH=".\node;.\node_modules\.bin;%PATH%"
+  ```
 
 ## To build this project:
 `mvn clean install`
