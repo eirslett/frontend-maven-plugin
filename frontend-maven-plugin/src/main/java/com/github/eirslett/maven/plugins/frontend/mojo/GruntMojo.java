@@ -54,7 +54,7 @@ public final class GruntMojo extends AbstractFrontendMojo {
     private BuildContext buildContext;
 
     @Override
-    protected boolean isSkipped() {
+    protected boolean skipExecution() {
         return this.skip;
     }
 

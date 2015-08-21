@@ -60,7 +60,7 @@ public final class InstallNodeAndNpmMojo extends AbstractFrontendMojo {
     private SettingsDecrypter decrypter;
 
     @Override
-    protected boolean isSkipped() {
+    protected boolean skipExecution() {
         return this.skip;
     }
 
