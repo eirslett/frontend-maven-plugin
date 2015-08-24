@@ -1,53 +1,124 @@
 package com.github.eirslett.maven.plugins.frontend.lib;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
+import java.util.StringTokenizer;
 
 public class ProxyConfig {
-    public final String id;
-    public final String protocol;
-    public final String host;
-    public final int port;
-    public final String username;
-    public final String password;
 
-    public ProxyConfig(String id, String protocol, String host, int port, String username, String password) {
-        this.id = id;
-        this.protocol = protocol;
-        this.host = host;
-        this.port = port;
-        this.username = username;
-        this.password = password;
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProxyConfig.class);
+
+    private final List<Proxy> proxies;
+
+    public ProxyConfig(List<Proxy> proxies) {
+        this.proxies = proxies;
+        LOGGER.info("Found proxies: {}", proxies);
     }
 
-    public boolean useAuthentication(){
-        return username != null && !username.isEmpty();
+    public boolean isEmpty() {
+        return proxies.isEmpty();
     }
 
-    public URI getUri() {
-        String authentication = useAuthentication() ? username + ":" + password : null;
-        try {
-            return new URI(protocol, authentication, host, port, null, null, null);
-        } catch (URISyntaxException e) {
-            throw new ProxyConfigException("Invalid proxy settings", e);
+    public Proxy getProxyForUrl(String requestUrl) {
+        if (proxies.isEmpty()) {
+            LOGGER.info("No proxies configured");
+            return null;
+        }
+        final URI uri = URI.create(requestUrl);
+        for (Proxy proxy : proxies) {
+            if (proxy.protocol.equals(uri.getScheme()) && !proxy.isNonProxyHost(uri.getHost())) {
+                return proxy;
+            }
+        }
+        LOGGER.info("Could not find matching proxy for protocol {}", uri.getScheme());
+        return null;
+    }
+
+    public Proxy getSecureProxy() {
+        for (Proxy proxy : proxies) {
+            if (proxy.isSecure()) {
+                return proxy;
+            }
+        }
+        return null;
+    }
+
+    public Proxy getInsecureProxy() {
+        for (Proxy proxy : proxies) {
+            if (!proxy.isSecure()) {
+                return proxy;
+            }
+        }
+        return null;
+    }
+
+    public static class Proxy {
+        public final String id;
+        public final String protocol;
+        public final String host;
+        public final int port;
+        public final String username;
+        public final String password;
+        public final String nonProxyHosts;
+
+        public Proxy(String id, String protocol, String host, int port, String username, String password, String nonProxyHosts) {
+            this.host = host;
+            this.id = id;
+            this.protocol = protocol;
+            this.port = port;
+            this.username = username;
+            this.password = password;
+            this.nonProxyHosts = nonProxyHosts;
+        }
+
+        public boolean useAuthentication(){
+            return username != null && !username.isEmpty();
+        }
+
+        public URI getUri() {
+            String authentication = useAuthentication() ? username + ":" + password : null;
+            try {
+                // Proxies should be schemed with http, even if the protocol is https
+                return new URI("http", authentication, host, port, null, null, null);
+            } catch (URISyntaxException e) {
+                throw new ProxyConfigException("Invalid proxy settings", e);
+            }
+        }
+
+        public boolean isSecure(){
+            return "https".equals(protocol);
+        }
+
+        public boolean isNonProxyHost(String host) {
+            if (host != null && nonProxyHosts != null && nonProxyHosts.length() > 0) {
+                for (StringTokenizer tokenizer = new StringTokenizer(nonProxyHosts, "|"); tokenizer.hasMoreTokens(); ) {
+                    String pattern = tokenizer.nextToken();
+                    pattern = pattern.replace(".", "\\.").replace("*", ".*");
+                    if (host.matches(pattern)) {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        @Override
+        public String toString() {
+            return id + "{" +
+                    "protocol='" + protocol + '\'' +
+                    ", host='" + host + '\'' +
+                    ", port=" + port +
+                    (useAuthentication()? ", with username/passport authentication" : "") +
+                    '}';
         }
     }
 
-    public boolean isSecure(){
-        return "https".equals(protocol);
-    }
-
-    @Override
-    public String toString() {
-        return id + "{" +
-                "protocol='" + protocol + '\'' +
-                ", host='" + host + '\'' +
-                ", port=" + port +
-                (useAuthentication()? ", with username/passport authentication" : "") +
-                '}';
-    }
-
-    class ProxyConfigException extends RuntimeException {
+    static class ProxyConfigException extends RuntimeException {
 
         private ProxyConfigException(String message, Exception cause) {
             super(message, cause);

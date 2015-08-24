@@ -1,11 +1,11 @@
 package com.github.eirslett.maven.plugins.frontend.lib;
 
+import com.github.eirslett.maven.plugins.frontend.lib.ProxyConfig.Proxy;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -38,10 +38,12 @@ interface FileDownloader {
 }
 
 final class DefaultFileDownloader implements FileDownloader {
-    private final ProxyConfig proxy;
+    private static final Logger LOGGER = LoggerFactory.getLogger(FileDownloader.class);
 
-    public DefaultFileDownloader(ProxyConfig proxy){
-        this.proxy = proxy;
+    private final ProxyConfig proxyConfig;
+
+    public DefaultFileDownloader(ProxyConfig proxyConfig){
+        this.proxyConfig = proxyConfig;
     }
 
     public void download(String downloadUrl, String destination) throws DownloadException {
@@ -74,20 +76,20 @@ final class DefaultFileDownloader implements FileDownloader {
 
     private CloseableHttpResponse execute(String requestUrl) throws IOException {
         CloseableHttpResponse response;
-        final Logger logger = LoggerFactory.getLogger(FileDownloader.class);
-        if(proxy != null) {
-            logger.info("Downloading via proxy " + proxy.toString());
-            return executeViaProxy(requestUrl);
+        Proxy proxy = proxyConfig.getProxyForUrl(requestUrl);
+        if (proxy != null) {
+            LOGGER.info("Downloading via proxy " + proxy.toString());
+            return executeViaProxy(proxy, requestUrl);
         } else {
-            logger.info("No proxy was configured, downloading directly");
+            LOGGER.info("No proxy was configured, downloading directly");
             response = HttpClients.createDefault().execute(new HttpGet(requestUrl));
         }
         return response;
     }
 
-    private CloseableHttpResponse executeViaProxy(String requestUrl) throws IOException {
+    private CloseableHttpResponse executeViaProxy(Proxy proxy, String requestUrl) throws IOException {
         final CloseableHttpClient proxyClient;
-        if(proxy.useAuthentication()){
+        if (proxy.useAuthentication()){
             CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
             credentialsProvider.setCredentials(
                     new AuthScope(proxy.host, proxy.port),
