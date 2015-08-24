@@ -27,7 +27,7 @@ public class JspmMojo extends AbstractFrontendMojo {
     private Boolean skip;
 
     @Override
-    protected boolean isSkipped() {
+    protected boolean skipExecution() {
         return this.skip;
     }
 
