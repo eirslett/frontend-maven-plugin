@@ -11,6 +11,8 @@ import org.codehaus.plexus.util.Scanner;
 import org.sonatype.plexus.build.incremental.BuildContext;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 class MojoUtils {
@@ -21,22 +23,33 @@ class MojoUtils {
     static ProxyConfig getProxyConfig(MavenSession mavenSession, SettingsDecrypter decrypter) {
         if (mavenSession == null ||
                 mavenSession.getSettings() == null ||
-                mavenSession.getSettings().getActiveProxy() == null ||
-                !mavenSession.getSettings().getActiveProxy().isActive()) {
-            return null;
+                mavenSession.getSettings().getProxies() == null ||
+                mavenSession.getSettings().getProxies().isEmpty()) {
+            return new ProxyConfig(Collections.<ProxyConfig.Proxy>emptyList());
         } else {
-            Proxy mavenProxy = mavenSession.getSettings().getActiveProxy();
-            return new ProxyConfig(
-                    mavenProxy.getId(),
-                    mavenProxy.getProtocol(),
-                    mavenProxy.getHost(),
-                    mavenProxy.getPort(),
-                    mavenProxy.getUsername(),
-                    mavenProxy.getPassword());
+            final List<Proxy> mavenProxies = mavenSession.getSettings().getProxies();
+
+            final List<ProxyConfig.Proxy> proxies = new ArrayList<ProxyConfig.Proxy>(mavenProxies.size());
+
+            for (Proxy mavenProxy : mavenProxies) {
+                if (mavenProxy.isActive()) {
+                    mavenProxy = decryptProxy(mavenProxy, decrypter);
+                    proxies.add(new ProxyConfig.Proxy(mavenProxy.getId(), mavenProxy.getProtocol(), mavenProxy.getHost(),
+                            mavenProxy.getPort(), mavenProxy.getUsername(), mavenProxy.getPassword(), mavenProxy.getNonProxyHosts()));
+                }
+            }
+
+            return new ProxyConfig(proxies);
         }
     }
 
-  static boolean shouldExecute(BuildContext buildContext, List<File> triggerfiles, File srcdir) {
+    private static Proxy decryptProxy(Proxy proxy, SettingsDecrypter decrypter) {
+        final DefaultSettingsDecryptionRequest decryptionRequest = new DefaultSettingsDecryptionRequest(proxy);
+        SettingsDecryptionResult decryptedResult = decrypter.decrypt(decryptionRequest);
+        return decryptedResult.getProxy();
+    }
+
+    static boolean shouldExecute(BuildContext buildContext, List<File> triggerfiles, File srcdir) {
 
     // If there is no buildContext, or this is not an incremental build, always execute.
     if (buildContext == null || !buildContext.isIncremental()) {
