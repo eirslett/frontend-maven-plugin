@@ -1,0 +1,2 @@
+assert new File(basedir, 'src/main/frontend/node').exists() : "Node was not installed in the custom working directory";
+assert new File(basedir, 'src/main/frontend/node_modules').exists() : "Node modules were not installed in the custom working directory";

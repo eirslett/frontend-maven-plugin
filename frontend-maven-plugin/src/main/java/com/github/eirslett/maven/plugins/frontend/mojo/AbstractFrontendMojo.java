@@ -32,7 +32,7 @@ public abstract class AbstractFrontendMojo extends AbstractMojo {
   /**
    * The base directory for installing node and npm.
    */
-  @Parameter(defaultValue = "${basedir}", property = "installDirectory", required = false)
+  @Parameter(property = "installDirectory", required = false)
   protected File installDirectory;
 
   /**
@@ -60,6 +60,9 @@ public abstract class AbstractFrontendMojo extends AbstractMojo {
   @Override
   public void execute() throws MojoFailureException {
     if (!(skipTestPhase() || skipExecution())) {
+      if (installDirectory == null) {
+        installDirectory = workingDirectory;
+      }
       try {
         execute(new FrontendPluginFactory(workingDirectory, installDirectory));
       } catch (TaskRunnerException e) {
