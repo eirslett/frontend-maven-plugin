@@ -13,7 +13,7 @@ import java.util.HashMap;
 
 public interface NodeAndNPMInstaller {
 
-    String DEFAULT_NODEJS_DOWNLOAD_ROOT = "http://nodejs.org/dist/";
+    String DEFAULT_NODEJS_DOWNLOAD_ROOT = "https://nodejs.org/dist/";
     String DEFAULT_NPM_DOWNLOAD_ROOT = "http://registry.npmjs.org/npm/-/";
 
     void install(String nodeVersion, String npmVersion, String nodeDownloadRoot, String npmDownloadRoot) throws InstallationException;
@@ -153,7 +153,7 @@ final class DefaultNodeAndNPMInstaller implements NodeAndNPMInstaller {
                         FileUtils.copyDirectory(packageDirectory, npmDirectory);
                     }
                 }
-                
+
                 // create a copy of the npm scripts next to the node executable
                 for (String script : Arrays.asList("npm", "npm.cmd")) {
                     File scriptFile = new File(npmDirectory, "bin/"+script);
@@ -161,9 +161,9 @@ final class DefaultNodeAndNPMInstaller implements NodeAndNPMInstaller {
                         File copy = new File(config.getInstallDirectory(), "/node/"+script);
                         FileUtils.copyFile(scriptFile, copy);
                         copy.setExecutable(true);
-                    }   
+                    }
                 }
-                
+
                 logger.info("Installed NPM locally.");
             } catch (DownloadException e) {
                 throw new InstallationException("Could not download npm", e);
