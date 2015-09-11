@@ -7,10 +7,12 @@ public final class FrontendPluginFactory {
 
     private final File workingDirectory;
     private final File installDirectory;
+    private final String npmRegistry;
 
-    public FrontendPluginFactory(File workingDirectory, File installDirectory){
+    public FrontendPluginFactory(File workingDirectory, File installDirectory, String npmRegistry){
         this.workingDirectory = workingDirectory;
         this.installDirectory = installDirectory;
+        this.npmRegistry = npmRegistry;
     }
 
     public NodeAndNPMInstaller getNodeAndNPMInstaller(ProxyConfig proxy){
@@ -29,7 +31,7 @@ public final class FrontendPluginFactory {
     }
 
     public NpmRunner getNpmRunner(ProxyConfig proxy) {
-        return new DefaultNpmRunner(getExecutorConfig(), proxy);
+        return new DefaultNpmRunner(getExecutorConfig(), proxy, npmRegistry);
     }
 
     public GruntRunner getGruntRunner(){

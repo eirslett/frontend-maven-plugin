@@ -23,7 +23,7 @@ public final class InstallNodeAndNpmMojo extends AbstractFrontendMojo {
     /**
      * Where to download NPM binary from. Defaults to http://registry.npmjs.org/npm/-/
      */
-    @Parameter(property = "npmDownloadRoot", required = false, defaultValue = NodeAndNPMInstaller.DEFAULT_NPM_DOWNLOAD_ROOT)
+    @Parameter(property = "npmDownloadRoot", required = false)
     private String npmDownloadRoot;
 
     /**
@@ -69,7 +69,7 @@ public final class InstallNodeAndNpmMojo extends AbstractFrontendMojo {
         ProxyConfig proxyConfig = MojoUtils.getProxyConfig(session, decrypter);
         String nodeDownloadRoot = getNodeDownloadRoot();
         String npmDownloadRoot = getNpmDownloadRoot();
-        factory.getNodeAndNPMInstaller(proxyConfig).install(nodeVersion, npmVersion, nodeDownloadRoot, npmDownloadRoot);
+        factory.getNodeAndNPMInstaller(proxyConfig).install(nodeVersion, npmVersion, nodeDownloadRoot, npmDownloadRoot, npmRegistry);
     }
 
     private String getNodeDownloadRoot() {

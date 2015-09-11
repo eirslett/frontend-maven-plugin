@@ -12,15 +12,17 @@ public interface NpmRunner {
 final class DefaultNpmRunner extends NodeTaskExecutor implements NpmRunner {
     static final String TASK_NAME = "npm";
 
-    public DefaultNpmRunner(NodeExecutorConfig config, ProxyConfig proxyConfig) {
-        super(config, TASK_NAME, config.getNpmPath().getAbsolutePath(), buildArguments(proxyConfig));
+    public DefaultNpmRunner(NodeExecutorConfig config, ProxyConfig proxyConfig, String npmRegistry) {
+        super(config, TASK_NAME, config.getNpmPath().getAbsolutePath(), buildArguments(proxyConfig, npmRegistry));
     }
 
-    private static List<String> buildArguments(ProxyConfig proxyConfig) {
+    private static List<String> buildArguments(ProxyConfig proxyConfig, String npmRegistry) {
         List<String> arguments = new ArrayList<String>();
         arguments.add("--color=false");
 
-        if (!proxyConfig.isEmpty()) {
+        arguments.add("--registry=" + npmRegistry);
+
+        if (!proxyConfig.isEmpty() && proxyConfig.getProxyForUrl(npmRegistry) != null) {
             Proxy secureProxy = proxyConfig.getSecureProxy();
             if (secureProxy != null){
                 arguments.add("--https-proxy=" + secureProxy.getUri().toString());

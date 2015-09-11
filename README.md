@@ -31,7 +31,7 @@ Include the plugin as a dependency in your Maven project.
     <plugin>
         <groupId>com.github.eirslett</groupId>
         <artifactId>frontend-maven-plugin</artifactId>
-        <version>0.0.23</version>
+        <version>0.0.26</version>
         ...
     </plugin>
 ...
@@ -95,6 +95,13 @@ You can also specify separate download roots for npm and node as they are now st
         <npmDownloadRoot>http://npm.org/npm/-/</npmDownloadRoot>
     </configuration>
 </execution>
+```
+
+You can also specify a proxy of the NPM registry (i.e. proxied through repository managers), npm will be download from it if npmDownloadRoot is not set.
+```xml
+<configuration>
+    <npmRegistry>http://registry.npmjs.org</npmRegistry>
+</configuration>
 ```
 
 __Proxy settings:__ If you need to download Node/npm through a proxy: [configure your Maven proxy settings](http://maven.apache.org/guides/mini/guide-proxies.html) in ~/.m2/settings.xml. This plugin will use the same proxy settings as Maven.
