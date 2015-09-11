@@ -1,6 +1,13 @@
 package com.github.eirslett.maven.plugins.frontend.lib;
 
-import com.github.eirslett.maven.plugins.frontend.lib.ProxyConfig.Proxy;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.http.HttpHost;
@@ -16,13 +23,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.channels.Channels;
-import java.nio.channels.ReadableByteChannel;
+import com.github.eirslett.maven.plugins.frontend.lib.ProxyConfig.Proxy;
 
 final class DownloadException extends Exception {
     public DownloadException(String message){
@@ -82,7 +83,7 @@ final class DefaultFileDownloader implements FileDownloader {
             return executeViaProxy(proxy, requestUrl);
         } else {
             LOGGER.info("No proxy was configured, downloading directly");
-            response = HttpClients.createDefault().execute(new HttpGet(requestUrl));
+            response = buildHttpClient(null).execute(new HttpGet(requestUrl));
         }
         return response;
     }
@@ -95,9 +96,9 @@ final class DefaultFileDownloader implements FileDownloader {
                     new AuthScope(proxy.host, proxy.port),
                     new UsernamePasswordCredentials(proxy.username, proxy.password)
             );
-            proxyClient = HttpClients.custom().setDefaultCredentialsProvider(credentialsProvider).build();
+            proxyClient = buildHttpClient(credentialsProvider);
         } else {
-            proxyClient = HttpClients.createDefault();
+            proxyClient = buildHttpClient(null);
         }
 
         final HttpHost proxyHttpHost = new HttpHost(proxy.host, proxy.port, proxy.protocol);
@@ -109,4 +110,12 @@ final class DefaultFileDownloader implements FileDownloader {
 
         return proxyClient.execute(request);
     }
+    
+    private CloseableHttpClient buildHttpClient(CredentialsProvider credentialsProvider) {
+    	return HttpClients.custom()
+    			.disableContentCompression()
+    			.setDefaultCredentialsProvider(credentialsProvider)
+    			.build();
+    }
+    
 }
