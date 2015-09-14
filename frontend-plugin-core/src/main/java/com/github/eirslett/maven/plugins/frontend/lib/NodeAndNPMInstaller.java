@@ -15,10 +15,9 @@ public interface NodeAndNPMInstaller {
 
     String DEFAULT_NODEJS_DOWNLOAD_ROOT = "http://nodejs.org/dist/";
     String DEFAULT_NPM_REGISTRY = "http://registry.npmjs.org";
-    String NPM_DOWNLOAD_PATH = "/npm/-/";
-    String DEFAULT_NPM_DOWNLOAD_ROOT = DEFAULT_NPM_REGISTRY + NPM_DOWNLOAD_PATH;
+    String DEFAULT_NPM_DOWNLOAD_ROOT = DEFAULT_NPM_REGISTRY + "/npm/-/";
 
-    void install(String nodeVersion, String npmVersion, String nodeDownloadRoot, String npmDownloadRoot, String npmRegistry) throws InstallationException;
+    void install(String nodeVersion, String npmVersion, String nodeDownloadRoot, String npmDownloadRoot) throws InstallationException;
 }
 
 final class DefaultNodeAndNPMInstaller implements NodeAndNPMInstaller {
@@ -36,16 +35,12 @@ final class DefaultNodeAndNPMInstaller implements NodeAndNPMInstaller {
     }
 
     @Override
-    public void install(String nodeVersion, String npmVersion, String nodeDownloadRoot, String npmDownloadRoot, String npmRegistry) throws InstallationException {
+    public void install(String nodeVersion, String npmVersion, String nodeDownloadRoot, String npmDownloadRoot) throws InstallationException {
         if(nodeDownloadRoot == null || nodeDownloadRoot.isEmpty()){
             nodeDownloadRoot = DEFAULT_NODEJS_DOWNLOAD_ROOT;
         }
         if(npmDownloadRoot == null || npmDownloadRoot.isEmpty()){
-            if(npmRegistry == null || npmRegistry.isEmpty()) {
-                npmDownloadRoot = DEFAULT_NPM_DOWNLOAD_ROOT;
-            } else {
-                npmDownloadRoot = npmRegistry + NPM_DOWNLOAD_PATH;
-            }
+            npmDownloadRoot = DEFAULT_NPM_DOWNLOAD_ROOT;
         }
         new NodeAndNPMInstallAction(nodeVersion, npmVersion, nodeDownloadRoot, npmDownloadRoot).install();
     }

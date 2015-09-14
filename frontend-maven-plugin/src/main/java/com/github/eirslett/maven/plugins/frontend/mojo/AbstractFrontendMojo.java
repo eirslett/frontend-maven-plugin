@@ -2,7 +2,6 @@ package com.github.eirslett.maven.plugins.frontend.mojo;
 
 import com.github.eirslett.maven.plugins.frontend.lib.FrontendException;
 import com.github.eirslett.maven.plugins.frontend.lib.FrontendPluginFactory;
-import com.github.eirslett.maven.plugins.frontend.lib.NodeAndNPMInstaller;
 import com.github.eirslett.maven.plugins.frontend.lib.TaskRunnerException;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecution;
@@ -37,12 +36,6 @@ public abstract class AbstractFrontendMojo extends AbstractMojo {
   protected File installDirectory;
 
   /**
-   * The URL of the npm registry.
-   */
-  @Parameter(property = "npmRegistry", required = false, defaultValue = NodeAndNPMInstaller.DEFAULT_NPM_REGISTRY)
-  protected String npmRegistry;
-
-  /**
    * Determines if this execution should be skipped.
    */
   private boolean skipTestPhase() {
@@ -71,7 +64,7 @@ public abstract class AbstractFrontendMojo extends AbstractMojo {
         installDirectory = workingDirectory;
       }
       try {
-        execute(new FrontendPluginFactory(workingDirectory, installDirectory, npmRegistry));
+        execute(new FrontendPluginFactory(workingDirectory, installDirectory));
       } catch (TaskRunnerException e) {
         throw new MojoFailureException("Failed to run task", e);
       } catch (FrontendException e) {
