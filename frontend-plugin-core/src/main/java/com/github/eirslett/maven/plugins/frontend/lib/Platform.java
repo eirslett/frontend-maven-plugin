@@ -67,9 +67,17 @@ class Platform {
     public String getNodeDownloadFilename(String nodeVersion) {
         if(isWindows()) {
             if(architecture == Architecture.x64){
-                return nodeVersion+"/x64/node.exe";
+                if (nodeVersion == "v4.0.0") {
+                    return nodeVersion+"/win-x64/node.exe";    
+                } else {
+                    return nodeVersion+"/x64/node.exe";
+                }
             } else {
-                return nodeVersion + "/node.exe";
+                if (nodeVersion == "v4.0.0") {
+                    return nodeVersion+"/win-x86/node.exe";    
+                } else {
+                    return nodeVersion + "/node.exe";
+                }
             }
         } else {
             return nodeVersion + "/" + getLongNodeFilename(nodeVersion) + ".tar.gz";
