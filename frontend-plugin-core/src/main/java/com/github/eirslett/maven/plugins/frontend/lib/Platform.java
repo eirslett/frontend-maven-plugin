@@ -74,7 +74,7 @@ class Platform {
                     return nodeVersion+"/x64/node.exe";
                 }
             } else {
-                if (versionCompare < 0) {
+                if (versionCompare >= 0) {
                     return nodeVersion+"/win-x86/node.exe";    
                 } else {
                     return nodeVersion + "/node.exe";
