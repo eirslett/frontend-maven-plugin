@@ -66,14 +66,15 @@ class Platform {
 
     public String getNodeDownloadFilename(String nodeVersion) {
         if(isWindows()) {
+			int versionCompare = nodeVersion.compareTo("v4.0.0");
             if(architecture == Architecture.x64){
-                if ("v4.0.0".equals(nodeVersion)) {
+				if (versionCompare >= 0) {
                     return nodeVersion+"/win-x64/node.exe";    
                 } else {
                     return nodeVersion+"/x64/node.exe";
                 }
             } else {
-                if ("v4.0.0".equals(nodeVersion)) {
+                if (versionCompare < 0) {
                     return nodeVersion+"/win-x86/node.exe";    
                 } else {
                     return nodeVersion + "/node.exe";
