@@ -14,7 +14,8 @@ import java.util.HashMap;
 public interface NodeAndNPMInstaller {
 
     String DEFAULT_NODEJS_DOWNLOAD_ROOT = "http://nodejs.org/dist/";
-    String DEFAULT_NPM_DOWNLOAD_ROOT = "http://registry.npmjs.org/npm/-/";
+    String DEFAULT_NPM_REGISTRY = "http://registry.npmjs.org";
+    String DEFAULT_NPM_DOWNLOAD_ROOT = DEFAULT_NPM_REGISTRY + "/npm/-/";
 
     void install(String nodeVersion, String npmVersion, String nodeDownloadRoot, String npmDownloadRoot) throws InstallationException;
 }
