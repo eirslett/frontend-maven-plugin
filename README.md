@@ -48,12 +48,12 @@ The working directory is where you've put `package.json` and your frontend confi
     <groupId>com.github.eirslett</groupId>
     <artifactId>frontend-maven-plugin</artifactId>
     <version>...</version>
-    
+
     <!-- optional -->
     <configuration>
         <workingDirectory>src/main/frontend</workingDirectory>
     </configuration>
-    
+
     <executions>
       ...
     </executions>
@@ -61,7 +61,7 @@ The working directory is where you've put `package.json` and your frontend confi
 ```
 
 ### Installing node and npm
-The versions of Node and npm are downloaded from http://nodejs.org/dist, extracted and put into a `node` folder created in your working directory. (Remember to gitignore the `node` folder, unless you actually want to commit it)
+The versions of Node and npm are downloaded from https://nodejs.org/dist, extracted and put into a `node` folder created in your working directory. (Remember to gitignore the `node` folder, unless you actually want to commit it)
 Node/npm will only be "installed" locally to your project. It will not be installed globally on the whole system (and it will not interfere with any Node/npm installations already present.)
 ```xml
 <execution>
@@ -76,7 +76,7 @@ Node/npm will only be "installed" locally to your project. It will not be instal
     <configuration>
         <nodeVersion>v0.10.18</nodeVersion>
         <npmVersion>1.3.8</npmVersion>
-        <!-- optional: where to download node and npm from. Defaults to http://nodejs.org/dist/ -->
+        <!-- optional: where to download node and npm from. Defaults to https://nodejs.org/dist/ -->
         <downloadRoot>http://myproxy.example.org/nodejs/dist/</downloadRoot>
         <!-- optional: where to install node and npm. Defaults to the working directory -->
         <installDirectory>target</installDirectory>
@@ -91,7 +91,7 @@ You can also specify separate download roots for npm and node as they are now st
     <configuration>
         <nodeVersion>v0.12.1</nodeVersion>
         <npmVersion>2.7.1</npmVersion>
-        <nodeDownloadRoot>http://nodejs.org/nodejs/dist/</nodeDownloadRoot>
+        <nodeDownloadRoot>https://nodejs.org/nodejs/dist/</nodeDownloadRoot>
         <npmDownloadRoot>http://npm.org/npm/-/</npmDownloadRoot>
     </configuration>
 </execution>
@@ -109,10 +109,10 @@ By default, no colors will be shown in the log.
     <goals>
         <goal>npm</goal>
     </goals>
-    
+
     <!-- optional: default phase is "generate-resources" -->
     <phase>generate-resources</phase>
-    
+
     <configuration>
         <!-- optional: The default argument is actually
         "install", so unless you need to run some other npm command,
@@ -131,7 +131,7 @@ All bower dependencies will be installed in the `bower_components` folder in you
     <goals>
         <goal>bower</goal>
     </goals>
-    
+
     <configuration>
 	    <!-- optional: The default argument is actually
 	    "install", so unless you need to run some other bower command,
@@ -139,7 +139,7 @@ All bower dependencies will be installed in the `bower_components` folder in you
 	    -->
         <arguments>install</arguments>
     </configuration>
-</execution>   
+</execution>
 ```
 
 ### Running jspm
@@ -150,7 +150,7 @@ All jspm dependencies will be installed in the `jspm_packages` folder in your wo
     <goals>
         <goal>jspm</goal>
     </goals>
-    
+
     <configuration>
 	    <!-- optional: The default argument is actually
 	    "install", so unless you need to run some other jspm command,
@@ -158,7 +158,7 @@ All jspm dependencies will be installed in the `jspm_packages` folder in your wo
 	    -->
         <arguments>install</arguments>
     </configuration>
-</execution>   
+</execution>
 ```
 
 ### Running Grunt
@@ -170,10 +170,10 @@ By default, no colors will be shown in the log.
     <goals>
         <goal>grunt</goal>
     </goals>
-    
+
     <!-- optional: the default phase is "generate-resources" -->
     <phase>generate-resources</phase>
-    
+
     <configuration>
         <!-- optional: if not specified, it will run Grunt's default
         task (and you can remove this whole <configuration> section.) -->
@@ -191,10 +191,10 @@ By default, no colors will be shown in the log.
     <goals>
         <goal>gulp</goal>
     </goals>
-    
+
     <!-- optional: the default phase is "generate-resources" -->
     <phase>generate-resources</phase>
-    
+
     <configuration>
         <!-- optional: if not specified, it will run gulp's default
         task (and you can remove this whole <configuration> section.) -->
@@ -210,11 +210,11 @@ By default, no colors will be shown in the log.
     <goals>
         <goal>karma</goal>
     </goals>
-    
+
     <!-- optional: the default plase is "test". Some developers
     choose to run karma in the "integration-test" phase. -->
     <phase>test</phase>
-    
+
     <configuration>
         <!-- optional: the default is "karma.conf.js" in your working directory -->
         <karmaConfPath>src/test/javascript/karma.conf.ci.js</karmaConfPath>
@@ -258,9 +258,9 @@ as part of the `grunt` or `gulp` execution. That will help to separate your fron
 
 # Eclipse M2E support
 
-This plugin contains support for M2E, including lifecycle mappings and support for incremental builds in Eclipse. 
-The `install-node-and-npm` goal will only run on a full project build. The other goals support incremental builds 
-to avoid doing unnecessary work. During an incremental build the `npm` goal will only run if the `package.json` file 
+This plugin contains support for M2E, including lifecycle mappings and support for incremental builds in Eclipse.
+The `install-node-and-npm` goal will only run on a full project build. The other goals support incremental builds
+to avoid doing unnecessary work. During an incremental build the `npm` goal will only run if the `package.json` file
 has been changed. The `grunt` and `gulp` goals have new `srcdir` and `triggerfiles` optional configuration options; if
 these are set they check for changes in your source files before being run. See the wiki for more information.
 
