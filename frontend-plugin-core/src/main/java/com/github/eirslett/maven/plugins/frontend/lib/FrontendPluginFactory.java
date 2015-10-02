@@ -20,8 +20,8 @@ public final class FrontendPluginFactory {
                 new DefaultFileDownloader(proxy));
     }
     
-    public BowerRunner getBowerRunner() {
-        return new DefaultBowerRunner(getExecutorConfig());
+    public BowerRunner getBowerRunner(ProxyConfig proxy) {
+        return new DefaultBowerRunner(getExecutorConfig(), proxy);
     }    
 
     public JspmRunner getJspmRunner() {
