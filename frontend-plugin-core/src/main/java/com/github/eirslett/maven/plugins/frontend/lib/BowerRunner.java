@@ -3,9 +3,7 @@ package com.github.eirslett.maven.plugins.frontend.lib;
 import java.util.ArrayList;
 import java.util.List;
 
-public interface BowerRunner {
-    void execute(String args) throws TaskRunnerException;
-}
+public interface BowerRunner extends NodeTaskRunner {}
 
 final class DefaultBowerRunner extends NodeTaskExecutor implements BowerRunner {
 
