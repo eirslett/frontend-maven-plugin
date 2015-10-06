@@ -5,9 +5,7 @@ import com.github.eirslett.maven.plugins.frontend.lib.ProxyConfig.Proxy;
 import java.util.ArrayList;
 import java.util.List;
 
-public interface NpmRunner {
-    void execute(String args) throws TaskRunnerException;
-}
+public interface NpmRunner extends NodeTaskRunner {}
 
 final class DefaultNpmRunner extends NodeTaskExecutor implements NpmRunner {
     static final String TASK_NAME = "npm";
