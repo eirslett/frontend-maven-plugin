@@ -61,8 +61,8 @@ The working directory is where you've put `package.json` and your frontend confi
 ```
 
 ### Installation Directory
-The installation directory is the folder where your dependencies are resolved.
-You can set this property on the differen goals.
+The installation directory is the folder where your dependencies are installed e.g. node.exe.
+You can set this property on the different goals.
 ```xml
 <execution>
     <id>npm install</id>
