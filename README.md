@@ -60,6 +60,37 @@ The working directory is where you've put `package.json` and your frontend confi
 </plugin>
 ```
 
+### Installation Directory
+The installation directory is the folder where your dependencies are installed e.g. node.exe.
+You can set this property on the different goals.
+```xml
+<execution>
+    <id>npm install</id>
+    <goals>
+        <goal>npm</goal>
+    </goals>
+    <configuration>
+        <arguments>install</arguments>
+        <installDirectory>target</installDirectory>
+    </configuration>
+</execution>
+```
+
+Or choose to set it for all the goals, in the maven configuration.
+
+```xml
+<plugins>
+    <plugin>
+        <groupId>com.github.eirslett</groupId>
+        <artifactId>frontend-maven-plugin</artifactId>
+        <version>0.0.26</version>
+
+        <configuration>
+            <installDirectory>target</installDirectory>
+        </configuration>
+```
+
+
 ### Installing node and npm
 The versions of Node and npm are downloaded from https://nodejs.org/dist, extracted and put into a `node` folder created in your working directory. (Remember to gitignore the `node` folder, unless you actually want to commit it)
 Node/npm will only be "installed" locally to your project. It will not be installed globally on the whole system (and it will not interfere with any Node/npm installations already present.)
