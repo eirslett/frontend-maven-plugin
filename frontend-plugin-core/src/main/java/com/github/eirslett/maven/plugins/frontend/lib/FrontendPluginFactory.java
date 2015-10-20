@@ -47,6 +47,10 @@ public final class FrontendPluginFactory {
     public GulpRunner getGulpRunner(){
         return new DefaultGulpRunner(getExecutorConfig());
     }
+    
+    public TypescriptRunner getTypescriptRunner() {
+    	return new DefaultTypescriptRunner(getExecutorConfig());
+    }
 
     public WebpackRunner getWebpackRunner(){
         return new DefaultWebpackRunner(getExecutorConfig());

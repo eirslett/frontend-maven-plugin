@@ -56,6 +56,7 @@
                         </goals>
                         <configuration>
                             <arguments>install</arguments>
+                            <skip.bower>true</skip.bower>
                         </configuration>
                     </execution>
 
@@ -66,6 +67,7 @@
                         </goals>
                         <configuration>
                             <arguments>--version</arguments>
+                            <skip.jspm>true</skip.jspm>
                         </configuration>
                     </execution>
 
@@ -76,6 +78,18 @@
                         </goals>
                         <configuration>
                             <arguments>--no-color</arguments>
+                            <skip.grunt>true</skip.grunt>
+                        </configuration>
+                    </execution>
+                    
+                    <execution>
+                        <id>typescript compiler</id>
+                        <goals>
+                            <goal>tsc</goal>
+                        </goals>
+                        <configuration>
+                            <srcdir>src/main/typescript</srcdir>
+                            <outputdir>target/js</outputdir>
                         </configuration>
                     </execution>
 
@@ -86,9 +100,10 @@
                         </goals>
                         <configuration>
                             <karmaConfPath>src/test/javascript/karma.conf.ci.js</karmaConfPath>
+                            <skip.karma>true</skip.karma>
                         </configuration>
                     </execution>
-
+                    
                 </executions>
             </plugin>
         </plugins>

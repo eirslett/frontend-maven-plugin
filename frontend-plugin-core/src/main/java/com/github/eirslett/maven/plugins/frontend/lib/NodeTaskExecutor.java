@@ -47,10 +47,13 @@ abstract class NodeTaskExecutor {
         return taskLocation.replaceAll("^.*/([^/]+)(?:\\.js)?$","$1");
     }
 
-
     public final void execute(String args) throws TaskRunnerException {
-        final String absoluteTaskLocation = getAbsoluteTaskLocation();
         final List<String> arguments = getArguments(args);
+        execute(arguments);
+    }
+    
+    public final void execute(List<String> arguments) throws TaskRunnerException {
+        final String absoluteTaskLocation = getAbsoluteTaskLocation();
         logger.info("Running " + taskToString(taskName, arguments) + " in " + config.getWorkingDirectory());
 
         try {
