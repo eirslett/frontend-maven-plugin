@@ -5,6 +5,7 @@
 			<pluginExecutionFilter>
 				<goals>
 					<goal>install-node-and-npm</goal>
+                    <goal>tsc</goal>
 				</goals>
 			</pluginExecutionFilter>
 			<action>
