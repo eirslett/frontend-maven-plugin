@@ -20,6 +20,12 @@ final class DefaultNpmRunner extends NodeTaskExecutor implements NpmRunner {
         List<String> arguments = new ArrayList<String>();
         arguments.add("--color=false");
 
+        String npmRegistryURL = System.getProperty("npmRegistryURL");
+        if (npmRegistryURL != null)
+        {
+            arguments.add ("--registry=" + npmRegistryURL);
+        }
+
         if (!proxyConfig.isEmpty()) {
             Proxy secureProxy = proxyConfig.getSecureProxy();
             if (secureProxy != null){
