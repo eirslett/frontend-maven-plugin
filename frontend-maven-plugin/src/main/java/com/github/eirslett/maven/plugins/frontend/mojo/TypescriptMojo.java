@@ -24,16 +24,21 @@ public final class TypescriptMojo extends AbstractFrontendMojo {
     /**
      * The directory containing typescript files that will be processed by tsc.
      */
-    @Parameter(property = "srcdir")
-    private File srcdir;
+    @Parameter(property = "srcDir")
+    private File srcDir;
 
     /**
-     * The directory where compiled typescript files will be output by tsc. If this is
-     * set then they will be refreshed so they correctly show as modified in
-     * Eclipse.
+     * The directory containing typescript files that will be processed by tsc.
+     * If not set all compiled files of srcDir will be placed in the same output-directory (outDir).
      */
-    @Parameter(property = "outputdir")
-    private File outputdir;
+    @Parameter(property = "rootDir")
+    private File rootDir;
+
+    /**
+     * The directory where compiled typescript files will be placed by tsc.
+     */
+    @Parameter(property = "outDir")
+    private File outDir;
 
     /**
      * Skips execution of this mojo.
@@ -52,11 +57,12 @@ public final class TypescriptMojo extends AbstractFrontendMojo {
     @Override
     public void execute(FrontendPluginFactory factory) throws TaskRunnerException {
 
-        factory.getTypescriptRunner().execute(argsTxt, srcdir, outputdir);
+        factory.getTypescriptRunner().execute(
+        		argsTxt, srcDir, rootDir, outDir);
 
-        if (outputdir != null) {
-            getLog().info("Refreshing files after tsc: " + outputdir);
-            buildContext.refresh(outputdir);
+        if (outDir != null) {
+            getLog().info("Refreshing files after tsc: " + outDir);
+            buildContext.refresh(outDir);
         }
         
     }

@@ -88,8 +88,8 @@
                             <goal>tsc</goal>
                         </goals>
                         <configuration>
-                            <srcdir>src/main/typescript</srcdir>
-                            <outputdir>target/js</outputdir>
+                            <srcDir>src/main/typescript</srcDir>
+                            <outDir>target/js</outDir>
                         </configuration>
                     </execution>
 

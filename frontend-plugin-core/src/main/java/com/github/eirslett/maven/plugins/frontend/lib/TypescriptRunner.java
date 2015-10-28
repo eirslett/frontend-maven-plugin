@@ -6,10 +6,14 @@ import java.io.IOException;
 import java.util.LinkedList;
 
 public interface TypescriptRunner {
-    void execute(File argsTxt, File srcdir, File outputdir) throws TaskRunnerException;
+    void execute(File argsTxt, File srcdir, File rootDir, File outputdir) throws TaskRunnerException;
 }
 
 final class DefaultTypescriptRunner extends NodeTaskExecutor implements TypescriptRunner {
+	
+	private static interface FileVisitor {
+		void visit(File file) throws TaskRunnerException;
+	}
 	
     static final String TASK_LOCATION = "node_modules/typescript/bin/tsc";
 
@@ -18,19 +22,57 @@ final class DefaultTypescriptRunner extends NodeTaskExecutor implements Typescri
     }
     
     @Override
-    public void execute(File argsTxt, File srcdir, File outputdir) throws TaskRunnerException {
+    public void execute(File argsTxt, File srcDir, File rootDir, File outDir) throws TaskRunnerException {
 
     	LinkedList<String> args = new LinkedList<String>();
+
+    	if (outDir == null) {
+    		throw new TaskRunnerException("Missing parameter '<outDir>'");
+    	}
+    	args.add("--outDir");
+    	args.add(outDir.getAbsolutePath());
     	
-    	if (outputdir != null) {
-	    	args.add("--outDir");
-	    	args.add(outputdir.getAbsolutePath());
+    	if (srcDir == null) {
+    		throw new TaskRunnerException("Missing parameter '<srcDir>'");
     	}
-    	if (srcdir != null) {
+    	
+    	if (rootDir != null) {
+    		
     		args.add("--rootDir");
-    		args.add(srcdir.getAbsolutePath());
-	    	addFilesOfDirectoryToArgs(srcdir, args);
+    		args.add(rootDir.getAbsolutePath());
+    		
+    		compileEntireSrcDir(argsTxt, args, srcDir);
+	    	
+    	} else {
+    		
+    		compileFileByFile(args, srcDir);
+    		
     	}
+    	
+    }
+    
+    private void superExecute(LinkedList<String> args) throws TaskRunnerException {
+    	
+    	super.execute(args);
+    	
+    }
+    
+    private void compileFileByFile(final LinkedList<String> args, final File srcDir)
+    		throws TaskRunnerException {
+    	
+    	visitFilesOfDirectory(srcDir, new FileVisitor() {
+			@Override
+			public void visit(File file) throws TaskRunnerException {
+		    	final LinkedList<String> tscArgs = new LinkedList<String>(args);
+		    	tscArgs.add(file.getAbsolutePath());
+				superExecute(tscArgs);
+			}
+		});
+    	
+    }
+    
+    private void compileEntireSrcDir(final File argsTxt, LinkedList<String> args, final File srcDir)
+    		throws TaskRunnerException {
     	
     	final LinkedList<String> tscArgs = new LinkedList<String>();
     	if (argsTxt != null) {
@@ -43,13 +85,27 @@ final class DefaultTypescriptRunner extends NodeTaskExecutor implements Typescri
     				if (!arg.startsWith("--")) {
     					argsTxtWriter.append(" \"");
     				} else {
-    					argsTxtWriter.append(" ");
+    					argsTxtWriter.append(' ');
     				}
     				argsTxtWriter.append(arg);
     				if (!arg.startsWith("--")) {
     					argsTxtWriter.append("\"");
     				}
     			}
+    			
+    			final FileWriter finalWriter = argsTxtWriter;
+    	    	visitFilesOfDirectory(srcDir, new FileVisitor() {
+    				@Override
+    				public void visit(File file) throws TaskRunnerException {
+    					try {
+    						finalWriter.append(' ');
+    						finalWriter.append(file.getAbsolutePath());
+    					} catch (IOException e) {
+    						throw new TaskRunnerException("Could not append file-information", e);
+    					}
+    				}
+    			});
+    			
     		} catch (IOException e) {
     			throw new TaskRunnerException("Could not build typescript arguments file '"
     					+ argsTxt + "'", e);
@@ -66,12 +122,12 @@ final class DefaultTypescriptRunner extends NodeTaskExecutor implements Typescri
     	} else {
     		tscArgs.addAll(args);
     	}
-
-		super.execute(tscArgs);
-
+    	
+		superExecute(tscArgs);
+    	
     }
     
-    private void addFilesOfDirectoryToArgs(File directory, LinkedList<String> args) {
+    private void visitFilesOfDirectory(File directory, FileVisitor visitor) throws TaskRunnerException {
     	
     	if (directory == null) {
     		return;
@@ -80,10 +136,10 @@ final class DefaultTypescriptRunner extends NodeTaskExecutor implements Typescri
     	for (File file : directory.listFiles()) {
     		
     		if (file.isDirectory()) {
-    			addFilesOfDirectoryToArgs(directory, args);
+    			visitFilesOfDirectory(file, visitor);
     		}
     		else if (file.isFile()) {
-    			args.add(file.getAbsolutePath());
+    			visitor.visit(file);
     		}
     		
     	}
