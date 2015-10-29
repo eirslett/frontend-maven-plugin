@@ -6,7 +6,16 @@ import java.io.IOException;
 import java.util.LinkedList;
 
 public interface TypescriptRunner {
-    void execute(File argsTxt, File srcdir, File rootDir, File outputdir) throws TaskRunnerException;
+	
+	enum Module { commonjs, amd, system, umd };
+	
+	enum Target { ES3, ES5, ES6 };
+
+    void execute(File argsTxt, File srcdir, boolean preserveDirectoryStructure,
+    		File outputdir, boolean removeComments, Module module,
+    		Target target, String charset, boolean sourceMap,
+    		boolean declaration, File mapRoot, boolean noImplicitAny,
+    		boolean noResolve) throws TaskRunnerException;
 }
 
 final class DefaultTypescriptRunner extends NodeTaskExecutor implements TypescriptRunner {
@@ -22,7 +31,10 @@ final class DefaultTypescriptRunner extends NodeTaskExecutor implements Typescri
     }
     
     @Override
-    public void execute(File argsTxt, File srcDir, File rootDir, File outDir) throws TaskRunnerException {
+    public void execute(File argsTxt, File srcDir, boolean preserveDirectoryStructure,
+    		File outDir, boolean removeComments, Module module, Target target,
+    		String charset, boolean sourceMap, boolean declaration,
+    		File mapRoot, boolean noImplicitAny, boolean noResolve) throws TaskRunnerException {
 
     	LinkedList<String> args = new LinkedList<String>();
 
@@ -36,10 +48,50 @@ final class DefaultTypescriptRunner extends NodeTaskExecutor implements Typescri
     		throw new TaskRunnerException("Missing parameter '<srcDir>'");
     	}
     	
-    	if (rootDir != null) {
+    	if (mapRoot != null) {
+    		args.add("--mapRoot");
+    		args.add(mapRoot.getAbsolutePath());
+    	}
+    	
+    	if (noImplicitAny) {
+    		args.add("--noImplicitAny");
+    	}
+
+    	if (noResolve) {
+    		args.add("--noResolve");
+    	}
+    	
+    	if (declaration) {
+    		args.add("--declaration");
+    	}
+    	
+    	if (sourceMap) {
+    		args.add("--sourceMap");
+    	}
+
+    	if (charset != null) {
+    		args.add("--charset");
+    		args.add(charset);
+    	}
+    	
+    	if (removeComments) {
+    		args.add("--removeComments");
+    	}
+    	
+    	if (module != null) {
+    		args.add("--module");
+    		args.add(module.name());
+    	}
+    	
+    	if (target != null) {
+    		args.add("--target");
+    		args.add(target.name());
+    	}
+    	
+    	if (preserveDirectoryStructure) {
     		
     		args.add("--rootDir");
-    		args.add(rootDir.getAbsolutePath());
+    		args.add(srcDir.getAbsolutePath());
     		
     		compileEntireSrcDir(argsTxt, args, srcDir);
 	    	
@@ -98,8 +150,9 @@ final class DefaultTypescriptRunner extends NodeTaskExecutor implements Typescri
     				@Override
     				public void visit(File file) throws TaskRunnerException {
     					try {
-    						finalWriter.append(' ');
+    						finalWriter.append(" \"");
     						finalWriter.append(file.getAbsolutePath());
+    						finalWriter.append('"');
     					} catch (IOException e) {
     						throw new TaskRunnerException("Could not append file-information", e);
     					}

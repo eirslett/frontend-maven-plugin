@@ -90,6 +90,10 @@
                         <configuration>
                             <srcDir>src/main/typescript</srcDir>
                             <outDir>target/js</outDir>
+                            <preserveDirectoryStructure>true</preserveDirectoryStructure>
+                            <removeComments>true</removeComments>
+                            <target>ES5</target>
+                            <module>amd</module>
                         </configuration>
                     </execution>
 
