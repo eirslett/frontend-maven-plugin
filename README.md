@@ -97,37 +97,43 @@ Or choose to set it for all the goals, in the maven configuration.
 The versions of Node and npm are downloaded from https://nodejs.org/dist, extracted and put into a `node` folder created in your working directory. (Remember to gitignore the `node` folder, unless you actually want to commit it)
 Node/npm will only be "installed" locally to your project. It will not be installed globally on the whole system (and it will not interfere with any Node/npm installations already present.)
 ```xml
-<execution>
-    <!-- optional: you don't really need execution ids,
-    but it looks nice in your build log. -->
-    <id>install node and npm</id>
-    <goals>
-        <goal>install-node-and-npm</goal>
-    </goals>
-    <!-- optional: default phase is "generate-resources" -->
-    <phase>generate-resources</phase>
-    <configuration>
-        <nodeVersion>v0.10.18</nodeVersion>
-        <npmVersion>1.3.8</npmVersion>
-        <!-- optional: where to download node and npm from. Defaults to https://nodejs.org/dist/ -->
-        <downloadRoot>http://myproxy.example.org/nodejs/dist/</downloadRoot>
-        <!-- optional: where to install node and npm. Defaults to the working directory -->
-        <installDirectory>target</installDirectory>
-    </configuration>
-</execution>
+<plugin>
+  ...
+  <execution>
+      <!-- optional: you don't really need execution ids,
+      but it looks nice in your build log. -->
+      <id>install node and npm</id>
+      <goals>
+          <goal>install-node-and-npm</goal>
+      </goals>
+      <!-- optional: default phase is "generate-resources" -->
+      <phase>generate-resources</phase>
+  </execution>
+  <configuration>
+      <nodeVersion>v0.10.18</nodeVersion>
+      <npmVersion>1.3.8</npmVersion>
+      <!-- optional: where to download node and npm from. Defaults to https://nodejs.org/dist/ -->
+      <downloadRoot>http://myproxy.example.org/nodejs/dist/</downloadRoot>
+      <!-- optional: where to install node and npm. Defaults to the working directory -->
+      <installDirectory>target</installDirectory>
+   </configuration>
+</plugin>
 ```
 
 You can also specify separate download roots for npm and node as they are now stored in separate repos.
 ```xml
-<execution>
-    ...
-    <configuration>
-        <nodeVersion>v0.12.1</nodeVersion>
-        <npmVersion>2.7.1</npmVersion>
-        <nodeDownloadRoot>https://nodejs.org/nodejs/dist/</nodeDownloadRoot>
-        <npmDownloadRoot>https://registry.npmjs.org/npm/-/</npmDownloadRoot>
-    </configuration>
-</execution>
+<plugin>
+  ...
+  <execution>
+      ...
+  </execution>
+  <configuration>
+      <nodeVersion>v0.12.1</nodeVersion>
+      <npmVersion>2.7.1</npmVersion>
+      <nodeDownloadRoot>https://nodejs.org/nodejs/dist/</nodeDownloadRoot>
+      <npmDownloadRoot>https://registry.npmjs.org/npm/-/</npmDownloadRoot>
+  </configuration>
+</plugin>
 ```
 
 __Proxy settings:__ If you need to download Node/npm through a proxy: [configure your Maven proxy settings](http://maven.apache.org/guides/mini/guide-proxies.html) in ~/.m2/settings.xml. This plugin will use the same proxy settings as Maven.
