@@ -11,6 +11,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.util.Map;
 
 public abstract class AbstractFrontendMojo extends AbstractMojo {
 
@@ -34,6 +35,13 @@ public abstract class AbstractFrontendMojo extends AbstractMojo {
    */
   @Parameter(property = "installDirectory", required = false)
   protected File installDirectory;
+
+
+  /**
+   * Additional environment variables to pass to the build.
+   */
+   @Parameter
+   protected Map<String, String> environmentVariables;
 
   /**
    * Determines if this execution should be skipped.

@@ -2,9 +2,7 @@ package com.github.eirslett.maven.plugins.frontend.lib;
 
 import java.util.Arrays;
 
-public interface KarmaRunner {
-    void execute(String args) throws TaskRunnerException;
-}
+public interface KarmaRunner extends NodeTaskRunner {}
 
 final class DefaultKarmaRunner extends NodeTaskExecutor implements KarmaRunner {
 

@@ -37,7 +37,7 @@ public final class KarmaRunMojo extends AbstractFrontendMojo {
     @Override
     public void execute(FrontendPluginFactory factory) throws TaskRunnerException {
         try {
-            factory.getKarmaRunner().execute("start " + karmaConfPath);
+            factory.getKarmaRunner().execute("start " + karmaConfPath, environmentVariables);
         }
         catch (TaskRunnerException e) {
             if (testFailureIgnore) {
