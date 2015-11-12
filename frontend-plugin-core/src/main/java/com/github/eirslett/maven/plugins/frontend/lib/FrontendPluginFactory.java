@@ -3,60 +3,63 @@ package com.github.eirslett.maven.plugins.frontend.lib;
 import java.io.File;
 
 public final class FrontendPluginFactory {
-    private static final Platform defaultPlatform = Platform.guess();
+  private static final Platform defaultPlatform = Platform.guess();
 
-    private final File workingDirectory;
-    private final File installDirectory;
+  private final File workingDirectory;
 
-    public FrontendPluginFactory(File workingDirectory, File installDirectory){
-        this.workingDirectory = workingDirectory;
-        this.installDirectory = installDirectory;
-    }
+  private final File installDirectory;
 
-    public NodeAndNPMInstaller getNodeAndNPMInstaller(ProxyConfig proxy){
-        return new DefaultNodeAndNPMInstaller(
-                getInstallConfig(),
-                new DefaultArchiveExtractor(),
-                new DefaultFileDownloader(proxy));
-    }
-    
-    public BowerRunner getBowerRunner() {
-        return new DefaultBowerRunner(getExecutorConfig());
-    }    
+  public FrontendPluginFactory(File workingDirectory, File installDirectory) {
+    this.workingDirectory = workingDirectory;
+    this.installDirectory = installDirectory;
+  }
 
-    public JspmRunner getJspmRunner() {
-        return new DefaultJspmRunner(getExecutorConfig());
-    }
+  public NodeAndNPMInstaller getNodeAndNPMInstaller(ProxyConfig proxy) {
+    return new DefaultNodeAndNPMInstaller(getInstallConfig(), new DefaultArchiveExtractor(), new DefaultFileDownloader(
+        proxy));
+  }
 
-    public NpmRunner getNpmRunner(ProxyConfig proxy) {
-        return new DefaultNpmRunner(getExecutorConfig(), proxy);
-    }
+  public BowerRunner getBowerRunner() {
+    return new DefaultBowerRunner(getExecutorConfig());
+  }
 
-    public GruntRunner getGruntRunner(){
-        return new DefaultGruntRunner(getExecutorConfig());
-    }
+  public JspmRunner getJspmRunner() {
+    return new DefaultJspmRunner(getExecutorConfig());
+  }
 
-    public EmberRunner getEmberRunner() {
-        return new DefaultEmberRunner(getExecutorConfig());
-    }
+  public NpmRunner getNpmRunner(ProxyConfig proxy) {
+    return new DefaultNpmRunner(getExecutorConfig(), proxy);
+  }
 
-    public KarmaRunner getKarmaRunner(){
-        return new DefaultKarmaRunner(getExecutorConfig());
-    }
+  public GruntRunner getGruntRunner() {
+    return new DefaultGruntRunner(getExecutorConfig());
+  }
 
-    public GulpRunner getGulpRunner(){
-        return new DefaultGulpRunner(getExecutorConfig());
-    }
+  public GruntHRunner getGruntHRunner() {
+    return new DefaultGruntHRunner(getExecutorConfig());
+  }
 
-    public WebpackRunner getWebpackRunner(){
-        return new DefaultWebpackRunner(getExecutorConfig());
-    }
+  public EmberRunner getEmberRunner() {
+    return new DefaultEmberRunner(getExecutorConfig());
+  }
 
-    private NodeExecutorConfig getExecutorConfig() {
-        return new InstallNodeExecutorConfig(getInstallConfig());
-    }
+  public KarmaRunner getKarmaRunner() {
+    return new DefaultKarmaRunner(getExecutorConfig());
+  }
 
-    private InstallConfig getInstallConfig() {
-        return new DefaultInstallConfig(installDirectory, workingDirectory, defaultPlatform);
-    }
+  public GulpRunner getGulpRunner() {
+    return new DefaultGulpRunner(getExecutorConfig());
+  }
+
+  public WebpackRunner getWebpackRunner() {
+    return new DefaultWebpackRunner(getExecutorConfig());
+  }
+
+  private NodeExecutorConfig getExecutorConfig() {
+    return new InstallNodeExecutorConfig(getInstallConfig());
+  }
+
+  private InstallConfig getInstallConfig() {
+    return new DefaultInstallConfig(installDirectory, workingDirectory, defaultPlatform);
+  }
 }

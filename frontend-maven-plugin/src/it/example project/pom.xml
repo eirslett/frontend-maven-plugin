@@ -80,6 +80,16 @@
                     </execution>
 
                     <execution>
+                        <id>grunth build</id>
+                        <goals>
+                            <goal>grunth</goal>
+                        </goals>
+                        <configuration>
+                            <arguments>--no-color</arguments>
+                        </configuration>
+                    </execution>
+
+                    <execution>
                         <id>javascript tests</id>
                         <goals>
                             <goal>karma</goal>
