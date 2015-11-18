@@ -99,6 +99,12 @@ public final class TypescriptMojo extends AbstractFrontendMojo {
     private boolean noResolve;
     
     /**
+     * Do not emit outputs if any errors were reported.
+     */
+    @Parameter(property = "noEmitOnError", defaultValue = "false")
+    private boolean noEmitOnError;
+    
+    /**
      * Skips execution of this mojo.
      */
     @Parameter(property = "skip.tsc", defaultValue = "false")
@@ -118,7 +124,7 @@ public final class TypescriptMojo extends AbstractFrontendMojo {
         factory.getTypescriptRunner().execute(
         		argsTxt, srcDir, preserveDirectoryStructure, outDir,
         		removeComments, module, target, charset, sourceMap,
-        		declaration, mapRoot, noImplicitAny, noResolve);
+        		declaration, mapRoot, noImplicitAny, noResolve, noEmitOnError);
 
         if (outDir != null) {
             getLog().info("Refreshing files after tsc: " + outDir);
