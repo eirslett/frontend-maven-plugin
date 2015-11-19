@@ -145,10 +145,15 @@ final class DefaultTypescriptRunner extends NodeTaskExecutor implements Typescri
     
     private void compileEntireSrcDir(final File argsTxt, LinkedList<String> args, final File srcDir, boolean noEmitOnError)
     		throws TaskRunnerException {
+
+		final long[] counter = new long[1];
+		counter[0] = -1l;
     	
     	final LinkedList<String> tscArgs = new LinkedList<String>();
     	if (argsTxt != null) {
-    		FileWriter argsTxtWriter = null;
+			counter[0] = 0l;
+
+			FileWriter argsTxtWriter = null;
     		try {
     			final File destDir = argsTxt.getParentFile();
     			destDir.mkdirs();
@@ -164,7 +169,7 @@ final class DefaultTypescriptRunner extends NodeTaskExecutor implements Typescri
     					argsTxtWriter.append("\"");
     				}
     			}
-    			
+    			    			
     			final FileWriter finalWriter = argsTxtWriter;
     	    	visitFilesOfDirectory(srcDir, new FileVisitor() {
     				@Override
@@ -175,6 +180,7 @@ final class DefaultTypescriptRunner extends NodeTaskExecutor implements Typescri
     					if (!file.getName().endsWith(".ts")) {
     						return;
     					}
+    					counter[0]++;
     					try {
     						finalWriter.append(" \"");
     						finalWriter.append(file.getAbsolutePath());
@@ -202,7 +208,9 @@ final class DefaultTypescriptRunner extends NodeTaskExecutor implements Typescri
     		tscArgs.addAll(args);
     	}
     	
-		superExecute(tscArgs, noEmitOnError);
+    	if (counter[0] != 0) {
+    		superExecute(tscArgs, noEmitOnError);
+    	}
     	
     }
     
