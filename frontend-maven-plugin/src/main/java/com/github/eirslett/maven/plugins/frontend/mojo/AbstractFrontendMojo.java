@@ -47,7 +47,7 @@ public abstract class AbstractFrontendMojo extends AbstractMojo {
    */
   private boolean isTestingPhase() {
     String phase = execution.getLifecyclePhase();
-    return phase.equals("test") || phase.equals("integration-test");
+    return phase!=null && (phase.equals("test") || phase.equals("integration-test"));
   }
 
   protected abstract void execute(FrontendPluginFactory factory) throws FrontendException;
