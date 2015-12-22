@@ -35,6 +35,11 @@ public class ProxyConfig {
             }
         }
         LOGGER.info("Could not find matching proxy for protocol {}", uri.getScheme());
+        for (Proxy proxy : proxies) {
+            if (!proxy.isNonProxyHost(uri.getHost())) {
+                return proxy;
+            }
+        }
         return null;
     }
 
