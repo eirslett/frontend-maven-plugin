@@ -21,6 +21,8 @@ public interface NodeAndNPMInstaller {
 
 final class DefaultNodeAndNPMInstaller implements NodeAndNPMInstaller {
 
+    private static final Object lock = new Object();
+
     private final Logger logger;
     private final InstallConfig config;
     private final ArchiveExtractor archiveExtractor;
@@ -60,15 +62,17 @@ final class DefaultNodeAndNPMInstaller implements NodeAndNPMInstaller {
         }
 
         public void install() throws InstallationException {
-            if(!nodeIsAlreadyInstalled()){
-                if(config.getPlatform().isWindows()){
-                    installNodeForWindows();
-                } else {
-                    installNodeDefault();
+            synchronized (lock) {
+                if (!nodeIsAlreadyInstalled()) {
+                    if (config.getPlatform().isWindows()) {
+                        installNodeForWindows();
+                    } else {
+                        installNodeDefault();
+                    }
                 }
-            }
-            if(!npmIsAlreadyInstalled()) {
-                installNpm();
+                if (!npmIsAlreadyInstalled()) {
+                    installNpm();
+                }
             }
         }
 
