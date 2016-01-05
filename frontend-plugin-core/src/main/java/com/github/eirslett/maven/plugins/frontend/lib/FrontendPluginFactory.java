@@ -3,14 +3,22 @@ package com.github.eirslett.maven.plugins.frontend.lib;
 import java.io.File;
 
 public final class FrontendPluginFactory {
+    
     private static final Platform defaultPlatform = Platform.guess();
+    private static final String DEFAULT_CACHE_PATH = "cache";
 
     private final File workingDirectory;
     private final File installDirectory;
+    private final CacheResolver cacheResolver;
 
     public FrontendPluginFactory(File workingDirectory, File installDirectory){
+        this(workingDirectory, installDirectory, getDefaultCacheResolver(installDirectory));
+    }
+
+    public FrontendPluginFactory(File workingDirectory, File installDirectory, CacheResolver cacheResolver){
         this.workingDirectory = workingDirectory;
         this.installDirectory = installDirectory;
+        this.cacheResolver = cacheResolver;
     }
 
     public NodeAndNPMInstaller getNodeAndNPMInstaller(ProxyConfig proxy){
@@ -57,6 +65,10 @@ public final class FrontendPluginFactory {
     }
 
     private InstallConfig getInstallConfig() {
-        return new DefaultInstallConfig(installDirectory, workingDirectory, defaultPlatform);
+        return new DefaultInstallConfig(installDirectory, workingDirectory, cacheResolver, defaultPlatform);
+    }
+
+    private static final CacheResolver getDefaultCacheResolver(File root) {
+        return new DirectoryCacheResolver(new File(root, DEFAULT_CACHE_PATH));
     }
 }

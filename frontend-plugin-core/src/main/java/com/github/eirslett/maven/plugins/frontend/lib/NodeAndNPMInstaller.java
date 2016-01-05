@@ -21,6 +21,8 @@ public interface NodeAndNPMInstaller {
 
 final class DefaultNodeAndNPMInstaller implements NodeAndNPMInstaller {
 
+    private static final String INSTALL_PATH = "node";
+
     private final Logger logger;
     private final InstallConfig config;
     private final ArchiveExtractor archiveExtractor;
@@ -61,6 +63,10 @@ final class DefaultNodeAndNPMInstaller implements NodeAndNPMInstaller {
 
         public void install() throws InstallationException {
             if(!nodeIsAlreadyInstalled()){
+                logger.info("Installing node version {}", nodeVersion);
+                if (!nodeVersion.startsWith("v")) {
+                    logger.warn("Node version does not start with naming convention 'v'.");
+                }
                 if(config.getPlatform().isWindows()){
                     installNodeForWindows();
                 } else {
@@ -80,10 +86,10 @@ final class DefaultNodeAndNPMInstaller implements NodeAndNPMInstaller {
                     final String version = new NodeExecutor(executorConfig, Arrays.asList("--version"), null).executeAndGetResult();
 
                     if(version.equals(nodeVersion)){
-                        logger.info("Node " + version + " is already installed.");
+                        logger.info("Node {} is already installed.", version);
                         return true;
                     } else {
-                        logger.info("Node " + version + " was installed, but we need version " + nodeVersion);
+                        logger.info("Node {} was installed, but we need version {}", version, nodeVersion);
                         return false;
                     }
                 } else {
@@ -101,11 +107,11 @@ final class DefaultNodeAndNPMInstaller implements NodeAndNPMInstaller {
                     HashMap<String,Object> data = new ObjectMapper().readValue(npmPackageJson, HashMap.class);
                     if(data.containsKey(VERSION)){
                         final String foundNpmVersion = data.get(VERSION).toString();
-                        logger.info("Found NPM version " + foundNpmVersion);
                         if(foundNpmVersion.equals(npmVersion)) {
+                            logger.info("NPM {} is already installed.", foundNpmVersion);
                             return true;
                         } else {
-                            logger.info("Mismatch between found NPM version and required NPM version");
+                            logger.info("NPM {} was installed, but we need version {}", foundNpmVersion, npmVersion);
                             return false;
                         }
                     } else {
@@ -122,16 +128,22 @@ final class DefaultNodeAndNPMInstaller implements NodeAndNPMInstaller {
 
         private void installNpm() throws InstallationException {
             try {
-                logger.info("Installing npm version " + npmVersion);
+                logger.info("Installing npm version {}", npmVersion);
                 final String downloadUrl = npmDownloadRoot +"npm-"+npmVersion+".tgz";
-                String targetName = config.getInstallDirectory() + File.separator + "npm.tar.gz";
-                logger.info("Downloading NPM from " + downloadUrl + " to " + targetName);
-                downloadFile(downloadUrl, targetName);
+
+                CacheDescriptor cacheDescriptor = new CacheDescriptor("npm", npmVersion, "tar.gz");
+
+                File archive = config.getCacheResolver().resolve(cacheDescriptor);
+
+                downloadFileIfMissing(downloadUrl, archive);
+
+                File installDirectory = getInstallDirectory();
+                File nodeModulesDirectory = new File(installDirectory, "node_modules");
 
                 // We need to delete the existing npm directory first so we clean out any old files, and
                 // so we can rename the package directory below.
-                File oldNpmDirectory = new File(config.getInstallDirectory(), "./node/npm");
-                File npmDirectory = new File(config.getInstallDirectory(), "./node/node_modules/npm");
+                File oldNpmDirectory = new File(installDirectory, "npm");
+                File npmDirectory = new File(nodeModulesDirectory, "npm");
                 try {
                     if (oldNpmDirectory.isDirectory()) {
                         FileUtils.deleteDirectory(oldNpmDirectory);
@@ -141,12 +153,11 @@ final class DefaultNodeAndNPMInstaller implements NodeAndNPMInstaller {
                     logger.warn("Failed to delete existing NPM installation.");
                 }
 
-                logger.info("Extracting NPM files in node/");
-                extractFile(targetName, config.getInstallDirectory() +"/node/node_modules");
-                new File(targetName).delete();
+                extractFile(archive, nodeModulesDirectory);
+
                 // handles difference between old and new download root (nodejs.org/dist/npm and registry.npmjs.org)
                 // see https://github.com/eirslett/frontend-maven-plugin/issues/65#issuecomment-52024254
-                File packageDirectory = new File(config.getInstallDirectory(), "./node/node_modules/package");
+                File packageDirectory = new File(nodeModulesDirectory, "package");
                 if (packageDirectory.exists() && !npmDirectory.exists()) {
                     if (! packageDirectory.renameTo(npmDirectory)) {
                         logger.warn("Cannot rename NPM directory, making a copy.");
@@ -156,15 +167,15 @@ final class DefaultNodeAndNPMInstaller implements NodeAndNPMInstaller {
 
                 // create a copy of the npm scripts next to the node executable
                 for (String script : Arrays.asList("npm", "npm.cmd")) {
-                    File scriptFile = new File(npmDirectory, "bin/"+script);
+                    File scriptFile = new File(npmDirectory, "bin"+File.separator+script);
                     if (scriptFile.exists()) {
-                        File copy = new File(config.getInstallDirectory(), "/node/"+script);
+                        File copy = new File(installDirectory, script);
                         FileUtils.copyFile(scriptFile, copy);
                         copy.setExecutable(true);
                     }
                 }
 
-                logger.info("Installed NPM locally.");
+                logger.info("Installed npm locally.");
             } catch (DownloadException e) {
                 throw new InstallationException("Could not download npm", e);
             } catch (ArchiveExtractionException e) {
@@ -175,45 +186,39 @@ final class DefaultNodeAndNPMInstaller implements NodeAndNPMInstaller {
         }
 
         private void installNodeDefault() throws InstallationException {
-            String downloadUrl = "";
             try {
-                logger.info("Installing node version " + nodeVersion);
-                if (!nodeVersion.startsWith("v")) {
-                    logger.warn("Node version does not start with naming convention 'v'.");
-                }
                 final String longNodeFilename = config.getPlatform().getLongNodeFilename(nodeVersion);
-                downloadUrl = nodeDownloadRoot + config.getPlatform().getNodeDownloadFilename(nodeVersion);
+                String downloadUrl = nodeDownloadRoot + config.getPlatform().getNodeDownloadFilename(nodeVersion);
+                String classifier = config.getPlatform().getNodeClassifier();
 
-                final File tmpDirectory = new File(config.getInstallDirectory() + File.separator + "node_tmp");
-                logger.info("Creating temporary directory " + tmpDirectory);
-                tmpDirectory.mkdirs();
+                File tmpDirectory = getTempDirectory();
 
-                final String targetName = config.getInstallDirectory() + "/node_tmp/node.tar.gz";
-                logger.info("Downloading Node.js from " + downloadUrl + " to " + targetName);
-                downloadFile(downloadUrl, targetName);
+                CacheDescriptor cacheDescriptor = new CacheDescriptor("node", nodeVersion, classifier, "tar.gz");
 
-                logger.info("Extracting Node.js files in node_tmp");
-                extractFile(targetName, config.getInstallDirectory() + "/node_tmp");
+                File archive = config.getCacheResolver().resolve(cacheDescriptor);
+
+                downloadFileIfMissing(downloadUrl, archive);
+
+                extractFile(archive, tmpDirectory);
 
                 // Search for the node binary
-                File nodeBinary = new File(config.getInstallDirectory() + "/node_tmp/"+longNodeFilename+"/bin/node");
+                File nodeBinary = new File(tmpDirectory,longNodeFilename + File.separator + "bin" + File.separator + "node");
                 if(!nodeBinary.exists()){
                     throw new FileNotFoundException("Could not find the downloaded Node.js binary in "+nodeBinary);
                 } else {
-                    File destinationDirectory = new File(config.getInstallDirectory() + "/node");
-                    destinationDirectory.mkdirs();
-                    File destination = new File(destinationDirectory + "/node");
-                    logger.info("Moving node binary to " + destination);
+                    File destinationDirectory = getInstallDirectory();
+
+                    File destination = new File(destinationDirectory, "node");
+                    logger.info("Copying node binary from {} to {}", nodeBinary, destination);
                     if(!nodeBinary.renameTo(destination)){
                         throw new InstallationException("Could not install Node: Was not allowed to rename "+nodeBinary+" to "+destination);
                     }
 
                     if(!destination.setExecutable(true, false)){
-                        throw new InstallationException("Cound not install Node: Was not allowed to make "+destination+" executable.");
+                      throw new InstallationException("Could not install Node: Was not allowed to make "+destination+" executable.");
                     }
 
-                    logger.info("Deleting temporary directory " + tmpDirectory);
-                    FileUtils.deleteDirectory(tmpDirectory);
+                    deleteTempDirectory(tmpDirectory);
 
                     logger.info("Installed node locally.");
                 }
@@ -229,24 +234,68 @@ final class DefaultNodeAndNPMInstaller implements NodeAndNPMInstaller {
         private void installNodeForWindows() throws InstallationException {
             final String downloadUrl = nodeDownloadRoot + config.getPlatform().getNodeDownloadFilename(nodeVersion);
             try {
-                logger.info("Installing node version " + nodeVersion);
+                File destinationDirectory = getInstallDirectory();
 
-                new File(config.getInstallDirectory()+"\\node").mkdirs();
+                File destination = new File(destinationDirectory, "node.exe");
 
-                downloadFile(downloadUrl, config.getInstallDirectory() +"\\node\\node.exe");
-                logger.info("Installed node.exe locally.");
+                String classifier = config.getPlatform().getNodeClassifier();
+
+                CacheDescriptor cacheDescriptor = new CacheDescriptor("node", nodeVersion, classifier, "exe");
+
+                File binary = config.getCacheResolver().resolve(cacheDescriptor);
+
+                downloadFileIfMissing(downloadUrl, binary);
+
+                logger.info("Copying node binary from {} to {}", binary, destination);
+                FileUtils.copyFile(binary, destination);
+
+                logger.info("Installed node locally.");
             } catch (DownloadException e) {
                 throw new InstallationException("Could not download Node.js from: " + downloadUrl, e);
+            } catch (IOException e) {
+                throw new InstallationException("Could not install Node.js", e);
             }
         }
 
-        private void extractFile(String archive, String destinationDirectory) throws ArchiveExtractionException {
-            logger.info("Unpacking " + archive + " into " + destinationDirectory);
-            archiveExtractor.extract(archive, destinationDirectory);
+        private File getTempDirectory() {
+            File tmpDirectory = new File(getInstallDirectory(), "tmp");
+            if (!tmpDirectory.exists()) {
+                logger.debug("Creating temporary directory {}", tmpDirectory);
+                tmpDirectory.mkdirs();
+            }
+            return tmpDirectory;
         }
 
-        private void downloadFile(String downloadUrl, String destination) throws DownloadException {
-            fileDownloader.download(downloadUrl, destination);
+        private File getInstallDirectory() {
+            File installDirectory = new File(config.getInstallDirectory(), INSTALL_PATH);
+            if (!installDirectory.exists()) {
+                logger.debug("Creating install directory {}", installDirectory);
+                installDirectory.mkdirs();
+            }
+            return installDirectory;
+        }
+
+        private void deleteTempDirectory(File tmpDirectory) throws IOException {
+            if (tmpDirectory != null && tmpDirectory.exists()) {
+                logger.debug("Deleting temporary directory {}", tmpDirectory);
+                FileUtils.deleteDirectory(tmpDirectory);
+            }
+        }
+
+        private void extractFile(File archive, File destinationDirectory) throws ArchiveExtractionException {
+            logger.info("Unpacking {} into {}", archive, destinationDirectory);
+            archiveExtractor.extract(archive.getPath(), destinationDirectory.getPath());
+        }
+
+        private void downloadFileIfMissing(String downloadUrl, File destination) throws DownloadException {
+            if (!destination.exists()) {
+                downloadFile(downloadUrl, destination);
+            }
+        }
+
+        private void downloadFile(String downloadUrl, File destination) throws DownloadException {
+            logger.info("Downloading {} to {}", downloadUrl, destination);
+            fileDownloader.download(downloadUrl, destination.getPath());
         }
     }
 }
