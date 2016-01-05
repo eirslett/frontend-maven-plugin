@@ -60,7 +60,7 @@ class Platform {
         if(isWindows()){
             return "node.exe";
         } else {
-            return "node-" + nodeVersion + "-" + getCodename() + "-" + architecture.toString();
+            return "node-" + nodeVersion + "-" + this.getNodeClassifier();
         }
     }
 
@@ -82,5 +82,9 @@ class Platform {
         } else {
             return nodeVersion + "/" + getLongNodeFilename(nodeVersion) + ".tar.gz";
         }
+    }
+
+    public String getNodeClassifier() {
+        return this.getCodename() + "-" + this.architecture.name();
     }
 }

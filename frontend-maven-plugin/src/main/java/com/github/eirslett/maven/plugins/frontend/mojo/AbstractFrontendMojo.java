@@ -8,6 +8,8 @@ import org.apache.maven.plugin.MojoExecution;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.project.MavenProject;
+import org.eclipse.aether.RepositorySystemSession;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
@@ -43,6 +45,18 @@ public abstract class AbstractFrontendMojo extends AbstractMojo {
    @Parameter
    protected Map<String, String> environmentVariables;
 
+  @Parameter(
+      defaultValue = "${project}",
+      readonly = true
+  )
+  private MavenProject project;
+
+  @Parameter(
+      defaultValue = "${repositorySystemSession}",
+      readonly = true
+  )
+  private RepositorySystemSession repositorySystemSession;
+
   /**
    * Determines if this execution should be skipped.
    */
@@ -72,7 +86,11 @@ public abstract class AbstractFrontendMojo extends AbstractMojo {
         installDirectory = workingDirectory;
       }
       try {
-        execute(new FrontendPluginFactory(workingDirectory, installDirectory));
+        execute(new FrontendPluginFactory(
+            workingDirectory,
+            installDirectory,
+            new RepositoryCacheResolver(repositorySystemSession)
+        ));
       } catch (TaskRunnerException e) {
         throw new MojoFailureException("Failed to run task", e);
       } catch (FrontendException e) {
