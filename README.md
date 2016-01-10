@@ -85,7 +85,7 @@ Or choose to set it for all the goals, in the maven configuration.
     <plugin>
         <groupId>com.github.eirslett</groupId>
         <artifactId>frontend-maven-plugin</artifactId>
-        <version>0.0.26</version>
+        <version>0.0.27</version>
 
         <configuration>
             <installDirectory>target</installDirectory>
