@@ -33,7 +33,7 @@ Include the plugin as a dependency in your Maven project.
         <artifactId>frontend-maven-plugin</artifactId>
         <!-- Use the latest released version:
         https://repo1.maven.org/maven2/com/github/eirslett/frontend-maven-plugin/ -->
-        <version>0.0.26</version>
+        <version>0.0.27</version>
         ...
     </plugin>
 ...
