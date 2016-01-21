@@ -101,7 +101,7 @@ final class DefaultFileDownloader implements FileDownloader {
             proxyClient = buildHttpClient(null);
         }
 
-        final HttpHost proxyHttpHost = new HttpHost(proxy.host, proxy.port, proxy.protocol);
+        final HttpHost proxyHttpHost = new HttpHost(proxy.host, proxy.port);
 
         final RequestConfig requestConfig = RequestConfig.custom().setProxy(proxyHttpHost).build();
 
