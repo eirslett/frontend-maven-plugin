@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -36,22 +35,23 @@ final class ProcessExecutor {
     private CommandLine commandLine;
     private final Executor executor;
 
-    public ProcessExecutor(File workingDirectory, List<String> paths, List<String> command, Platform platform) {
-        this(workingDirectory, paths, command, platform, 0);
+    public ProcessExecutor(File workingDirectory, List<String> paths, String executable, List<String> arguments,
+            Platform platform) {
+        this(workingDirectory, paths, executable, arguments, platform, 0);
     }
 
-    public ProcessExecutor(File workingDirectory, List<String> paths, List<String> command, Platform platform,
-            long timeoutInSeconds) {
+    public ProcessExecutor(File workingDirectory, List<String> paths, String executable, List<String> arguments,
+            Platform platform, long timeoutInSeconds) {
         this.environment = createEnvironment(paths, platform);
-        this.commandLine = createCommandLine(command);
+        this.commandLine = createCommandLine(executable, arguments);
         this.executor = createExecutor(workingDirectory, timeoutInSeconds);
     }
 
-    public String executeAndGetResult() throws ProcessExecutionException {
+    public String executeAndGetResult(final Logger logger) throws ProcessExecutionException {
         ByteArrayOutputStream stdout = new ByteArrayOutputStream();
         ByteArrayOutputStream stderr = new ByteArrayOutputStream();
 
-        int exitValue = execute(stdout, stderr);
+        int exitValue = execute(logger, stdout, stderr);
         if (exitValue == 0) {
             return stdout.toString().trim();
         } else {
@@ -63,15 +63,20 @@ final class ProcessExecutor {
         OutputStream stdout = new LoggerOutputStream(logger, 0);
         OutputStream stderr = new LoggerOutputStream(logger, 1);
 
-        return execute(stdout, stderr);
+        return execute(logger, stdout, stderr);
     }
 
-    private int execute(OutputStream stdout, OutputStream stderr) throws ProcessExecutionException {
+    private int execute(final Logger logger, final OutputStream stdout, final OutputStream stderr)
+            throws ProcessExecutionException {
+        logger.debug("Executing command line {}", commandLine);
         try {
             ExecuteStreamHandler streamHandler = new PumpStreamHandler(stdout, stderr);
             executor.setStreamHandler(streamHandler);
 
-            return executor.execute(commandLine, environment);
+            int exitValue = executor.execute(commandLine, environment);
+            logger.debug("Exit value {}", exitValue);
+
+            return exitValue;
         } catch (ExecuteException e) {
             if (executor.getWatchdog() != null && executor.getWatchdog().killedProcess()) {
                 throw new ProcessExecutionException("Process killed after timeout");
@@ -107,12 +112,11 @@ final class ProcessExecutor {
         return environment;
     }
 
-    private CommandLine createCommandLine(List<String> command) {
-        Iterator<String> args = command.iterator();
-        CommandLine commmandLine = new CommandLine(args.next());
+    private CommandLine createCommandLine(String executable, List<String> arguments) {
+        CommandLine commmandLine = new CommandLine(executable);
 
-        while(args.hasNext()) {
-            commmandLine.addArgument(args.next());
+        for (String argument : arguments) {
+            commmandLine.addArgument(argument);
         }
 
         return commmandLine;
