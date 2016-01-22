@@ -116,7 +116,7 @@ final class ProcessExecutor {
         CommandLine commmandLine = new CommandLine(executable);
 
         for (String argument : arguments) {
-            commmandLine.addArgument(argument);
+            commmandLine.addArgument(argument, false);
         }
 
         return commmandLine;
