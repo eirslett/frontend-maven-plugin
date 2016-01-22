@@ -12,15 +12,12 @@ final class NodeExecutor {
         final String node = config.getNodePath().getAbsolutePath();
         List<String> localPaths = new ArrayList<String>();
         localPaths.add(config.getNodePath().getParent());
-        this.executor = new ProcessExecutor(
-            config.getWorkingDirectory(),
-            localPaths,
-            Utils.prepend(node, arguments),
-            config.getPlatform());
+        this.executor = new ProcessExecutor(config.getWorkingDirectory(), localPaths, node, arguments,
+                config.getPlatform());
     }
 
-    public String executeAndGetResult() throws ProcessExecutionException {
-        return executor.executeAndGetResult();
+    public String executeAndGetResult(final Logger logger) throws ProcessExecutionException {
+        return executor.executeAndGetResult(logger);
     }
 
     public int executeAndRedirectOutput(final Logger logger) throws ProcessExecutionException {
