@@ -2,9 +2,7 @@ package com.github.eirslett.maven.plugins.frontend.lib;
 
 import java.util.Arrays;
 
-public interface GruntRunner {
-    void execute(String args) throws TaskRunnerException;
-}
+public interface GruntRunner extends NodeTaskRunner {}
 
 final class DefaultGruntRunner extends NodeTaskExecutor implements GruntRunner {
 
