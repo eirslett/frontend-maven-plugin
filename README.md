@@ -141,7 +141,7 @@ __Proxy settings:__ If you need to download Node/npm through a proxy: [configure
 
 ### Running npm
 All npm modules will be installed in the `node_modules` folder in your working directory.
-By default, no colors will be shown in the log.
+By default, colors will be shown in the log.
 ```xml
 <execution>
     <id>npm install</id>
@@ -202,7 +202,7 @@ All jspm dependencies will be installed in the `jspm_packages` folder in your wo
 
 ### Running Grunt
 It will run Grunt according to the `Gruntfile.js` in your working directory.
-By default, no colors will be shown in the log.
+By default, colors will be shown in the log.
 ```xml
 <execution>
     <id>grunt build</id>
@@ -223,7 +223,7 @@ By default, no colors will be shown in the log.
 
 ### Running gulp
 Very similar to the Grunt execution. It will run gulp according to the `gulpfile.js` in your working directory.
-By default, no colors will be shown in the log.
+By default, colors will be shown in the log.
 ```xml
 <execution>
     <id>gulp build</id>
