@@ -16,12 +16,20 @@ import java.io.File;
 @Mojo(name="npm",  defaultPhase = LifecyclePhase.GENERATE_RESOURCES)
 public final class NpmMojo extends AbstractFrontendMojo {
 
+    private static final String NPM_REGISTRY_URL = "npmRegistryURL";
+    
     /**
      * npm arguments. Default is "install".
      */
     @Parameter(defaultValue = "install", property = "frontend.npm.arguments", required = false)
     private String arguments;
 
+    /**
+     * Registry override, passed as the registry option during npm install if set.
+     */
+    @Parameter(property = NPM_REGISTRY_URL, required = false, defaultValue = "")
+    private String npmRegistryURL;
+    
     @Parameter(property = "session", defaultValue = "${session}", readonly = true)
     private MavenSession session;
 
@@ -47,9 +55,14 @@ public final class NpmMojo extends AbstractFrontendMojo {
         File packageJson = new File(workingDirectory, "package.json");
         if (buildContext == null || buildContext.hasDelta(packageJson) || !buildContext.isIncremental()) {
             ProxyConfig proxyConfig = MojoUtils.getProxyConfig(session, decrypter);
-            factory.getNpmRunner(proxyConfig).execute(arguments, environmentVariables);
+            factory.getNpmRunner(proxyConfig, getRegistryUrl()).execute(arguments, environmentVariables);
         } else {
             getLog().info("Skipping npm install as package.json unchanged");
         }
+    }
+    
+    private String getRegistryUrl() {
+	// check to see if overridden via `-D`, otherwise fallback to pom value
+	return System.getProperty(NPM_REGISTRY_URL, npmRegistryURL);
     }
 }
