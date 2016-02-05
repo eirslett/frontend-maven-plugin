@@ -10,14 +10,13 @@ public interface NpmRunner extends NodeTaskRunner {}
 final class DefaultNpmRunner extends NodeTaskExecutor implements NpmRunner {
     static final String TASK_NAME = "npm";
 
-    public DefaultNpmRunner(NodeExecutorConfig config, ProxyConfig proxyConfig) {
-        super(config, TASK_NAME, config.getNpmPath().getAbsolutePath(), buildArguments(proxyConfig));
+    public DefaultNpmRunner(NodeExecutorConfig config, ProxyConfig proxyConfig, String npmRegistryURL) {
+        super(config, TASK_NAME, config.getNpmPath().getAbsolutePath(), buildArguments(proxyConfig, npmRegistryURL));
     }
 
-    private static List<String> buildArguments(ProxyConfig proxyConfig) {
+    private static List<String> buildArguments(ProxyConfig proxyConfig, String npmRegistryURL) {
         List<String> arguments = new ArrayList<String>();
-
-        String npmRegistryURL = System.getProperty("npmRegistryURL");
+               
         if (npmRegistryURL != null)
         {
             arguments.add ("--registry=" + npmRegistryURL);
@@ -34,6 +33,7 @@ final class DefaultNpmRunner extends NodeTaskExecutor implements NpmRunner {
                 arguments.add("--proxy=" + insecureProxy.getUri().toString());
             }
         }
+        
         return arguments;
     }
 }

@@ -28,8 +28,8 @@ public final class FrontendPluginFactory {
         return new DefaultJspmRunner(getExecutorConfig());
     }
 
-    public NpmRunner getNpmRunner(ProxyConfig proxy) {
-        return new DefaultNpmRunner(getExecutorConfig(), proxy);
+    public NpmRunner getNpmRunner(ProxyConfig proxy, String npmRegistryURL) {
+        return new DefaultNpmRunner(getExecutorConfig(), proxy, npmRegistryURL);
     }
 
     public GruntRunner getGruntRunner(){
