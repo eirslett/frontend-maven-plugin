@@ -16,24 +16,27 @@ final class DefaultNpmRunner extends NodeTaskExecutor implements NpmRunner {
 
     private static List<String> buildArguments(ProxyConfig proxyConfig, String npmRegistryURL) {
         List<String> arguments = new ArrayList<String>();
-               
-        if (npmRegistryURL != null)
-        {
-            arguments.add ("--registry=" + npmRegistryURL);
+
+        if (npmRegistryURL != null) {
+            arguments.add("--registry=" + npmRegistryURL);
         }
 
         if (!proxyConfig.isEmpty()) {
-            Proxy secureProxy = proxyConfig.getSecureProxy();
-            if (secureProxy != null){
-                arguments.add("--https-proxy=" + secureProxy.getUri().toString());
-            }
-
-            Proxy insecureProxy = proxyConfig.getInsecureProxy();
-            if (insecureProxy != null) {
-                arguments.add("--proxy=" + insecureProxy.getUri().toString());
+            if (npmRegistryURL != null) {
+                Proxy registryProxy = proxyConfig.getProxyForUrl(npmRegistryURL);
+                addProxyToArguments(registryProxy, arguments);
+            } else {
+                addProxyToArguments(proxyConfig.getSecureProxy(), arguments);
+                addProxyToArguments(proxyConfig.getInsecureProxy(), arguments);
             }
         }
-        
+
         return arguments;
+    }
+
+    private static void addProxyToArguments(Proxy proxy, List<String> arguments) {
+        if (proxy != null) {
+            arguments.add((proxy.isSecure() ? "--https-proxy=" : "--proxy=") + proxy.getUri().toString());
+        }
     }
 }
