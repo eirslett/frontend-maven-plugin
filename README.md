@@ -26,6 +26,7 @@ running common javascript tasks such as minification, obfuscation, compression, 
 
 # Installing
 Include the plugin as a dependency in your Maven project.
+## Maven 3
 ```xml
 <plugins>
     <plugin>
@@ -38,6 +39,8 @@ Include the plugin as a dependency in your Maven project.
     </plugin>
 ...
 ```
+
+For *Maven 2* support take a look at the [wiki](https://github.com/eirslett/frontend-maven-plugin/wiki#maven-2).
 
 # Usage
 Have a look at the example project, to see how it should be set up!
