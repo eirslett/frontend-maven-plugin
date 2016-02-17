@@ -39,6 +39,7 @@ Include the plugin as a dependency in your Maven project.
     </plugin>
 ...
 ```
+
 For *Maven 2* support take a look at the [wiki](https://github.com/eirslett/frontend-maven-plugin/wiki#maven-2).
 
 # Usage
