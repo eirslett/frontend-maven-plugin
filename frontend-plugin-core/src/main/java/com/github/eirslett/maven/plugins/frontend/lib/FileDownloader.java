@@ -114,6 +114,7 @@ final class DefaultFileDownloader implements FileDownloader {
     private CloseableHttpClient buildHttpClient(CredentialsProvider credentialsProvider) {
     	return HttpClients.custom()
     			.disableContentCompression()
+    			.useSystemProperties()
     			.setDefaultCredentialsProvider(credentialsProvider)
     			.build();
     }
