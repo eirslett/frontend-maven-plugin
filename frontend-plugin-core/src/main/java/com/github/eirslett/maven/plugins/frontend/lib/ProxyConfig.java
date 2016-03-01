@@ -30,11 +30,11 @@ public class ProxyConfig {
         }
         final URI uri = URI.create(requestUrl);
         for (Proxy proxy : proxies) {
-            if (proxy.protocol.equals(uri.getScheme()) && !proxy.isNonProxyHost(uri.getHost())) {
+            if (!proxy.isNonProxyHost(uri.getHost())) {
                 return proxy;
             }
         }
-        LOGGER.info("Could not find matching proxy for protocol {}", uri.getScheme());
+        LOGGER.info("Could not find matching proxy for host: {}" + uri.getHost());
         return null;
     }
 
