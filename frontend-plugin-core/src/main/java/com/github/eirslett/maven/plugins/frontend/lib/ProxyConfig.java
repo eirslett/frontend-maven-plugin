@@ -16,7 +16,6 @@ public class ProxyConfig {
 
     public ProxyConfig(List<Proxy> proxies) {
         this.proxies = proxies;
-        LOGGER.info("Found proxies: {}", proxies);
     }
 
     public boolean isEmpty() {

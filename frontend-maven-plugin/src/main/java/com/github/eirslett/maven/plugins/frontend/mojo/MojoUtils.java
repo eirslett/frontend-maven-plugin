@@ -8,6 +8,8 @@ import org.apache.maven.settings.crypto.DefaultSettingsDecryptionRequest;
 import org.apache.maven.settings.crypto.SettingsDecrypter;
 import org.apache.maven.settings.crypto.SettingsDecryptionResult;
 import org.codehaus.plexus.util.Scanner;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sonatype.plexus.build.incremental.BuildContext;
 
 import java.io.File;
@@ -16,6 +18,9 @@ import java.util.Collections;
 import java.util.List;
 
 class MojoUtils {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(MojoUtils.class);
+
     static <E extends Throwable> MojoFailureException toMojoFailureException(E e) {
         return new MojoFailureException(e.getMessage() + ": " + e.getCause().getMessage(), e);
     }
@@ -39,6 +44,7 @@ class MojoUtils {
                 }
             }
 
+            LOGGER.info("Found proxies: {}", proxies);
             return new ProxyConfig(proxies);
         }
     }
