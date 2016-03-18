@@ -139,8 +139,26 @@ You can also specify separate download roots for npm and node as they are now st
 </plugin>
 ```
 
-__Proxy settings:__ If you need to download Node/npm through a proxy: [configure your Maven proxy settings](http://maven.apache.org/guides/mini/guide-proxies.html) in ~/.m2/settings.xml. This plugin will use the same proxy settings as Maven.
+### Proxy settings
 
+If you have [configured proxy settings for Maven](http://maven.apache.org/guides/mini/guide-proxies.html)
+in your settings.xml file, the plugin will automatically use the proxy for downloading node and npm, as well
+as [passing the proxy to npm commands](https://docs.npmjs.com/misc/config#proxy).
+
+__Non Proxy Hosts:__ npm does not currently support non proxy hosts - if you are using a proxy and npm install is 
+is not downloading from your repository, it may be because it cannot be accessed through your proxy. 
+If that is the case, you can stop the npm execution from inheriting the Maven proxy settings like this:
+```xml
+<execution>
+    <id>npm install</id>
+    <goals>
+        <goal>npm</goal>
+    </goals>
+    <configuration>
+        <npmInheritsProxyConfigFromMaven>false</npmInheritsProxyConfigFromMaven>
+    </configuration>
+</execution>
+```
 
 ### Running npm
 All npm modules will be installed in the `node_modules` folder in your working directory.
