@@ -16,7 +16,7 @@ public interface NodeAndNPMInstaller {
     String DEFAULT_NODEJS_DOWNLOAD_ROOT = "https://nodejs.org/dist/";
     String DEFAULT_NPM_DOWNLOAD_ROOT = "http://registry.npmjs.org/npm/-/";
 
-    void install(String nodeVersion, String npmVersion, String nodeDownloadRoot, String npmDownloadRoot) throws InstallationException;
+    void install(String nodeVersion, String npmVersion, String nodeDownloadRoot, String npmDownloadRoot, String userName, String password) throws InstallationException;
 }
 
 final class DefaultNodeAndNPMInstaller implements NodeAndNPMInstaller {
@@ -36,14 +36,14 @@ final class DefaultNodeAndNPMInstaller implements NodeAndNPMInstaller {
     }
 
     @Override
-    public void install(String nodeVersion, String npmVersion, String nodeDownloadRoot, String npmDownloadRoot) throws InstallationException {
+    public void install(String nodeVersion, String npmVersion, String nodeDownloadRoot, String npmDownloadRoot, String userName, String password) throws InstallationException {
         if(nodeDownloadRoot == null || nodeDownloadRoot.isEmpty()){
             nodeDownloadRoot = DEFAULT_NODEJS_DOWNLOAD_ROOT;
         }
         if(npmDownloadRoot == null || npmDownloadRoot.isEmpty()){
             npmDownloadRoot = DEFAULT_NPM_DOWNLOAD_ROOT;
         }
-        new NodeAndNPMInstallAction(nodeVersion, npmVersion, nodeDownloadRoot, npmDownloadRoot).install();
+        new NodeAndNPMInstallAction(nodeVersion, npmVersion, nodeDownloadRoot, npmDownloadRoot, userName, password).install();
     }
 
     private final class NodeAndNPMInstallAction {
@@ -53,12 +53,16 @@ final class DefaultNodeAndNPMInstaller implements NodeAndNPMInstaller {
         private final String npmVersion;
         private final String nodeDownloadRoot;
         private final String npmDownloadRoot;
+        private final String userName;
+        private final String password;
 
-        public NodeAndNPMInstallAction(String nodeVersion, String npmVersion, String nodeDownloadRoot, String npmDownloadRoot) {
+        public NodeAndNPMInstallAction(String nodeVersion, String npmVersion, String nodeDownloadRoot, String npmDownloadRoot, String userName, String password) {
             this.nodeVersion = nodeVersion;
             this.npmVersion = npmVersion;
             this.nodeDownloadRoot = nodeDownloadRoot;
             this.npmDownloadRoot = npmDownloadRoot;
+            this.userName = userName;
+            this.password = password;
         }
 
         public void install() throws InstallationException {
@@ -135,7 +139,7 @@ final class DefaultNodeAndNPMInstaller implements NodeAndNPMInstaller {
 
                 File archive = config.getCacheResolver().resolve(cacheDescriptor);
 
-                downloadFileIfMissing(downloadUrl, archive);
+                downloadFileIfMissing(downloadUrl, archive, userName, password);
 
                 File installDirectory = getInstallDirectory();
                 File nodeModulesDirectory = new File(installDirectory, "node_modules");
@@ -197,7 +201,7 @@ final class DefaultNodeAndNPMInstaller implements NodeAndNPMInstaller {
 
                 File archive = config.getCacheResolver().resolve(cacheDescriptor);
 
-                downloadFileIfMissing(downloadUrl, archive);
+                downloadFileIfMissing(downloadUrl, archive, userName, password);
 
                 extractFile(archive, tmpDirectory);
 
@@ -244,7 +248,7 @@ final class DefaultNodeAndNPMInstaller implements NodeAndNPMInstaller {
 
                 File binary = config.getCacheResolver().resolve(cacheDescriptor);
 
-                downloadFileIfMissing(downloadUrl, binary);
+                downloadFileIfMissing(downloadUrl, binary, userName, password);
 
                 logger.info("Copying node binary from {} to {}", binary, destination);
                 FileUtils.copyFile(binary, destination);
@@ -287,15 +291,15 @@ final class DefaultNodeAndNPMInstaller implements NodeAndNPMInstaller {
             archiveExtractor.extract(archive.getPath(), destinationDirectory.getPath());
         }
 
-        private void downloadFileIfMissing(String downloadUrl, File destination) throws DownloadException {
+        private void downloadFileIfMissing(String downloadUrl, File destination, String userName, String password) throws DownloadException {
             if (!destination.exists()) {
-                downloadFile(downloadUrl, destination);
+                downloadFile(downloadUrl, destination, userName, password);
             }
         }
 
-        private void downloadFile(String downloadUrl, File destination) throws DownloadException {
+        private void downloadFile(String downloadUrl, File destination, String userName, String password) throws DownloadException {
             logger.info("Downloading {} to {}", downloadUrl, destination);
-            fileDownloader.download(downloadUrl, destination.getPath());
+            fileDownloader.download(downloadUrl, destination.getPath(), userName, password);
         }
     }
 }

@@ -10,6 +10,7 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.settings.crypto.SettingsDecrypter;
+import org.apache.maven.settings.Server;
 
 @Mojo(name="install-node-and-npm", defaultPhase = LifecyclePhase.GENERATE_RESOURCES)
 public final class InstallNodeAndNpmMojo extends AbstractFrontendMojo {
@@ -47,6 +48,12 @@ public final class InstallNodeAndNpmMojo extends AbstractFrontendMojo {
     @Parameter(property = "npmVersion", required = true)
     private String npmVersion;
 
+    /**
+     * Server Id for download username and password
+     */
+    @Parameter(property = "serverId", defaultValue = "")
+    private String serverId;
+
     @Parameter(property = "session", defaultValue = "${session}", readonly = true)
     private MavenSession session;
 
@@ -69,7 +76,12 @@ public final class InstallNodeAndNpmMojo extends AbstractFrontendMojo {
         ProxyConfig proxyConfig = MojoUtils.getProxyConfig(session, decrypter);
         String nodeDownloadRoot = getNodeDownloadRoot();
         String npmDownloadRoot = getNpmDownloadRoot();
-        factory.getNodeAndNPMInstaller(proxyConfig).install(nodeVersion, npmVersion, nodeDownloadRoot, npmDownloadRoot);
+        if(serverId != null && !"".equals(serverId)) {
+            Server server = MojoUtils.decryptServer(serverId, session, decrypter);
+            factory.getNodeAndNPMInstaller(proxyConfig).install(nodeVersion, npmVersion, nodeDownloadRoot, npmDownloadRoot, server.getUsername(), server.getPassword());
+        } else {
+            factory.getNodeAndNPMInstaller(proxyConfig).install(nodeVersion, npmVersion, nodeDownloadRoot, npmDownloadRoot, null, null);
+        }
     }
 
     private String getNodeDownloadRoot() {

@@ -35,7 +35,7 @@ final class DownloadException extends Exception {
 }
 
 interface FileDownloader {
-    void download(String downloadUrl, String destination) throws DownloadException;
+    void download(String downloadUrl, String destination, String userName, String password) throws DownloadException;
 }
 
 final class DefaultFileDownloader implements FileDownloader {
@@ -47,7 +47,7 @@ final class DefaultFileDownloader implements FileDownloader {
         this.proxyConfig = proxyConfig;
     }
 
-    public void download(String downloadUrl, String destination) throws DownloadException {
+    public void download(String downloadUrl, String destination, String userName, String password) throws DownloadException {
         String fixedDownloadUrl = downloadUrl;
         try {
             fixedDownloadUrl = FilenameUtils.separatorsToUnix(fixedDownloadUrl);
@@ -56,7 +56,7 @@ final class DefaultFileDownloader implements FileDownloader {
                 FileUtils.copyFile(new File(downloadURI), new File(destination));
             }
             else {
-                CloseableHttpResponse response = execute(fixedDownloadUrl);
+                CloseableHttpResponse response = execute(fixedDownloadUrl, userName, password);
                 int statusCode = response.getStatusLine().getStatusCode();
                 if(statusCode != 200){
                     throw new DownloadException("Got error code "+ statusCode +" from the server.");
@@ -75,7 +75,7 @@ final class DefaultFileDownloader implements FileDownloader {
         }
     }
 
-    private CloseableHttpResponse execute(String requestUrl) throws IOException {
+    private CloseableHttpResponse execute(String requestUrl, String userName, String password) throws IOException {
         CloseableHttpResponse response;
         Proxy proxy = proxyConfig.getProxyForUrl(requestUrl);
         if (proxy != null) {
@@ -83,7 +83,16 @@ final class DefaultFileDownloader implements FileDownloader {
             return executeViaProxy(proxy, requestUrl);
         } else {
             LOGGER.info("No proxy was configured, downloading directly");
-            response = buildHttpClient(null).execute(new HttpGet(requestUrl));
+            if (userName != null && !"".equals(userName) && password != null && !"".equals(password)) {
+                CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+                credentialsProvider.setCredentials(
+                        new AuthScope(proxy.host, proxy.port),
+                        new UsernamePasswordCredentials(proxy.username, proxy.password)
+                );
+                response = buildHttpClient(credentialsProvider).execute(new HttpGet(requestUrl));
+            } else {
+                response = buildHttpClient(null).execute(new HttpGet(requestUrl));
+            }
         }
         return response;
     }
@@ -110,7 +119,7 @@ final class DefaultFileDownloader implements FileDownloader {
 
         return proxyClient.execute(request);
     }
-    
+
     private CloseableHttpClient buildHttpClient(CredentialsProvider credentialsProvider) {
     	return HttpClients.custom()
     			.disableContentCompression()
@@ -118,5 +127,5 @@ final class DefaultFileDownloader implements FileDownloader {
     			.setDefaultCredentialsProvider(credentialsProvider)
     			.build();
     }
-    
+
 }
