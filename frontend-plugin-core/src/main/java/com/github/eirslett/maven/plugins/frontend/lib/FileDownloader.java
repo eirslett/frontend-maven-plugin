@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 
@@ -13,10 +14,14 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.AuthCache;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.protocol.HttpClientContext;
+import org.apache.http.impl.auth.BasicScheme;
+import org.apache.http.impl.client.BasicAuthCache;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -84,12 +89,24 @@ final class DefaultFileDownloader implements FileDownloader {
         } else {
             LOGGER.info("No proxy was configured, downloading directly");
             if (userName != null && !"".equals(userName) && password != null && !"".equals(password)) {
+                LOGGER.info("Using credentials (" + userName + ") from settings.xml");
+                // Auth target host
+                URL aURL = new URL(requestUrl);
+                HttpHost target = new HttpHost (aURL.getHost(), aURL.getPort(), aURL.getProtocol());
+                // Create AuthCache instance
+                AuthCache authCache = new BasicAuthCache();
+                // Generate BASIC scheme object and add it to the local auth cache
+                BasicScheme basicAuth = new BasicScheme();
+                authCache.put(target, basicAuth);
+                // Add AuthCache to the execution context
+                HttpClientContext localContext = HttpClientContext.create();
+                localContext.setAuthCache(authCache);
                 CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
                 credentialsProvider.setCredentials(
-                        new AuthScope(proxy.host, proxy.port),
-                        new UsernamePasswordCredentials(proxy.username, proxy.password)
+                        new AuthScope(aURL.getHost(), aURL.getPort()),
+                        new UsernamePasswordCredentials(userName, password)
                 );
-                response = buildHttpClient(credentialsProvider).execute(new HttpGet(requestUrl));
+                response = buildHttpClient(credentialsProvider).execute(new HttpGet(requestUrl),localContext);
             } else {
                 response = buildHttpClient(null).execute(new HttpGet(requestUrl));
             }
