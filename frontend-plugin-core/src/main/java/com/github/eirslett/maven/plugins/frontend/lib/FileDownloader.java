@@ -25,6 +25,7 @@ import org.apache.http.impl.client.BasicAuthCache;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.codehaus.plexus.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,7 +89,7 @@ final class DefaultFileDownloader implements FileDownloader {
             return executeViaProxy(proxy, requestUrl);
         } else {
             LOGGER.info("No proxy was configured, downloading directly");
-            if (userName != null && !"".equals(userName) && password != null && !"".equals(password)) {
+            if (StringUtils.isNotEmpty(userName) && StringUtils.isNotEmpty(password)) {
                 LOGGER.info("Using credentials (" + userName + ") from settings.xml");
                 // Auth target host
                 URL aURL = new URL(requestUrl);
