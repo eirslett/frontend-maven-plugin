@@ -93,20 +93,12 @@ final class DefaultFileDownloader implements FileDownloader {
                 LOGGER.info("Using credentials (" + userName + ") from settings.xml");
                 // Auth target host
                 URL aURL = new URL(requestUrl);
-                HttpHost target = new HttpHost (aURL.getHost(), aURL.getPort(), aURL.getProtocol());
-                // Create AuthCache instance
-                AuthCache authCache = new BasicAuthCache();
-                // Generate BASIC scheme object and add it to the local auth cache
-                BasicScheme basicAuth = new BasicScheme();
-                authCache.put(target, basicAuth);
-                // Add AuthCache to the execution context
-                HttpClientContext localContext = HttpClientContext.create();
-                localContext.setAuthCache(authCache);
-                CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
-                credentialsProvider.setCredentials(
-                        new AuthScope(aURL.getHost(), aURL.getPort()),
-                        new UsernamePasswordCredentials(userName, password)
-                );
+                HttpClientContext localContext = makeLocalContext(aURL);
+                CredentialsProvider credentialsProvider = makeCredentialsProvider(
+                    aURL.getHost(),
+                    aURL.getPort(),
+                    userName,
+                    password);
                 response = buildHttpClient(credentialsProvider).execute(new HttpGet(requestUrl),localContext);
             } else {
                 response = buildHttpClient(null).execute(new HttpGet(requestUrl));
@@ -118,12 +110,7 @@ final class DefaultFileDownloader implements FileDownloader {
     private CloseableHttpResponse executeViaProxy(Proxy proxy, String requestUrl) throws IOException {
         final CloseableHttpClient proxyClient;
         if (proxy.useAuthentication()){
-            CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
-            credentialsProvider.setCredentials(
-                    new AuthScope(proxy.host, proxy.port),
-                    new UsernamePasswordCredentials(proxy.username, proxy.password)
-            );
-            proxyClient = buildHttpClient(credentialsProvider);
+            proxyClient = buildHttpClient(makeCredentialsProvider(proxy.host,proxy.port,proxy.username,proxy.password));
         } else {
             proxyClient = buildHttpClient(null);
         }
@@ -146,4 +133,26 @@ final class DefaultFileDownloader implements FileDownloader {
     			.build();
     }
 
+    private CredentialsProvider makeCredentialsProvider(String host, int port, String username, String password) {
+        CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+        credentialsProvider.setCredentials(
+                new AuthScope(host, port),
+                new UsernamePasswordCredentials(username, password)
+        );
+        return credentialsProvider;
+    }
+
+    private HttpClientContext makeLocalContext(URL requestUrl) {
+        // Auth target host
+        HttpHost target = new HttpHost (requestUrl.getHost(), requestUrl.getPort(), requestUrl.getProtocol());
+        // Create AuthCache instance
+        AuthCache authCache = new BasicAuthCache();
+        // Generate BASIC scheme object and add it to the local auth cache
+        BasicScheme basicAuth = new BasicScheme();
+        authCache.put(target, basicAuth);
+        // Add AuthCache to the execution context
+        HttpClientContext localContext = HttpClientContext.create();
+        localContext.setAuthCache(authCache);
+        return localContext;
+    }
 }
