@@ -76,8 +76,8 @@ public final class InstallNodeAndNpmMojo extends AbstractFrontendMojo {
         ProxyConfig proxyConfig = MojoUtils.getProxyConfig(session, decrypter);
         String nodeDownloadRoot = getNodeDownloadRoot();
         String npmDownloadRoot = getNpmDownloadRoot();
-        if(serverId != null && !"".equals(serverId)) {
-            Server server = MojoUtils.decryptServer(serverId, session, decrypter);
+        Server server = MojoUtils.decryptServer(serverId, session, decrypter);
+        if (null != server) {
             factory.getNodeAndNPMInstaller(proxyConfig).install(nodeVersion, npmVersion, nodeDownloadRoot, npmDownloadRoot, server.getUsername(), server.getPassword());
         } else {
             factory.getNodeAndNPMInstaller(proxyConfig).install(nodeVersion, npmVersion, nodeDownloadRoot, npmDownloadRoot, null, null);
