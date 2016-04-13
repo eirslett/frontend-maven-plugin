@@ -22,7 +22,7 @@ public final class FrontendPluginFactory {
     }
 
     public NodeAndNPMInstaller getNodeAndNPMInstaller(ProxyConfig proxy){
-        return new DefaultNodeAndNPMInstaller(
+        return new NodeAndNPMInstaller(
                 getInstallConfig(),
                 new DefaultArchiveExtractor(),
                 new DefaultFileDownloader(proxy));
