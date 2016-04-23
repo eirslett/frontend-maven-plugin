@@ -4,10 +4,12 @@ import com.github.eirslett.maven.plugins.frontend.lib.ProxyConfig;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.settings.Proxy;
+import org.apache.maven.settings.Server;
 import org.apache.maven.settings.crypto.DefaultSettingsDecryptionRequest;
 import org.apache.maven.settings.crypto.SettingsDecrypter;
 import org.apache.maven.settings.crypto.SettingsDecryptionResult;
 import org.codehaus.plexus.util.Scanner;
+import org.codehaus.plexus.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonatype.plexus.build.incremental.BuildContext;
@@ -53,6 +55,21 @@ class MojoUtils {
         final DefaultSettingsDecryptionRequest decryptionRequest = new DefaultSettingsDecryptionRequest(proxy);
         SettingsDecryptionResult decryptedResult = decrypter.decrypt(decryptionRequest);
         return decryptedResult.getProxy();
+    }
+
+    static Server decryptServer(String serverId, MavenSession mavenSession, SettingsDecrypter decrypter) {
+        if (StringUtils.isEmpty(serverId)) {
+            return null;
+        }
+        Server server = mavenSession.getSettings().getServer(serverId);
+        if (server != null) {
+            final DefaultSettingsDecryptionRequest decryptionRequest = new DefaultSettingsDecryptionRequest(server);
+            SettingsDecryptionResult decryptedResult = decrypter.decrypt(decryptionRequest);
+            return decryptedResult.getServer();
+        } else {
+            LOGGER.warn("Could not find server '" + serverId + "' in settings.xml");
+            return null;
+        }
     }
 
     static boolean shouldExecute(BuildContext buildContext, List<File> triggerfiles, File srcdir) {
