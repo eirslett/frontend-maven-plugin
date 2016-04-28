@@ -139,6 +139,12 @@ You can also specify separate download roots for npm and node as they are now st
 </plugin>
 ```
 
+By default node/npm will be cached to to the Maven local repository. To disable this and use the `workingDirectory/cache` add
+
+    <configuration>
+        <useMavenCache>false</useMavenCache>
+
+
 ### Proxy settings
 
 If you have [configured proxy settings for Maven](http://maven.apache.org/guides/mini/guide-proxies.html)

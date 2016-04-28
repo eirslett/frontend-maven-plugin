@@ -38,6 +38,12 @@ public abstract class AbstractFrontendMojo extends AbstractMojo {
   @Parameter(property = "installDirectory", required = false)
   protected File installDirectory;
 
+  /**
+   * Use maven cache location.
+   */
+  @Parameter(property = "useMavenCache", required = false, defaultValue = "true")
+  protected Boolean useMavenCache;
+
 
   /**
    * Additional environment variables to pass to the build.
@@ -89,7 +95,8 @@ public abstract class AbstractFrontendMojo extends AbstractMojo {
         execute(new FrontendPluginFactory(
             workingDirectory,
             installDirectory,
-            new RepositoryCacheResolver(repositorySystemSession)
+            ( useMavenCache ? new RepositoryCacheResolver(repositorySystemSession) :
+              FrontendPluginFactory.getDefaultCacheResolver (workingDirectory))
         ));
       } catch (TaskRunnerException e) {
         throw new MojoFailureException("Failed to run task", e);
