@@ -625,6 +625,13 @@ You can set this property on the different goals. Or choose to set it for all th
 </plugin>
 ```
 
+By default node/npm will be cached to to the Maven local repository. To disable this and use the `workingDirectory/cache` add
+
+```xml
+    <configuration>
+        <useMavenCache>false</useMavenCache>
+```
+
 #### Proxy settings
 
 If you have [configured proxy settings for Maven](http://maven.apache.org/guides/mini/guide-proxies.html)
