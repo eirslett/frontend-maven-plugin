@@ -67,7 +67,7 @@ abstract class NodeTaskExecutor {
     private String getAbsoluteTaskLocation() {
         String location = normalize(taskLocation);
         if (Utils.isRelative(taskLocation)) {
-            location = new File(config.getWorkingDirectory(), location).getAbsolutePath();
+            location = new File(config.getInstallDirectory(), location).getAbsolutePath();
         }
         return location;
     }

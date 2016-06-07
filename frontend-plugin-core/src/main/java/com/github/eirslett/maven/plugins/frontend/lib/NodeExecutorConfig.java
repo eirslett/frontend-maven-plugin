@@ -5,6 +5,7 @@ import java.io.File;
 public interface NodeExecutorConfig {
   File getNodePath();
   File getNpmPath();
+  File getInstallDirectory();
   File getWorkingDirectory();
   Platform getPlatform();
 }
@@ -32,7 +33,11 @@ final class InstallNodeExecutorConfig implements NodeExecutorConfig {
     return new File(installConfig.getInstallDirectory() + Utils.normalize(NPM));
   }
 
-
+  @Override
+  public File getInstallDirectory() {
+    return installConfig.getInstallDirectory();
+  }
+  
   @Override
   public File getWorkingDirectory() {
     return installConfig.getWorkingDirectory();
