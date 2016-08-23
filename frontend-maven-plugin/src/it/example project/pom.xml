@@ -80,6 +80,19 @@
                     </execution>
 
                     <execution>
+                        <id>gulp build</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>gulp</goal>
+                        </goals>
+                        <configuration>
+                            <environmentVariables>
+                                <NODE_ENV>production</NODE_ENV>
+                            </environmentVariables>
+                        </configuration>
+                    </execution>
+
+                    <execution>
                         <id>javascript tests</id>
                         <goals>
                             <goal>karma</goal>
