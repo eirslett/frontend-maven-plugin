@@ -160,6 +160,28 @@ If that is the case, you can stop the npm execution from inheriting the Maven pr
 </execution>
 ```
 
+### Environment variables
+
+If you need to pass some variable to Node, you can set that using the property `environmentVariables` in configuration tag of an execution like this:
+```xml
+<execution>
+    <id>gulp build</id>
+    <goals>
+        <goal>gulp</goal>
+    </goals>
+    
+    <configuration>
+        <environmentVariables>
+            <!-- Simple var -->
+            <Jon>Snow</Jon>
+            <Tyrion>Lannister</Tyrion>
+            <!-- Var value take from maven properties -->
+            <NODE_ENV>${NODE_ENV}</NODE_ENV>
+        </environmentVariables>        
+    </configuration>
+</execution>
+```
+
 ### Running npm
 All npm modules will be installed in the `node_modules` folder in your working directory.
 By default, colors will be shown in the log.
