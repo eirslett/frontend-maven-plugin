@@ -4,7 +4,7 @@ public interface EmberRunner extends NodeTaskRunner {}
 
 final class DefaultEmberRunner extends NodeTaskExecutor implements EmberRunner {
 
-    private static final String TASK_LOCATION = "node_modules/ember-cli/bin/ember";
+    private static final String TASK_LOCATION = "node_modules/.bin/ember";
 
     DefaultEmberRunner(NodeExecutorConfig config) {
         super(config, TASK_LOCATION);
