@@ -21,6 +21,8 @@ public class NodeAndNPMInstaller {
 
     private String nodeVersion, npmVersion, nodeDownloadRoot, npmDownloadRoot, userName, password;
 
+    private static final Object lock = new Object();
+
     private final Logger logger;
     private final InstallConfig config;
     private final ArchiveExtractor archiveExtractor;
@@ -70,19 +72,21 @@ public class NodeAndNPMInstaller {
         if(npmDownloadRoot == null || npmDownloadRoot.isEmpty()){
             npmDownloadRoot = DEFAULT_NPM_DOWNLOAD_ROOT;
         }
-        if(!nodeIsAlreadyInstalled()){
-            logger.info("Installing node version {}", nodeVersion);
-            if (!nodeVersion.startsWith("v")) {
-                logger.warn("Node version does not start with naming convention 'v'.");
+        synchronized (lock) {
+            if (!nodeIsAlreadyInstalled()) {
+                logger.info("Installing node version {}", nodeVersion);
+                if (!nodeVersion.startsWith("v")) {
+                    logger.warn("Node version does not start with naming convention 'v'.");
+                }
+                if (config.getPlatform().isWindows()) {
+                    installNodeForWindows();
+                } else {
+                    installNodeDefault();
+                }
             }
-            if(config.getPlatform().isWindows()){
-                installNodeForWindows();
-            } else {
-                installNodeDefault();
+            if (!npmIsAlreadyInstalled()) {
+                installNpm();
             }
-        }
-        if(!npmIsAlreadyInstalled()) {
-            installNpm();
         }
     }
 
