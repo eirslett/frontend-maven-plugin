@@ -19,6 +19,8 @@ public class NodeAndNPMInstaller {
     public static final String DEFAULT_NODEJS_DOWNLOAD_ROOT = "https://nodejs.org/dist/";
     public static final String DEFAULT_NPM_DOWNLOAD_ROOT = "http://registry.npmjs.org/npm/-/";
 
+    private static final Object LOCK = new Object();
+
     private String nodeVersion, npmVersion, nodeDownloadRoot, npmDownloadRoot, userName, password;
 
     private final Logger logger;
@@ -64,25 +66,28 @@ public class NodeAndNPMInstaller {
     }
 
     public void install() throws InstallationException {
-        if(nodeDownloadRoot == null || nodeDownloadRoot.isEmpty()){
-            nodeDownloadRoot = DEFAULT_NODEJS_DOWNLOAD_ROOT;
-        }
-        if(npmDownloadRoot == null || npmDownloadRoot.isEmpty()){
-            npmDownloadRoot = DEFAULT_NPM_DOWNLOAD_ROOT;
-        }
-        if(!nodeIsAlreadyInstalled()){
-            logger.info("Installing node version {}", nodeVersion);
-            if (!nodeVersion.startsWith("v")) {
-                logger.warn("Node version does not start with naming convention 'v'.");
+        // use static lock object for a synchronized block
+        synchronized (LOCK) {
+            if(nodeDownloadRoot == null || nodeDownloadRoot.isEmpty()){
+                nodeDownloadRoot = DEFAULT_NODEJS_DOWNLOAD_ROOT;
             }
-            if(config.getPlatform().isWindows()){
-                installNodeForWindows();
-            } else {
-                installNodeDefault();
+            if(npmDownloadRoot == null || npmDownloadRoot.isEmpty()){
+                npmDownloadRoot = DEFAULT_NPM_DOWNLOAD_ROOT;
             }
-        }
-        if(!npmIsAlreadyInstalled()) {
-            installNpm();
+            if (!nodeIsAlreadyInstalled()) {
+                logger.info("Installing node version {}", nodeVersion);
+                if (!nodeVersion.startsWith("v")) {
+                    logger.warn("Node version does not start with naming convention 'v'.");
+                }
+                if (config.getPlatform().isWindows()) {
+                    installNodeForWindows();
+                } else {
+                    installNodeDefault();
+                }
+            }
+            if (!npmIsAlreadyInstalled()) {
+                installNpm();
+            }
         }
     }
 
