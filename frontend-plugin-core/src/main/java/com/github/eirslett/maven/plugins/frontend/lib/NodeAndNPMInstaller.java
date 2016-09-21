@@ -19,9 +19,9 @@ public class NodeAndNPMInstaller {
     public static final String DEFAULT_NODEJS_DOWNLOAD_ROOT = "https://nodejs.org/dist/";
     public static final String DEFAULT_NPM_DOWNLOAD_ROOT = "http://registry.npmjs.org/npm/-/";
 
-    private String nodeVersion, npmVersion, nodeDownloadRoot, npmDownloadRoot, userName, password;
+    private static final Object LOCK = new Object();
 
-    private static final Object lock = new Object();
+    private String nodeVersion, npmVersion, nodeDownloadRoot, npmDownloadRoot, userName, password;
 
     private final Logger logger;
     private final InstallConfig config;
@@ -66,13 +66,14 @@ public class NodeAndNPMInstaller {
     }
 
     public void install() throws InstallationException {
-        if(nodeDownloadRoot == null || nodeDownloadRoot.isEmpty()){
-            nodeDownloadRoot = DEFAULT_NODEJS_DOWNLOAD_ROOT;
-        }
-        if(npmDownloadRoot == null || npmDownloadRoot.isEmpty()){
-            npmDownloadRoot = DEFAULT_NPM_DOWNLOAD_ROOT;
-        }
-        synchronized (lock) {
+        // use static lock object for a synchronized block
+        synchronized (LOCK) {
+            if(nodeDownloadRoot == null || nodeDownloadRoot.isEmpty()){
+                nodeDownloadRoot = DEFAULT_NODEJS_DOWNLOAD_ROOT;
+            }
+            if(npmDownloadRoot == null || npmDownloadRoot.isEmpty()){
+                npmDownloadRoot = DEFAULT_NPM_DOWNLOAD_ROOT;
+            }
             if (!nodeIsAlreadyInstalled()) {
                 logger.info("Installing node version {}", nodeVersion);
                 if (!nodeVersion.startsWith("v")) {
