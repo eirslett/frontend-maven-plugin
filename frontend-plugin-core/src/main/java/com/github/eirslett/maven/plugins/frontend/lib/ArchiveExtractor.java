@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.AccessDeniedException;
 
 class ArchiveExtractionException extends Exception {
     ArchiveExtractionException(String message, Throwable cause) {
@@ -39,6 +40,10 @@ final class DefaultArchiveExtractor implements ArchiveExtractor {
                 } else {
                     if (!destPath.getParentFile().exists()) {
                         destPath.getParentFile().mkdirs();
+                    }
+                    if(!destPath.getParentFile().canWrite()) {
+                        throw new AccessDeniedException(
+                                String.format("Could not get write permissions for '%s'", destinationDirectory));
                     }
                     destPath.createNewFile();
                     boolean isExecutable = (tarEntry.getMode() & 0100) > 0;
