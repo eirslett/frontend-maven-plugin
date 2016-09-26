@@ -68,7 +68,7 @@ public final class FrontendPluginFactory {
         return new DefaultInstallConfig(installDirectory, workingDirectory, cacheResolver, defaultPlatform);
     }
 
-    private static final CacheResolver getDefaultCacheResolver(File root) {
+    public static final CacheResolver getDefaultCacheResolver(File root) {
         return new DirectoryCacheResolver(new File(root, DEFAULT_CACHE_PATH));
     }
 }
