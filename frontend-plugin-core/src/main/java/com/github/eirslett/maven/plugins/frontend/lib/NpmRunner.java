@@ -23,14 +23,11 @@ final class DefaultNpmRunner extends NodeTaskExecutor implements NpmRunner {
         }
 
         if (!proxyConfig.isEmpty()) {
-            Proxy secureProxy = proxyConfig.getSecureProxy();
-            if (secureProxy != null){
-                arguments.add("--https-proxy=" + secureProxy.getUri().toString());
-            }
-
-            Proxy insecureProxy = proxyConfig.getInsecureProxy();
-            if (insecureProxy != null) {
-                arguments.add("--proxy=" + insecureProxy.getUri().toString());
+            Proxy proxy = proxyConfig.getProxyForUrl(npmRegistryURL);
+            if(proxy.isSecure()){
+                arguments.add("--https-proxy=" + proxy.getUri().toString());
+            } else {
+                arguments.add("--proxy=" + proxy.getUri().toString());
             }
         }
         
