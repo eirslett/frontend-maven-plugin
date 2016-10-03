@@ -11,6 +11,7 @@
 * Add ARM's 64bit server aarch64 support
 * Add Linux on Power Systems ppc64le support
 * Authenticated download
+* Support for using NPM provided by node versions >4.0.0
 
 ### 1.0
 
