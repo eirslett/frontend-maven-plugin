@@ -23,11 +23,19 @@ enum OS { Windows, Mac, Linux, SunOS;
                                 OS.Linux;
     }
 
+    public String getArchiveExtension(){
+        if(this == OS.Windows){
+          return "zip";
+        } else {
+          return "tar.gz";
+        }
+    }
+
     public String getCodename(){
         if(this == OS.Mac){
             return "darwin";
         } else if(this == OS.Windows){
-            return "windows";
+            return "win";
         } else if(this == OS.SunOS){
             return "sunos";
         } else {
@@ -51,6 +59,10 @@ class Platform {
         return new Platform(os,architecture);
     }
 
+    public String getArchiveExtension(){
+        return os.getArchiveExtension();
+    }
+
     public String getCodename(){
         return os.getCodename();
     }
@@ -63,19 +75,19 @@ class Platform {
         return os == OS.Mac;
     }
 
-    public String getLongNodeFilename(String nodeVersion) {
-        if(isWindows()){
+    public String getLongNodeFilename(String nodeVersion, boolean archiveOnWindows) {
+        if(isWindows() && !archiveOnWindows){
             return "node.exe";
         } else {
             return "node-" + nodeVersion + "-" + this.getNodeClassifier();
         }
     }
 
-    public String getNodeDownloadFilename(String nodeVersion) {
-        if(isWindows()) {
+    public String getNodeDownloadFilename(String nodeVersion, boolean archiveOnWindows) {
+        if(isWindows() && !archiveOnWindows) {
             if(architecture == Architecture.x64){
                 if (nodeVersion.startsWith("v0.")) {
-                    return nodeVersion+"/x64/node.exe";    
+                    return nodeVersion+"/x64/node.exe";
                 } else {
                     return nodeVersion+"/win-x64/node.exe";
                 }
@@ -87,7 +99,7 @@ class Platform {
                 }
             }
         } else {
-            return nodeVersion + "/" + getLongNodeFilename(nodeVersion) + ".tar.gz";
+            return nodeVersion + "/" + getLongNodeFilename(nodeVersion, archiveOnWindows) + "." + os.getArchiveExtension();
         }
     }
 
