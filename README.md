@@ -23,14 +23,16 @@ laptops, but backend developers can run a clean build without even installing No
 - Not meant to install Node for production uses. The Node usage is intended as part of a frontend build,
 running common javascript tasks such as minification, obfuscation, compression, packaging, testing etc.
 
+**Notice:** _This plugin does not support already installed Node or npm versions. Use the `exec-maven-plugin` instead._
+
 ## Requirements
 
-* *Maven 3* and *Java 1.7*
-* For *Maven 2* support take a look at the [wiki](https://github.com/eirslett/frontend-maven-plugin/wiki#maven-2).
+* _Maven 3_ and _Java 1.7_
+* For _Maven 2_ support take a look at the [wiki](https://github.com/eirslett/frontend-maven-plugin/wiki#maven-2).
 
 ## Installation
 
-Include the plugin as a dependency in your Maven project.
+Include the plugin as a dependency in your Maven project. Change `LATEST_VERSION` to the latest tagged version.
 
 ```xml
 <plugins>
@@ -39,7 +41,7 @@ Include the plugin as a dependency in your Maven project.
         <artifactId>frontend-maven-plugin</artifactId>
         <!-- Use the latest released version:
         https://repo1.maven.org/maven2/com/github/eirslett/frontend-maven-plugin/ -->
-        <version>1.0</version>
+        <version>LATEST_VERSION</version>
         ...
     </plugin>
 ...
@@ -50,154 +52,74 @@ Include the plugin as a dependency in your Maven project.
 Have a look at the [example project](https://github.com/eirslett/frontend-maven-plugin/tree/master/frontend-maven-plugin/src/it/example%20project), 
 to see how it should be set up: https://github.com/eirslett/frontend-maven-plugin/blob/master/frontend-maven-plugin/src/it/example%20project/pom.xml
 
-### Working directory
-
-The working directory is where you've put `package.json` and your frontend configuration files (`Gruntfile.js` or 
-`gulpfile.js` etc). The default working directory is your project's base directory (the same directory as your `pom.xml`). 
-You can change the working directory if you want:
-
-```xml
-<plugin>
-    <groupId>com.github.eirslett</groupId>
-    <artifactId>frontend-maven-plugin</artifactId>
-    <version>...</version>
-
-    <!-- optional -->
-    <configuration>
-        <workingDirectory>src/main/frontend</workingDirectory>
-    </configuration>
-
-    <executions>
-      ...
-    </executions>
-</plugin>
-```
-
-### Installation Directory
-
-The installation directory is the folder where your dependencies are installed e.g. node.exe.
-You can set this property on the different goals.
-
-```xml
-<execution>
-    <id>npm install</id>
-    <goals>
-        <goal>npm</goal>
-    </goals>
-    <configuration>
-        <arguments>install</arguments>
-        <installDirectory>target</installDirectory>
-    </configuration>
-</execution>
-```
-
-Or choose to set it for all the goals, in the maven configuration.
-
-```xml
-<plugins>
-    <plugin>
-        <groupId>com.github.eirslett</groupId>
-        <artifactId>frontend-maven-plugin</artifactId>
-        <version>0.0.27</version>
-
-        <configuration>
-            <installDirectory>target</installDirectory>
-        </configuration>
-```
-
-**Notice: ** __
-
-### Installing node and npm
-
-The versions of Node and npm are downloaded from https://nodejs.org/dist, extracted and put into a `node` folder created in your working directory. (Remember to gitignore the `node` folder, unless you actually want to commit it)
-Node/npm will only be "installed" locally to your project. It will not be installed globally on the whole system (and it will not interfere with any Node/npm installations already present.)
-```xml
-<plugin>
-  ...
-  <execution>
-      <!-- optional: you don't really need execution ids,
-      but it looks nice in your build log. -->
-      <id>install node and npm</id>
-      <goals>
-          <goal>install-node-and-npm</goal>
-      </goals>
-      <!-- optional: default phase is "generate-resources" -->
-      <phase>generate-resources</phase>
-  </execution>
-  <configuration>
-      <nodeVersion>v0.10.18</nodeVersion>
-      <npmVersion>1.3.8</npmVersion>
-      <!-- optional: where to download node and npm from. Defaults to https://nodejs.org/dist/ -->
-      <downloadRoot>http://myproxy.example.org/nodejs/dist/</downloadRoot>
-      <!-- optional: where to install node and npm. Defaults to the working directory -->
-      <installDirectory>target</installDirectory>
-   </configuration>
-</plugin>
-```
-
-You can also specify separate download roots for npm and node as they are now stored in separate repos.
-
-```xml
-<plugin>
-  ...
-  <execution>
-      ...
-  </execution>
-  <configuration>
-      <nodeVersion>v0.12.1</nodeVersion>
-      <npmVersion>2.7.1</npmVersion>
-      <nodeDownloadRoot>https://nodejs.org/nodejs/dist/</nodeDownloadRoot>
-      <npmDownloadRoot>https://registry.npmjs.org/npm/-/</npmDownloadRoot>
-  </configuration>
-</plugin>
-```
-
-### Proxy settings
-
-If you have [configured proxy settings for Maven](http://maven.apache.org/guides/mini/guide-proxies.html)
-in your settings.xml file, the plugin will automatically use the proxy for downloading node and npm, as well
-as [passing the proxy to npm commands](https://docs.npmjs.com/misc/config#proxy).
-
-__Non Proxy Hosts:__ npm does not currently support non proxy hosts - if you are using a proxy and npm install is 
-is not downloading from your repository, it may be because it cannot be accessed through your proxy. 
-If that is the case, you can stop the npm execution from inheriting the Maven proxy settings like this:
-```xml
-<execution>
-    <id>npm install</id>
-    <goals>
-        <goal>npm</goal>
-    </goals>
-    <configuration>
-        <npmInheritsProxyConfigFromMaven>false</npmInheritsProxyConfigFromMaven>
-    </configuration>
-</execution>
-```
-
-### Environment variables
-
-If you need to pass some variable to Node, you can set that using the property `environmentVariables` in configuration tag of an execution like this:
-```xml
-<execution>
-    <id>gulp build</id>
-    <goals>
-        <goal>gulp</goal>
-    </goals>
+ - [Installing node and npm](#installing-node-and-npm)
+ - Running 
+    - [npm](#running-npm)
+    - [bower](#running-bower)
+    - [grunt](#running-grunt)
+    - [gulp](#running-gulp)
+    - [jspm](#running-jspm)
+    - [karma](#running-karma)
+    - [webpack](#running-webpack)
+ - Configuration
+    - [Working Directory](#working-directory)
+    - [Installation Directory](#installation-directory)
+    - [Proxy Settings](#proxy-settings)
+    - [Environment variables](#environment-variables)
     
+**Recommendation:** _Try to run all your tasks via npm scripts instead of running bower, grunt, gulp etc. directly._
+
+#### Installing node and npm
+
+The versions of Node and npm are downloaded from https://nodejs.org/dist, extracted and put into a `node` folder created 
+in your [installation directory](#installation-directory) . Node/npm will only be "installed" locally to your project. 
+It will not be installed globally on the whole system (and it will not interfere with any Node/npm installations already 
+present). 
+
+```xml
+<plugin>
+    ...
+    <execution>
+        <!-- optional: you don't really need execution ids, but it looks nice in your build log. -->
+        <id>install node and npm</id>
+        <goals>
+            <goal>install-node-and-npm</goal>
+        </goals>
+        <!-- optional: default phase is "generate-resources" -->
+        <phase>generate-resources</phase>
+    </execution>
     <configuration>
-        <environmentVariables>
-            <!-- Simple var -->
-            <Jon>Snow</Jon>
-            <Tyrion>Lannister</Tyrion>
-            <!-- Var value take from maven properties -->
-            <NODE_ENV>${NODE_ENV}</NODE_ENV>
-        </environmentVariables>        
+        <nodeVersion>v4.6.0</nodeVersion>
+        <npmVersion>2.15.9</npmVersion>
+        
+        <!-- optional: where to download node and npm from. Defaults to https://nodejs.org/dist/ -->
+        <downloadRoot>http://myproxy.example.org/nodejs/</downloadRoot>
     </configuration>
-</execution>
+</plugin>
 ```
+
+You can also specify separate download roots for npm and node as they are stored in separate repos.
+
+```xml
+<plugin>
+    ...
+    <configuration>
+        <!-- optional: where to download node and npm from. Defaults to https://nodejs.org/dist/ and http://registry.npmjs.org/npm/-/ -->
+        <nodeDownloadRoot>http://myproxy.example.org/nodejs/</nodeDownloadRoot>
+        <npmDownloadRoot>https://myproxy.example.org/npm/</npmDownloadRoot>
+    </configuration>
+</plugin>
+```
+
+You can use Nexus repository Manager to proxy npm registries. See https://books.sonatype.com/nexus-book/reference/npm.html
+
+**Notice:** _Remember to gitignore the `node` folder, unless you actually want to commit it._
 
 ### Running npm
-All npm modules will be installed in the `node_modules` folder in your working directory.
+
+All node packaged modules will be installed in the `node_modules` folder in your [working directory](#working-directory).
 By default, colors will be shown in the log.
+
 ```xml
 <execution>
     <id>npm install</id>
@@ -218,8 +140,14 @@ By default, colors will be shown in the log.
 </execution>
 ```
 
+**Notice:** _Remember to gitignore the `node_modules` folder, unless you actually want to commit it. Npm packages will 
+always be installed in `node_modules` next to your `package.json`, which is default npm behavior._
+
+
 ### Running bower
+
 All bower dependencies will be installed in the `bower_components` folder in your working directory.
+
 ```xml
 <execution>
     <id>bower install</id>
@@ -228,37 +156,22 @@ All bower dependencies will be installed in the `bower_components` folder in you
     </goals>
 
     <configuration>
-	    <!-- optional: The default argument is actually
-	    "install", so unless you need to run some other bower command,
-	    you can remove this whole <configuration> section.
-	    -->
+        <!-- optional: The default argument is actually
+        "install", so unless you need to run some other bower command,
+        you can remove this whole <configuration> section.
+        -->
         <arguments>install</arguments>
     </configuration>
 </execution>
 ```
 
-### Running jspm
-All jspm dependencies will be installed in the `jspm_packages` folder in your working directory.
-```xml
-<execution>
-    <id>jspm install</id>
-    <goals>
-        <goal>jspm</goal>
-    </goals>
-
-    <configuration>
-	    <!-- optional: The default argument is actually
-	    "install", so unless you need to run some other jspm command,
-	    you can remove this whole <configuration> section.
-	    -->
-        <arguments>install</arguments>
-    </configuration>
-</execution>
-```
+**Notice:** _Remember to gitignore the `bower_components` folder, unless you actually want to commit it._
 
 ### Running Grunt
+
 It will run Grunt according to the `Gruntfile.js` in your working directory.
 By default, colors will be shown in the log.
+
 ```xml
 <execution>
     <id>grunt build</id>
@@ -278,8 +191,10 @@ By default, colors will be shown in the log.
 ```
 
 ### Running gulp
+
 Very similar to the Grunt execution. It will run gulp according to the `gulpfile.js` in your working directory.
 By default, colors will be shown in the log.
+
 ```xml
 <execution>
     <id>gulp build</id>
@@ -298,7 +213,29 @@ By default, colors will be shown in the log.
 </execution>
 ```
 
+### Running jspm
+
+All jspm dependencies will be installed in the `jspm_packages` folder in your working directory.
+
+```xml
+<execution>
+    <id>jspm install</id>
+    <goals>
+        <goal>jspm</goal>
+    </goals>
+
+    <configuration>
+	    <!-- optional: The default argument is actually
+	    "install", so unless you need to run some other jspm command,
+	    you can remove this whole <configuration> section.
+	    -->
+        <arguments>install</arguments>
+    </configuration>
+</execution>
+```
+
 ### Running Karma
+
 ```xml
 <execution>
     <id>javascript tests</id>
@@ -316,12 +253,14 @@ By default, colors will be shown in the log.
     </configuration>
 </execution>
 ```
-__Skipping tests:__ If you run maven with the `-DskipTests` flag, karma tests will be skipped.
 
-__Ignoring failed tests:__ If you want to ignore test failures run maven with the `-Dmaven.test.failure.ignore` flag, karma test results will not stop the build but test results will remain
+**Skipping tests:** If you run maven with the `-DskipTests` flag, karma tests will be skipped.
+
+**Ignoring failed tests:** If you want to ignore test failures run maven with the `-Dmaven.test.failure.ignore` flag, 
+karma test results will not stop the build but test results will remain
 in test output files. Suitable for continuous integration tool builds.
 
-__Why karma.conf.ci.js?__ When using Karma, you should have two separate
+**Why karma.conf.ci.js?** When using Karma, you should have two separate
 configurations: `karma.conf.js` and `karma.conf.ci.js`. (The second one should inherit configuration
 from the first one, and override some options. The example project shows you how to set it up.)
 The idea is that you use `karma.conf.js` while developing (using watch/livereload etc.), and
@@ -329,10 +268,12 @@ The idea is that you use `karma.conf.js` while developing (using watch/livereloa
 it should generate xml reports, it should run only in PhantomJS, and/or it should generate
 code coverage reports.
 
-__Running Karma through Grunt or gulp:__ You may choose to run Karma [directly through Grunt](https://github.com/karma-runner/grunt-karma) or [through gulp](https://github.com/karma-runner/gulp-karma) instead,
-as part of the `grunt` or `gulp` execution. That will help to separate your frontend and backend builds even more.
+**Running Karma through Grunt or gulp:** You may choose to run Karma [directly through Grunt](https://github.com/karma-runner/grunt-karma) 
+or [through gulp](https://github.com/karma-runner/gulp-karma) instead, as part of the `grunt` or `gulp` execution. That 
+will help to separate your frontend and backend builds even more.
 
 ### Running Webpack
+
 ```xml
 <execution>
     <id>webpack build</id>
@@ -350,6 +291,80 @@ as part of the `grunt` or `gulp` execution. That will help to separate your fron
     </configuration>
 </execution>
 ```
+
+### Optional Configuration 
+
+#### Working directory
+
+The working directory is where you've put `package.json` and your frontend configuration files (`Gruntfile.js` or 
+`gulpfile.js` etc). The default working directory is your project's base directory (the same directory as your `pom.xml`). 
+You can change the working directory if you want:
+
+```xml
+<plugin>
+    <groupId>com.github.eirslett</groupId>
+    <artifactId>frontend-maven-plugin</artifactId>
+
+    <!-- optional -->
+    <configuration>
+        <workingDirectory>src/main/frontend</workingDirectory>
+    </configuration>
+</plugin>
+```
+
+**Notice:** _Npm packages will always be installed in `node_modules` next to your `package.json`, which is default npm behavior._
+
+#### Installation Directory
+
+The installation directory is the folder where your node and npm are installed.
+You can set this property on the different goals. Or choose to set it for all the goals, in the maven configuration.
+
+```xml
+<plugin>
+    <groupId>com.github.eirslett</groupId>
+    <artifactId>frontend-maven-plugin</artifactId>
+
+    <!-- optional -->
+    <configuration>
+        <installDirectory>target</installDirectory>
+    </configuration>    
+</plugin>
+```
+
+#### Proxy settings
+
+If you have [configured proxy settings for Maven](http://maven.apache.org/guides/mini/guide-proxies.html)
+in your settings.xml file, the plugin will automatically use the proxy for downloading node and npm, as well
+as [passing the proxy to npm commands](https://docs.npmjs.com/misc/config#proxy).
+
+**Non Proxy Hosts:** npm does not currently support non proxy hosts - if you are using a proxy and npm install is 
+is not downloading from your repository, it may be because it cannot be accessed through your proxy. 
+If that is the case, you can stop the npm execution from inheriting the Maven proxy settings like this:
+
+```xml
+<configuration>
+    <npmInheritsProxyConfigFromMaven>false</npmInheritsProxyConfigFromMaven>
+</configuration>
+```
+
+#### Environment variables
+
+If you need to pass some variable to Node, you can set that using the property `environmentVariables` in configuration 
+tag of an execution like this:
+
+```xml
+<configuration>
+    <environmentVariables>
+        <!-- Simple var -->
+        <Jon>Snow</Jon>
+        <Tyrion>Lannister</Tyrion>
+        
+        <!-- Var value take from maven properties -->
+        <NODE_ENV>${NODE_ENV}</NODE_ENV>
+    </environmentVariables>        
+</configuration>
+```
+
 
 ## Eclipse M2E support
 
