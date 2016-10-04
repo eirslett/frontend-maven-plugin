@@ -1,11 +1,13 @@
-OS X Build: (Travis CI) [![Build Status](https://travis-ci.org/eirslett/frontend-maven-plugin.png?branch=master)](https://travis-ci.org/eirslett/frontend-maven-plugin)
+# frontend-maven-plugin
 
-Windows Build: (Appveyor) [![Build status](https://ci.appveyor.com/api/projects/status/vxbccc1t9ceadhi9)](https://ci.appveyor.com/project/eirslett/frontend-maven-plugin)
+[![Build Status OSX](https://travis-ci.org/eirslett/frontend-maven-plugin.png?branch=master)](https://travis-ci.org/eirslett/frontend-maven-plugin)
+[![Build status Linux](https://eirslett.ci.cloudbees.com/buildStatus/icon?job=Frontend%20maven%20plugin)](https://eirslett.ci.cloudbees.com/job/Frontend%20maven%20plugin/)
+[![Build status Windows](https://ci.appveyor.com/api/projects/status/vxbccc1t9ceadhi9?svg=true)](https://ci.appveyor.com/project/eirslett/frontend-maven-plugin)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.eirslett/frontend-maven-plugin/badge.svg?style=flat-square)](https://maven-badges.herokuapp.com/maven-central/com.github.eirslett/frontend-maven-plugin/)
 
-Linux Build: (CloudBees) [![Build status](https://eirslett.ci.cloudbees.com/buildStatus/icon?job=Frontend%20maven%20plugin)](https://eirslett.ci.cloudbees.com/job/Frontend%20maven%20plugin/)
-
-# Frontend maven plugin
-This plugin downloads/installs Node and NPM locally for your project, runs NPM install, and then any combination of [Bower](http://bower.io/), [Grunt](http://gruntjs.com/), [Gulp](http://gulpjs.com/), [Jspm](http://jspm.io), [Karma](http://karma-runner.github.io/), or [Webpack](http://webpack.github.io/).
+This plugin downloads/installs Node and NPM locally for your project, runs NPM install, and then any combination of 
+[Bower](http://bower.io/), [Grunt](http://gruntjs.com/), [Gulp](http://gulpjs.com/), [Jspm](http://jspm.io), 
+[Karma](http://karma-runner.github.io/), or [Webpack](http://webpack.github.io/).
 It's supposed to work on Windows, OS X and Linux.
 
 #### What is this plugin meant to do?
@@ -21,12 +23,15 @@ laptops, but backend developers can run a clean build without even installing No
 - Not meant to install Node for production uses. The Node usage is intended as part of a frontend build,
 running common javascript tasks such as minification, obfuscation, compression, packaging, testing etc.
 
-## Show me an example!
-[Here is an example for you!](https://github.com/eirslett/frontend-maven-plugin/tree/master/frontend-maven-plugin/src/it/example%20project)
+## Requirements
 
-# Installing
+* *Maven 3* and *Java 1.7*
+* For *Maven 2* support take a look at the [wiki](https://github.com/eirslett/frontend-maven-plugin/wiki#maven-2).
+
+## Installation
+
 Include the plugin as a dependency in your Maven project.
-## Maven 3
+
 ```xml
 <plugins>
     <plugin>
@@ -40,14 +45,17 @@ Include the plugin as a dependency in your Maven project.
 ...
 ```
 
-For *Maven 2* support take a look at the [wiki](https://github.com/eirslett/frontend-maven-plugin/wiki#maven-2).
+## Usage
 
-# Usage
-Have a look at the example project, to see how it should be set up!
-https://github.com/eirslett/frontend-maven-plugin/blob/master/frontend-maven-plugin/src/it/example%20project/pom.xml
+Have a look at the [example project](https://github.com/eirslett/frontend-maven-plugin/tree/master/frontend-maven-plugin/src/it/example%20project), 
+to see how it should be set up: https://github.com/eirslett/frontend-maven-plugin/blob/master/frontend-maven-plugin/src/it/example%20project/pom.xml
 
 ### Working directory
-The working directory is where you've put `package.json` and your frontend configuration files (`Gruntfile.js` or `gulpfile.js` etc). The default working directory is your project's base directory (the same directory as your `pom.xml`). You can change the working directory if you want:
+
+The working directory is where you've put `package.json` and your frontend configuration files (`Gruntfile.js` or 
+`gulpfile.js` etc). The default working directory is your project's base directory (the same directory as your `pom.xml`). 
+You can change the working directory if you want:
+
 ```xml
 <plugin>
     <groupId>com.github.eirslett</groupId>
@@ -66,8 +74,10 @@ The working directory is where you've put `package.json` and your frontend confi
 ```
 
 ### Installation Directory
+
 The installation directory is the folder where your dependencies are installed e.g. node.exe.
 You can set this property on the different goals.
+
 ```xml
 <execution>
     <id>npm install</id>
@@ -95,8 +105,10 @@ Or choose to set it for all the goals, in the maven configuration.
         </configuration>
 ```
 
+**Notice: ** __
 
 ### Installing node and npm
+
 The versions of Node and npm are downloaded from https://nodejs.org/dist, extracted and put into a `node` folder created in your working directory. (Remember to gitignore the `node` folder, unless you actually want to commit it)
 Node/npm will only be "installed" locally to your project. It will not be installed globally on the whole system (and it will not interfere with any Node/npm installations already present.)
 ```xml
@@ -124,6 +136,7 @@ Node/npm will only be "installed" locally to your project. It will not be instal
 ```
 
 You can also specify separate download roots for npm and node as they are now stored in separate repos.
+
 ```xml
 <plugin>
   ...
@@ -338,7 +351,7 @@ as part of the `grunt` or `gulp` execution. That will help to separate your fron
 </execution>
 ```
 
-# Eclipse M2E support
+## Eclipse M2E support
 
 This plugin contains support for M2E, including lifecycle mappings and support for incremental builds in Eclipse.
 The `install-node-and-npm` goal will only run on a full project build. The other goals support incremental builds
@@ -346,15 +359,21 @@ to avoid doing unnecessary work. During an incremental build the `npm` goal will
 has been changed. The `grunt` and `gulp` goals have new `srcdir` and `triggerfiles` optional configuration options; if
 these are set they check for changes in your source files before being run. See the wiki for more information.
 
-# Helper scripts
+## Helper scripts
+
 During development, it's convenient to have the "npm", "bower", "grunt", "gulp" and "karma" commands
 available on the command line. If you want that, use [those helper scripts](https://github.com/eirslett/frontend-maven-plugin/tree/master/frontend-maven-plugin/src/it/example%20project/helper-scripts)!
 
 ## To build this project:
-`mvn clean install`
+
+Run `$ mvn clean install`
 
 ## Issues, Contributing
-Please post any issues on the Github's Issue tracker. Pull requests are welcome!
 
-### License
-Apache 2.0
+Please post any issues on the [Github's Issue tracker](https://github.com/eirslett/frontend-maven-plugin/issues). 
+[Pull requests](https://github.com/eirslett/frontend-maven-plugin/pulls) are welcome! 
+You can find a full list of [contributors here](https://github.com/eirslett/frontend-maven-plugin/graphs/contributors).
+
+## License
+
+[Apache 2.0](LICENSE)
