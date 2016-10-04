@@ -104,8 +104,9 @@ You can also specify separate download roots for npm and node as they are stored
 <plugin>
     ...
     <configuration>
-        <!-- optional: where to download node and npm from. Defaults to https://nodejs.org/dist/ and http://registry.npmjs.org/npm/-/ -->
+        <!-- optional: where to download node from. Defaults to https://nodejs.org/dist/ -->
         <nodeDownloadRoot>http://myproxy.example.org/nodejs/</nodeDownloadRoot>
+        <!-- optional: where to download npm from. Defaults to http://registry.npmjs.org/npm/-/ -->
         <npmDownloadRoot>https://myproxy.example.org/npm/</npmDownloadRoot>
     </configuration>
 </plugin>
