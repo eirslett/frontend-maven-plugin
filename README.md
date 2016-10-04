@@ -3,7 +3,7 @@
 [![Build Status OSX](https://travis-ci.org/eirslett/frontend-maven-plugin.png?branch=master)](https://travis-ci.org/eirslett/frontend-maven-plugin)
 [![Build status Linux](https://eirslett.ci.cloudbees.com/buildStatus/icon?job=Frontend%20maven%20plugin)](https://eirslett.ci.cloudbees.com/job/Frontend%20maven%20plugin/)
 [![Build status Windows](https://ci.appveyor.com/api/projects/status/vxbccc1t9ceadhi9?svg=true)](https://ci.appveyor.com/project/eirslett/frontend-maven-plugin)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.eirslett/frontend-maven-plugin/badge.svg?style=flat-square)](https://maven-badges.herokuapp.com/maven-central/com.github.eirslett/frontend-maven-plugin/)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.eirslett/frontend-maven-plugin/badge.svg?style=flat)](https://maven-badges.herokuapp.com/maven-central/com.github.eirslett/frontend-maven-plugin/)
 
 This plugin downloads/installs Node and NPM locally for your project, runs NPM install, and then any combination of 
 [Bower](http://bower.io/), [Grunt](http://gruntjs.com/), [Gulp](http://gulpjs.com/), [Jspm](http://jspm.io), 
