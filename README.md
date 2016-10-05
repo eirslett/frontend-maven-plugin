@@ -69,7 +69,7 @@ to see how it should be set up: https://github.com/eirslett/frontend-maven-plugi
     
 **Recommendation:** _Try to run all your tasks via npm scripts instead of running bower, grunt, gulp etc. directly._
 
-#### Installing node and npm
+### Installing node and npm
 
 The versions of Node and npm are downloaded from https://nodejs.org/dist, extracted and put into a `node` folder created 
 in your [installation directory](#installation-directory) . Node/npm will only be "installed" locally to your project. 
