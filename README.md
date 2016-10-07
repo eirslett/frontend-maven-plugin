@@ -90,6 +90,8 @@ present).
     </execution>
     <configuration>
         <nodeVersion>v4.6.0</nodeVersion>
+
+        <!-- optional: with node version greater than 4.0.0 will use npm provided by node distribution -->
         <npmVersion>2.15.9</npmVersion>
         
         <!-- optional: where to download node and npm from. Defaults to https://nodejs.org/dist/ -->

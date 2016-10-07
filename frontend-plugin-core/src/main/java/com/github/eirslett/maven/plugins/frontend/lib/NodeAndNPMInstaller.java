@@ -65,6 +65,16 @@ public class NodeAndNPMInstaller {
         return this;
     }
 
+    private boolean npmProvided() throws InstallationException {
+        if("provided".equals(npmVersion)){
+            if(Integer.parseInt(nodeVersion.replace("v", "").split("[.]")[0]) < 4){
+                throw new InstallationException("NPM version is '"+npmVersion+"' but Node didn't include NPM prior to v4.0.0");
+            }
+            return true;
+        }
+        return false;
+
+    }
     public void install() throws InstallationException {
         // use static lock object for a synchronized block
         synchronized (LOCK) {
@@ -80,12 +90,16 @@ public class NodeAndNPMInstaller {
                     logger.warn("Node version does not start with naming convention 'v'.");
                 }
                 if (config.getPlatform().isWindows()) {
-                    installNodeForWindows();
+                    if(npmProvided()){
+                        installNodeWithNpmForWindows();
+                    } else {
+                        installNodeForWindows();
+                    }
                 } else {
                     installNodeDefault();
                 }
             }
-            if (!npmIsAlreadyInstalled()) {
+            if(!npmProvided() && !npmIsAlreadyInstalled()) {
                 installNpm();
             }
         }
@@ -200,13 +214,13 @@ public class NodeAndNPMInstaller {
 
     private void installNodeDefault() throws InstallationException {
         try {
-            final String longNodeFilename = config.getPlatform().getLongNodeFilename(nodeVersion);
-            String downloadUrl = nodeDownloadRoot + config.getPlatform().getNodeDownloadFilename(nodeVersion);
+            final String longNodeFilename = config.getPlatform().getLongNodeFilename(nodeVersion, false);
+            String downloadUrl = nodeDownloadRoot + config.getPlatform().getNodeDownloadFilename(nodeVersion, false);
             String classifier = config.getPlatform().getNodeClassifier();
 
             File tmpDirectory = getTempDirectory();
 
-            CacheDescriptor cacheDescriptor = new CacheDescriptor("node", nodeVersion, classifier, "tar.gz");
+            CacheDescriptor cacheDescriptor = new CacheDescriptor("node", nodeVersion, classifier, config.getPlatform().getArchiveExtension());
 
             File archive = config.getCacheResolver().resolve(cacheDescriptor);
 
@@ -231,6 +245,21 @@ public class NodeAndNPMInstaller {
                   throw new InstallationException("Could not install Node: Was not allowed to make "+destination+" executable.");
                 }
 
+                if(npmProvided()){
+                    File tmpNodeModulesDir = new File(tmpDirectory, longNodeFilename + File.separator + "lib" + File.separator + "node_modules");
+                    File nodeModulesDirectory = new File(destinationDirectory, "node_modules");
+                    File npmDirectory = new File(nodeModulesDirectory, "npm");
+                    FileUtils.copyDirectory(tmpNodeModulesDir, nodeModulesDirectory);
+                    logger.info("Extracting NPM");
+                    // create a copy of the npm scripts next to the node executable
+                    for (String script : Arrays.asList("npm", "npm.cmd")) {
+                        File scriptFile = new File(npmDirectory, "bin"+File.separator+script);
+                        if (scriptFile.exists()) {
+                            scriptFile.setExecutable(true);
+                        }
+                    }
+                }
+
                 deleteTempDirectory(tmpDirectory);
 
                 logger.info("Installed node locally.");
@@ -244,8 +273,56 @@ public class NodeAndNPMInstaller {
         }
     }
 
+    private void installNodeWithNpmForWindows() throws InstallationException {
+		    try {
+		        final String longNodeFilename = config.getPlatform().getLongNodeFilename(nodeVersion, true);
+		        String downloadUrl = nodeDownloadRoot + config.getPlatform().getNodeDownloadFilename(nodeVersion, true);
+		        String classifier = config.getPlatform().getNodeClassifier();
+
+		        File tmpDirectory = getTempDirectory();
+
+		        CacheDescriptor cacheDescriptor = new CacheDescriptor("node", nodeVersion, classifier, config.getPlatform().getArchiveExtension());
+
+		        File archive = config.getCacheResolver().resolve(cacheDescriptor);
+
+		        downloadFileIfMissing(downloadUrl, archive, userName, password);
+
+		        extractFile(archive, tmpDirectory);
+
+		        // Search for the node binary
+		        File nodeBinary = new File(tmpDirectory, longNodeFilename + File.separator + "node.exe");
+		        if(!nodeBinary.exists()){
+		            throw new FileNotFoundException("Could not find the downloaded Node.js binary in "+nodeBinary);
+		        } else {
+		            File destinationDirectory = getInstallDirectory();
+
+		            File destination = new File(destinationDirectory, "node.exe");
+		            logger.info("Copying node binary from {} to {}", nodeBinary, destination);
+		            if(!nodeBinary.renameTo(destination)){
+		                throw new InstallationException("Could not install Node: Was not allowed to rename "+nodeBinary+" to "+destination);
+		            }
+
+		            if("provided".equals(npmVersion)){
+		                File tmpNodeModulesDir = new File(tmpDirectory, longNodeFilename + File.separator + "node_modules");
+		                File nodeModulesDirectory = new File(destinationDirectory, "node_modules");
+		                FileUtils.copyDirectory(tmpNodeModulesDir, nodeModulesDirectory);
+		            }
+		            deleteTempDirectory(tmpDirectory);
+
+		            logger.info("Installed node locally.");
+		        }
+		    } catch (IOException e) {
+		        throw new InstallationException("Could not install Node", e);
+		    } catch (DownloadException e) {
+		        throw new InstallationException("Could not download Node.js", e);
+		    } catch (ArchiveExtractionException e) {
+		        throw new InstallationException("Could not extract the Node archive", e);
+		    }
+
+    }
+
     private void installNodeForWindows() throws InstallationException {
-        final String downloadUrl = nodeDownloadRoot + config.getPlatform().getNodeDownloadFilename(nodeVersion);
+        final String downloadUrl = nodeDownloadRoot + config.getPlatform().getNodeDownloadFilename(nodeVersion, false);
         try {
             File destinationDirectory = getInstallDirectory();
 

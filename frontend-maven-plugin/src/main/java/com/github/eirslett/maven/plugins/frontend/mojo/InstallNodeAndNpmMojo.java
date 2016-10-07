@@ -45,7 +45,7 @@ public final class InstallNodeAndNpmMojo extends AbstractFrontendMojo {
     /**
      * The version of NPM to install.
      */
-    @Parameter(property = "npmVersion", required = true)
+    @Parameter(property = "npmVersion", required = false, defaultValue = "provided")
     private String npmVersion;
 
     /**
