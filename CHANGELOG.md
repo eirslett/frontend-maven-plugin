@@ -2,7 +2,11 @@
 
 ## Changelog
 
-### 1.1-SNAPSHOT
+### 1.2-SNAPSHOT
+
+* 
+
+### 1.1
 
 * Update requirements to Java 1.7
 * Fix #469: Check write permissions on node installation folder
@@ -12,6 +16,7 @@
 * Add Linux on Power Systems ppc64le support
 * Authenticated download
 * Support for using NPM provided by node versions >4.0.0
+* Fix #482: https-proxy setting from Maven
 
 ### 1.0
 
