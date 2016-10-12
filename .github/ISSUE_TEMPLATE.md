@@ -1,4 +1,7 @@
-<!-- Before creating an issue please make sure you are using the latest version of frontend-maven-plugin. -->
+<!-- Before creating an issue please 
+ - search for existing duplicate or closed issues 
+ - make sure you are using the latest version of frontend-maven-plugin 
+-->
 
 **Do you want to request a _feature_ or report a _bug_?**
 
