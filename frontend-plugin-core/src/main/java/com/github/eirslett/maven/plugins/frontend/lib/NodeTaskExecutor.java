@@ -13,14 +13,21 @@ import static com.github.eirslett.maven.plugins.frontend.lib.Utils.implode;
 import static com.github.eirslett.maven.plugins.frontend.lib.Utils.normalize;
 import static com.github.eirslett.maven.plugins.frontend.lib.Utils.prepend;
 import java.util.Map;
+import java.util.concurrent.Callable;
 
 abstract class NodeTaskExecutor {
     private static final String DS = "//";
     private static final String AT = "@";
-    
+
     private final Logger logger;
     private final String taskName;
-    private final String taskLocation;
+
+    /**
+     * Allows taskLocation to be deferred until later, because newer NPM version change the "npm" path.
+     *
+     * It would be better to use Supplier but Callable is backward-compatible.
+     */
+    private final Callable<String> taskLocationSupplier;
     private final List<String> additionalArguments;
     private final NodeExecutorConfig config;
 
@@ -36,11 +43,21 @@ abstract class NodeTaskExecutor {
         this(config, getTaskNameFromLocation(taskLocation), taskLocation, additionalArguments);
     }
 
-    public NodeTaskExecutor(NodeExecutorConfig config, String taskName, String taskLocation, List<String> additionalArguments) {
+
+    public NodeTaskExecutor(NodeExecutorConfig config, String taskName, final String taskLocation, List<String> additionalArguments) {
+        this(config, taskName, new Callable<String>() {
+            @Override
+            public String call() throws Exception {
+                return taskLocation;
+            }
+        }, additionalArguments);
+    }
+
+    public NodeTaskExecutor(NodeExecutorConfig config, String taskName, Callable<String> taskLocationSupplier, List<String> additionalArguments) {
         this.logger = LoggerFactory.getLogger(getClass());
         this.config = config;
         this.taskName = taskName;
-        this.taskLocation = taskLocation;
+        this.taskLocationSupplier = taskLocationSupplier;
         this.additionalArguments = additionalArguments;
     }
 
@@ -65,6 +82,12 @@ abstract class NodeTaskExecutor {
     }
 
     private String getAbsoluteTaskLocation() {
+        String taskLocation = null;
+        try {
+            taskLocation = taskLocationSupplier.call();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         String location = normalize(taskLocation);
         if (Utils.isRelative(taskLocation)) {
             location = new File(config.getWorkingDirectory(), location).getAbsolutePath();
