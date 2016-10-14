@@ -24,8 +24,13 @@ public final class FrontendPluginFactory {
         this.cacheResolver = cacheResolver;
     }
 
-    public NodeAndNPMInstaller getNodeAndNPMInstaller(ProxyConfig proxy) {
-        return new NodeAndNPMInstaller(getInstallConfig(), new DefaultArchiveExtractor(),
+    public NodeInstaller getNodeInstaller(ProxyConfig proxy) {
+        return new NodeInstaller(getInstallConfig(), new DefaultArchiveExtractor(),
+            new DefaultFileDownloader(proxy));
+    }
+
+    public NPMInstaller getNPMInstaller(ProxyConfig proxy) {
+        return new NPMInstaller(getInstallConfig(), new DefaultArchiveExtractor(),
             new DefaultFileDownloader(proxy));
     }
 
