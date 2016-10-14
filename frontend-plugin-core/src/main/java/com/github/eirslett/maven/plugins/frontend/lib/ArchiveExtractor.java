@@ -20,6 +20,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 class ArchiveExtractionException extends Exception {
+    ArchiveExtractionException(String message) {
+        super(message);
+    }
+
     ArchiveExtractionException(String message, Throwable cause) {
         super(message, cause);
     }
@@ -58,12 +62,15 @@ final class DefaultArchiveExtractor implements ArchiveExtractor {
                 String command = "msiexec /a " + archiveFile.getAbsolutePath() + " /qn TARGETDIR=\""
                     + destinationDirectory + "\"";
                 Process child = Runtime.getRuntime().exec(command);
-                while (child.isAlive()) {
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                        // ignore
+                try {
+                    int result = child.waitFor();
+                    if (result != 0) {
+                        throw new ArchiveExtractionException(
+                            "Could not extract " + archiveFile.getAbsolutePath() + "; return code " + result);
                     }
+                } catch (InterruptedException e) {
+                    throw new ArchiveExtractionException(
+                        "Unexpected interruption of while waiting for extraction process", e);
                 }
             } else if ("zip".equals(FileUtils.getExtension(archiveFile.getAbsolutePath()))) {
                 ZipFile zipFile = new ZipFile(archiveFile);
