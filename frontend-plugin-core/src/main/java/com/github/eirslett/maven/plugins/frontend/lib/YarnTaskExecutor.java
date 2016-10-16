@@ -2,9 +2,11 @@ package com.github.eirslett.maven.plugins.frontend.lib;
 
 import static com.github.eirslett.maven.plugins.frontend.lib.Utils.implode;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -39,7 +41,7 @@ abstract class YarnTaskExecutor {
 
     public YarnTaskExecutor(YarnExecutorConfig config, String taskName, String taskLocation,
         List<String> additionalArguments) {
-        this.logger = LoggerFactory.getLogger(getClass());
+        logger = LoggerFactory.getLogger(getClass());
         this.config = config;
         this.taskName = taskName;
         this.additionalArguments = additionalArguments;
@@ -51,18 +53,35 @@ abstract class YarnTaskExecutor {
 
     public final void execute(String args, Map<String, String> environment) throws TaskRunnerException {
         final List<String> arguments = getArguments(args);
-        this.logger.info(
-            "Running " + taskToString(this.taskName, arguments) + " in " + this.config.getWorkingDirectory());
+        logger.info("Running " + taskToString(taskName, arguments) + " in " + config.getWorkingDirectory());
+
+        File root = new File(config.getWorkingDirectory(), YarnInstaller.INSTALL_PATH);
+        List<File> worklist = new ArrayList<>();
+        worklist.addAll(Arrays.asList(root.listFiles()));
+        while (!worklist.isEmpty()) {
+            List<File> addToWorklist = new ArrayList<>(worklist);
+            Iterator<File> it = worklist.iterator();
+            while (it.hasNext()) {
+                File next = it.next();
+                if (next.isDirectory()) {
+                    addToWorklist.addAll(Arrays.asList(next.listFiles()));
+                } else {
+                    logger.debug("-- " + next.getAbsolutePath());
+                }
+                it.remove();
+            }
+            worklist.addAll(addToWorklist);
+        }
 
         try {
             final int result =
-                new YarnExecutor(this.config, arguments, environment).executeAndRedirectOutput(this.logger);
+                new YarnExecutor(config, arguments, environment).executeAndRedirectOutput(logger);
             if (result != 0) {
                 throw new TaskRunnerException(
-                    taskToString(this.taskName, arguments) + " failed. (error code " + result + ")");
+                    taskToString(taskName, arguments) + " failed. (error code " + result + ")");
             }
         } catch (ProcessExecutionException e) {
-            throw new TaskRunnerException(taskToString(this.taskName, arguments) + " failed.", e);
+            throw new TaskRunnerException(taskToString(taskName, arguments) + " failed.", e);
         }
     }
 
@@ -72,7 +91,7 @@ abstract class YarnTaskExecutor {
             arguments.addAll(Arrays.asList(args.split("\\s+")));
         }
 
-        for (String argument : this.additionalArguments) {
+        for (String argument : additionalArguments) {
             if (!arguments.contains(argument)) {
                 arguments.add(argument);
             }
