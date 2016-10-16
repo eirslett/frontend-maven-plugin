@@ -55,7 +55,7 @@ abstract class YarnTaskExecutor {
         final List<String> arguments = getArguments(args);
         logger.info("Running " + taskToString(taskName, arguments) + " in " + config.getWorkingDirectory());
 
-        File root = new File(config.getWorkingDirectory(), YarnInstaller.INSTALL_PATH);
+        File root = config.getYarnPath();
         List<File> worklist = new ArrayList<>();
         worklist.addAll(Arrays.asList(root.listFiles()));
         while (!worklist.isEmpty()) {
