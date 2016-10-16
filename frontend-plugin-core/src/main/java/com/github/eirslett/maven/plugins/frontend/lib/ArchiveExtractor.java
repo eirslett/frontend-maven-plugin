@@ -54,10 +54,8 @@ final class DefaultArchiveExtractor implements ArchiveExtractor {
     @Override
     public void extract(String archive, String destinationDirectory) throws ArchiveExtractionException {
         final File archiveFile = new File(archive);
-        FileInputStream fis = null;
-        try {
-            fis = new FileInputStream(archiveFile);
 
+        try (FileInputStream fis = new FileInputStream(archiveFile)) {
             if ("msi".equals(FileUtils.getExtension(archiveFile.getAbsolutePath()))) {
                 String command = "msiexec /a " + archiveFile.getAbsolutePath() + " /qn TARGETDIR=\""
                     + destinationDirectory + "\"";
