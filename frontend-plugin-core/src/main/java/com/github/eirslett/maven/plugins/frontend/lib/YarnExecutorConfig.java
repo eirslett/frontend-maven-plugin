@@ -18,7 +18,7 @@ final class InstallYarnExecutorConfig implements YarnExecutorConfig {
     private static final String YARN_WINDOWS =
         YarnInstaller.INSTALL_PATH.replaceAll("/", "\\\\") + "\\Yarn\\bin\\yarn.cmd";
 
-    private static final String YARN_DEFAULT = YarnInstaller.INSTALL_PATH + "/Yarn/bin/yarn";
+    private static final String YARN_DEFAULT = YarnInstaller.INSTALL_PATH + "/dist/bin/yarn";
 
     private File nodePath;
 

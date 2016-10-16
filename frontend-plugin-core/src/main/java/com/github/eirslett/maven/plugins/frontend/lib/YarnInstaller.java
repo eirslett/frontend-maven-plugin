@@ -97,13 +97,12 @@ public class YarnInstaller {
     private void installYarn() throws InstallationException {
         try {
             logger.info("Installing Yarn version {}", yarnVersion);
-            String downloadUrl =
-                yarnDownloadRoot + yarnVersion + "/yarn-" + yarnVersion.substring(1, yarnVersion.length());
+            String downloadUrl = yarnDownloadRoot + yarnVersion;
             String fileending;
             if (config.getPlatform().isWindows()) {
-                fileending = ".msi";
+                fileending = "/yarn-" + yarnVersion.substring(1, yarnVersion.length()) + ".msi";
             } else {
-                fileending = ".tar.gz";
+                fileending = "/yarn-" + yarnVersion + ".tar.gz";
             }
             downloadUrl += fileending;
 
