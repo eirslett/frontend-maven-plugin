@@ -4,7 +4,7 @@
 
 ### 1.2-SNAPSHOT
 
-* 
+* New goals `yarn` and `install-node-and-yarn` for Yarn support 
 
 ### 1.1
 

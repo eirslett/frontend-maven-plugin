@@ -14,6 +14,7 @@ final class ProcessExecutionException extends Exception {
     public ProcessExecutionException(String message) {
         super(message);
     }
+
     public ProcessExecutionException(Throwable cause) {
         super(cause);
     }
@@ -21,13 +22,19 @@ final class ProcessExecutionException extends Exception {
 
 final class ProcessExecutor {
     private final File workingDirectory;
+
     private final List<String> localPaths;
+
     private final List<String> command;
+
     private final ProcessBuilder processBuilder;
+
     private final Platform platform;
+
     private final Map<String, String> additionalEnvironment;
 
-    public ProcessExecutor(File workingDirectory, List<String> paths, List<String> command, Platform platform, Map<String, String> additionalEnvironment){
+    public ProcessExecutor(File workingDirectory, List<String> paths, List<String> command, Platform platform,
+        Map<String, String> additionalEnvironment) {
         this.workingDirectory = workingDirectory;
         this.localPaths = paths;
         this.command = command;
@@ -39,15 +46,15 @@ final class ProcessExecutor {
 
     public String executeAndGetResult() throws ProcessExecutionException {
         try {
-            final Process process = processBuilder.start();
+            final Process process = this.processBuilder.start();
             final String result = readString(process.getInputStream());
             final String error = readString(process.getErrorStream());
             final int exitValue = process.waitFor();
 
-            if(exitValue == 0){
+            if (exitValue == 0) {
                 return result;
             } else {
-                throw new ProcessExecutionException(result+" "+error);
+                throw new ProcessExecutionException(result + " " + error);
             }
         } catch (IOException e) {
             throw new ProcessExecutionException(e);
@@ -58,7 +65,7 @@ final class ProcessExecutor {
 
     public int executeAndRedirectOutput(final Logger logger) throws ProcessExecutionException {
         try {
-            final Process process = processBuilder.start();
+            final Process process = this.processBuilder.start();
 
             final Thread infoLogThread = InputStreamHandler.logInfo(process.getInputStream(), logger);
             infoLogThread.start();
@@ -76,13 +83,13 @@ final class ProcessExecutor {
         }
     }
 
-    private ProcessBuilder createProcessBuilder(){
-        ProcessBuilder pbuilder = new ProcessBuilder(command).directory(workingDirectory);
+    private ProcessBuilder createProcessBuilder() {
+        ProcessBuilder pbuilder = new ProcessBuilder(this.command).directory(this.workingDirectory);
         final Map<String, String> environment = pbuilder.environment();
         String pathVarName = "PATH";
         String pathVarValue = environment.get(pathVarName);
-        if (platform.isWindows()) {
-            for (String key:environment.keySet()) {
+        if (this.platform.isWindows()) {
+            for (String key : environment.keySet()) {
                 if ("PATH".equalsIgnoreCase(key)) {
                     pathVarName = key;
                     pathVarValue = environment.get(key);
@@ -94,13 +101,13 @@ final class ProcessExecutor {
         if (pathVarValue != null) {
             pathBuilder.append(pathVarValue).append(File.pathSeparator);
         }
-        for (String path : localPaths) {
-        	pathBuilder.insert(0, File.pathSeparator).insert(0, path);
+        for (String path : this.localPaths) {
+            pathBuilder.insert(0, File.pathSeparator).insert(0, path);
         }
         environment.put(pathVarName, pathBuilder.toString());
 
-        if (additionalEnvironment != null) {
-            environment.putAll(additionalEnvironment);
+        if (this.additionalEnvironment != null) {
+            environment.putAll(this.additionalEnvironment);
         }
         return pbuilder;
     }
@@ -109,7 +116,7 @@ final class ProcessExecutor {
         BufferedReader inputStream = new BufferedReader(new InputStreamReader(processInputStream));
         StringBuilder result = new StringBuilder();
         String line;
-        while((line = inputStream.readLine()) != null) {
+        while ((line = inputStream.readLine()) != null) {
             result.append(line).append("\n");
         }
         return result.toString().trim();

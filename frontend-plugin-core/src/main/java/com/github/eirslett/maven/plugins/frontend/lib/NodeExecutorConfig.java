@@ -3,43 +3,48 @@ package com.github.eirslett.maven.plugins.frontend.lib;
 import java.io.File;
 
 public interface NodeExecutorConfig {
-  File getNodePath();
-  File getNpmPath();
-  File getWorkingDirectory();
-  Platform getPlatform();
+    File getNodePath();
+
+    File getNpmPath();
+
+    File getWorkingDirectory();
+
+    Platform getPlatform();
 }
 
 final class InstallNodeExecutorConfig implements NodeExecutorConfig {
 
-  private static final String NODE_WINDOWS = "\\node\\node.exe";
-  private static final String NODE_DEFAULT = "/node/node";
-  private static final String NPM = "/node/node_modules/npm/bin/npm-cli.js";
+    private static final String NODE_WINDOWS =
+        NodeInstaller.INSTALL_PATH.replaceAll("/", "\\\\") + "\\node.exe";
 
-  private final InstallConfig installConfig;
+    private static final String NODE_DEFAULT = NodeInstaller.INSTALL_PATH + "/node";
 
-  public InstallNodeExecutorConfig(InstallConfig installConfig) {
-    this.installConfig = installConfig;
-  }
+    private static final String NPM = NodeInstaller.INSTALL_PATH + "/node_modules/npm/bin/npm-cli.js";
 
-  @Override
-  public File getNodePath() {
-    String nodeExecutable = getPlatform().isWindows() ? NODE_WINDOWS : NODE_DEFAULT;
-    return new File(installConfig.getInstallDirectory() + nodeExecutable);
-  }
+    private final InstallConfig installConfig;
 
-  @Override
-  public File getNpmPath() {
-    return new File(installConfig.getInstallDirectory() + Utils.normalize(NPM));
-  }
+    public InstallNodeExecutorConfig(InstallConfig installConfig) {
+        this.installConfig = installConfig;
+    }
 
+    @Override
+    public File getNodePath() {
+        String nodeExecutable = getPlatform().isWindows() ? NODE_WINDOWS : NODE_DEFAULT;
+        return new File(this.installConfig.getInstallDirectory() + nodeExecutable);
+    }
 
-  @Override
-  public File getWorkingDirectory() {
-    return installConfig.getWorkingDirectory();
-  }
+    @Override
+    public File getNpmPath() {
+        return new File(this.installConfig.getInstallDirectory() + Utils.normalize(NPM));
+    }
 
-  @Override
-  public Platform getPlatform() {
-    return installConfig.getPlatform();
-  }
+    @Override
+    public File getWorkingDirectory() {
+        return this.installConfig.getWorkingDirectory();
+    }
+
+    @Override
+    public Platform getPlatform() {
+        return this.installConfig.getPlatform();
+    }
 }
