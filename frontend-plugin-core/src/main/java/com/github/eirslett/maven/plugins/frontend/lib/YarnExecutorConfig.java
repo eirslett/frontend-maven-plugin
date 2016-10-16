@@ -3,6 +3,9 @@ package com.github.eirslett.maven.plugins.frontend.lib;
 import java.io.File;
 
 public interface YarnExecutorConfig {
+
+    File getNodePath();
+
     File getYarnPath();
 
     File getWorkingDirectory();
@@ -17,25 +20,33 @@ final class InstallYarnExecutorConfig implements YarnExecutorConfig {
 
     private static final String YARN_DEFAULT = YarnInstaller.INSTALL_PATH + "/Yarn/bin/yarn";
 
+    private File nodePath;
+
     private final InstallConfig installConfig;
 
     public InstallYarnExecutorConfig(InstallConfig installConfig) {
         this.installConfig = installConfig;
+        nodePath = new InstallNodeExecutorConfig(installConfig).getNodePath();
+    }
+
+    @Override
+    public File getNodePath() {
+        return nodePath;
     }
 
     @Override
     public File getYarnPath() {
         String yarnExecutable = getPlatform().isWindows() ? YARN_WINDOWS : YARN_DEFAULT;
-        return new File(this.installConfig.getInstallDirectory() + yarnExecutable);
+        return new File(installConfig.getInstallDirectory() + yarnExecutable);
     }
 
     @Override
     public File getWorkingDirectory() {
-        return this.installConfig.getWorkingDirectory();
+        return installConfig.getWorkingDirectory();
     }
 
     @Override
     public Platform getPlatform() {
-        return this.installConfig.getPlatform();
+        return installConfig.getPlatform();
     }
 }

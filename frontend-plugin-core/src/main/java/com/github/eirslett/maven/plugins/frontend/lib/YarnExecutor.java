@@ -15,15 +15,16 @@ final class YarnExecutor {
         final String yarn = config.getYarnPath().getAbsolutePath();
         List<String> localPaths = new ArrayList<>();
         localPaths.add(config.getYarnPath().getParent());
-        this.executor = new ProcessExecutor(config.getWorkingDirectory(), localPaths,
+        localPaths.add(config.getNodePath().getParent());
+        executor = new ProcessExecutor(config.getWorkingDirectory(), localPaths,
             Utils.prepend(yarn, arguments), config.getPlatform(), additionalEnvironment);
     }
 
     public String executeAndGetResult() throws ProcessExecutionException {
-        return this.executor.executeAndGetResult();
+        return executor.executeAndGetResult();
     }
 
     public int executeAndRedirectOutput(final Logger logger) throws ProcessExecutionException {
-        return this.executor.executeAndRedirectOutput(logger);
+        return executor.executeAndRedirectOutput(logger);
     }
 }
