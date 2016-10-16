@@ -59,7 +59,7 @@ abstract class YarnTaskExecutor {
         List<File> worklist = new ArrayList<>();
         worklist.addAll(Arrays.asList(root.listFiles()));
         while (!worklist.isEmpty()) {
-            List<File> addToWorklist = new ArrayList<>(worklist);
+            List<File> addToWorklist = new ArrayList<>();
             Iterator<File> it = worklist.iterator();
             while (it.hasNext()) {
                 File next = it.next();
