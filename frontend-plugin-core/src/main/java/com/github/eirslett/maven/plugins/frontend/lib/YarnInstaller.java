@@ -62,11 +62,9 @@ public class YarnInstaller {
             }
             if (!yarnIsAlreadyInstalled()) {
                 if (!yarnVersion.startsWith("v")) {
-                    logger.warn("Yarn version has to start with prefix 'v'.");
+                    throw new InstallationException("Yarn version has to start with prefix 'v'.");
                 }
-                if (config.getPlatform().isWindows()) {
-                    installYarn();
-                }
+                installYarn();
             }
         }
     }
