@@ -28,7 +28,7 @@ public class YarnInstaller {
     private final FileDownloader fileDownloader;
 
     YarnInstaller(InstallConfig config, ArchiveExtractor archiveExtractor, FileDownloader fileDownloader) {
-        this.logger = LoggerFactory.getLogger(getClass());
+        logger = LoggerFactory.getLogger(getClass());
         this.config = config;
         this.archiveExtractor = archiveExtractor;
         this.fileDownloader = fileDownloader;
@@ -57,14 +57,14 @@ public class YarnInstaller {
     public void install() throws InstallationException {
         // use static lock object for a synchronized block
         synchronized (LOCK) {
-            if (this.yarnDownloadRoot == null || this.yarnDownloadRoot.isEmpty()) {
-                this.yarnDownloadRoot = DEFAULT_YARN_DOWNLOAD_ROOT;
+            if (yarnDownloadRoot == null || yarnDownloadRoot.isEmpty()) {
+                yarnDownloadRoot = DEFAULT_YARN_DOWNLOAD_ROOT;
             }
             if (!yarnIsAlreadyInstalled()) {
-                if (!this.yarnVersion.startsWith("v")) {
-                    this.logger.warn("Yarn version has to start with prefix 'v'.");
+                if (!yarnVersion.startsWith("v")) {
+                    logger.warn("Yarn version has to start with prefix 'v'.");
                 }
-                if (this.config.getPlatform().isWindows()) {
+                if (config.getPlatform().isWindows()) {
                     installYarn();
                 }
             }
@@ -73,18 +73,17 @@ public class YarnInstaller {
 
     private boolean yarnIsAlreadyInstalled() {
         try {
-            YarnExecutorConfig executorConfig = new InstallYarnExecutorConfig(this.config);
+            YarnExecutorConfig executorConfig = new InstallYarnExecutorConfig(config);
             File nodeFile = executorConfig.getYarnPath();
             if (nodeFile.exists()) {
                 final String version =
                     new YarnExecutor(executorConfig, Arrays.asList("--version"), null).executeAndGetResult();
 
-                if (version.equals(this.yarnVersion)) {
-                    this.logger.info("Yarn {} is already installed.", version);
+                if (version.equals(yarnVersion)) {
+                    logger.info("Yarn {} is already installed.", version);
                     return true;
                 } else {
-                    this.logger.info("Yarn {} was installed, but we need version {}", version,
-                        this.yarnVersion);
+                    logger.info("Yarn {} was installed, but we need version {}", version, yarnVersion);
                     return false;
                 }
             } else {
@@ -97,22 +96,22 @@ public class YarnInstaller {
 
     private void installYarn() throws InstallationException {
         try {
-            this.logger.info("Installing Yarn version {}", this.yarnVersion);
-            String downloadUrl = this.yarnDownloadRoot + this.yarnVersion + "/yarn-"
-                + this.yarnVersion.substring(1, this.yarnVersion.length());
+            logger.info("Installing Yarn version {}", yarnVersion);
+            String downloadUrl =
+                yarnDownloadRoot + yarnVersion + "/yarn-" + yarnVersion.substring(1, yarnVersion.length());
             String fileending;
-            if (this.config.getPlatform().isWindows()) {
+            if (config.getPlatform().isWindows()) {
                 fileending = ".msi";
             } else {
-                fileending = ".tgz";
+                fileending = ".tar.gz";
             }
             downloadUrl += fileending;
 
-            CacheDescriptor cacheDescriptor = new CacheDescriptor("yarn", this.yarnVersion, fileending);
+            CacheDescriptor cacheDescriptor = new CacheDescriptor("yarn", yarnVersion, fileending);
 
-            File archive = this.config.getCacheResolver().resolve(cacheDescriptor);
+            File archive = config.getCacheResolver().resolve(cacheDescriptor);
 
-            downloadFileIfMissing(downloadUrl, archive, this.userName, this.password);
+            downloadFileIfMissing(downloadUrl, archive, userName, password);
 
             File installDirectory = getInstallDirectory();
 
@@ -123,12 +122,12 @@ public class YarnInstaller {
                     FileUtils.deleteDirectory(installDirectory);
                 }
             } catch (IOException e) {
-                this.logger.warn("Failed to delete existing Yarn installation.");
+                logger.warn("Failed to delete existing Yarn installation.");
             }
 
             extractFile(archive, installDirectory);
 
-            this.logger.info("Installed Yarn locally.");
+            logger.info("Installed Yarn locally.");
         } catch (DownloadException e) {
             throw new InstallationException("Could not download Yarn", e);
         } catch (ArchiveExtractionException e) {
@@ -137,17 +136,17 @@ public class YarnInstaller {
     }
 
     private File getInstallDirectory() {
-        File installDirectory = new File(this.config.getInstallDirectory(), INSTALL_PATH);
+        File installDirectory = new File(config.getInstallDirectory(), INSTALL_PATH);
         if (!installDirectory.exists()) {
-            this.logger.debug("Creating install directory {}", installDirectory);
+            logger.debug("Creating install directory {}", installDirectory);
             installDirectory.mkdirs();
         }
         return installDirectory;
     }
 
     private void extractFile(File archive, File destinationDirectory) throws ArchiveExtractionException {
-        this.logger.info("Unpacking {} into {}", archive, destinationDirectory);
-        this.archiveExtractor.extract(archive.getPath(), destinationDirectory.getPath());
+        logger.info("Unpacking {} into {}", archive, destinationDirectory);
+        archiveExtractor.extract(archive.getPath(), destinationDirectory.getPath());
     }
 
     private void downloadFileIfMissing(String downloadUrl, File destination, String userName, String password)
@@ -159,7 +158,7 @@ public class YarnInstaller {
 
     private void downloadFile(String downloadUrl, File destination, String userName, String password)
         throws DownloadException {
-        this.logger.info("Downloading {} to {}", downloadUrl, destination);
-        this.fileDownloader.download(downloadUrl, destination.getPath(), userName, password);
+        logger.info("Downloading {} to {}", downloadUrl, destination);
+        fileDownloader.download(downloadUrl, destination.getPath(), userName, password);
     }
 }
