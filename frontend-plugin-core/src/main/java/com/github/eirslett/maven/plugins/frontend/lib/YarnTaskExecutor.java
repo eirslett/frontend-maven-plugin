@@ -2,11 +2,9 @@ package com.github.eirslett.maven.plugins.frontend.lib;
 
 import static com.github.eirslett.maven.plugins.frontend.lib.Utils.implode;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -54,24 +52,6 @@ abstract class YarnTaskExecutor {
     public final void execute(String args, Map<String, String> environment) throws TaskRunnerException {
         final List<String> arguments = getArguments(args);
         logger.info("Running " + taskToString(taskName, arguments) + " in " + config.getWorkingDirectory());
-
-        File root = config.getWorkingDirectory();
-        List<File> worklist = new ArrayList<>();
-        worklist.addAll(Arrays.asList(root.listFiles()));
-        while (!worklist.isEmpty()) {
-            List<File> addToWorklist = new ArrayList<>();
-            Iterator<File> it = worklist.iterator();
-            while (it.hasNext()) {
-                File next = it.next();
-                if (next.isDirectory()) {
-                    addToWorklist.addAll(Arrays.asList(next.listFiles()));
-                } else {
-                    logger.debug("-- " + next.getAbsolutePath());
-                }
-                it.remove();
-            }
-            worklist.addAll(addToWorklist);
-        }
 
         try {
             final int result =
