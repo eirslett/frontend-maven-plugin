@@ -8,9 +8,12 @@ import org.apache.maven.plugin.MojoExecution;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.project.MavenProject;
+import org.eclipse.aether.RepositorySystemSession;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.util.Map;
 
 public abstract class AbstractFrontendMojo extends AbstractMojo {
 
@@ -35,6 +38,25 @@ public abstract class AbstractFrontendMojo extends AbstractMojo {
   @Parameter(property = "installDirectory", required = false)
   protected File installDirectory;
 
+
+  /**
+   * Additional environment variables to pass to the build.
+   */
+   @Parameter
+   protected Map<String, String> environmentVariables;
+
+  @Parameter(
+      defaultValue = "${project}",
+      readonly = true
+  )
+  private MavenProject project;
+
+  @Parameter(
+      defaultValue = "${repositorySystemSession}",
+      readonly = true
+  )
+  private RepositorySystemSession repositorySystemSession;
+
   /**
    * Determines if this execution should be skipped.
    */
@@ -47,7 +69,7 @@ public abstract class AbstractFrontendMojo extends AbstractMojo {
    */
   private boolean isTestingPhase() {
     String phase = execution.getLifecyclePhase();
-    return phase.equals("test") || phase.equals("integration-test");
+    return phase!=null && (phase.equals("test") || phase.equals("integration-test"));
   }
 
   protected abstract void execute(FrontendPluginFactory factory) throws FrontendException;
@@ -64,7 +86,11 @@ public abstract class AbstractFrontendMojo extends AbstractMojo {
         installDirectory = workingDirectory;
       }
       try {
-        execute(new FrontendPluginFactory(workingDirectory, installDirectory));
+        execute(new FrontendPluginFactory(
+            workingDirectory,
+            installDirectory,
+            new RepositoryCacheResolver(repositorySystemSession)
+        ));
       } catch (TaskRunnerException e) {
         throw new MojoFailureException("Failed to run task", e);
       } catch (FrontendException e) {

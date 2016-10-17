@@ -2,16 +2,18 @@
   "name": "example",
   "version": "0.0.1",
   "dependencies": {
-    "bower": "~1.3.12",
-    "grunt": "~0.4.1",
-    "grunt-cli": "~0.1.9",
-    "grunt-contrib-jshint": "~0.6.4",
-    "grunt-karma": "~0.7.0",
-    "gulp": "^3.9.0",
-    "jspm": "~0.15.6",
-    "karma": "~0.12.0",
-    "karma-jasmine": "~0.1.5",
-    "karma-phantomjs-launcher": "~0.1.1",
+    "bower": "~1.7.9",
+    "grunt": "~1.0.1",
+    "grunt-cli": "~1.2.0",
+    "grunt-contrib-jshint": "~1.0.0",
+    "grunt-karma": "~2.0.0",
+    "gulp": "^3.9.1",
+    "jspm": "~0.16.46",
+    "karma": "~1.3.0",
+    "karma-jasmine": "~1.0.2",
+    "karma-phantomjs-launcher": "~1.0.2",
+    "jasmine-core": "^2.5.2",
+    "phantomjs": "^2.1.7",
     "typescript": "1.6.2"
   },
   "jspm": {
@@ -19,8 +21,8 @@
       "jquery": "github:jquery/jquery@^2.1.3"
     },
     "devDependencies": {
-      "traceur": "github:jmcriffey/bower-traceur@0.0.88",
-      "traceur-runtime": "github:jmcriffey/bower-traceur-runtime@0.0.88"
+      "traceur": "github:jmcriffey/bower-traceur@0.0.95",
+      "traceur-runtime": "github:jmcriffey/bower-traceur-runtime@0.0.95"
     }
   },
   "scripts": {

@@ -23,8 +23,9 @@
                             <goal>install-node-and-npm</goal>
                         </goals>
                         <configuration>
-                            <nodeVersion>v0.12.2</nodeVersion>
-                            <npmVersion>2.7.6</npmVersion>
+                            <!-- See https://nodejs.org/en/download/ for latest node and npm (lts) versions -->
+                            <nodeVersion>v4.6.0</nodeVersion>
+                            <npmVersion>2.15.9</npmVersion>
                         </configuration>
                     </execution>
 
@@ -94,6 +95,19 @@
                             <removeComments>true</removeComments>
                             <target>ES5</target>
                             <module>amd</module>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>gulp build</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>gulp</goal>
+                        </goals>
+                        <configuration>
+                            <environmentVariables>
+                                <NODE_ENV>production</NODE_ENV>
+                            </environmentVariables>
                         </configuration>
                     </execution>
 

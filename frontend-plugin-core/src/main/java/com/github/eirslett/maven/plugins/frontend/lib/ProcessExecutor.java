@@ -25,12 +25,14 @@ final class ProcessExecutor {
     private final List<String> command;
     private final ProcessBuilder processBuilder;
     private final Platform platform;
+    private final Map<String, String> additionalEnvironment;
 
-    public ProcessExecutor(File workingDirectory, List<String> paths, List<String> command, Platform platform){
+    public ProcessExecutor(File workingDirectory, List<String> paths, List<String> command, Platform platform, Map<String, String> additionalEnvironment){
         this.workingDirectory = workingDirectory;
         this.localPaths = paths;
         this.command = command;
         this.platform = platform;
+        this.additionalEnvironment = additionalEnvironment;
 
         this.processBuilder = createProcessBuilder();
     }
@@ -97,6 +99,9 @@ final class ProcessExecutor {
         }
         environment.put(pathVarName, pathBuilder.toString());
 
+        if (additionalEnvironment != null) {
+            environment.putAll(additionalEnvironment);
+        }
         return pbuilder;
     }
 

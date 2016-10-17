@@ -20,7 +20,7 @@ public final class KarmaRunMojo extends AbstractFrontendMojo {
     /**
      * Whether you should continue build when some test will fail (default is false)
      */
-    @Parameter(property = "testFailureIgnore", required = false, defaultValue = "false")
+    @Parameter(property = "maven.test.failure.ignore", required = false, defaultValue = "false")
     private Boolean testFailureIgnore;
 
     /**
@@ -37,7 +37,7 @@ public final class KarmaRunMojo extends AbstractFrontendMojo {
     @Override
     public void execute(FrontendPluginFactory factory) throws TaskRunnerException {
         try {
-            factory.getKarmaRunner().execute("start " + karmaConfPath);
+            factory.getKarmaRunner().execute("start " + karmaConfPath, environmentVariables);
         }
         catch (TaskRunnerException e) {
             if (testFailureIgnore) {

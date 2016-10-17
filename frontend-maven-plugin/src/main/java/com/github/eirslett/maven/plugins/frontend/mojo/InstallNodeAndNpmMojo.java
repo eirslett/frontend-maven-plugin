@@ -10,8 +10,9 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.settings.crypto.SettingsDecrypter;
+import org.apache.maven.settings.Server;
 
-@Mojo(name="install-node-and-npm", defaultPhase = LifecyclePhase.GENERATE_RESOURCES)
+@Mojo(name="install-node-and-npm", defaultPhase = LifecyclePhase.GENERATE_RESOURCES, threadSafe = true)
 public final class InstallNodeAndNpmMojo extends AbstractFrontendMojo {
 
     /**
@@ -44,8 +45,14 @@ public final class InstallNodeAndNpmMojo extends AbstractFrontendMojo {
     /**
      * The version of NPM to install.
      */
-    @Parameter(property = "npmVersion", required = true)
+    @Parameter(property = "npmVersion", required = false, defaultValue = "provided")
     private String npmVersion;
+
+    /**
+     * Server Id for download username and password
+     */
+    @Parameter(property = "serverId", defaultValue = "")
+    private String serverId;
 
     @Parameter(property = "session", defaultValue = "${session}", readonly = true)
     private MavenSession session;
@@ -69,7 +76,24 @@ public final class InstallNodeAndNpmMojo extends AbstractFrontendMojo {
         ProxyConfig proxyConfig = MojoUtils.getProxyConfig(session, decrypter);
         String nodeDownloadRoot = getNodeDownloadRoot();
         String npmDownloadRoot = getNpmDownloadRoot();
-        factory.getNodeAndNPMInstaller(proxyConfig).install(nodeVersion, npmVersion, nodeDownloadRoot, npmDownloadRoot);
+        Server server = MojoUtils.decryptServer(serverId, session, decrypter);
+        if (null != server) {
+            factory.getNodeAndNPMInstaller(proxyConfig)
+                .setNodeVersion(nodeVersion)
+                .setNodeDownloadRoot(nodeDownloadRoot)
+                .setNpmVersion(npmVersion)
+                .setNpmDownloadRoot(npmDownloadRoot)
+                .setUserName(server.getUsername())
+                .setPassword(server.getPassword())
+                .install();
+        } else {
+            factory.getNodeAndNPMInstaller(proxyConfig)
+                .setNodeVersion(nodeVersion)
+                .setNodeDownloadRoot(nodeDownloadRoot)
+                .setNpmVersion(npmVersion)
+                .setNpmDownloadRoot(npmDownloadRoot)
+                .install();
+        }
     }
 
     private String getNodeDownloadRoot() {
