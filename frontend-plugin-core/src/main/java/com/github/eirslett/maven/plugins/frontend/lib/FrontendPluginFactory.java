@@ -21,11 +21,16 @@ public final class FrontendPluginFactory {
         this.cacheResolver = cacheResolver;
     }
 
-    public NodeAndNPMInstaller getNodeAndNPMInstaller(ProxyConfig proxy){
-        return new NodeAndNPMInstaller(
-                getInstallConfig(),
-                new DefaultArchiveExtractor(),
-                new DefaultFileDownloader(proxy));
+    public NodeInstaller getNodeInstaller(ProxyConfig proxy) {
+        return new NodeInstaller(getInstallConfig(), new DefaultArchiveExtractor(), new DefaultFileDownloader(proxy));
+    }
+
+    public NPMInstaller getNPMInstaller(ProxyConfig proxy) {
+        return new NPMInstaller(getInstallConfig(), new DefaultArchiveExtractor(), new DefaultFileDownloader(proxy));
+    }
+
+    public YarnInstaller getYarnInstaller(ProxyConfig proxy) {
+        return new YarnInstaller(getInstallConfig(), new DefaultArchiveExtractor(), new DefaultFileDownloader(proxy));
     }
     
     public BowerRunner getBowerRunner(ProxyConfig proxy) {
@@ -38,6 +43,10 @@ public final class FrontendPluginFactory {
 
     public NpmRunner getNpmRunner(ProxyConfig proxy, String npmRegistryURL) {
         return new DefaultNpmRunner(getExecutorConfig(), proxy, npmRegistryURL);
+    }
+
+    public YarnRunner getYarnRunner(ProxyConfig proxy, String npmRegistryURL) {
+        return new DefaultYarnRunner(new InstallYarnExecutorConfig(getInstallConfig()), proxy, npmRegistryURL);
     }
 
     public GruntRunner getGruntRunner(){
