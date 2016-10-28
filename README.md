@@ -5,10 +5,13 @@
 [![Build status Windows](https://ci.appveyor.com/api/projects/status/vxbccc1t9ceadhi9?svg=true)](https://ci.appveyor.com/project/eirslett/frontend-maven-plugin)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.eirslett/frontend-maven-plugin/badge.svg?style=flat)](https://maven-badges.herokuapp.com/maven-central/com.github.eirslett/frontend-maven-plugin/)
 
-This plugin downloads/installs Node and NPM locally for your project, runs NPM install, and then any combination of 
+This plugin downloads/installs Node and NPM locally for your project, runs `npm install`, and then any combination of 
 [Bower](http://bower.io/), [Grunt](http://gruntjs.com/), [Gulp](http://gulpjs.com/), [Jspm](http://jspm.io), 
 [Karma](http://karma-runner.github.io/), or [Webpack](http://webpack.github.io/).
 It's supposed to work on Windows, OS X and Linux.
+
+If you prefer [Yarn](https://yarnpkg.com/) over [NPM](https://www.npmjs.com/) for your node package fetching, 
+this plugin can also download Node and Yarn and then run `yarn install` for your project.
 
 #### What is this plugin meant to do?
 - Let you keep your frontend and backend builds as separate as possible, by
@@ -53,8 +56,10 @@ Have a look at the [example project](https://github.com/eirslett/frontend-maven-
 to see how it should be set up: https://github.com/eirslett/frontend-maven-plugin/blob/master/frontend-maven-plugin/src/it/example%20project/pom.xml
 
  - [Installing node and npm](#installing-node-and-npm)
+ - [Installing node and yarn](#installing-node-and-yarn)
  - Running 
     - [npm](#running-npm)
+    - [yarn](#running-yarn)
     - [bower](#running-bower)
     - [grunt](#running-grunt)
     - [gulp](#running-gulp)
@@ -118,6 +123,45 @@ You can use Nexus repository Manager to proxy npm registries. See https://books.
 
 **Notice:** _Remember to gitignore the `node` folder, unless you actually want to commit it._
 
+### Installing node and yarn
+
+Instead of using Node with npm you can alternatively choose to install Node with Yarn as the package manager.
+
+The versions of Node and Yarn are downloaded from `https://nodejs.org/dist` for Node 
+and from the Github releases for Yarn, 
+extracted and put into a `node` folder created in your installation directory. 
+Node/Yarn will only be "installed" locally to your project. 
+It will not be installed globally on the whole system (and it will not interfere with any Node/Yarn installations already 
+present). 
+
+Have a look at the example `POM` to see how it should be set up with Yarn: 
+https://github.com/eirslett/frontend-maven-plugin/blob/master/frontend-maven-plugin/src/it/yarn-integration/pom.xml
+
+
+```xml
+<plugin>
+    ...
+    <execution>
+        <!-- optional: you don't really need execution ids, but it looks nice in your build log. -->
+        <id>install node and yarn</id>
+        <goals>
+            <goal>install-node-and-yarn</goal>
+        </goals>
+        <!-- optional: default phase is "generate-resources" -->
+        <phase>generate-resources</phase>
+    </execution>
+    <configuration>
+        <nodeVersion>v6.9.1</nodeVersion>
+        <yarnVersion>v0.16.1</yarnVersion>
+
+        <!-- optional: where to download node from. Defaults to https://nodejs.org/dist/ -->
+        <nodeDownloadRoot>http://myproxy.example.org/nodejs/</nodeDownloadRoot>
+        <!-- optional: where to download yarn from. Defaults to https://github.com/yarnpkg/yarn/releases/download/ -->
+        <yarnDownloadRoot>http://myproxy.example.org/yarn/</yarnDownloadRoot>        
+    </configuration>
+</plugin>
+```
+
 ### Running npm
 
 All node packaged modules will be installed in the `node_modules` folder in your [working directory](#working-directory).
@@ -146,6 +190,26 @@ By default, colors will be shown in the log.
 **Notice:** _Remember to gitignore the `node_modules` folder, unless you actually want to commit it. Npm packages will 
 always be installed in `node_modules` next to your `package.json`, which is default npm behavior._
 
+### Running yarn
+
+As with npm above, all node packaged modules will be installed in the `node_modules` folder in your [working directory](#working-directory).
+
+
+```xml
+<execution>
+    <id>yarn install</id>
+    <goals>
+        <goal>yarn</goal>
+    </goals>
+    <configuration>
+         <!-- optional: The default argument is actually
+         "install", so unless you need to run some other yarn command,
+         you can remove this whole <configuration> section.
+         -->
+        <arguments>install</arguments>
+    </configuration>
+</execution>
+```
 
 ### Running bower
 

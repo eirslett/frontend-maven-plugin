@@ -17,8 +17,15 @@ import java.util.zip.ZipFile;
 
 import org.apache.commons.io.IOUtils;
 import org.codehaus.plexus.util.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class ArchiveExtractionException extends Exception {
+
+    ArchiveExtractionException(String message) {
+        super(message);
+    }
+
     ArchiveExtractionException(String message, Throwable cause) {
         super(message, cause);
     }
@@ -29,6 +36,9 @@ interface ArchiveExtractor {
 }
 
 final class DefaultArchiveExtractor implements ArchiveExtractor {
+
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultArchiveExtractor.class);
+
     private void prepDestination(File path, boolean directory) throws IOException {
         if (directory) {
             path.mkdirs();
@@ -46,11 +56,23 @@ final class DefaultArchiveExtractor implements ArchiveExtractor {
     @Override
     public void extract(String archive, String destinationDirectory) throws ArchiveExtractionException {
         final File archiveFile = new File(archive);
-        FileInputStream fis = null;
-        try {
-            fis = new FileInputStream(archiveFile);
 
-            if("zip".equals(FileUtils.getExtension(archiveFile.getAbsolutePath()))){
+        try (FileInputStream fis = new FileInputStream(archiveFile)) {
+            if ("msi".equals(FileUtils.getExtension(archiveFile.getAbsolutePath()))) {
+                String command = "msiexec /a " + archiveFile.getAbsolutePath() + " /qn TARGETDIR=\""
+                    + destinationDirectory + "\"";
+                Process child = Runtime.getRuntime().exec(command);
+                try {
+                    int result = child.waitFor();
+                    if (result != 0) {
+                        throw new ArchiveExtractionException(
+                            "Could not extract " + archiveFile.getAbsolutePath() + "; return code " + result);
+                    }
+                } catch (InterruptedException e) {
+                    throw new ArchiveExtractionException(
+                        "Unexpected interruption of while waiting for extraction process", e);
+                }
+            } else if ("zip".equals(FileUtils.getExtension(archiveFile.getAbsolutePath()))) {
                 ZipFile zipFile = new ZipFile(archiveFile);
                 try {
                     Enumeration<? extends ZipEntry> entries = zipFile.entries();
