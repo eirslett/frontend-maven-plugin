@@ -3,8 +3,8 @@ language: java
 matrix:
   include:
     - os: linux
-      jdk: oraclejdk8
+      jdk: oraclejdk7
     - os: osx
-      osx_image: xcode8
+      #osx_image: beta-xcode6.1
 # Run Integration tests
 script: "mvn test && mvn clean verify"
