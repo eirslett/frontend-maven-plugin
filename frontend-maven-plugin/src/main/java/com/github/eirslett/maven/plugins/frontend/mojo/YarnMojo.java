@@ -54,8 +54,8 @@ public final class YarnMojo extends AbstractFrontendMojo {
     /**
      * The path of the yarn executable
      */
-    @Parameter(property = "yarnExecutablePath", required = false)
-    protected File yarnExecutablePath;
+    @Parameter(property = "yarnPath", required = false)
+    protected File yarnPath;
 
     @Override
     protected boolean skipExecution() {
@@ -68,7 +68,7 @@ public final class YarnMojo extends AbstractFrontendMojo {
         if (this.buildContext == null || this.buildContext.hasDelta(packageJson)
             || !this.buildContext.isIncremental()) {
             ProxyConfig proxyConfig = getProxyConfig();
-            factory.getYarnRunner(proxyConfig, getRegistryUrl(), this.yarnExecutablePath).execute(this.arguments,
+            factory.getYarnRunner(proxyConfig, getRegistryUrl(), this.yarnPath).execute(this.arguments,
                 this.environmentVariables);
         } else {
             getLog().info("Skipping yarn install as package.json unchanged");
