@@ -75,7 +75,7 @@ public class YarnInstaller {
             File nodeFile = executorConfig.getYarnPath();
             if (nodeFile.exists()) {
                 final String version =
-                    new YarnExecutor(executorConfig, Arrays.asList("--version"), null).executeAndGetResult();
+                    new YarnExecutor(executorConfig, Arrays.asList("--version"), null).executeAndGetResult().trim();
 
                 if (version.equals(yarnVersion.replaceFirst("^v", ""))) {
                     logger.info("Yarn {} is already installed.", version);
