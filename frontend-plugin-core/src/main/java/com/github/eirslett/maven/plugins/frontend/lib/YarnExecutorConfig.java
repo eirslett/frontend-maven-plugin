@@ -18,7 +18,7 @@ final class InstallYarnExecutorConfig implements YarnExecutorConfig {
     private static final String YARN_WINDOWS =
         YarnInstaller.INSTALL_PATH.replaceAll("/", "\\\\") + "\\Yarn\\bin\\yarn.cmd";
 
-    private static final String YARN_DEFAULT = YarnInstaller.INSTALL_PATH + "/dist/bin/yarn";
+    private static final String YARN_DEFAULT = YarnInstaller.INSTALL_PATH + "/dist/bin/yarn.js";
 
     private File nodePath;
 
@@ -36,8 +36,8 @@ final class InstallYarnExecutorConfig implements YarnExecutorConfig {
 
     @Override
     public File getYarnPath() {
-        String yarnExecutable = getPlatform().isWindows() ? YARN_WINDOWS : YARN_DEFAULT;
-        return new File(installConfig.getInstallDirectory() + yarnExecutable);
+        //String yarnExecutable = getPlatform().isWindows() ? YARN_WINDOWS : YARN_DEFAULT;
+        return new File(installConfig.getInstallDirectory() + YARN_DEFAULT);
     }
 
     @Override
