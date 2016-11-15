@@ -53,8 +53,8 @@ final class InputStreamHandler extends Thread {
         return new LogLevelAgnosticLogger() {
             @Override
             public void log(String value) {
-                // fix #343
-                if (value.startsWith("npm WARN ")) {
+                // fix #343 and #515
+                if (value.startsWith("npm WARN ") || value.startsWith("warning ")) {
                     logger.warn(value);
                 } else {
                     logger.error(value);
