@@ -2,7 +2,11 @@
 
 ## Changelog
 
-### 1.2-SNAPSHOT
+### 1.3
+
+* Fix `yarn` for Windows
+
+### 1.2
 
 * New goals `yarn` and `install-node-and-yarn` for Yarn support 
 
