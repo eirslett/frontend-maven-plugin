@@ -1,12 +1,12 @@
 package com.github.eirslett.maven.plugins.frontend.lib;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
-
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
 
 public class YarnInstaller {
 
@@ -96,12 +96,8 @@ public class YarnInstaller {
         try {
             logger.info("Installing Yarn version {}", yarnVersion);
             String downloadUrl = yarnDownloadRoot + yarnVersion;
-            String fileending;
-            if (config.getPlatform().isWindows()) {
-                fileending = "/yarn-" + yarnVersion.substring(1, yarnVersion.length()) + ".msi";
-            } else {
-                fileending = "/yarn-" + yarnVersion + ".tar.gz";
-            }
+            String fileending = "/yarn-" + yarnVersion + ".tar.gz";
+
             downloadUrl += fileending;
 
             CacheDescriptor cacheDescriptor = new CacheDescriptor("yarn", yarnVersion, fileending);
