@@ -415,6 +415,18 @@ If that is the case, you can stop the npm execution from inheriting the Maven pr
 </configuration>
 ```
 
+If you have [configured proxy settings for Maven](http://maven.apache.org/guides/mini/guide-proxies.html)
+in your settings.xml file, the plugin will automatically [pass the proxy to bower commands](https://docs.npmjs.com/misc/config#proxy).
+If that is the case, you can stop the bower execution from inheriting the Maven proxy settings like this:
+
+```xml
+<configuration>
+    <bowerInheritsProxyConfigFromMaven>false</bowerInheritsProxyConfigFromMaven>
+</configuration>
+```
+
+
+
 #### Environment variables
 
 If you need to pass some variable to Node, you can set that using the property `environmentVariables` in configuration 
