@@ -5,9 +5,7 @@
 [![Build status Windows](https://ci.appveyor.com/api/projects/status/vxbccc1t9ceadhi9?svg=true)](https://ci.appveyor.com/project/eirslett/frontend-maven-plugin)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.eirslett/frontend-maven-plugin/badge.svg?style=flat)](https://maven-badges.herokuapp.com/maven-central/com.github.eirslett/frontend-maven-plugin/)
 
-This plugin downloads/installs Node and NPM locally for your project, runs `npm install`, and then any combination of 
-[Bower](http://bower.io/), [Grunt](http://gruntjs.com/), [Gulp](http://gulpjs.com/), [Jspm](http://jspm.io), 
-[Karma](http://karma-runner.github.io/), or [Webpack](http://webpack.github.io/).
+This plugin downloads/installs Node and NPM locally for your project, runs `npm install`, and any npm script.
 It's supposed to work on Windows, OS X and Linux.
 
 If you prefer [Yarn](https://yarnpkg.com/) over [NPM](https://www.npmjs.com/) for your node package fetching, 
@@ -60,19 +58,12 @@ to see how it should be set up: https://github.com/eirslett/frontend-maven-plugi
  - Running 
     - [npm](#running-npm)
     - [yarn](#running-yarn)
-    - [bower](#running-bower)
-    - [grunt](#running-grunt)
-    - [gulp](#running-gulp)
-    - [jspm](#running-jspm)
-    - [karma](#running-karma)
-    - [webpack](#running-webpack)
+    - [scripts](#running-npm-scripts)
  - Configuration
     - [Working Directory](#working-directory)
     - [Installation Directory](#installation-directory)
     - [Proxy Settings](#proxy-settings)
     - [Environment variables](#environment-variables)
-    
-**Recommendation:** _Try to run all your tasks via npm scripts instead of running bower, grunt, gulp etc. directly._
 
 ### Installing node and npm
 
@@ -176,14 +167,6 @@ By default, colors will be shown in the log.
 
     <!-- optional: default phase is "generate-resources" -->
     <phase>generate-resources</phase>
-
-    <configuration>
-        <!-- optional: The default argument is actually
-        "install", so unless you need to run some other npm command,
-        you can remove this whole <configuration> section.
-        -->
-        <arguments>install</arguments>
-    </configuration>
 </execution>
 ```
 
@@ -201,171 +184,33 @@ As with npm above, all node packaged modules will be installed in the `node_modu
     <goals>
         <goal>yarn</goal>
     </goals>
-    <configuration>
-         <!-- optional: The default argument is actually
-         "install", so unless you need to run some other yarn command,
-         you can remove this whole <configuration> section.
-         -->
-        <arguments>install</arguments>
-    </configuration>
+
+    <!-- optional: the default phase is "generate-resources" -->
+    <phase>generate-resources</phase>
 </execution>
 ```
 
-### Running bower
-
-All bower dependencies will be installed in the `bower_components` folder in your working directory.
-
-```xml
+### Running npm scripts
 <execution>
-    <id>bower install</id>
+    <id>build assets</id>
     <goals>
-        <goal>bower</goal>
-    </goals>
-
-    <configuration>
-        <!-- optional: The default argument is actually
-        "install", so unless you need to run some other bower command,
-        you can remove this whole <configuration> section.
-        -->
-        <arguments>install</arguments>
-    </configuration>
-</execution>
-```
-
-**Notice:** _Remember to gitignore the `bower_components` folder, unless you actually want to commit it._
-
-### Running Grunt
-
-It will run Grunt according to the `Gruntfile.js` in your working directory.
-By default, colors will be shown in the log.
-
-```xml
-<execution>
-    <id>grunt build</id>
-    <goals>
-        <goal>grunt</goal>
+        <!-- or yarn -->
+        <goal>npm</goal>
     </goals>
 
     <!-- optional: the default phase is "generate-resources" -->
     <phase>generate-resources</phase>
 
     <configuration>
-        <!-- optional: if not specified, it will run Grunt's default
-        task (and you can remove this whole <configuration> section.) -->
-        <arguments>build</arguments>
+        <!-- you can run any npm/yarn command here -->
+        <arguments>run build:prod</arguments>
     </configuration>
 </execution>
-```
-
-### Running gulp
-
-Very similar to the Grunt execution. It will run gulp according to the `gulpfile.js` in your working directory.
-By default, colors will be shown in the log.
-
-```xml
-<execution>
-    <id>gulp build</id>
-    <goals>
-        <goal>gulp</goal>
-    </goals>
-
-    <!-- optional: the default phase is "generate-resources" -->
-    <phase>generate-resources</phase>
-
-    <configuration>
-        <!-- optional: if not specified, it will run gulp's default
-        task (and you can remove this whole <configuration> section.) -->
-        <arguments>build</arguments>
-    </configuration>
-</execution>
-```
-
-### Running jspm
-
-All jspm dependencies will be installed in the `jspm_packages` folder in your working directory.
-
-```xml
-<execution>
-    <id>jspm install</id>
-    <goals>
-        <goal>jspm</goal>
-    </goals>
-
-    <configuration>
-	    <!-- optional: The default argument is actually
-	    "install", so unless you need to run some other jspm command,
-	    you can remove this whole <configuration> section.
-	    -->
-        <arguments>install</arguments>
-    </configuration>
-</execution>
-```
-
-### Running Karma
-
-```xml
-<execution>
-    <id>javascript tests</id>
-    <goals>
-        <goal>karma</goal>
-    </goals>
-
-    <!-- optional: the default plase is "test". Some developers
-    choose to run karma in the "integration-test" phase. -->
-    <phase>test</phase>
-
-    <configuration>
-        <!-- optional: the default is "karma.conf.js" in your working directory -->
-        <karmaConfPath>src/test/javascript/karma.conf.ci.js</karmaConfPath>
-    </configuration>
-</execution>
-```
-
-**Skipping tests:** If you run maven with the `-DskipTests` flag, karma tests will be skipped.
-
-**Ignoring failed tests:** If you want to ignore test failures run maven with the `-Dmaven.test.failure.ignore` flag, 
-karma test results will not stop the build but test results will remain
-in test output files. Suitable for continuous integration tool builds.
-
-**Why karma.conf.ci.js?** When using Karma, you should have two separate
-configurations: `karma.conf.js` and `karma.conf.ci.js`. (The second one should inherit configuration
-from the first one, and override some options. The example project shows you how to set it up.)
-The idea is that you use `karma.conf.js` while developing (using watch/livereload etc.), and
-`karma.conf.ci.js` when building - for example, when building, it should only run karma once,
-it should generate xml reports, it should run only in PhantomJS, and/or it should generate
-code coverage reports.
-
-**Running Karma through Grunt or gulp:** You may choose to run Karma [directly through Grunt](https://github.com/karma-runner/grunt-karma) 
-or [through gulp](https://github.com/karma-runner/gulp-karma) instead, as part of the `grunt` or `gulp` execution. That 
-will help to separate your frontend and backend builds even more.
-
-### Running Webpack
-
-```xml
-<execution>
-    <id>webpack build</id>
-    <goals>
-        <goal>webpack</goal>
-    </goals>
-
-    <!-- optional: the default phase is "generate-resources" -->
-    <phase>generate-resources</phase>
-
-    <configuration>
-        <!-- optional: if not specified, it will run webpack's default
-        build (and you can remove this whole <configuration> section.) -->
-        <arguments>-p</arguments>
-    </configuration>
-</execution>
-```
-
-### Optional Configuration 
 
 #### Working directory
 
-The working directory is where you've put `package.json` and your frontend configuration files (`Gruntfile.js` or 
-`gulpfile.js` etc). The default working directory is your project's base directory (the same directory as your `pom.xml`). 
-You can change the working directory if you want:
+The working directory is where you've put `package.json`. The default working directory is your project's
+base directory (the same directory as your `pom.xml`). You can change the working directory if you want:
 
 ```xml
 <plugin>
@@ -438,8 +283,7 @@ tag of an execution like this:
 This plugin contains support for M2E, including lifecycle mappings and support for incremental builds in Eclipse.
 The `install-node-and-npm` goal will only run on a full project build. The other goals support incremental builds
 to avoid doing unnecessary work. During an incremental build the `npm` goal will only run if the `package.json` file
-has been changed. The `grunt` and `gulp` goals have new `srcdir` and `triggerfiles` optional configuration options; if
-these are set they check for changes in your source files before being run. See the wiki for more information.
+has been changed. See the wiki for more information.
 
 ## To build this project:
 

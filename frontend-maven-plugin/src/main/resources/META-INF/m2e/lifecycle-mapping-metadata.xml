@@ -18,12 +18,6 @@
             <pluginExecutionFilter>
                 <goals>
                     <goal>npm</goal>
-                    <goal>gulp</goal>
-                    <goal>grunt</goal>
-                    <goal>bower</goal>
-                    <goal>jspm</goal>
-                    <goal>ember</goal>
-                    <goal>webpack</goal>
                 </goals>
             </pluginExecutionFilter>
             <action>
