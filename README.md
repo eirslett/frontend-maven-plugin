@@ -441,11 +441,6 @@ to avoid doing unnecessary work. During an incremental build the `npm` goal will
 has been changed. The `grunt` and `gulp` goals have new `srcdir` and `triggerfiles` optional configuration options; if
 these are set they check for changes in your source files before being run. See the wiki for more information.
 
-## Helper scripts
-
-During development, it's convenient to have the "npm", "bower", "grunt", "gulp" and "karma" commands
-available on the command line. If you want that, use [those helper scripts](https://github.com/eirslett/frontend-maven-plugin/tree/master/frontend-maven-plugin/src/it/example%20project/helper-scripts)!
-
 ## To build this project:
 
 Run `$ mvn clean install`
