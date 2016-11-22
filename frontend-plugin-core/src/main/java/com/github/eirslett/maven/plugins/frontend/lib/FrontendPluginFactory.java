@@ -32,14 +32,6 @@ public final class FrontendPluginFactory {
     public YarnInstaller getYarnInstaller(ProxyConfig proxy) {
         return new YarnInstaller(getInstallConfig(), new DefaultArchiveExtractor(), new DefaultFileDownloader(proxy));
     }
-    
-    public BowerRunner getBowerRunner(ProxyConfig proxy) {
-        return new DefaultBowerRunner(getExecutorConfig(), proxy);
-    }    
-
-    public JspmRunner getJspmRunner() {
-        return new DefaultJspmRunner(getExecutorConfig());
-    }
 
     public NpmRunner getNpmRunner(ProxyConfig proxy, String npmRegistryURL) {
         return new DefaultNpmRunner(getExecutorConfig(), proxy, npmRegistryURL);
@@ -47,26 +39,6 @@ public final class FrontendPluginFactory {
 
     public YarnRunner getYarnRunner(ProxyConfig proxy, String npmRegistryURL) {
         return new DefaultYarnRunner(new InstallYarnExecutorConfig(getInstallConfig()), proxy, npmRegistryURL);
-    }
-
-    public GruntRunner getGruntRunner(){
-        return new DefaultGruntRunner(getExecutorConfig());
-    }
-
-    public EmberRunner getEmberRunner() {
-        return new DefaultEmberRunner(getExecutorConfig());
-    }
-
-    public KarmaRunner getKarmaRunner(){
-        return new DefaultKarmaRunner(getExecutorConfig());
-    }
-
-    public GulpRunner getGulpRunner(){
-        return new DefaultGulpRunner(getExecutorConfig());
-    }
-
-    public WebpackRunner getWebpackRunner(){
-        return new DefaultWebpackRunner(getExecutorConfig());
     }
 
     private NodeExecutorConfig getExecutorConfig() {

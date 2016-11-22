@@ -49,59 +49,6 @@
                             <arguments>run build</arguments>
                         </configuration>
                     </execution>
-                    
-                    <execution>
-                        <id>bower install</id>
-                        <goals>
-                            <goal>bower</goal>
-                        </goals>
-                        <configuration>
-                            <arguments>install</arguments>
-                        </configuration>
-                    </execution>
-
-                    <execution>
-                        <id>jspm install</id>
-                        <goals>
-                            <goal>jspm</goal>
-                        </goals>
-                        <configuration>
-                            <arguments>--version</arguments>
-                        </configuration>
-                    </execution>
-
-                    <execution>
-                        <id>grunt build</id>
-                        <goals>
-                            <goal>grunt</goal>
-                        </goals>
-                        <configuration>
-                            <arguments>--no-color</arguments>
-                        </configuration>
-                    </execution>
-
-                    <execution>
-                        <id>gulp build</id>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>gulp</goal>
-                        </goals>
-                        <configuration>
-                            <environmentVariables>
-                                <NODE_ENV>production</NODE_ENV>
-                            </environmentVariables>
-                        </configuration>
-                    </execution>
-
-                    <execution>
-                        <id>javascript tests</id>
-                        <goals>
-                            <goal>karma</goal>
-                        </goals>
-                        <configuration>
-                            <karmaConfPath>src/test/javascript/karma.conf.ci.js</karmaConfPath>
-                        </configuration>
-                    </execution>
 
                 </executions>
             </plugin>
