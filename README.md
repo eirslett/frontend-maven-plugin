@@ -71,6 +71,7 @@ to see how it should be set up: https://github.com/eirslett/frontend-maven-plugi
     - [Installation Directory](#installation-directory)
     - [Proxy Settings](#proxy-settings)
     - [Environment variables](#environment-variables)
+    - [Skipping Execution](#skipping-execution)
     
 **Recommendation:** _Try to run all your tasks via npm scripts instead of running bower, grunt, gulp etc. directly._
 
@@ -432,6 +433,25 @@ tag of an execution like this:
 </configuration>
 ```
 
+#### Skipping Execution
+
+Each frontend build tool and package manager allows skipping execution.
+This is useful for projects that contain multiple builds (such as a module containing Java and frontend code).
+
+**Note** that if the package manager (npm or yarn) is skipped, other build tools will also need to be skipped because they
+would not have been downloaded.
+For example, in a project using npm and gulp, if npm is skipped, gulp must also be skipped or the build will fail.
+
+Tools and property to enable skipping
+
+* npm `-Dskip.npm`
+* yarn `-Dskip.yarn`
+* bower `-Dskip.bower`
+* grunt `-Dskip.grunt`
+* gulp `-Dskip.gulp`
+* jspm `-Dskip.jspm`
+* karma `-Dskip.karma`
+* webpack `-Dskip.webpack`
 
 ## Eclipse M2E support
 
