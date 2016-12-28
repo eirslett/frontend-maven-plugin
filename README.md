@@ -7,7 +7,7 @@
 
 This plugin downloads/installs Node and NPM locally for your project, runs `npm install`, and then any combination of 
 [Bower](http://bower.io/), [Grunt](http://gruntjs.com/), [Gulp](http://gulpjs.com/), [Jspm](http://jspm.io), 
-[Karma](http://karma-runner.github.io/), or [Webpack](http://webpack.github.io/).
+[Karma](http://karma-runner.github.io/), [Protractor](http://http://www.protractortest.org/), or [Webpack](http://webpack.github.io/).
 It's supposed to work on Windows, OS X and Linux.
 
 If you prefer [Yarn](https://yarnpkg.com/) over [NPM](https://www.npmjs.com/) for your node package fetching, 
@@ -65,6 +65,7 @@ to see how it should be set up: https://github.com/eirslett/frontend-maven-plugi
     - [gulp](#running-gulp)
     - [jspm](#running-jspm)
     - [karma](#running-karma)
+    - [protractor](#running-protractor)
     - [webpack](#running-webpack)
  - Configuration
     - [Working Directory](#working-directory)
@@ -339,6 +340,31 @@ code coverage reports.
 **Running Karma through Grunt or gulp:** You may choose to run Karma [directly through Grunt](https://github.com/karma-runner/grunt-karma) 
 or [through gulp](https://github.com/karma-runner/gulp-karma) instead, as part of the `grunt` or `gulp` execution. That 
 will help to separate your frontend and backend builds even more.
+
+### Running Protractor
+
+```xml
+<execution>
+    <id>angular tests</id>
+    <goals>
+        <goal>protractor</goal>
+    </goals>
+
+    <!-- optional: the default plase is "integration-test" . -->
+    <phase>integration-test</phase>
+
+    <configuration>
+        <!-- optional: the default is "protractor.conf.js" in your working directory -->
+        <karmaConfPath>src/test/javascript/protractor.conf.js</karmaConfPath>
+    </configuration>
+</execution>
+```
+
+**Skipping tests:** If you run maven with the `-Dskip.protractor` flag, protractor tests will be skipped.
+
+**Ignoring failed tests:** If you want to ignore test failures run maven with the `-Dmaven.test.failure.ignore` flag, 
+protractor test results will not stop the build but test results will remain
+in test output files. Suitable for continuous integration tool builds.
 
 ### Running Webpack
 
