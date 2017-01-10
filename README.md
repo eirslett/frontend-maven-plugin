@@ -31,7 +31,7 @@ running common javascript tasks such as minification, obfuscation, compression, 
 ## Requirements
 
 * _Maven 3_ and _Java 1.7_
-* For _Maven 2_ support take a look at the [wiki](https://github.com/eirslett/frontend-maven-plugin/wiki#maven-2).
+* For _Maven 2_ support take a look at the [wiki](frontend-maven-plugin/wiki#maven-2).
 
 ## Installation
 
@@ -52,8 +52,8 @@ Include the plugin as a dependency in your Maven project. Change `LATEST_VERSION
 
 ## Usage
 
-Have a look at the [example project](https://github.com/eirslett/frontend-maven-plugin/tree/master/frontend-maven-plugin/src/it/example%20project), 
-to see how it should be set up: https://github.com/eirslett/frontend-maven-plugin/blob/master/frontend-maven-plugin/src/it/example%20project/pom.xml
+Have a look at the [example project](frontend-maven-plugin/src/it/example%20project), 
+to see how it should be set up: frontend-maven-plugin/blob/master/frontend-maven-plugin/src/it/example%20project/pom.xml
 
  - [Installing node and npm](#installing-node-and-npm)
  - [Installing node and yarn](#installing-node-and-yarn)
@@ -137,7 +137,7 @@ It will not be installed globally on the whole system (and it will not interfere
 present). 
 
 Have a look at the example `POM` to see how it should be set up with Yarn: 
-https://github.com/eirslett/frontend-maven-plugin/blob/master/frontend-maven-plugin/src/it/yarn-integration/pom.xml
+frontend-maven-plugin/blob/master/frontend-maven-plugin/src/it/yarn-integration/pom.xml
 
 
 ```xml
@@ -489,6 +489,7 @@ Tools and property to enable skipping
 * gulp `-Dskip.gulp`
 * jspm `-Dskip.jspm`
 * karma `-Dskip.karma`
+* protractor `-Dskip.protractor`
 * webpack `-Dskip.webpack`
 
 ## Eclipse M2E support
@@ -502,7 +503,7 @@ these are set they check for changes in your source files before being run. See 
 ## Helper scripts
 
 During development, it's convenient to have the "npm", "bower", "grunt", "gulp" and "karma" commands
-available on the command line. If you want that, use [those helper scripts](https://github.com/eirslett/frontend-maven-plugin/tree/master/frontend-maven-plugin/src/it/example%20project/helper-scripts)!
+available on the command line. If you want that, use [those helper scripts](frontend-maven-plugin/src/it/example%20project/helper-scripts)!
 
 ## To build this project:
 
@@ -510,9 +511,9 @@ Run `$ mvn clean install`
 
 ## Issues, Contributing
 
-Please post any issues on the [Github's Issue tracker](https://github.com/eirslett/frontend-maven-plugin/issues). 
-[Pull requests](https://github.com/eirslett/frontend-maven-plugin/pulls) are welcome! 
-You can find a full list of [contributors here](https://github.com/eirslett/frontend-maven-plugin/graphs/contributors).
+Please post any issues on the [Github's Issue tracker](frontend-maven-plugin/issues). 
+[Pull requests](frontend-maven-plugin/pulls) are welcome! 
+You can find a full list of [contributors here](frontend-maven-plugin/graphs/contributors).
 
 ## License
 
