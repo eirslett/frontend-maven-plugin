@@ -2,6 +2,10 @@
 
 ## Changelog
 
+### 1.4
+
+* Add maven.frontend.failOnError and maven.test.failure.ignore flags to best manage integration-test 
+
 ### 1.3
 
 * Fix `yarn` for Windows
