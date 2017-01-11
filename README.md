@@ -463,11 +463,11 @@ If you want to generally ignore tests run maven with the `-Dmaven.test.failure.i
 
 ```xml
 <configuration>
-    <maven.frontend.failOnError>true</maven.test.failure.ignore>        
+    <maven.frontend.failOnError>true</maven.frontend.failOnError>        
 </configuration>
 ```
 
-If you want to ignore all failures run maven with the `-Dmaven.test.failure.ignore=true` flag.
+If you want to ignore all failures run maven with the `-Dmaven.frontend.failOnError=true` flag.
 
 #### Skipping Execution
 
