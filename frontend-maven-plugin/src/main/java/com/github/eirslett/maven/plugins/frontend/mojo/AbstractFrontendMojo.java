@@ -1,8 +1,8 @@
 package com.github.eirslett.maven.plugins.frontend.mojo;
 
-import com.github.eirslett.maven.plugins.frontend.lib.FrontendException;
-import com.github.eirslett.maven.plugins.frontend.lib.FrontendPluginFactory;
-import com.github.eirslett.maven.plugins.frontend.lib.TaskRunnerException;
+import java.io.File;
+import java.util.Map;
+
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecution;
 import org.apache.maven.plugin.MojoFailureException;
@@ -12,8 +12,9 @@ import org.apache.maven.project.MavenProject;
 import org.eclipse.aether.RepositorySystemSession;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.util.Map;
+import com.github.eirslett.maven.plugins.frontend.lib.FrontendException;
+import com.github.eirslett.maven.plugins.frontend.lib.FrontendPluginFactory;
+import com.github.eirslett.maven.plugins.frontend.lib.TaskRunnerException;
 
 public abstract class AbstractFrontendMojo extends AbstractMojo {
 
@@ -25,6 +26,21 @@ public abstract class AbstractFrontendMojo extends AbstractMojo {
    */
   @Parameter(property = "skipTests", required = false, defaultValue = "false")
   protected Boolean skipTests;
+
+  /**
+   * Specifies if the build will fail if there are errors during a frontend execution or not.
+   *
+   * @parameter property="maven.frontend.failOnError" default-value="true"
+   * @since 1.4
+   */
+  @Parameter(property = "maven.frontend.failOnError", required = false, defaultValue = "true")
+  protected boolean failOnError;
+
+  /**
+   * Whether you should continue build when some test will fail (default is false)
+   */
+  @Parameter(property = "maven.test.failure.ignore", required = false, defaultValue = "false")
+  protected boolean testFailureIgnore;
 
   /**
    * The base directory for running all Node commands. (Usually the directory that contains package.json)
@@ -81,6 +97,9 @@ public abstract class AbstractFrontendMojo extends AbstractMojo {
 
   @Override
   public void execute() throws MojoFailureException {
+	if (testFailureIgnore && !isTestingPhase()){
+		LoggerFactory.getLogger(AbstractFrontendMojo.class).warn("testFailureIgnore property is ignored in non test phases");
+	}
     if (!(skipTestPhase() || skipExecution())) {
       if (installDirectory == null) {
         installDirectory = workingDirectory;
@@ -92,7 +111,7 @@ public abstract class AbstractFrontendMojo extends AbstractMojo {
             new RepositoryCacheResolver(repositorySystemSession)
         ));
       } catch (TaskRunnerException e) {
-        throw new MojoFailureException("Failed to run task", e);
+        failOnError( "Failed to run task", e );
       } catch (FrontendException e) {
         throw MojoUtils.toMojoFailureException(e);
       }
@@ -100,4 +119,19 @@ public abstract class AbstractFrontendMojo extends AbstractMojo {
       LoggerFactory.getLogger(AbstractFrontendMojo.class).info("Skipping test phase.");
     }
   }
+
+	protected void failOnError(String prefix, Exception e) throws MojoFailureException {
+		if (!failOnError || (testFailureIgnore && isTestingPhase()) ){
+			if ((testFailureIgnore && isTestingPhase())){
+	            LoggerFactory.getLogger(AbstractFrontendMojo.class)
+	            .warn("There are ignored test failures/errors for: " + workingDirectory);
+			}
+			LoggerFactory.getLogger(AbstractFrontendMojo.class).error(prefix + ": " + e.getMessage(), e);
+		}else {
+			if (e instanceof RuntimeException) {
+				throw (RuntimeException) e;
+			}
+			throw new MojoFailureException(prefix + ": " + e.getMessage(), e);
+		}
+	}
 }
