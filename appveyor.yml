@@ -1,0 +1,18 @@
+version: '{build}'
+environment:
+  MAVEN_VERSION: 3.3.9
+  matrix:
+    - JAVA_HOME: C:\Program Files\Java\jdk1.7.0
+    - JAVA_HOME: C:\Program Files\Java\jdk1.8.0
+install:
+  - cmd: SET MAVEN_OPTS=-XX:MaxPermSize=1g -Xmx2g
+  - cmd: SET JAVA_OPTS=-XX:MaxPermSize=1g -Xmx2g
+  - cmd: mvn --version
+  - cmd: java -version
+test_script:
+  - mvn test
+build_script:
+  - mvn clean verify
+cache:
+  - C:\maven\ -> appveyor.yml
+  - C:\Users\appveyor\.m2\ -> pom.xml
