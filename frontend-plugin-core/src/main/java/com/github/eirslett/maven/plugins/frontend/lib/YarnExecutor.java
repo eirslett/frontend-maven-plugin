@@ -20,8 +20,8 @@ final class YarnExecutor {
             Utils.prepend(yarn, arguments), config.getPlatform(), additionalEnvironment);
     }
 
-    public String executeAndGetResult() throws ProcessExecutionException {
-        return executor.executeAndGetResult();
+    public String executeAndGetResult(final Logger logger) throws ProcessExecutionException {
+        return executor.executeAndGetResult(logger);
     }
 
     public int executeAndRedirectOutput(final Logger logger) throws ProcessExecutionException {
