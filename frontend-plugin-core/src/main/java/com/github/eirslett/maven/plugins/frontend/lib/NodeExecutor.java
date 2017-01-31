@@ -1,10 +1,10 @@
 package com.github.eirslett.maven.plugins.frontend.lib;
 
-import org.slf4j.Logger;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import org.slf4j.Logger;
 
 final class NodeExecutor {
     private final ProcessExecutor executor;
@@ -21,8 +21,8 @@ final class NodeExecutor {
             additionalEnvironment);
     }
 
-    public String executeAndGetResult() throws ProcessExecutionException {
-        return executor.executeAndGetResult();
+    public String executeAndGetResult(final Logger logger) throws ProcessExecutionException {
+        return executor.executeAndGetResult(logger);
     }
 
     public int executeAndRedirectOutput(final Logger logger) throws ProcessExecutionException {

@@ -1,12 +1,12 @@
 package com.github.eirslett.maven.plugins.frontend.lib;
 
-import org.apache.commons.io.FileUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+
+import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class YarnInstaller {
 
@@ -75,7 +75,7 @@ public class YarnInstaller {
             File nodeFile = executorConfig.getYarnPath();
             if (nodeFile.exists()) {
                 final String version =
-                    new YarnExecutor(executorConfig, Arrays.asList("--version"), null).executeAndGetResult().trim();
+                    new YarnExecutor(executorConfig, Arrays.asList("--version"), null).executeAndGetResult(logger).trim();
 
                 if (version.equals(yarnVersion.replaceFirst("^v", ""))) {
                     logger.info("Yarn {} is already installed.", version);

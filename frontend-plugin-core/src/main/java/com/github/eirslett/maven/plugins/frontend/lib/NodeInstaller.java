@@ -103,7 +103,7 @@ public class NodeInstaller {
             File nodeFile = executorConfig.getNodePath();
             if (nodeFile.exists()) {
                 final String version =
-                    new NodeExecutor(executorConfig, Arrays.asList("--version"), null).executeAndGetResult();
+                    new NodeExecutor(executorConfig, Arrays.asList("--version"), null).executeAndGetResult(logger);
 
                 if (version.equals(this.nodeVersion)) {
                     this.logger.info("Node {} is already installed.", version);
