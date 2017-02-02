@@ -33,7 +33,7 @@ public class JspmMojo extends AbstractFrontendMojo {
 
     @Override
     protected void execute(FrontendPluginFactory factory) throws TaskRunnerException {
-        factory.getJspmRunner().execute(arguments, environmentVariables);
+        factory.getJspmRunner().execute(arguments, nodeArguments, environmentVariables);
     }
 
 }

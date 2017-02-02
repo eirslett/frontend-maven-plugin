@@ -44,7 +44,7 @@ public final class BowerMojo extends AbstractFrontendMojo {
     @Override
     protected void execute(FrontendPluginFactory factory) throws TaskRunnerException {
         ProxyConfig proxyConfig = getProxyConfig();
-        factory.getBowerRunner(proxyConfig).execute(arguments, environmentVariables);
+        factory.getBowerRunner(proxyConfig).execute(arguments, nodeArguments, environmentVariables);
     }
 
     private ProxyConfig getProxyConfig() {

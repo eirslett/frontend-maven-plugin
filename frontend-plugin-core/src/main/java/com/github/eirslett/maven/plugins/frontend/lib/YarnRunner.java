@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.github.eirslett.maven.plugins.frontend.lib.ProxyConfig.Proxy;
 
-public interface YarnRunner extends NodeTaskRunner {
+public interface YarnRunner extends YarnTaskRunner {
 }
 
 final class DefaultYarnRunner extends YarnTaskExecutor implements YarnRunner {
