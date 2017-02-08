@@ -11,9 +11,6 @@
     <packaging>maven-plugin</packaging>
 
     <name>Maven Frontend Plugin</name>
-    <prerequisites>
-        <maven>3.1.0</maven>
-    </prerequisites>
 
     <description>
         This Maven plugin lets you install Node/NPM locally
