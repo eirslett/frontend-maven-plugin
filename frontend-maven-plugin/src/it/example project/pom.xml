@@ -103,6 +103,13 @@
                         </configuration>
                     </execution>
 
+                    <execution>
+                        <id>read package.json</id>
+                        <goals>
+                            <goal>package-json</goal>
+                        </goals>
+                    </execution>
+
                 </executions>
             </plugin>
         </plugins>
