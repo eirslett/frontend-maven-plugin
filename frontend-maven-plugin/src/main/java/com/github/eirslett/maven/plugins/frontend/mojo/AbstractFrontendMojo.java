@@ -27,6 +27,13 @@ public abstract class AbstractFrontendMojo extends AbstractMojo {
   protected Boolean skipTests;
 
   /**
+   * Set this to "true" to ignore a failure during testing. Its use is NOT RECOMMENDED, but quite convenient on
+   * occasion.
+   */
+  @Parameter(property = "maven.test.failure.ignore", defaultValue = "false")
+  protected Boolean testFailureIgnore;
+
+  /**
    * The base directory for running all Node commands. (Usually the directory that contains package.json)
    */
   @Parameter(defaultValue = "${basedir}", property = "workingDirectory", required = false)
@@ -64,6 +71,10 @@ public abstract class AbstractFrontendMojo extends AbstractMojo {
     return skipTests && isTestingPhase();
   }
 
+  private boolean ignoreTestFailure() {
+    return testFailureIgnore && isTestingPhase();
+  }
+  
   /**
    * Determines if the current execution is during a testing phase (e.g., "test" or "integration-test").
    */
@@ -92,9 +103,18 @@ public abstract class AbstractFrontendMojo extends AbstractMojo {
             new RepositoryCacheResolver(repositorySystemSession)
         ));
       } catch (TaskRunnerException e) {
-        throw new MojoFailureException("Failed to run task", e);
+        if (!ignoreTestFailure()) {
+          throw new MojoFailureException("Failed to run task", e);
+        } else {
+          getLog().error("Failed to run task", e);
+        }
       } catch (FrontendException e) {
-        throw MojoUtils.toMojoFailureException(e);
+        MojoFailureException mojoFailed = MojoUtils.toMojoFailureException(e);
+        if (!ignoreTestFailure()) {
+          throw mojoFailed;
+        } else {
+          getLog().error(mojoFailed);
+        }
       }
     } else {
       LoggerFactory.getLogger(AbstractFrontendMojo.class).info("Skipping test phase.");
