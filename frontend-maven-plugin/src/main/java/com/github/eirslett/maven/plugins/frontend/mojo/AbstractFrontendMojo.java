@@ -10,7 +10,6 @@ import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.eclipse.aether.RepositorySystemSession;
-import org.slf4j.LoggerFactory;
 
 import com.github.eirslett.maven.plugins.frontend.lib.FrontendException;
 import com.github.eirslett.maven.plugins.frontend.lib.FrontendPluginFactory;
@@ -28,18 +27,12 @@ public abstract class AbstractFrontendMojo extends AbstractMojo {
     protected Boolean skipTests;
 
     /**
-     * Specifies if the build will fail if there are errors during a frontend execution or not.
+     * Set this to true to ignore a failure during testing. Its use is NOT RECOMMENDED, but quite convenient on
+     * occasion.
      *
-     * @parameter property="maven.frontend.failOnError" default-value="true"
      * @since 1.4
      */
-    @Parameter(property = "maven.frontend.failOnError", required = false, defaultValue = "true")
-    protected boolean failOnError;
-
-    /**
-     * Whether you should continue build when some test will fail (default is false)
-     */
-    @Parameter(property = "maven.test.failure.ignore", required = false, defaultValue = "false")
+    @Parameter(property = "maven.test.failure.ignore", defaultValue = "false")
     protected boolean testFailureIgnore;
 
     /**
@@ -78,7 +71,7 @@ public abstract class AbstractFrontendMojo extends AbstractMojo {
      */
     private boolean isTestingPhase() {
         String phase = execution.getLifecyclePhase();
-        return phase != null && (phase.equals("test") || phase.equals("integration-test"));
+        return "test".equals(phase) || "integration-test".equals(phase);
     }
 
     protected abstract void execute(FrontendPluginFactory factory) throws FrontendException;
@@ -88,11 +81,31 @@ public abstract class AbstractFrontendMojo extends AbstractMojo {
      */
     protected abstract boolean skipExecution();
 
+    /**
+     * Whether to raise an error or a failure if the execution fails. If unset, execution will fail if not in a testing
+     * phase.
+     *
+     * @since 1.4
+     * @see #isTestingPhase()
+     */
+    @Parameter(property = "failOnError")
+    protected Boolean failOnError;
+
+    /**
+     * @since 1.4
+     * @see #failOnError
+     */
+    protected boolean isFailOnError() {
+        if (failOnError == null) {
+            failOnError = !isTestingPhase();
+        }
+        return failOnError;
+    }
+
     @Override
     public void execute() throws MojoFailureException {
         if (testFailureIgnore && !isTestingPhase()) {
-            LoggerFactory.getLogger(AbstractFrontendMojo.class)
-                         .warn("testFailureIgnore property is ignored in non test phases");
+            getLog().info("testFailureIgnore property is ignored in non test phases");
         }
         if (!(skipTestPhase() || skipExecution())) {
             if (installDirectory == null) {
@@ -102,27 +115,17 @@ public abstract class AbstractFrontendMojo extends AbstractMojo {
                 execute(new FrontendPluginFactory(workingDirectory, installDirectory,
                         new RepositoryCacheResolver(repositorySystemSession)));
             } catch (TaskRunnerException e) {
-                failOnError("Failed to run task", e);
+                if (!isFailOnError() || testFailureIgnore && isTestingPhase()) {
+                    getLog().error("There are test failures.\nFailed to run task: " + e.getMessage(), e);
+                } else {
+                    throw new MojoFailureException("Failed to run task", e);
+                }
             } catch (FrontendException e) {
                 throw MojoUtils.toMojoFailureException(e);
             }
         } else {
-            LoggerFactory.getLogger(AbstractFrontendMojo.class).info("Skipping test phase.");
+            getLog().info("Skipping execution.");
         }
     }
 
-    protected void failOnError(String prefix, Exception e) throws MojoFailureException {
-        if (!failOnError || (testFailureIgnore && isTestingPhase())) {
-            if ((testFailureIgnore && isTestingPhase())) {
-                LoggerFactory.getLogger(AbstractFrontendMojo.class)
-                             .warn("There are ignored test failures/errors for: " + workingDirectory);
-            }
-            LoggerFactory.getLogger(AbstractFrontendMojo.class).error(prefix + ": " + e.getMessage(), e);
-        } else {
-            if (e instanceof RuntimeException) {
-                throw (RuntimeException) e;
-            }
-            throw new MojoFailureException(prefix + ": " + e.getMessage(), e);
-        }
-    }
 }
