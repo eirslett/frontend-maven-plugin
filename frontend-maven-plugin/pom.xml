@@ -122,11 +122,6 @@
               <goal>run</goal>
               <goal>verify</goal>
             </goals>
-            <configuration>
-              <goals>
-                <goal>verify</goal>
-              </goals>
-            </configuration>
           </execution>
         </executions>
       </plugin>
