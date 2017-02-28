@@ -12,9 +12,9 @@ public interface NodeExecutorConfig {
 
 final class InstallNodeExecutorConfig implements NodeExecutorConfig {
 
-  private static final String NODE_WINDOWS = "\\node\\node.exe";
-  private static final String NODE_DEFAULT = "/node/node";
-  private static final String NPM = "/node/node_modules/npm/bin/npm-cli.js";
+  private static final String NODE_WINDOWS = NodeInstaller.INSTALL_PATH.replaceAll("/", "\\\\") + "\\node.exe";
+  private static final String NODE_DEFAULT = NodeInstaller.INSTALL_PATH + "/node";
+  private static final String NPM = NodeInstaller.INSTALL_PATH + "/node_modules/npm/bin/npm-cli.js";
 
   private final InstallConfig installConfig;
 

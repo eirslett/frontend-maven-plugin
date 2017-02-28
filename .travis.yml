@@ -1,6 +1,10 @@
-os:
-  - osx
-language: objective-c
-script: JAVA_HOME=$(/usr/libexec/java_home) mvn clean install
-jdk:
-  - openjdk6
+language: java
+# Run on OSX and Linux
+matrix:
+  include:
+    - os: linux
+      jdk: oraclejdk7
+    - os: osx
+      #osx_image: beta-xcode6.1
+# Run Integration tests
+script: "mvn test && mvn clean verify"

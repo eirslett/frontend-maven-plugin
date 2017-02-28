@@ -23,8 +23,9 @@
                             <goal>install-node-and-npm</goal>
                         </goals>
                         <configuration>
-                            <nodeVersion>v5.3.0</nodeVersion>
-                            <npmVersion>3.3.12</npmVersion>
+                            <!-- See https://nodejs.org/en/download/ for latest node and npm (lts) versions -->
+                            <nodeVersion>v4.6.0</nodeVersion>
+                            <npmVersion>2.15.9</npmVersion>
                         </configuration>
                     </execution>
 
@@ -76,6 +77,19 @@
                         </goals>
                         <configuration>
                             <arguments>--no-color</arguments>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>gulp build</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>gulp</goal>
+                        </goals>
+                        <configuration>
+                            <environmentVariables>
+                                <NODE_ENV>production</NODE_ENV>
+                            </environmentVariables>
                         </configuration>
                     </execution>
 
