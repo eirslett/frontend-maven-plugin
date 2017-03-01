@@ -61,7 +61,7 @@ public final class EmberMojo extends AbstractFrontendMojo {
     @Override
     public void execute(FrontendPluginFactory factory) throws TaskRunnerException {
         if (shouldExecute()) {
-            factory.getEmberRunner().execute(arguments, environmentVariables);
+            factory.getEmberRunner().execute(arguments, nodeArguments, environmentVariables);
 
             if (outputdir != null) {
                 getLog().info("Refreshing files after ember: " + outputdir);

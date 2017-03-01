@@ -12,6 +12,7 @@ import java.util.List;
 import static com.github.eirslett.maven.plugins.frontend.lib.Utils.implode;
 import static com.github.eirslett.maven.plugins.frontend.lib.Utils.normalize;
 import static com.github.eirslett.maven.plugins.frontend.lib.Utils.prepend;
+import static com.github.eirslett.maven.plugins.frontend.lib.Utils.merge;
 import java.util.Map;
 
 abstract class NodeTaskExecutor {
@@ -23,6 +24,7 @@ abstract class NodeTaskExecutor {
     private final String taskLocation;
     private final List<String> additionalArguments;
     private final NodeExecutorConfig config;
+    private final List<String> additionalNodeArguments;
 
     public NodeTaskExecutor(NodeExecutorConfig config, String taskLocation) {
         this(config, taskLocation, Collections.<String>emptyList());
@@ -37,30 +39,35 @@ abstract class NodeTaskExecutor {
     }
 
     public NodeTaskExecutor(NodeExecutorConfig config, String taskName, String taskLocation, List<String> additionalArguments) {
+        this(config, taskName, taskLocation, additionalArguments, Collections.<String>emptyList());
+    }
+
+    public NodeTaskExecutor(NodeExecutorConfig config, String taskName, String taskLocation, List<String> additionalArguments, List<String> additionalNodeArguments) {
         this.logger = LoggerFactory.getLogger(getClass());
         this.config = config;
         this.taskName = taskName;
         this.taskLocation = taskLocation;
         this.additionalArguments = additionalArguments;
+        this.additionalNodeArguments = additionalNodeArguments;
     }
 
     private static String getTaskNameFromLocation(String taskLocation) {
         return taskLocation.replaceAll("^.*/([^/]+)(?:\\.js)?$","$1");
     }
 
-
-    public final void execute(String args, Map<String, String> environment) throws TaskRunnerException {
+    public final void execute(String args, String nodeArgs, Map<String, String> environment) throws TaskRunnerException {
         final String absoluteTaskLocation = getAbsoluteTaskLocation();
         final List<String> arguments = getArguments(args);
-        logger.info("Running " + taskToString(taskName, arguments) + " in " + config.getWorkingDirectory());
+        final List<String> nodeArguments = getNodeArguments(nodeArgs);
+        logger.info("Running " + taskToString(taskName, arguments, nodeArguments) + " in " + config.getWorkingDirectory());
 
         try {
-            final int result = new NodeExecutor(config, prepend(absoluteTaskLocation, arguments), environment).executeAndRedirectOutput(logger);
+            final int result = new NodeExecutor(config, merge(nodeArguments,prepend(absoluteTaskLocation, arguments)), environment).executeAndRedirectOutput(logger);
             if (result != 0) {
-                throw new TaskRunnerException(taskToString(taskName, arguments) + " failed. (error code " + result + ")");
+                throw new TaskRunnerException(taskToString(taskName, arguments, nodeArguments) + " failed. (error code " + result + ")");
             }
         } catch (ProcessExecutionException e) {
-            throw new TaskRunnerException(taskToString(taskName, arguments) + " failed.", e);
+            throw new TaskRunnerException(taskToString(taskName, arguments, nodeArguments) + " failed.", e);
         }
     }
 
@@ -76,8 +83,6 @@ abstract class NodeTaskExecutor {
         return location;
     }
 
-
-
     private List<String> getArguments(String args) {
         List<String> arguments = new ArrayList<String>();
         if (args != null && !args.equals("null") && !args.isEmpty()) {
@@ -92,7 +97,21 @@ abstract class NodeTaskExecutor {
         return arguments;
     }
 
-    private static String taskToString(String taskName, List<String> arguments) {
+    private List<String> getNodeArguments(String args) {
+        List<String> arguments = new ArrayList<String>();
+        if (args != null && !args.equals("null") && !args.isEmpty()) {
+            arguments.addAll(Arrays.asList(args.split("\\s+")));
+        }
+
+        for (String argument : additionalNodeArguments) {
+            if (!arguments.contains(argument)) {
+                arguments.add(argument);
+            }
+        }
+        return arguments;
+    }
+
+    private static String taskToString(String taskName, List<String> arguments, List<String> nodeArguments) {
         List<String> clonedArguments = new ArrayList<String>(arguments);
         for (int i = 0; i < clonedArguments.size(); i++) {
             final String s = clonedArguments.get(i);
@@ -102,7 +121,7 @@ abstract class NodeTaskExecutor {
                 clonedArguments.set(i, bestEffortMaskedPassword);
             }
         }
-        return "'" + taskName + " " + implode(" ", clonedArguments) + "'";
+        return "'" + taskName + " " + implode(" ", clonedArguments) + (nodeArguments.isEmpty()?"":(" with node arguments " + implode(" ", nodeArguments))) + "'";
     }
 
     private static String maskPassword(String proxyString) {

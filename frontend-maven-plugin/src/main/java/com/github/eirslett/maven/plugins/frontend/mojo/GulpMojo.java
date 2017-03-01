@@ -61,7 +61,7 @@ public final class GulpMojo extends AbstractFrontendMojo {
     @Override
     public void execute(FrontendPluginFactory factory) throws TaskRunnerException {
         if (shouldExecute()) {
-            factory.getGulpRunner().execute(arguments, environmentVariables);
+            factory.getGulpRunner().execute(arguments, nodeArguments, environmentVariables);
 
             if (outputdir != null) {
                 getLog().info("Refreshing files after gulp: " + outputdir);

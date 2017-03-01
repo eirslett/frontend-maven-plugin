@@ -72,6 +72,7 @@ to see how it should be set up: https://github.com/eirslett/frontend-maven-plugi
     - [Proxy Settings](#proxy-settings)
     - [Environment variables](#environment-variables)
     - [Skipping Execution](#skipping-execution)
+    - [Node arguments](#node-arguments)
     
 **Recommendation:** _Try to run all your tasks via npm scripts instead of running bower, grunt, gulp etc. directly._
 
@@ -464,6 +465,16 @@ Tools and property to enable skipping
 * jspm `-Dskip.jspm`
 * karma `-Dskip.karma`
 * webpack `-Dskip.webpack`
+
+### Node Arguments
+
+If you need to pass extra arguments to node before running the main tasks, you can set that using the property `nodeArguments` in configuration
+tag of an execution like this:
+```xml
+<configuration>
+    <nodeArguments>--optimize_for_size --gc_interval=100 --max-old-space-size=8000</nodeArguments>       
+</configuration>
+```
 
 ## Eclipse M2E support
 

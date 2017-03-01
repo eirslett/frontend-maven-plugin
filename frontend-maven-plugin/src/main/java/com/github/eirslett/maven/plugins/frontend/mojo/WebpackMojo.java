@@ -61,7 +61,7 @@ public final class WebpackMojo extends AbstractFrontendMojo {
     @Override
     public void execute(FrontendPluginFactory factory) throws TaskRunnerException {
         if (shouldExecute()) {
-            factory.getWebpackRunner().execute(arguments, environmentVariables);
+            factory.getWebpackRunner().execute(arguments, nodeArguments, environmentVariables);
 
             if (outputdir != null) {
                 getLog().info("Refreshing files after webpack: " + outputdir);

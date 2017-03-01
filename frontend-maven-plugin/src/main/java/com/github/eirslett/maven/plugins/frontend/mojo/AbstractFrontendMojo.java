@@ -58,6 +58,12 @@ public abstract class AbstractFrontendMojo extends AbstractMojo {
   private RepositorySystemSession repositorySystemSession;
 
   /**
+   * node arguments.
+   */
+  @Parameter(property = "frontend.node.arguments", required = false)
+  protected String nodeArguments;
+
+  /**
    * Determines if this execution should be skipped.
    */
   private boolean skipTestPhase() {
