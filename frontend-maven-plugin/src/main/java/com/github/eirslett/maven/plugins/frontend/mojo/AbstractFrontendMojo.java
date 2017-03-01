@@ -81,7 +81,11 @@ public abstract class AbstractFrontendMojo extends AbstractMojo {
 
   @Override
   public void execute() throws MojoFailureException {
-    if (!(skipTestPhase() || skipExecution())) {
+	if (skipExecution()) {
+		LoggerFactory.getLogger(AbstractFrontendMojo.class).info("Skipping execution.");
+	} else if (skipTestPhase()) {
+		LoggerFactory.getLogger(AbstractFrontendMojo.class).info("Skipping test phase.");
+	} else {
       if (installDirectory == null) {
         installDirectory = workingDirectory;
       }
@@ -96,8 +100,6 @@ public abstract class AbstractFrontendMojo extends AbstractMojo {
       } catch (FrontendException e) {
         throw MojoUtils.toMojoFailureException(e);
       }
-    } else {
-      LoggerFactory.getLogger(AbstractFrontendMojo.class).info("Skipping test phase.");
-    }
+	}
   }
 }
