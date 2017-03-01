@@ -52,7 +52,7 @@ Include the plugin as a dependency in your Maven project. Change `LATEST_VERSION
 
 ## Usage
 
-Have a look at the [example project](https://github.com/eirslett/frontend-maven-plugin/tree/master/frontend-maven-plugin/src/it/example%20project), 
+Have a look at the [example project](frontend-maven-plugin/src/it/example%20project),
 to see how it should be set up: https://github.com/eirslett/frontend-maven-plugin/blob/master/frontend-maven-plugin/src/it/example%20project/pom.xml
 
  - [Installing node and npm](#installing-node-and-npm)
@@ -71,6 +71,7 @@ to see how it should be set up: https://github.com/eirslett/frontend-maven-plugi
     - [Installation Directory](#installation-directory)
     - [Proxy Settings](#proxy-settings)
     - [Environment variables](#environment-variables)
+    - [Ignoring Failure](#ignoring-failure)
     - [Skipping Execution](#skipping-execution)
     
 **Recommendation:** _Try to run all your tasks via npm scripts instead of running bower, grunt, gulp etc. directly._
@@ -190,6 +191,7 @@ By default, colors will be shown in the log.
 
 **Notice:** _Remember to gitignore the `node_modules` folder, unless you actually want to commit it. Npm packages will 
 always be installed in `node_modules` next to your `package.json`, which is default npm behavior._
+
 
 ### Running yarn
 
@@ -445,6 +447,28 @@ tag of an execution like this:
 </configuration>
 ```
 
+#### Ignoring Failure
+
+**Ignoring failed tests:** If you want to ignore test failures in specific execution  you can set that using the property `maven.test.failure.ignore` in configuration tag of an execution like this:
+
+```xml
+<configuration>
+    <maven.test.failure.ignore>true</maven.test.failure.ignore>
+</configuration>
+```
+
+If you want to generally ignore tests run maven with the `-Dmaven.test.failure.ignore=true` flag, test/integration-test results will not stop the build.
+
+**Ignoring other failures:** If you need to ignore other failures you can set that using the property `maven.frontend.failOnError` in configuration tag of an execution like this:
+
+```xml
+<configuration>
+    <maven.frontend.failOnError>true</maven.frontend.failOnError>
+</configuration>
+```
+
+If you want to ignore all failures run maven with the `-Dmaven.frontend.failOnError=true` flag.
+
 #### Skipping Execution
 
 Each frontend build tool and package manager allows skipping execution.
@@ -476,7 +500,7 @@ these are set they check for changes in your source files before being run. See 
 ## Helper scripts
 
 During development, it's convenient to have the "npm", "bower", "grunt", "gulp" and "karma" commands
-available on the command line. If you want that, use [those helper scripts](https://github.com/eirslett/frontend-maven-plugin/tree/master/frontend-maven-plugin/src/it/example%20project/helper-scripts)!
+available on the command line. If you want that, use [those helper scripts](frontend-maven-plugin/src/it/example%20project/helper-scripts)!
 
 ## To build this project:
 
