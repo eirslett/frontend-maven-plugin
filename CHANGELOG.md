@@ -2,6 +2,10 @@
 
 ## Changelog
 
+### 1.4
+
+* New goal `protractor` for Protractor support 
+
 ### 1.3
 
 * Fix `yarn` for Windows

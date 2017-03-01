@@ -61,6 +61,10 @@ public final class FrontendPluginFactory {
         return new DefaultKarmaRunner(getExecutorConfig());
     }
 
+    public ProtractorRunner getProtractorRunner(){
+        return new DefaultProtractorRunner(getExecutorConfig());
+    }
+
     public GulpRunner getGulpRunner(){
         return new DefaultGulpRunner(getExecutorConfig());
     }

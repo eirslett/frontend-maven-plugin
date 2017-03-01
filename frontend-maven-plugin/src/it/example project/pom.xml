@@ -39,7 +39,15 @@
                             <arguments>install</arguments>
                         </configuration>
                     </execution>
-
+                    <execution>
+                        <id>npm run prebuild</id>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                        <configuration>
+                            <arguments>run prebuild</arguments>
+                        </configuration>
+                    </execution>
                     <execution>
                         <id>npm run build</id>
                         <goals>
@@ -102,6 +110,17 @@
                             <karmaConfPath>src/test/javascript/karma.conf.ci.js</karmaConfPath>
                         </configuration>
                     </execution>
+										
+                    <execution>
+                        <id>angular tests</id>
+						<phase>test</phase>
+                        <goals>
+                            <goal>protractor</goal>
+                        </goals>
+                        <configuration>
+                            <protractorConfPath>src/test/javascript/protractor.conf.js</protractorConfPath>
+                        </configuration>
+                    </execution>					
 
                 </executions>
             </plugin>
