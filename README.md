@@ -52,7 +52,9 @@ Include the plugin as a dependency in your Maven project. Change `LATEST_VERSION
 
 ## Usage
 
+
 Have a look at the [example project](frontend-maven-plugin/src/it/example%20project), 
+
 to see how it should be set up: https://github.com/eirslett/frontend-maven-plugin/blob/master/frontend-maven-plugin/src/it/example%20project/pom.xml
 
  - [Installing node and npm](#installing-node-and-npm)
@@ -449,25 +451,29 @@ tag of an execution like this:
 
 #### Ignoring Failure
 
-**Ignoring failed tests:** If you want to ignore test failures in specific execution  you can set that using the property `maven.test.failure.ignore` in configuration tag of an execution like this:
+**Ignoring failed tests:** If you want to ignore test failures in specific execution  you can set that using the property `testFailureIgnore` in configuration tag of an execution like this:
 
 ```xml
 <configuration>
-    <maven.test.failure.ignore>true</maven.test.failure.ignore>        
+
+    <testFailureIgnore>true</testFailureIgnore>
+
 </configuration>
 ```
 
 If you want to generally ignore tests run maven with the `-Dmaven.test.failure.ignore=true` flag, test/integration-test results will not stop the build.
 
-**Ignoring other failures:** If you need to ignore other failures you can set that using the property `maven.frontend.failOnError` in configuration tag of an execution like this:
+**Ignoring other failures:** If you need to ignore other failures you can set that using the property `failOnError` in configuration tag of an execution like this:
 
 ```xml
 <configuration>
-    <maven.frontend.failOnError>true</maven.frontend.failOnError>        
+
+    <failOnError>false</failOnError>
+
 </configuration>
 ```
 
-If you want to ignore all failures run maven with the `-Dmaven.frontend.failOnError=true` flag.
+If you want to ignore all failures run maven with the `-DfailOnError=false` flag.
 
 #### Skipping Execution
 
