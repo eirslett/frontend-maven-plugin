@@ -8,6 +8,9 @@
     <version>1.4-SNAPSHOT</version>
   </parent>
 
+  
+  
+  
   <artifactId>frontend-maven-plugin</artifactId>
   <packaging>maven-plugin</packaging>
 
@@ -114,6 +117,7 @@
           </filterProperties>
         </configuration>
 
+
         <executions>
           <execution>
             <phase>integration-test</phase>
@@ -127,6 +131,7 @@
       </plugin>
     </plugins>
   </build>
+
 
   <profiles>
     <profile>

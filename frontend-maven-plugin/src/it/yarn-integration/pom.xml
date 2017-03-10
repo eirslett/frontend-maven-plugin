@@ -41,7 +41,7 @@
                             <arguments>install</arguments>
                         </configuration>
                     </execution>
-
+                    
                 </executions>
             </plugin>
         </plugins>
