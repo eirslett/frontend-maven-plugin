@@ -2,9 +2,18 @@
 
 ## Changelog
 
+### 1.5
+
 ### 1.4
 
 * Add maven.frontend.failOnError and maven.test.failure.ignore flags to best manage integration-test
+* Fix #41: Replaced ProcessBuilder usage with commons-exec
+* Use InstallDirectory to locate node tasks instead of the WorkingDirectory as fallback
+* Fix 531: update lifecycle-mapping-metadata.xml for yarn
+* Fix execute goal for gulp
+* Fix #532: fix NullPointerException for invalid yarn version
+* Added bower proxy ignore parameter
+* Document how to skip package managers and build tools'
 
 ### 1.3
 
