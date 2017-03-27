@@ -1,5 +1,7 @@
 # frontend-maven-plugin
 
+Last public release: [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.eirslett/frontend-maven-plugin/badge.svg?style=flat)](https://maven-badges.herokuapp.com/maven-central/com.github.eirslett/frontend-maven-plugin/)
+
 ## Changelog
 
 ### 1.4
