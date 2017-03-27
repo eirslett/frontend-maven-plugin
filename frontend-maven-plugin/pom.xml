@@ -4,7 +4,7 @@
   <parent>
     <artifactId>frontend-plugins</artifactId>
     <groupId>com.github.eirslett</groupId>
-    <version>1.4</version>
+    <version>1.5-SNAPSHOT</version>
   </parent>
 
   <artifactId>frontend-maven-plugin</artifactId>
