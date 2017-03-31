@@ -458,15 +458,15 @@ tag of an execution like this:
 
 If you want to generally ignore tests run maven with the `-Dmaven.test.failure.ignore=true` flag, test/integration-test results will not stop the build.
 
-**Ignoring other failures:** If you need to ignore other failures you can set that using the property `maven.frontend.failOnError` in configuration tag of an execution like this:
+**Ignoring other failures:** If you need to ignore other failures you can set that using the property `failOnError` in configuration tag of an execution like this:
 
 ```xml
 <configuration>
-    <maven.frontend.failOnError>true</maven.frontend.failOnError>
+    <failOnError>true</failOnError>
 </configuration>
 ```
 
-If you want to ignore all failures run maven with the `-Dmaven.frontend.failOnError=true` flag.
+If you want to ignore all failures run maven with the `-DfailOnError=true` flag.
 
 #### Skipping Execution
 
