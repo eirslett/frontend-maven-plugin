@@ -47,8 +47,8 @@ public final class GulpMojo extends AbstractFrontendMojo {
     /**
      * Skips execution of this mojo.
      */
-    @Parameter(property = "skip.gulp", defaultValue = "false")
-    private Boolean skip;
+    @Parameter(property = "skip.gulp", defaultValue = "${skip.gulp}")
+    private boolean skip;
 
     @Component
     private BuildContext buildContext;

@@ -47,8 +47,8 @@ public final class EmberMojo extends AbstractFrontendMojo {
     /**
      * Skips execution of this mojo.
      */
-    @Parameter(property = "skip.ember", defaultValue = "false")
-    private Boolean skip;
+    @Parameter(property = "skip.ember", defaultValue = "${skip.ember}")
+    private boolean skip;
 
     @Component
     private BuildContext buildContext;
