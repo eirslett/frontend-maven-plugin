@@ -61,8 +61,8 @@ public final class InstallNodeAndNpmMojo extends AbstractFrontendMojo {
     /**
      * Skips execution of this mojo.
      */
-    @Parameter(property = "skip.installnodenpm", defaultValue = "false")
-    private Boolean skip;
+    @Parameter(property = "skip.installnodenpm", defaultValue = "${skip.installnodenpm}")
+    private boolean skip;
 
     @Component(role = SettingsDecrypter.class)
     private SettingsDecrypter decrypter;

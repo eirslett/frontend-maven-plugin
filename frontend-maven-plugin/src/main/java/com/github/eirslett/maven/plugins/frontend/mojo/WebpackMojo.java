@@ -47,8 +47,8 @@ public final class WebpackMojo extends AbstractFrontendMojo {
     /**
      * Skips execution of this mojo.
      */
-    @Parameter(property = "skip.webpack", defaultValue = "false")
-    private Boolean skip;
+    @Parameter(property = "skip.webpack", defaultValue = "${skip.webpack}")
+    private boolean skip;
 
     @Component
     private BuildContext buildContext;

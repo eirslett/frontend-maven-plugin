@@ -56,8 +56,8 @@ public final class InstallNodeAndYarnMojo extends AbstractFrontendMojo {
     /**
      * Skips execution of this mojo.
      */
-    @Parameter(property = "skip.installyarn", alias = "skip.installyarn", defaultValue = "false")
-    private Boolean skip;
+    @Parameter(property = "skip.installyarn", alias = "skip.installyarn", defaultValue = "${skip.installyarn}")
+    private boolean skip;
 
     @Component(role = SettingsDecrypter.class)
     private SettingsDecrypter decrypter;

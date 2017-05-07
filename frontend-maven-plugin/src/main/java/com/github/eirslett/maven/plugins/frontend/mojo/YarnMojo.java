@@ -48,8 +48,8 @@ public final class YarnMojo extends AbstractFrontendMojo {
     /**
      * Skips execution of this mojo.
      */
-    @Parameter(property = "skip.yarn", defaultValue = "false")
-    private Boolean skip;
+    @Parameter(property = "skip.yarn", defaultValue = "${skip.yarn}")
+    private boolean skip;
 
     @Override
     protected boolean skipExecution() {
@@ -74,7 +74,7 @@ public final class YarnMojo extends AbstractFrontendMojo {
             return MojoUtils.getProxyConfig(this.session, this.decrypter);
         } else {
             getLog().info("yarn not inheriting proxy config from Maven");
-            return new ProxyConfig(Collections.<ProxyConfig.Proxy> emptyList());
+            return new ProxyConfig(Collections.<ProxyConfig.Proxy>emptyList());
         }
     }
 

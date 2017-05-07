@@ -19,8 +19,8 @@ public final class KarmaRunMojo extends AbstractFrontendMojo {
     /**
      * Skips execution of this mojo.
      */
-    @Parameter(property = "skip.karma", defaultValue = "false")
-    private Boolean skip;
+    @Parameter(property = "skip.karma", defaultValue = "${skip.karma}")
+    private boolean skip;
 
     @Override
     protected boolean skipExecution() {
@@ -29,6 +29,6 @@ public final class KarmaRunMojo extends AbstractFrontendMojo {
 
     @Override
     public void execute(FrontendPluginFactory factory) throws TaskRunnerException {
-	factory.getKarmaRunner().execute("start " + karmaConfPath, environmentVariables);
+        factory.getKarmaRunner().execute("start " + karmaConfPath, environmentVariables);
     }
 }

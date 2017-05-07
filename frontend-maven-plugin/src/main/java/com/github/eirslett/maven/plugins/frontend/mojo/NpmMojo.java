@@ -46,8 +46,8 @@ public final class NpmMojo extends AbstractFrontendMojo {
     /**
      * Skips execution of this mojo.
      */
-    @Parameter(property = "skip.npm", defaultValue = "false")
-    private Boolean skip;
+    @Parameter(property = "skip.npm", defaultValue = "${skip.npm}")
+    private boolean skip;
 
     @Override
     protected boolean skipExecution() {
@@ -75,7 +75,7 @@ public final class NpmMojo extends AbstractFrontendMojo {
     }
 
     private String getRegistryUrl() {
-	// check to see if overridden via `-D`, otherwise fallback to pom value
-	return System.getProperty(NPM_REGISTRY_URL, npmRegistryURL);
+        // check to see if overridden via `-D`, otherwise fallback to pom value
+        return System.getProperty(NPM_REGISTRY_URL, npmRegistryURL);
     }
 }

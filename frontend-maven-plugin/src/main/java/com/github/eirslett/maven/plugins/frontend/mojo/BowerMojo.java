@@ -24,8 +24,8 @@ public final class BowerMojo extends AbstractFrontendMojo {
     /**
      * Skips execution of this mojo.
      */
-    @Parameter(property = "skip.bower", defaultValue = "false")
-    private Boolean skip;
+    @Parameter(property = "skip.bower", defaultValue = "${skip.bower}")
+    private boolean skip;
 
     @Parameter(property = "session", defaultValue = "${session}", readonly = true)
     private MavenSession session;
