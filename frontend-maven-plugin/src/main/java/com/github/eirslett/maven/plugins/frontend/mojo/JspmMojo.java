@@ -23,8 +23,8 @@ public class JspmMojo extends AbstractFrontendMojo {
     /**
      * Skips execution of this mojo.
      */
-    @Parameter(property = "skip.jspm", defaultValue = "false")
-    private Boolean skip;
+    @Parameter(property = "skip.jspm", defaultValue = "${skip.jspm}")
+    private boolean skip;
 
     @Override
     protected boolean skipExecution() {
