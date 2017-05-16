@@ -100,7 +100,7 @@ public class YarnInstaller {
 
             downloadUrl += fileending;
 
-            CacheDescriptor cacheDescriptor = new CacheDescriptor("yarn", yarnVersion, fileending);
+            CacheDescriptor cacheDescriptor = new CacheDescriptor("yarn", yarnVersion, "tar.gz");
 
             File archive = config.getCacheResolver().resolve(cacheDescriptor);
 
