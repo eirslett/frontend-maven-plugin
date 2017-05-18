@@ -96,11 +96,12 @@ public class YarnInstaller {
         try {
             logger.info("Installing Yarn version {}", yarnVersion);
             String downloadUrl = yarnDownloadRoot + yarnVersion;
-            String fileending = "/yarn-" + yarnVersion + ".tar.gz";
+            String extension = "tar.gz";
+            String fileending = "/yarn-" + yarnVersion + "." + extension;
 
             downloadUrl += fileending;
 
-            CacheDescriptor cacheDescriptor = new CacheDescriptor("yarn", yarnVersion, fileending);
+            CacheDescriptor cacheDescriptor = new CacheDescriptor("yarn", yarnVersion, extension);
 
             File archive = config.getCacheResolver().resolve(cacheDescriptor);
 
