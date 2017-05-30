@@ -22,10 +22,17 @@ final class InstallYarnExecutorConfig implements YarnExecutorConfig {
 
     private File nodePath;
 
+    private final File yarnPath;
+
     private final InstallConfig installConfig;
 
     public InstallYarnExecutorConfig(InstallConfig installConfig) {
+        this(installConfig, null);
+    }
+
+    public InstallYarnExecutorConfig(InstallConfig installConfig, File yarnPath) {
         this.installConfig = installConfig;
+        this.yarnPath = yarnPath;
         nodePath = new InstallNodeExecutorConfig(installConfig).getNodePath();
     }
 
@@ -36,6 +43,9 @@ final class InstallYarnExecutorConfig implements YarnExecutorConfig {
 
     @Override
     public File getYarnPath() {
+        if (yarnPath != null) {
+            return yarnPath ;
+        }
         String yarnExecutable = getPlatform().isWindows() ? YARN_WINDOWS : YARN_DEFAULT;
         return new File(installConfig.getInstallDirectory() + yarnExecutable);
     }
