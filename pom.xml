@@ -34,9 +34,9 @@
     </licenses>
 
     <scm>
-        <url>https://github.com/eirslett/frontend-maven-plugin</url>
-        <connection>scm:git:https://github.com/eirslett/frontend-maven-plugin.git</connection>
-        <developerConnection>scm:git:git@github.com:eirslett/frontend-maven-plugin.git</developerConnection>
+        <url>https://github.com/atlassian/frontend-maven-plugin</url>
+        <connection>scm:git:https://github.com/atlassian/frontend-maven-plugin.git</connection>
+        <developerConnection>scm:git:git@github.com:atlassian/frontend-maven-plugin.git</developerConnection>
     </scm>
 
     <developers>
