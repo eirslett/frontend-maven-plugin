@@ -14,7 +14,7 @@ public class NPMInstaller {
 
     private static final String VERSION = "version";
 
-    public static final String DEFAULT_NPM_DOWNLOAD_ROOT = "http://registry.npmjs.org/npm/-/";
+    public static final String DEFAULT_NPM_DOWNLOAD_ROOT = "https://registry.npmjs.org/npm/-/";
 
     private static final Object LOCK = new Object();
 

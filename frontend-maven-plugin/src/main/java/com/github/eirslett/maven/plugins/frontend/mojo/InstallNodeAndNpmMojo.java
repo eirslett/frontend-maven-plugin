@@ -17,13 +17,13 @@ import org.apache.maven.settings.Server;
 public final class InstallNodeAndNpmMojo extends AbstractFrontendMojo {
 
     /**
-     * Where to download Node.js binary from. Defaults to http://nodejs.org/dist/
+     * Where to download Node.js binary from. Defaults to https://nodejs.org/dist/
      */
     @Parameter(property = "nodeDownloadRoot", required = false, defaultValue = NodeInstaller.DEFAULT_NODEJS_DOWNLOAD_ROOT)
     private String nodeDownloadRoot;
 
     /**
-     * Where to download NPM binary from. Defaults to http://registry.npmjs.org/npm/-/
+     * Where to download NPM binary from. Defaults to https://registry.npmjs.org/npm/-/
      */
     @Parameter(property = "npmDownloadRoot", required = false, defaultValue = NPMInstaller.DEFAULT_NPM_DOWNLOAD_ROOT)
     private String npmDownloadRoot;
