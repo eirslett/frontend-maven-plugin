@@ -24,7 +24,8 @@ class MojoUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(MojoUtils.class);
 
     static <E extends Throwable> MojoFailureException toMojoFailureException(E e) {
-        return new MojoFailureException(e.getMessage() + ": " + e.getCause().getMessage(), e);
+        String causeMessage = e.getCause() != null ? ": " + e.getCause().getMessage() : "";
+        return new MojoFailureException(e.getMessage() + causeMessage, e);
     }
 
     static ProxyConfig getProxyConfig(MavenSession mavenSession, SettingsDecrypter decrypter) {

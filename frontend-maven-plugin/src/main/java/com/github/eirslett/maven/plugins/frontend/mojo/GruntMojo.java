@@ -47,8 +47,8 @@ public final class GruntMojo extends AbstractFrontendMojo {
     /**
      * Skips execution of this mojo.
      */
-    @Parameter(property = "skip.grunt", defaultValue = "false")
-    private Boolean skip;
+    @Parameter(property = "skip.grunt", defaultValue = "${skip.grunt}")
+    private boolean skip;
 
     @Component
     private BuildContext buildContext;

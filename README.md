@@ -1,14 +1,16 @@
 # frontend-maven-plugin
 
-[![Build Status OSX](https://travis-ci.org/eirslett/frontend-maven-plugin.png?branch=master)](https://travis-ci.org/eirslett/frontend-maven-plugin)
-[![Build status Linux](https://eirslett.ci.cloudbees.com/buildStatus/icon?job=Frontend%20maven%20plugin)](https://eirslett.ci.cloudbees.com/job/Frontend%20maven%20plugin/)
+[![Build Status OSX and Linux](https://travis-ci.org/eirslett/frontend-maven-plugin.png?branch=master)](https://travis-ci.org/eirslett/frontend-maven-plugin)
 [![Build status Windows](https://ci.appveyor.com/api/projects/status/vxbccc1t9ceadhi9?svg=true)](https://ci.appveyor.com/project/eirslett/frontend-maven-plugin)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.eirslett/frontend-maven-plugin/badge.svg?style=flat)](https://maven-badges.herokuapp.com/maven-central/com.github.eirslett/frontend-maven-plugin/)
 
-This plugin downloads/installs Node and NPM locally for your project, runs NPM install, and then any combination of 
+This plugin downloads/installs Node and NPM locally for your project, runs `npm install`, and then any combination of 
 [Bower](http://bower.io/), [Grunt](http://gruntjs.com/), [Gulp](http://gulpjs.com/), [Jspm](http://jspm.io), 
 [Karma](http://karma-runner.github.io/), or [Webpack](http://webpack.github.io/).
 It's supposed to work on Windows, OS X and Linux.
+
+If you prefer [Yarn](https://yarnpkg.com/) over [NPM](https://www.npmjs.com/) for your node package fetching, 
+this plugin can also download Node and Yarn and then run `yarn install` for your project.
 
 #### What is this plugin meant to do?
 - Let you keep your frontend and backend builds as separate as possible, by
@@ -49,12 +51,14 @@ Include the plugin as a dependency in your Maven project. Change `LATEST_VERSION
 
 ## Usage
 
-Have a look at the [example project](https://github.com/eirslett/frontend-maven-plugin/tree/master/frontend-maven-plugin/src/it/example%20project), 
+Have a look at the [example project](frontend-maven-plugin/src/it/example%20project),
 to see how it should be set up: https://github.com/eirslett/frontend-maven-plugin/blob/master/frontend-maven-plugin/src/it/example%20project/pom.xml
 
  - [Installing node and npm](#installing-node-and-npm)
+ - [Installing node and yarn](#installing-node-and-yarn)
  - Running 
     - [npm](#running-npm)
+    - [yarn](#running-yarn)
     - [bower](#running-bower)
     - [grunt](#running-grunt)
     - [gulp](#running-gulp)
@@ -66,6 +70,8 @@ to see how it should be set up: https://github.com/eirslett/frontend-maven-plugi
     - [Installation Directory](#installation-directory)
     - [Proxy Settings](#proxy-settings)
     - [Environment variables](#environment-variables)
+    - [Ignoring Failure](#ignoring-failure)
+    - [Skipping Execution](#skipping-execution)
     
 **Recommendation:** _Try to run all your tasks via npm scripts instead of running bower, grunt, gulp etc. directly._
 
@@ -118,6 +124,45 @@ You can use Nexus repository Manager to proxy npm registries. See https://books.
 
 **Notice:** _Remember to gitignore the `node` folder, unless you actually want to commit it._
 
+### Installing node and yarn
+
+Instead of using Node with npm you can alternatively choose to install Node with Yarn as the package manager.
+
+The versions of Node and Yarn are downloaded from `https://nodejs.org/dist` for Node 
+and from the Github releases for Yarn, 
+extracted and put into a `node` folder created in your installation directory. 
+Node/Yarn will only be "installed" locally to your project. 
+It will not be installed globally on the whole system (and it will not interfere with any Node/Yarn installations already 
+present). 
+
+Have a look at the example `POM` to see how it should be set up with Yarn: 
+https://github.com/eirslett/frontend-maven-plugin/blob/master/frontend-maven-plugin/src/it/yarn-integration/pom.xml
+
+
+```xml
+<plugin>
+    ...
+    <execution>
+        <!-- optional: you don't really need execution ids, but it looks nice in your build log. -->
+        <id>install node and yarn</id>
+        <goals>
+            <goal>install-node-and-yarn</goal>
+        </goals>
+        <!-- optional: default phase is "generate-resources" -->
+        <phase>generate-resources</phase>
+    </execution>
+    <configuration>
+        <nodeVersion>v6.9.1</nodeVersion>
+        <yarnVersion>v0.16.1</yarnVersion>
+
+        <!-- optional: where to download node from. Defaults to https://nodejs.org/dist/ -->
+        <nodeDownloadRoot>http://myproxy.example.org/nodejs/</nodeDownloadRoot>
+        <!-- optional: where to download yarn from. Defaults to https://github.com/yarnpkg/yarn/releases/download/ -->
+        <yarnDownloadRoot>http://myproxy.example.org/yarn/</yarnDownloadRoot>        
+    </configuration>
+</plugin>
+```
+
 ### Running npm
 
 All node packaged modules will be installed in the `node_modules` folder in your [working directory](#working-directory).
@@ -146,6 +191,27 @@ By default, colors will be shown in the log.
 **Notice:** _Remember to gitignore the `node_modules` folder, unless you actually want to commit it. Npm packages will 
 always be installed in `node_modules` next to your `package.json`, which is default npm behavior._
 
+
+### Running yarn
+
+As with npm above, all node packaged modules will be installed in the `node_modules` folder in your [working directory](#working-directory).
+
+
+```xml
+<execution>
+    <id>yarn install</id>
+    <goals>
+        <goal>yarn</goal>
+    </goals>
+    <configuration>
+         <!-- optional: The default argument is actually
+         "install", so unless you need to run some other yarn command,
+         you can remove this whole <configuration> section.
+         -->
+        <arguments>install</arguments>
+    </configuration>
+</execution>
+```
 
 ### Running bower
 
@@ -350,6 +416,18 @@ If that is the case, you can stop the npm execution from inheriting the Maven pr
 </configuration>
 ```
 
+If you have [configured proxy settings for Maven](http://maven.apache.org/guides/mini/guide-proxies.html)
+in your settings.xml file, the plugin will automatically [pass the proxy to bower commands](https://docs.npmjs.com/misc/config#proxy).
+If that is the case, you can stop the bower execution from inheriting the Maven proxy settings like this:
+
+```xml
+<configuration>
+    <bowerInheritsProxyConfigFromMaven>false</bowerInheritsProxyConfigFromMaven>
+</configuration>
+```
+
+
+
 #### Environment variables
 
 If you need to pass some variable to Node, you can set that using the property `environmentVariables` in configuration 
@@ -368,6 +446,47 @@ tag of an execution like this:
 </configuration>
 ```
 
+#### Ignoring Failure
+
+**Ignoring failed tests:** If you want to ignore test failures in specific execution  you can set that using the property `maven.test.failure.ignore` in configuration tag of an execution like this:
+
+```xml
+<configuration>
+    <maven.test.failure.ignore>true</maven.test.failure.ignore>
+</configuration>
+```
+
+If you want to generally ignore tests run maven with the `-Dmaven.test.failure.ignore=true` flag, test/integration-test results will not stop the build.
+
+**Ignoring other failures:** If you need to ignore other failures you can set that using the property `failOnError` in configuration tag of an execution like this:
+
+```xml
+<configuration>
+    <failOnError>true</failOnError>
+</configuration>
+```
+
+If you want to ignore all failures run maven with the `-DfailOnError=true` flag.
+
+#### Skipping Execution
+
+Each frontend build tool and package manager allows skipping execution.
+This is useful for projects that contain multiple builds (such as a module containing Java and frontend code).
+
+**Note** that if the package manager (npm or yarn) is skipped, other build tools will also need to be skipped because they
+would not have been downloaded.
+For example, in a project using npm and gulp, if npm is skipped, gulp must also be skipped or the build will fail.
+
+Tools and property to enable skipping
+
+* npm `-Dskip.npm`
+* yarn `-Dskip.yarn`
+* bower `-Dskip.bower`
+* grunt `-Dskip.grunt`
+* gulp `-Dskip.gulp`
+* jspm `-Dskip.jspm`
+* karma `-Dskip.karma`
+* webpack `-Dskip.webpack`
 
 ## Eclipse M2E support
 
@@ -380,7 +499,7 @@ these are set they check for changes in your source files before being run. See 
 ## Helper scripts
 
 During development, it's convenient to have the "npm", "bower", "grunt", "gulp" and "karma" commands
-available on the command line. If you want that, use [those helper scripts](https://github.com/eirslett/frontend-maven-plugin/tree/master/frontend-maven-plugin/src/it/example%20project/helper-scripts)!
+available on the command line. If you want that, use [those helper scripts](frontend-maven-plugin/src/it/example%20project/helper-scripts)!
 
 ## To build this project:
 

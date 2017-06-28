@@ -1,91 +1,117 @@
 package com.github.eirslett.maven.plugins.frontend.lib;
 
-import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.exec.CommandLine;
+import org.apache.commons.exec.DefaultExecutor;
+import org.apache.commons.exec.ExecuteException;
+import org.apache.commons.exec.ExecuteStreamHandler;
+import org.apache.commons.exec.ExecuteWatchdog;
+import org.apache.commons.exec.Executor;
+import org.apache.commons.exec.LogOutputStream;
+import org.apache.commons.exec.PumpStreamHandler;
+import org.apache.commons.exec.ShutdownHookProcessDestroyer;
 import org.slf4j.Logger;
 
 final class ProcessExecutionException extends Exception {
-    public ProcessExecutionException(String message) {
+    private static final long serialVersionUID = 1L;
+
+    private int exitCode;
+
+    public ProcessExecutionException(String message, int exitCode) {
         super(message);
+        this.exitCode = exitCode;
     }
-    public ProcessExecutionException(Throwable cause) {
+    public ProcessExecutionException(Throwable cause, int exitCode) {
         super(cause);
+        this.exitCode = exitCode;
+    }
+    public int getExitCode() {
+        return exitCode;
     }
 }
 
 final class ProcessExecutor {
-    private final File workingDirectory;
-    private final List<String> localPaths;
-    private final List<String> command;
-    private final ProcessBuilder processBuilder;
-    private final Platform platform;
-    private final Map<String, String> additionalEnvironment;
+    private final Map<String, String> environment;
+    private CommandLine commandLine;
+    private final Executor executor;
 
     public ProcessExecutor(File workingDirectory, List<String> paths, List<String> command, Platform platform, Map<String, String> additionalEnvironment){
-        this.workingDirectory = workingDirectory;
-        this.localPaths = paths;
-        this.command = command;
-        this.platform = platform;
-        this.additionalEnvironment = additionalEnvironment;
-
-        this.processBuilder = createProcessBuilder();
+        this(workingDirectory, paths, command, platform, additionalEnvironment, 0);
     }
 
-    public String executeAndGetResult() throws ProcessExecutionException {
-        try {
-            final Process process = processBuilder.start();
-            final String result = readString(process.getInputStream());
-            final String error = readString(process.getErrorStream());
-            final int exitValue = process.waitFor();
+    public ProcessExecutor(File workingDirectory, List<String> paths, List<String> command, Platform platform, Map<String, String> additionalEnvironment, long timeoutInSeconds) {
+        this.environment = createEnvironment(paths, platform, additionalEnvironment);
+        this.commandLine = createCommandLine(command);
+        this.executor = createExecutor(workingDirectory, timeoutInSeconds);
+    }
 
-            if(exitValue == 0){
-                return result;
-            } else {
-                throw new ProcessExecutionException(result+" "+error);
-            }
-        } catch (IOException e) {
-            throw new ProcessExecutionException(e);
-        } catch (InterruptedException e) {
-            throw new ProcessExecutionException(e);
+    public String executeAndGetResult(final Logger logger) throws ProcessExecutionException {
+        ByteArrayOutputStream stdout = new ByteArrayOutputStream();
+        ByteArrayOutputStream stderr = new ByteArrayOutputStream();
+
+        int exitValue = execute(logger, stdout, stderr);
+        if (exitValue == 0) {
+            return stdout.toString().trim();
+        } else {
+            throw new ProcessExecutionException(stdout + " " + stderr, exitValue);
         }
     }
 
     public int executeAndRedirectOutput(final Logger logger) throws ProcessExecutionException {
+        OutputStream stdout = new LoggerOutputStream(logger, 0);
+        OutputStream stderr = new LoggerOutputStream(logger, 1);
+
+        return execute(logger, stdout, stderr);
+    }
+
+    private int execute(final Logger logger, final OutputStream stdout, final OutputStream stderr)
+            throws ProcessExecutionException {
+        logger.debug("Executing command line {}", commandLine);
         try {
-            final Process process = processBuilder.start();
+            ExecuteStreamHandler streamHandler = new PumpStreamHandler(stdout, stderr);
+            executor.setStreamHandler(streamHandler);
 
-            final Thread infoLogThread = InputStreamHandler.logInfo(process.getInputStream(), logger);
-            infoLogThread.start();
-            final Thread errorLogThread = InputStreamHandler.logError(process.getErrorStream(), logger);
-            errorLogThread.start();
+            int exitValue = executor.execute(commandLine, environment);
+            logger.debug("Exit value {}", exitValue);
 
-            int result = process.waitFor();
-            infoLogThread.join();
-            errorLogThread.join();
-            return result;
+            return exitValue;
+        } catch (ExecuteException e) {
+            if (executor.getWatchdog() != null && executor.getWatchdog().killedProcess()) {
+                throw new ProcessExecutionException("Process killed after timeout", e.getExitValue());
+            }
+            throw new ProcessExecutionException(e, e.getExitValue());
         } catch (IOException e) {
-            throw new ProcessExecutionException(e);
-        } catch (InterruptedException e) {
-            throw new ProcessExecutionException(e);
+            throw new ProcessExecutionException(e, -1);
         }
     }
 
-    private ProcessBuilder createProcessBuilder(){
-        ProcessBuilder pbuilder = new ProcessBuilder(command).directory(workingDirectory);
-        final Map<String, String> environment = pbuilder.environment();
+    private CommandLine createCommandLine(List<String> command) {
+        CommandLine commmandLine = new CommandLine(command.get(0));
+
+        for (int i = 1;i < command.size();i++) {
+            String argument = command.get(i);
+            commmandLine.addArgument(argument, false);
+        }
+
+        return commmandLine;
+    }
+
+    private Map<String, String> createEnvironment(List<String> paths, Platform platform, Map<String, String> additionalEnvironment) {
+        final Map<String, String> environment = new HashMap<>(System.getenv());
         String pathVarName = "PATH";
         String pathVarValue = environment.get(pathVarName);
         if (platform.isWindows()) {
-            for (String key:environment.keySet()) {
-                if ("PATH".equalsIgnoreCase(key)) {
-                    pathVarName = key;
-                    pathVarValue = environment.get(key);
+            for (Map.Entry<String, String> entry : environment.entrySet()) {
+                if ("PATH".equalsIgnoreCase(entry.getKey())) {
+                    pathVarName = entry.getKey();
+                    pathVarValue = entry.getValue();
                 }
             }
         }
@@ -94,24 +120,54 @@ final class ProcessExecutor {
         if (pathVarValue != null) {
             pathBuilder.append(pathVarValue).append(File.pathSeparator);
         }
-        for (String path : localPaths) {
-        	pathBuilder.insert(0, File.pathSeparator).insert(0, path);
+        for (String path : paths) {
+            pathBuilder.insert(0, File.pathSeparator).insert(0, path);
         }
         environment.put(pathVarName, pathBuilder.toString());
 
         if (additionalEnvironment != null) {
             environment.putAll(additionalEnvironment);
         }
-        return pbuilder;
+
+        return environment;
     }
 
-    private static String readString(InputStream processInputStream) throws IOException {
-        BufferedReader inputStream = new BufferedReader(new InputStreamReader(processInputStream));
-        StringBuilder result = new StringBuilder();
-        String line;
-        while((line = inputStream.readLine()) != null) {
-            result.append(line).append("\n");
+    private Executor createExecutor(File workingDirectory, long timeoutInSeconds) {
+        DefaultExecutor executor = new DefaultExecutor();
+        executor.setWorkingDirectory(workingDirectory);
+        executor.setProcessDestroyer(new ShutdownHookProcessDestroyer());   // Fixes #41
+
+        if (timeoutInSeconds > 0) {
+            executor.setWatchdog(new ExecuteWatchdog(timeoutInSeconds * 1000));
         }
-        return result.toString().trim();
+
+        return executor;
+    }
+
+    private static class LoggerOutputStream extends LogOutputStream {
+        private final Logger logger;
+
+        LoggerOutputStream(Logger logger, int logLevel) {
+            super(logLevel);
+            this.logger = logger;
+        }
+
+        @Override
+        public final void flush() {
+            // buffer processing on close() only
+        }
+
+        @Override
+        protected void processLine(final String line, final int logLevel) {
+            if (logLevel == 0) {
+                logger.info(line);
+            } else {
+                if (line.startsWith("npm WARN ")) {
+                    logger.warn(line);
+                } else {
+                    logger.error(line);
+                }
+            }
+        }
     }
 }

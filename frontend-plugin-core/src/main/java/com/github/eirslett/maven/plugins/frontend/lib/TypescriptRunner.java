@@ -114,20 +114,13 @@ final class DefaultTypescriptRunner extends NodeTaskExecutor implements Typescri
         try {
             super.execute(args, null);
         } catch (TaskRunnerException e) {
-            // treat tsc as successful if noEmitOnError-flag was false or absent
-            if (e.getCause() != null) {
-                throw e;
-            }
-            // see
-            // https://github.com/Microsoft/TypeScript/blob/f8489afe7ff16a6936ba661893968d22da9bc3eb/lib/typescriptServices.d.ts#L1038
-            if (e.getMessage().contains("error code 1")) {
-                throw e;
-            }
-            if (noEmitOnError) {
-                throw e;
-            }
             // suppress exception if tsc was instructed to build output even in
             // case of errors
+            // see
+            // https://github.com/Microsoft/TypeScript/blob/f8489afe7ff16a6936ba661893968d22da9bc3eb/lib/typescriptServices.d.ts#L1038
+            if (e.getExitCode() != 2) {
+                throw e;
+            }
         }
 
     }

@@ -10,6 +10,8 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.settings.crypto.SettingsDecrypter;
 
+import java.util.Collections;
+
 @Mojo(name = "bower", defaultPhase = LifecyclePhase.GENERATE_RESOURCES)
 public final class BowerMojo extends AbstractFrontendMojo {
 
@@ -22,11 +24,14 @@ public final class BowerMojo extends AbstractFrontendMojo {
     /**
      * Skips execution of this mojo.
      */
-    @Parameter(property = "skip.bower", defaultValue = "false")
-    private Boolean skip;
+    @Parameter(property = "skip.bower", defaultValue = "${skip.bower}")
+    private boolean skip;
 
     @Parameter(property = "session", defaultValue = "${session}", readonly = true)
     private MavenSession session;
+
+    @Parameter(property = "frontend.bower.bowerInheritsProxyConfigFromMaven", required = false, defaultValue = "true")
+    private boolean bowerInheritsProxyConfigFromMaven;
 
     @Component(role = SettingsDecrypter.class)
     private SettingsDecrypter decrypter;
@@ -38,7 +43,17 @@ public final class BowerMojo extends AbstractFrontendMojo {
 
     @Override
     protected void execute(FrontendPluginFactory factory) throws TaskRunnerException {
-        ProxyConfig proxyConfig = MojoUtils.getProxyConfig(session, decrypter);
+        ProxyConfig proxyConfig = getProxyConfig();
         factory.getBowerRunner(proxyConfig).execute(arguments, environmentVariables);
     }
+
+    private ProxyConfig getProxyConfig() {
+        if (bowerInheritsProxyConfigFromMaven) {
+            return MojoUtils.getProxyConfig(session, decrypter);
+        } else {
+            getLog().info("npm not inheriting proxy config from Maven");
+            return new ProxyConfig(Collections.<ProxyConfig.Proxy>emptyList());
+        }
+    }
+
 }

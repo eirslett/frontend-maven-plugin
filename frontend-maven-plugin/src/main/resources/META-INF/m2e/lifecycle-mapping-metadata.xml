@@ -5,7 +5,8 @@
 			<pluginExecutionFilter>
 				<goals>
 					<goal>install-node-and-npm</goal>
-                    <goal>tsc</goal>
+					<goal>install-node-and-yarn</goal>
+					<goal>tsc</goal>
 				</goals>
 			</pluginExecutionFilter>
 			<action>
@@ -19,6 +20,7 @@
             <pluginExecutionFilter>
                 <goals>
                     <goal>npm</goal>
+                    <goal>yarn</goal>
                     <goal>gulp</goal>
                     <goal>grunt</goal>
                     <goal>bower</goal>

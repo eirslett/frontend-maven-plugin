@@ -6,19 +6,18 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 
-final class NodeExecutor {
+final class YarnExecutor {
+
     private final ProcessExecutor executor;
 
-    public NodeExecutor(NodeExecutorConfig config, List<String> arguments, Map<String, String> additionalEnvironment){
-        final String node = config.getNodePath().getAbsolutePath();
-        List<String> localPaths = new ArrayList<String>();
+    public YarnExecutor(YarnExecutorConfig config, List<String> arguments,
+        Map<String, String> additionalEnvironment) {
+        final String yarn = config.getYarnPath().getAbsolutePath();
+        List<String> localPaths = new ArrayList<>();
+        localPaths.add(config.getYarnPath().getParent());
         localPaths.add(config.getNodePath().getParent());
-        this.executor = new ProcessExecutor(
-            config.getWorkingDirectory(),
-            localPaths,
-            Utils.prepend(node, arguments),
-            config.getPlatform(),
-            additionalEnvironment);
+        executor = new ProcessExecutor(config.getWorkingDirectory(), localPaths,
+            Utils.prepend(yarn, arguments), config.getPlatform(), additionalEnvironment);
     }
 
     public String executeAndGetResult(final Logger logger) throws ProcessExecutionException {
