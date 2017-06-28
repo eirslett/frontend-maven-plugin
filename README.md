@@ -65,6 +65,7 @@ to see how it should be set up: https://github.com/eirslett/frontend-maven-plugi
     - [jspm](#running-jspm)
     - [karma](#running-karma)
     - [webpack](#running-webpack)
+    - [tsc](#running-typescript)
  - Configuration
     - [Working Directory](#working-directory)
     - [Installation Directory](#installation-directory)
