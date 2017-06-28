@@ -361,6 +361,28 @@ will help to separate your frontend and backend builds even more.
 </execution>
 ```
 
+### Running Typescript
+
+Allows to run a Typescript build without any nodejs build tool (e.g. like gulp).
+
+```xml
+<execution>
+        <id>tsc</id>
+        <goals>
+                <goal>tsc</goal>
+        </goals>
+        <phase>generate-resources</phase>
+        <configuration>
+                <srcDir>src/main/typescript</srcDir>
+                <outDir>${project.build.directory}/${project.build.finalName}/WEB-INF/js</outDir>
+                <preserveDirectoryStructure>true</preserveDirectoryStructure>
+                <removeComments>true</removeComments>
+                <target>ES5</target>
+                <module>amd</module>
+        </configuration>
+</execution>
+```
+
 ### Optional Configuration 
 
 #### Working directory
