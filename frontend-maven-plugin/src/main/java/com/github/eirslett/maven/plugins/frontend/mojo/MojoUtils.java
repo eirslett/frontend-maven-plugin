@@ -98,4 +98,33 @@ class MojoUtils {
     String[] includedFiles = scanner.getIncludedFiles();
     return (includedFiles != null && includedFiles.length > 0);
   }
+
+    public static ProxyConfig getProxyConfig(final ProxyOverrideConfig httpProxyOverride, final ProxyOverrideConfig httpsProxyOverride, final MavenSession session, final SettingsDecrypter decrypter) {
+        if (httpProxyOverride == null && httpsProxyOverride == null) {
+            return getProxyConfig(session, decrypter);
+        } else {
+            final List<ProxyConfig.Proxy> proxies = new ArrayList<ProxyConfig.Proxy>();
+            if (httpProxyOverride != null) {
+                proxies.add(buildProxyFromOverride(httpProxyOverride, "http"));
+            }
+
+            if (httpsProxyOverride != null) {
+                proxies.add(buildProxyFromOverride(httpsProxyOverride, "https"));
+            }
+
+            return new ProxyConfig(proxies);
+        }
+    }
+
+    private static ProxyConfig.Proxy buildProxyFromOverride(final ProxyOverrideConfig config, final String protocol) {
+        return new ProxyConfig.Proxy(
+                "frontend-proxy-override-" + protocol,
+                protocol,
+                config.getHost(),
+                config.getPort(),
+                config.getUserName(),
+                config.getPassword(),
+                config.getNonProxy()
+        );
+    }
 }
