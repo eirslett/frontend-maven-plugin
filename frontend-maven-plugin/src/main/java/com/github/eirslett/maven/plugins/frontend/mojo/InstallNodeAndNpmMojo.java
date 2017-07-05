@@ -134,12 +134,4 @@ public final class InstallNodeAndNpmMojo extends AbstractFrontendMojo {
         }
         return npmDownloadRoot;
     }
-
-    public ProxyOverrideConfig getHttpProxyOverride() {
-        return httpProxyOverride;
-    }
-
-    public ProxyOverrideConfig getHttpsProxyOverride() {
-        return httpsProxyOverride;
-    }
 }
