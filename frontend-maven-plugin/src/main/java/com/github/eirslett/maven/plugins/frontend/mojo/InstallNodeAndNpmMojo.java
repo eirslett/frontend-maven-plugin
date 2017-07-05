@@ -88,7 +88,7 @@ public final class InstallNodeAndNpmMojo extends AbstractFrontendMojo {
 
     @Override
     public void execute(FrontendPluginFactory factory) throws InstallationException {
-        ProxyConfig proxyConfig = MojoUtils.getProxyConfig(this.getHttpProxyOverride(), this.getHttpsProxyOverride(), session, decrypter);
+        ProxyConfig proxyConfig = MojoUtils.getProxyConfig(httpProxyOverride, httpsProxyOverride, session, decrypter);
         String nodeDownloadRoot = getNodeDownloadRoot();
         String npmDownloadRoot = getNpmDownloadRoot();
         Server server = MojoUtils.decryptServer(serverId, session, decrypter);
