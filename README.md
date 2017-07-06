@@ -108,7 +108,7 @@ present).
             <!-- required -->
             <host>myproxy.host</host>
             
-            <!-- optional - defaults to 8080-->
+            <!-- optional - overrides the default of 8080 to 8081 -->
             <port>8081</port>
             
             <!-- optional -->
@@ -126,7 +126,7 @@ present).
             <!-- required -->
             <host>myproxy.host</host>
             
-            <!-- optional - defaults to 8080-->
+            <!-- optional - overrides the default of 8080 to 8081 -->
             <port>8081</port>
             
             <!-- optional -->
