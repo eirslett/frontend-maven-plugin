@@ -6,7 +6,7 @@ public class ProxyOverrideConfig {
     @Parameter(required = true)
     private String host;
 
-    @Parameter()
+    @Parameter
     private Integer port = 8080;
 
     @Parameter
