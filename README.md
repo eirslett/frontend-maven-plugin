@@ -102,6 +102,42 @@ present).
         
         <!-- optional: where to download node and npm from. Defaults to https://nodejs.org/dist/ -->
         <downloadRoot>http://myproxy.example.org/nodejs/</downloadRoot>
+        
+        <!-- optional -->
+        <httpProxyOverride>
+            <!-- required -->
+            <host>myproxy.host</host>
+            
+            <!-- optional - overrides the default of 8080 to 8081 -->
+            <port>8081</port>
+            
+            <!-- optional -->
+            <userName>myUserName</userName>
+            
+            <!-- optional -->
+            <password>myPassword</password>
+            
+            <!-- optional -->
+            <nonProxy>myNonProxyHost.com</nonProxy>
+        </httpProxyOverride>
+        
+        <!-- optional -->
+        <httpsProxyOverride>
+            <!-- required -->
+            <host>myproxy.host</host>
+            
+            <!-- optional - overrides the default of 8080 to 8081 -->
+            <port>8081</port>
+            
+            <!-- optional -->
+            <userName>myUserName</userName>
+            
+            <!-- optional -->
+            <password>myPassword</password>
+            
+            <!-- optional -->
+            <nonProxy>myNonProxyHost.com</nonProxy>
+        </httpsProxyOverride>
     </configuration>
 </plugin>
 ```

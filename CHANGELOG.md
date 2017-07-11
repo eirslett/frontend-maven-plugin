@@ -4,6 +4,9 @@ Last public release: [![Maven Central](https://maven-badges.herokuapp.com/maven-
 
 ## Changelog
 
+### 1.5
+* Add proxy override configuration for `install-node-and-npm`
+
 ### 1.4
 
 * Add maven.frontend.failOnError and maven.test.failure.ignore flags to best manage integration-test

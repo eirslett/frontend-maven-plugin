@@ -64,6 +64,20 @@ public final class InstallNodeAndNpmMojo extends AbstractFrontendMojo {
     @Parameter(property = "skip.installnodenpm", defaultValue = "${skip.installnodenpm}")
     private boolean skip;
 
+    /**
+     * allows setting of http proxy overrides so that settings.xml does not need to be modified
+     * @since 1.5
+     */
+    @Parameter
+    private ProxyOverrideConfig httpProxyOverride;
+
+    /**
+     * allows setting of https proxy overrides so that settings.xml does not need to be modified
+     * @since 1.5
+     */
+    @Parameter
+    private ProxyOverrideConfig httpsProxyOverride;
+
     @Component(role = SettingsDecrypter.class)
     private SettingsDecrypter decrypter;
 
@@ -74,7 +88,7 @@ public final class InstallNodeAndNpmMojo extends AbstractFrontendMojo {
 
     @Override
     public void execute(FrontendPluginFactory factory) throws InstallationException {
-        ProxyConfig proxyConfig = MojoUtils.getProxyConfig(session, decrypter);
+        ProxyConfig proxyConfig = MojoUtils.getProxyConfig(httpProxyOverride, httpsProxyOverride, session, decrypter);
         String nodeDownloadRoot = getNodeDownloadRoot();
         String npmDownloadRoot = getNpmDownloadRoot();
         Server server = MojoUtils.decryptServer(serverId, session, decrypter);
