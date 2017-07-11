@@ -17,7 +17,7 @@ import java.util.Map;
 abstract class NodeTaskExecutor {
     private static final String DS = "//";
     private static final String AT = "@";
-    
+
     private final Logger logger;
     private final String taskName;
     private final String taskLocation;
@@ -25,18 +25,19 @@ abstract class NodeTaskExecutor {
     private final NodeExecutorConfig config;
 
     public NodeTaskExecutor(NodeExecutorConfig config, String taskLocation) {
-        this(config, taskLocation, Collections.<String>emptyList());
+        this(config, taskLocation, Collections.<String> emptyList());
     }
 
     public NodeTaskExecutor(NodeExecutorConfig config, String taskName, String taskLocation) {
-        this(config, taskName, taskLocation, Collections.<String>emptyList());
+        this(config, taskName, taskLocation, Collections.<String> emptyList());
     }
 
     public NodeTaskExecutor(NodeExecutorConfig config, String taskLocation, List<String> additionalArguments) {
         this(config, getTaskNameFromLocation(taskLocation), taskLocation, additionalArguments);
     }
 
-    public NodeTaskExecutor(NodeExecutorConfig config, String taskName, String taskLocation, List<String> additionalArguments) {
+    public NodeTaskExecutor(NodeExecutorConfig config, String taskName, String taskLocation,
+            List<String> additionalArguments) {
         this.logger = LoggerFactory.getLogger(getClass());
         this.config = config;
         this.taskName = taskName;
@@ -45,22 +46,28 @@ abstract class NodeTaskExecutor {
     }
 
     private static String getTaskNameFromLocation(String taskLocation) {
-        return taskLocation.replaceAll("^.*/([^/]+)(?:\\.js)?$","$1");
+        return taskLocation.replaceAll("^.*/([^/]+)(?:\\.js)?$", "$1");
     }
 
-
     public final void execute(String args, Map<String, String> environment) throws TaskRunnerException {
-        final String absoluteTaskLocation = getAbsoluteTaskLocation();
         final List<String> arguments = getArguments(args);
+        execute(arguments, environment);
+    }
+
+    public final void execute(List<String> arguments, Map<String, String> environment) throws TaskRunnerException {
+        final String absoluteTaskLocation = getAbsoluteTaskLocation();
         logger.info("Running " + taskToString(taskName, arguments) + " in " + config.getWorkingDirectory());
 
         try {
-            final int result = new NodeExecutor(config, prepend(absoluteTaskLocation, arguments), environment).executeAndRedirectOutput(logger);
+            final int result = new NodeExecutor(config,
+                    prepend(absoluteTaskLocation, arguments),
+                    environment).executeAndRedirectOutput(logger);
             if (result != 0) {
-                throw new TaskRunnerException(taskToString(taskName, arguments) + " failed. (error code " + result + ")");
+                throw new TaskRunnerException(
+                        taskToString(taskName, arguments) + " failed. (error code " + result + ")", result);
             }
         } catch (ProcessExecutionException e) {
-            throw new TaskRunnerException(taskToString(taskName, arguments) + " failed.", e);
+            throw new TaskRunnerException(taskToString(taskName, arguments) + " failed.", e, e.getExitCode());
         }
     }
 
@@ -75,8 +82,6 @@ abstract class NodeTaskExecutor {
         }
         return location;
     }
-
-
 
     private List<String> getArguments(String args) {
         List<String> arguments = new ArrayList<String>();
@@ -120,7 +125,8 @@ abstract class NodeTaskExecutor {
                     final String[] userParts = userInfo.split(":");
                     if (userParts.length > 0) {
                         final int startOfUserNameIndex = firstDoubleSlashIndex + DS.length();
-                        final int firstColonInUsernameOrEndOfUserNameIndex = startOfUserNameIndex + userParts[0].length();
+                        final int firstColonInUsernameOrEndOfUserNameIndex = startOfUserNameIndex
+                                + userParts[0].length();
                         final String leftPart = proxyString.substring(0, firstColonInUsernameOrEndOfUserNameIndex);
                         final String rightPart = proxyString.substring(lastAtCharIndex);
                         retVal = leftPart + ":***" + rightPart;

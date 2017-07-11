@@ -65,6 +65,7 @@ to see how it should be set up: https://github.com/eirslett/frontend-maven-plugi
     - [jspm](#running-jspm)
     - [karma](#running-karma)
     - [webpack](#running-webpack)
+    - [tsc](#running-typescript)
  - Configuration
     - [Working Directory](#working-directory)
     - [Installation Directory](#installation-directory)
@@ -358,6 +359,28 @@ will help to separate your frontend and backend builds even more.
         build (and you can remove this whole <configuration> section.) -->
         <arguments>-p</arguments>
     </configuration>
+</execution>
+```
+
+### Running Typescript
+
+Allows to run a Typescript build without any nodejs build tool (e.g. like gulp).
+
+```xml
+<execution>
+        <id>tsc</id>
+        <goals>
+                <goal>tsc</goal>
+        </goals>
+        <phase>generate-resources</phase>
+        <configuration>
+                <srcDir>src/main/typescript</srcDir>
+                <outDir>${project.build.directory}/${project.build.finalName}/WEB-INF/js</outDir>
+                <preserveDirectoryStructure>true</preserveDirectoryStructure>
+                <removeComments>true</removeComments>
+                <target>ES5</target>
+                <module>amd</module>
+        </configuration>
 </execution>
 ```
 

@@ -6,6 +6,7 @@
 				<goals>
 					<goal>install-node-and-npm</goal>
 					<goal>install-node-and-yarn</goal>
+					<goal>tsc</goal>
 				</goals>
 			</pluginExecutionFilter>
 			<action>

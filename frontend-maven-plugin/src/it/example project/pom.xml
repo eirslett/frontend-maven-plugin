@@ -104,6 +104,21 @@
             </configuration>
           </execution>
 
+                    <execution>
+                        <id>typescript compiler</id>
+                        <goals>
+                            <goal>tsc</goal>
+                        </goals>
+                        <configuration>
+                            <srcDir>src/main/typescript</srcDir>
+                            <outDir>target/js</outDir>
+                            <preserveDirectoryStructure>true</preserveDirectoryStructure>
+                            <removeComments>true</removeComments>
+                            <target>ES5</target>
+                            <module>amd</module>
+                        </configuration>
+                    </execution>
+
           <!-- Integration Tests -->
           <execution>
             <id>npm-pre-integration-test</id>

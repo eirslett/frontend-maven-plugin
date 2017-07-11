@@ -22,11 +22,18 @@ import org.slf4j.Logger;
 final class ProcessExecutionException extends Exception {
     private static final long serialVersionUID = 1L;
 
-    public ProcessExecutionException(String message) {
+    private int exitCode;
+
+    public ProcessExecutionException(String message, int exitCode) {
         super(message);
+        this.exitCode = exitCode;
     }
-    public ProcessExecutionException(Throwable cause) {
+    public ProcessExecutionException(Throwable cause, int exitCode) {
         super(cause);
+        this.exitCode = exitCode;
+    }
+    public int getExitCode() {
+        return exitCode;
     }
 }
 
@@ -53,7 +60,7 @@ final class ProcessExecutor {
         if (exitValue == 0) {
             return stdout.toString().trim();
         } else {
-            throw new ProcessExecutionException(stdout + " " + stderr);
+            throw new ProcessExecutionException(stdout + " " + stderr, exitValue);
         }
     }
 
@@ -77,11 +84,11 @@ final class ProcessExecutor {
             return exitValue;
         } catch (ExecuteException e) {
             if (executor.getWatchdog() != null && executor.getWatchdog().killedProcess()) {
-                throw new ProcessExecutionException("Process killed after timeout");
+                throw new ProcessExecutionException("Process killed after timeout", e.getExitValue());
             }
-            throw new ProcessExecutionException(e);
+            throw new ProcessExecutionException(e, e.getExitValue());
         } catch (IOException e) {
-            throw new ProcessExecutionException(e);
+            throw new ProcessExecutionException(e, -1);
         }
     }
 

@@ -4,6 +4,10 @@ Last public release: [![Maven Central](https://maven-badges.herokuapp.com/maven-
 
 ## Changelog
 
+### 1.5
+
+* Add tsc goal to use Typescript without any build framework and/or as a precondition to build a M2E connector for Eclipse.
+
 ### 1.4
 
 * Add maven.frontend.failOnError and maven.test.failure.ignore flags to best manage integration-test
