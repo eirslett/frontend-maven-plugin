@@ -4,6 +4,13 @@ Last public release: [![Maven Central](https://maven-badges.herokuapp.com/maven-
 
 ## Changelog
 
+### 1.5
+
+* Revert support for the maven.frontend.failOnError flag ([#572](https://github.com/eirslett/frontend-maven-plugin/pull/572)), due to
+the major regression described in [#613](https://github.com/eirslett/frontend-maven-plugin/issues/613).
+failOnError-like behavior can be implemented by ignoring exit codes;
+`npm run mytask` from the maven plugin, and `"scripts": { "mytask": "runstuff || exit 0"` in package.json
+
 ### 1.4
 
 * Add maven.frontend.failOnError and maven.test.failure.ignore flags to best manage integration-test

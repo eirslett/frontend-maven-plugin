@@ -81,27 +81,6 @@ public abstract class AbstractFrontendMojo extends AbstractMojo {
      */
     protected abstract boolean skipExecution();
 
-    /**
-     * Whether to raise an error or a failure if the execution fails. If unset, execution will fail if not in a testing
-     * phase.
-     *
-     * @since 1.4
-     * @see #isTestingPhase()
-     */
-    @Parameter(property = "failOnError")
-    protected Boolean failOnError;
-
-    /**
-     * @since 1.4
-     * @see #failOnError
-     */
-    protected boolean isFailOnError() {
-        if (failOnError == null) {
-            failOnError = !isTestingPhase();
-        }
-        return failOnError;
-    }
-
     @Override
     public void execute() throws MojoFailureException {
         if (testFailureIgnore && !isTestingPhase()) {
@@ -115,7 +94,7 @@ public abstract class AbstractFrontendMojo extends AbstractMojo {
                 execute(new FrontendPluginFactory(workingDirectory, installDirectory,
                         new RepositoryCacheResolver(repositorySystemSession)));
             } catch (TaskRunnerException e) {
-                if (!isFailOnError() || testFailureIgnore && isTestingPhase()) {
+                if (testFailureIgnore && isTestingPhase()) {
                     getLog().error("There are test failures.\nFailed to run task: " + e.getMessage(), e);
                 } else {
                     throw new MojoFailureException("Failed to run task", e);
