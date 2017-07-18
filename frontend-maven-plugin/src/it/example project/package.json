@@ -26,9 +26,6 @@
   },
   "scripts": {
     "prebuild": "npm install",
-    "pre-test": "echo pre-integration-test-success",
-    "test": "return 1",
-    "post-test": "echo post-integration-test-success",
     "build": "gulp"
   }
 }

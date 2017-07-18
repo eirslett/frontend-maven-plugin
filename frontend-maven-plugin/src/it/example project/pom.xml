@@ -104,51 +104,6 @@
             </configuration>
           </execution>
 
-          <!-- Integration Tests -->
-          <execution>
-            <id>npm-pre-integration-test</id>
-            <goals>
-              <goal>npm</goal>
-            </goals>
-            <configuration>
-              <arguments>run pre-test</arguments>
-            </configuration>
-            <phase>pre-integration-test</phase>
-          </execution>
-          <execution>
-            <id>npm-integration-test-failSafeTest</id>
-            <goals>
-              <goal>npm</goal>
-            </goals>
-            <configuration>
-              <arguments>run test</arguments>
-              <testFailureIgnore>true</testFailureIgnore>
-            </configuration>
-            <phase>integration-test</phase>
-          </execution>
-          <execution>
-            <id>npm-integration-test-failOnError</id>
-            <goals>
-              <goal>npm</goal>
-            </goals>
-            <configuration>
-              <arguments>run test</arguments>
-              <failOnError>false</failOnError>
-            </configuration>
-            <phase>integration-test</phase>
-          </execution>
-          <execution>
-            <id>npm-post-integration-test</id>
-            <goals>
-              <goal>npm</goal>
-            </goals>
-            <configuration>
-              <arguments>run post-test</arguments>
-              <testFailureIgnore>true</testFailureIgnore>
-            </configuration>
-            <phase>post-integration-test</phase>
-          </execution>
-
         </executions>
       </plugin>
     </plugins>
