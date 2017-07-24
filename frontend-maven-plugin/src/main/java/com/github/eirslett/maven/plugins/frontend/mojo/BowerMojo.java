@@ -51,7 +51,7 @@ public final class BowerMojo extends AbstractFrontendMojo {
         if (bowerInheritsProxyConfigFromMaven) {
             return MojoUtils.getProxyConfig(session, decrypter);
         } else {
-            getLog().info("npm not inheriting proxy config from Maven");
+            getLog().info("bower not inheriting proxy config from Maven");
             return new ProxyConfig(Collections.<ProxyConfig.Proxy>emptyList());
         }
     }
