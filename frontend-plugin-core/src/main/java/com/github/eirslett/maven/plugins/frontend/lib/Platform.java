@@ -8,7 +8,7 @@ enum Architecture { x86, x64, ppc64le, s390x, arm64;
         } else if (arch.equals("aarch64")) {
             return arm64;
         } else if (arch.equals("s390x")) {
-                return s390x;		
+                return s390x;
         } else {
             return arch.contains("64") ? x64 : x86;
         }
@@ -46,7 +46,7 @@ enum OS { Windows, Mac, Linux, SunOS;
     }
 }
 
-class Platform {
+public class Platform {
     private final OS os;
     private final Architecture architecture;
 
@@ -59,6 +59,10 @@ class Platform {
         OS os = OS.guess();
         Architecture architecture = Architecture.guess();
         return new Platform(os,architecture);
+    }
+
+    public static Platform valueOf(String os, String architecture){
+        return new Platform(OS.valueOf(os), Architecture.valueOf(architecture));
     }
 
     public String getArchiveExtension(){

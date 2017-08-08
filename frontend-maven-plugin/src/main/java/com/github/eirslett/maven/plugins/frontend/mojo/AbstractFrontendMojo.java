@@ -1,6 +1,8 @@
 package com.github.eirslett.maven.plugins.frontend.mojo;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.maven.plugin.AbstractMojo;
@@ -13,6 +15,7 @@ import org.eclipse.aether.RepositorySystemSession;
 
 import com.github.eirslett.maven.plugins.frontend.lib.FrontendException;
 import com.github.eirslett.maven.plugins.frontend.lib.FrontendPluginFactory;
+import com.github.eirslett.maven.plugins.frontend.lib.Platform;
 import com.github.eirslett.maven.plugins.frontend.lib.TaskRunnerException;
 
 public abstract class AbstractFrontendMojo extends AbstractMojo {
@@ -75,6 +78,20 @@ public abstract class AbstractFrontendMojo extends AbstractMojo {
     }
 
     protected abstract void execute(FrontendPluginFactory factory) throws FrontendException;
+
+    /**
+     * @param targets list of platforms
+     * @return the list of Platform
+     */
+    protected List<Platform> convertPlatformConfig(List<PlatformTarget> targets) {
+        List<Platform> platforms = new ArrayList<Platform>();
+
+        for(PlatformTarget target : targets) {
+            platforms.add(Platform.valueOf(target.getOs(), target.getArchitecture()));
+        }
+
+        return platforms;
+    }
 
     /**
      * Implemented by children to determine if this execution should be skipped.

@@ -1,9 +1,11 @@
 package com.github.eirslett.maven.plugins.frontend.lib;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 public final class FrontendPluginFactory {
-    
+
     private static final Platform defaultPlatform = Platform.guess();
     private static final String DEFAULT_CACHE_PATH = "cache";
 
@@ -11,18 +13,22 @@ public final class FrontendPluginFactory {
     private final File installDirectory;
     private final CacheResolver cacheResolver;
 
-    public FrontendPluginFactory(File workingDirectory, File installDirectory){
+    public FrontendPluginFactory(File workingDirectory, File installDirectory) {
         this(workingDirectory, installDirectory, getDefaultCacheResolver(installDirectory));
     }
 
-    public FrontendPluginFactory(File workingDirectory, File installDirectory, CacheResolver cacheResolver){
+    public FrontendPluginFactory(File workingDirectory, File installDirectory, CacheResolver cacheResolver) {
         this.workingDirectory = workingDirectory;
         this.installDirectory = installDirectory;
         this.cacheResolver = cacheResolver;
     }
 
     public NodeInstaller getNodeInstaller(ProxyConfig proxy) {
-        return new NodeInstaller(getInstallConfig(), new DefaultArchiveExtractor(), new DefaultFileDownloader(proxy));
+        return new NodeInstaller(getNodeInstallConfig(null), new DefaultArchiveExtractor(), new DefaultFileDownloader(proxy));
+    }
+
+    public NodeInstaller getNodeInstaller(ProxyConfig proxy, List<Platform> platforms) {
+        return new NodeInstaller(getNodeInstallConfig(platforms), new DefaultArchiveExtractor(), new DefaultFileDownloader(proxy));
     }
 
     public NPMInstaller getNPMInstaller(ProxyConfig proxy) {
@@ -32,10 +38,10 @@ public final class FrontendPluginFactory {
     public YarnInstaller getYarnInstaller(ProxyConfig proxy) {
         return new YarnInstaller(getInstallConfig(), new DefaultArchiveExtractor(), new DefaultFileDownloader(proxy));
     }
-    
+
     public BowerRunner getBowerRunner(ProxyConfig proxy) {
         return new DefaultBowerRunner(getExecutorConfig(), proxy);
-    }    
+    }
 
     public JspmRunner getJspmRunner() {
         return new DefaultJspmRunner(getExecutorConfig());
@@ -49,7 +55,7 @@ public final class FrontendPluginFactory {
         return new DefaultYarnRunner(new InstallYarnExecutorConfig(getInstallConfig()), proxy, npmRegistryURL);
     }
 
-    public GruntRunner getGruntRunner(){
+    public GruntRunner getGruntRunner() {
         return new DefaultGruntRunner(getExecutorConfig());
     }
 
@@ -57,15 +63,15 @@ public final class FrontendPluginFactory {
         return new DefaultEmberRunner(getExecutorConfig());
     }
 
-    public KarmaRunner getKarmaRunner(){
+    public KarmaRunner getKarmaRunner() {
         return new DefaultKarmaRunner(getExecutorConfig());
     }
 
-    public GulpRunner getGulpRunner(){
+    public GulpRunner getGulpRunner() {
         return new DefaultGulpRunner(getExecutorConfig());
     }
 
-    public WebpackRunner getWebpackRunner(){
+    public WebpackRunner getWebpackRunner() {
         return new DefaultWebpackRunner(getExecutorConfig());
     }
 
@@ -75,6 +81,21 @@ public final class FrontendPluginFactory {
 
     private InstallConfig getInstallConfig() {
         return new DefaultInstallConfig(installDirectory, workingDirectory, cacheResolver, defaultPlatform);
+    }
+
+    private List<InstallConfig> getNodeInstallConfig(List<Platform> platforms) {
+        List<InstallConfig> resolvedPlatforms = new ArrayList<InstallConfig>();
+        resolvedPlatforms.add(new DefaultInstallConfig(installDirectory, workingDirectory, cacheResolver, defaultPlatform));
+
+        if(null == platforms) {
+            return resolvedPlatforms;
+        }
+
+        for(Platform platform : platforms) {
+            resolvedPlatforms.add(new DefaultInstallConfig(installDirectory, workingDirectory, cacheResolver, platform));
+        }
+
+        return resolvedPlatforms;
     }
 
     private static final CacheResolver getDefaultCacheResolver(File root) {
