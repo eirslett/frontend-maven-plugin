@@ -4,6 +4,20 @@ Last public release: [![Maven Central](https://maven-badges.herokuapp.com/maven-
 
 ## Changelog
 
+### 1.6
+
+* Adding support to specify the platform for downloading node. It can be set in pom.xml this way:
+
+	<platformTargets>
+	    <platformTarget>
+	        <os>Windows</os>
+	        <architecture>x64</architecture>
+	    </platformTarget>
+	    ...
+	</platformTargets>
+
+os and architectures can be found in com.github.eirslett.maven.plugins.frontend.lib.Platform.java
+
 ### 1.5
 
 * Revert support for the maven.frontend.failOnError flag ([#572](https://github.com/eirslett/frontend-maven-plugin/pull/572)), due to
@@ -29,14 +43,14 @@ failOnError-like behavior can be implemented by ignoring exit codes;
 
 ### 1.2
 
-* New goals `yarn` and `install-node-and-yarn` for Yarn support 
+* New goals `yarn` and `install-node-and-yarn` for Yarn support
 
 ### 1.1
 
 * Update requirements to Java 1.7
 * Fix #469: Check write permissions on node installation folder
 * ThreadSafe Node and NPM installation
-* Add documentation and example for environmentVariables 
+* Add documentation and example for environmentVariables
 * Add ARM's 64bit server aarch64 support
 * Add Linux on Power Systems ppc64le support
 * Authenticated download
@@ -45,7 +59,7 @@ failOnError-like behavior can be implemented by ignoring exit codes;
 
 ### 1.0
 
-* Fix #384: Add parameter `npmInheritsProxyConfigFromMaven` 
+* Fix #384: Add parameter `npmInheritsProxyConfigFromMaven`
 * Update `maven-invoker-plugin` to v2.0.0 to fix the build on Windows mith Maven 3.2.2
   Caused by this issue: https://issues.apache.org/jira/browse/MINVOKER-166
 * Fix #343: Change "npm WARN" from ERROR to WARNING in log
