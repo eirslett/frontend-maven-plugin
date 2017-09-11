@@ -1,6 +1,7 @@
 package com.github.eirslett.maven.plugins.frontend.lib;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
 
@@ -16,6 +17,8 @@ public class YarnInstaller {
         "https://github.com/yarnpkg/yarn/releases/download/";
 
     private static final Object LOCK = new Object();
+
+    private static final String YARN_ROOT_DIRECTORY = "dist";
 
     private String yarnVersion, yarnDownloadRoot, userName, password;
 
@@ -121,10 +124,12 @@ public class YarnInstaller {
 
             extractFile(archive, installDirectory);
 
+            ensureCorrectYarnRootDirectory(installDirectory, yarnVersion);
+
             logger.info("Installed Yarn locally.");
         } catch (DownloadException e) {
             throw new InstallationException("Could not download Yarn", e);
-        } catch (ArchiveExtractionException e) {
+        } catch (ArchiveExtractionException | IOException e) {
             throw new InstallationException("Could not extract the Yarn archive", e);
         }
     }
@@ -141,6 +146,22 @@ public class YarnInstaller {
     private void extractFile(File archive, File destinationDirectory) throws ArchiveExtractionException {
         logger.info("Unpacking {} into {}", archive, destinationDirectory);
         archiveExtractor.extract(archive.getPath(), destinationDirectory.getPath());
+    }
+
+    private void ensureCorrectYarnRootDirectory(File installDirectory, String yarnVersion) throws IOException {
+        File yarnRootDirectory = new File(installDirectory, YARN_ROOT_DIRECTORY);
+        if (!yarnRootDirectory.exists()) {
+            logger.debug("Yarn root directory not found, checking for yarn-{}", yarnVersion);
+            // Handle renaming Yarn 1.X root to YARN_ROOT_DIRECTORY
+            File yarnOneXDirectory = new File(installDirectory, "yarn-" + yarnVersion);
+            if (yarnOneXDirectory.isDirectory()) {
+                if (!yarnOneXDirectory.renameTo(yarnRootDirectory)) {
+                    throw new IOException("Could not rename versioned yarn root directory to " + YARN_ROOT_DIRECTORY);
+                }
+            } else {
+                throw new FileNotFoundException("Could not find yarn distribution directory during extract");
+            }
+        }
     }
 
     private void downloadFileIfMissing(String downloadUrl, File destination, String userName, String password)
