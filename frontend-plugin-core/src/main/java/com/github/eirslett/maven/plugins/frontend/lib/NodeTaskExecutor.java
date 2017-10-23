@@ -1,23 +1,27 @@
 package com.github.eirslett.maven.plugins.frontend.lib;
 
+import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.FilenameFilter;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import static com.github.eirslett.maven.plugins.frontend.lib.Utils.implode;
 import static com.github.eirslett.maven.plugins.frontend.lib.Utils.normalize;
 import static com.github.eirslett.maven.plugins.frontend.lib.Utils.prepend;
-import java.util.Map;
 
 abstract class NodeTaskExecutor {
     private static final String DS = "//";
     private static final String AT = "@";
-    
+    private static final String[] NODE_EXTENSIONS = {"js", "json", "node", ""};
+
     private final Logger logger;
     private final String taskName;
     private final String taskLocation;
@@ -33,7 +37,7 @@ abstract class NodeTaskExecutor {
     }
 
     public NodeTaskExecutor(NodeExecutorConfig config, String taskLocation, List<String> additionalArguments) {
-        this(config, getTaskNameFromLocation(taskLocation), taskLocation, additionalArguments);
+        this(config, FilenameUtils.getBaseName(taskLocation), taskLocation, additionalArguments);
     }
 
     public NodeTaskExecutor(NodeExecutorConfig config, String taskName, String taskLocation, List<String> additionalArguments) {
@@ -44,17 +48,13 @@ abstract class NodeTaskExecutor {
         this.additionalArguments = additionalArguments;
     }
 
-    private static String getTaskNameFromLocation(String taskLocation) {
-        return taskLocation.replaceAll("^.*/([^/]+)(?:\\.js)?$","$1");
-    }
-
-
     public final void execute(String args, Map<String, String> environment) throws TaskRunnerException {
-        final String absoluteTaskLocation = getAbsoluteTaskLocation();
         final List<String> arguments = getArguments(args);
-        logger.info("Running " + taskToString(taskName, arguments) + " in " + config.getWorkingDirectory());
 
         try {
+            final String absoluteTaskLocation = getAbsoluteTaskLocation();
+            logger.info("Running {} in {}", taskToString(taskName, arguments), FilenameUtils.getFullPath(absoluteTaskLocation));
+
             final int result = new NodeExecutor(config, prepend(absoluteTaskLocation, arguments), environment).executeAndRedirectOutput(logger);
             if (result != 0) {
                 throw new TaskRunnerException(taskToString(taskName, arguments) + " failed. (error code " + result + ")");
@@ -64,19 +64,33 @@ abstract class NodeTaskExecutor {
         }
     }
 
-    private String getAbsoluteTaskLocation() {
-        String location = normalize(taskLocation);
-        if (Utils.isRelative(taskLocation)) {
-            File taskFile = new File(config.getWorkingDirectory(), location);
-            if (!taskFile.exists()) {
-                taskFile = new File(config.getInstallDirectory(), location);
-            }
-            location = taskFile.getAbsolutePath();
+    private String getAbsoluteTaskLocation() throws ProcessExecutionException {
+        final String location = normalize(taskLocation);
+        if (!Utils.isRelative(taskLocation)) {
+            return location;
         }
-        return location;
+
+        String taskLocation = getFirstMatchingNodeExecutable(config.getWorkingDirectory(), location);
+        if (taskLocation == null) {
+            taskLocation = getFirstMatchingNodeExecutable(config.getInstallDirectory(), location);
+        }
+
+        if (taskLocation == null) {
+            throw new ProcessExecutionException(MessageFormat.format(
+                    "Could not locate a task <{0}> in neither working dir <{1}> nor install dir <{2}>",
+                    location, config.getWorkingDirectory(), config.getInstallDirectory()));
+        }
+        return taskLocation;
     }
 
-
+    private String getFirstMatchingNodeExecutable(final File parent, final String taskLocation) {
+        final File taskDirectory = new File(parent, FilenameUtils.getFullPath(taskLocation));
+        final File[] tasks = taskDirectory.listFiles(new NodeExecutableFilter(taskName));
+        if (tasks != null && tasks.length > 0) {
+            return tasks[0].getAbsolutePath();
+        }
+        return null;
+    }
 
     private List<String> getArguments(String args) {
         List<String> arguments = new ArrayList<String>();
@@ -129,5 +143,19 @@ abstract class NodeTaskExecutor {
             }
         }
         return retVal;
+    }
+
+    private static class NodeExecutableFilter implements FilenameFilter {
+        private final String name;
+
+        NodeExecutableFilter(String name) {
+            this.name = FilenameUtils.removeExtension(name);
+        }
+
+        @Override
+        public boolean accept(File dir, String name) {
+            return this.name.equals(FilenameUtils.removeExtension(name))
+                    && FilenameUtils.isExtension(name, NODE_EXTENSIONS);
+        }
     }
 }
