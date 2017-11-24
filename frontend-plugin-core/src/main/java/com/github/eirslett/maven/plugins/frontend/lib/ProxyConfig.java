@@ -33,7 +33,7 @@ public class ProxyConfig {
                 return proxy;
             }
         }
-        LOGGER.info("Could not find matching proxy for host: {}" + uri.getHost());
+        LOGGER.info("Could not find matching proxy for host: {}", uri.getHost());
         return null;
     }
 
