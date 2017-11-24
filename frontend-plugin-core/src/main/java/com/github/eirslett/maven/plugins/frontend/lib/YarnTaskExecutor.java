@@ -38,11 +38,25 @@ abstract class YarnTaskExecutor {
     }
 
     public YarnTaskExecutor(YarnExecutorConfig config, String taskName, String taskLocation,
-        List<String> additionalArguments) {
+                            List<String> additionalArguments) {
         logger = LoggerFactory.getLogger(getClass());
         this.config = config;
         this.taskName = taskName;
         this.additionalArguments = additionalArguments;
+        try {
+            final String version =
+                    new YarnExecutor(config, Arrays.asList("--version"), null).executeAndGetResult(logger).trim();
+            logger.info("Yarn verstion is {}", version);
+            if(version.startsWith("v1.") || version.startsWith("V1.")){
+                // From Yarn 1.0 onwards, scripts don't require "--" for options to be forwarded. In a future version, any explicit "--" will be forwarded as-is to the scripts.
+                for (int i = 0; i < additionalArguments.size(); i++) {
+                    String para = additionalArguments.get(i);
+                    additionalArguments.set(i,para.replaceFirst("^--",""));
+                }
+            }
+        } catch (ProcessExecutionException e) {
+            e.printStackTrace();
+        }
     }
 
     private static String getTaskNameFromLocation(String taskLocation) {
