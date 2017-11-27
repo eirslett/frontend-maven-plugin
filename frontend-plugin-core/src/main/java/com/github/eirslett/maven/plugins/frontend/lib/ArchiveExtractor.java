@@ -141,11 +141,9 @@ final class DefaultArchiveExtractor implements ArchiveExtractor {
     }
     
     void setFilePermissions(TarArchiveEntry tarEntry, File destPath){
-	    LOG.debug("tarEntry is " + tarEntry.getName() + " mode is " + tarEntry.getMode());
 	    
 	    boolean isExecutable = (tarEntry.getMode() & EXECUTE_FILE_MASK) > 0;
 
-	    LOG.debug("Setting Execute permission on: " + destPath + " to " + isExecutable);
 	    destPath.setExecutable(isExecutable);
 	}
 }
