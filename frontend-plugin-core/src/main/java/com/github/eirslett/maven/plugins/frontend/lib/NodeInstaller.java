@@ -169,7 +169,7 @@ public class NodeInstaller {
                         longNodeFilename + File.separator + "lib" + File.separator + "node_modules");
                     File nodeModulesDirectory = new File(destinationDirectory, "node_modules");
                     File npmDirectory = new File(nodeModulesDirectory, "npm");
-                    copyDirectoryContents(tmpNodeModulesDir, nodeModulesDirectory);
+                    Utils.copyDirectoryContents(tmpNodeModulesDir, nodeModulesDirectory);
                     this.logger.info("Extracting NPM");
                     // create a copy of the npm scripts next to the node executable
                     for (String script : Arrays.asList("npm", "npm.cmd")) {
@@ -231,7 +231,7 @@ public class NodeInstaller {
                     File tmpNodeModulesDir =
                         new File(tmpDirectory, longNodeFilename + File.separator + "node_modules");
                     File nodeModulesDirectory = new File(destinationDirectory, "node_modules");
-                    copyDirectoryContents(tmpNodeModulesDir, nodeModulesDirectory);
+                    Utils.copyDirectoryContents(tmpNodeModulesDir, nodeModulesDirectory);
                 }
                 deleteTempDirectory(tmpDirectory);
 
@@ -317,36 +317,5 @@ public class NodeInstaller {
         this.logger.info("Downloading {} to {}", downloadUrl, destination);
         this.fileDownloader.download(downloadUrl, destination.getPath(), userName, password);
     }
-    
-    /**
-     * This method is a convenience for copying all contents from 1 directory to another while preserving file permissions
-     * @param sourceDirectory - The directory to copy all contents from
-     * @param destDirectory - The new directory to copy all contents to
-     */
-    private void copyDirectoryContents(File sourceDirectory, File destDirectory) {
-    		if(sourceDirectory.isDirectory()) {
-	    		//Get all files and directory names from the current source directory
-			for(File child : sourceDirectory.listFiles()) {
-				//If the File is a Directory then we need to create it and any parent directories that may not exist
-				//At the same time we need to go ahead and recursively call our current method to go into all child directories to copy
-				//all of their contents as well
-				if(child.isDirectory()) {
-					File newDirectory = new File(destDirectory.getAbsolutePath() + File.separator + child.getName());
-					this.logger.debug("Creating directory :" + newDirectory.getAbsolutePath());
-					newDirectory.mkdirs();
-					copyDirectoryContents(child, newDirectory);
-				}
-				else {
-					//If this is a plain file then we need to copy it and preserve permissions
-					File dest = new File(destDirectory.getPath() + File.separator + child.getName());
-					try {
-						this.logger.debug("Creating file :" + dest.getAbsolutePath());
-						Files.copy(Paths.get(child.getAbsolutePath()), Paths.get(dest.getAbsolutePath()), StandardCopyOption.COPY_ATTRIBUTES);
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
-			}
-	    }
-    }
+
 }
