@@ -1,7 +1,8 @@
 package com.github.eirslett.maven.plugins.frontend.lib;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static com.github.eirslett.maven.plugins.frontend.lib.Utils.implode;
+import static com.github.eirslett.maven.plugins.frontend.lib.Utils.normalize;
+import static com.github.eirslett.maven.plugins.frontend.lib.Utils.prepend;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -9,11 +10,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-
-import static com.github.eirslett.maven.plugins.frontend.lib.Utils.implode;
-import static com.github.eirslett.maven.plugins.frontend.lib.Utils.normalize;
-import static com.github.eirslett.maven.plugins.frontend.lib.Utils.prepend;
 import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 abstract class NodeTaskExecutor {
     private static final String DS = "//";
@@ -63,11 +63,13 @@ abstract class NodeTaskExecutor {
 
         try {
             Map<String, String> internalEnvironment = new HashMap<>();
-            internalEnvironment.putAll(environment);
-            if (!proxy.isEmpty()) {
-            	internalEnvironment.putAll(proxy);
+            if (environment != null && !environment.isEmpty()) {
+                internalEnvironment.putAll(environment);
             }
-			final int result = new NodeExecutor(config, prepend(absoluteTaskLocation, arguments), internalEnvironment ).executeAndRedirectOutput(logger);
+            if (!proxy.isEmpty()) {
+                internalEnvironment.putAll(proxy);
+            }
+            final int result = new NodeExecutor(config, prepend(absoluteTaskLocation, arguments), internalEnvironment ).executeAndRedirectOutput(logger);
             if (result != 0) {
                 throw new TaskRunnerException(taskToString(taskName, arguments) + " failed. (error code " + result + ")");
             }
