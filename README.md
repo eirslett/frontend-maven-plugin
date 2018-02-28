@@ -493,11 +493,13 @@ available on the command line. If you want that, use [those helper scripts](fron
 
 Run `$ mvn clean install`
 
-## Issues, Contributing
+## Issues, Contributing [![Open Source Helpers](https://www.codetriage.com/eirslett/frontend-maven-plugin/badges/users.svg)](https://www.codetriage.com/eirslett/frontend-maven-plugin)
 
 Please post any issues on the [Github's Issue tracker](https://github.com/eirslett/frontend-maven-plugin/issues). 
 [Pull requests](https://github.com/eirslett/frontend-maven-plugin/pulls) are welcome! 
 You can find a full list of [contributors here](https://github.com/eirslett/frontend-maven-plugin/graphs/contributors).
+
+You can also triage issues which may include reproducing bug reports or asking for vital information, such as version numbers or reproduction instructions. If you would like to start triaging issues, one easy way to get started is to [subscribe to frontend-maven-plugin on CodeTriage](https://www.codetriage.com/eirslett/frontend-maven-plugin).
 
 ## License
 
