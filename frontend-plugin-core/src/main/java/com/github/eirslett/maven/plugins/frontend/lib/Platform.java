@@ -16,7 +16,7 @@ enum Architecture { x86, x64, ppc64le, s390x, arm64, armv6l, armv7l;
         } else if (arch.equals("arm")) {
             final Process p;
             try {
-                p = Runtime.getRuntime().exec("uname -");
+                p = Runtime.getRuntime().exec("uname -a");
                 p.waitFor();
                 final BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
                 final String line = reader.readLine();
