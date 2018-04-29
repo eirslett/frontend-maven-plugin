@@ -53,7 +53,11 @@ final class DefaultFileDownloader implements FileDownloader {
         this.proxyConfig = proxyConfig;
     }
 
+    @Override
     public void download(String downloadUrl, String destination, String userName, String password) throws DownloadException {
+        // force tls to 1.2 since github removed weak cryptographic standards
+        // https://blog.github.com/2018-02-02-weak-cryptographic-standards-removal-notice/
+        System.setProperty("https.protocols", "TLSv1.2");
         String fixedDownloadUrl = downloadUrl;
         try {
             fixedDownloadUrl = FilenameUtils.separatorsToUnix(fixedDownloadUrl);
@@ -73,11 +77,8 @@ final class DefaultFileDownloader implements FileDownloader {
                 fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
                 fos.close();
             }
-        } catch (IOException e) {
-            throw new DownloadException("Could not download "+fixedDownloadUrl, e);
-        }
-        catch (URISyntaxException e) {
-            throw new DownloadException("Could not download "+fixedDownloadUrl, e);
+        } catch (IOException | URISyntaxException e) {
+            throw new DownloadException("Could not download " + fixedDownloadUrl, e);
         }
     }
 
