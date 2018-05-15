@@ -155,7 +155,14 @@ final class ProcessExecutor {
             if (logLevel == 0) {
                 logger.info(line);
             } else {
-                if (line.startsWith("npm WARN ")) {
+                // log empty/blank lines as info
+                if (line == null || line.isEmpty()) {
+                    logger.info(line);
+                // log npm warnings as warning
+                } else if (line.startsWith("npm WARN ")) {
+                    logger.warn(line);
+                // log yarn warnings as warning
+                } else if (line.startsWith("warning ")) {
                     logger.warn(line);
                 } else {
                     logger.error(line);
