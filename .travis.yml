@@ -3,7 +3,7 @@ language: java
 matrix:
   include:
     - os: linux
-      jdk: oraclejdk7
+      jdk: openjdk8
     - os: osx
       #osx_image: beta-xcode6.1
 # Run Integration tests

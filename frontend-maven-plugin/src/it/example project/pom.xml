@@ -25,8 +25,8 @@
             </goals>
             <configuration>
               <!-- See https://nodejs.org/en/download/ for latest node and npm (lts) versions -->
-              <nodeVersion>v4.6.0</nodeVersion>
-              <npmVersion>2.15.9</npmVersion>
+              <nodeVersion>v8.11.1</nodeVersion>
+              <npmVersion>5.6.0</npmVersion>
             </configuration>
           </execution>
 
@@ -102,51 +102,6 @@
             <configuration>
               <karmaConfPath>src/test/javascript/karma.conf.ci.js</karmaConfPath>
             </configuration>
-          </execution>
-
-          <!-- Integration Tests -->
-          <execution>
-            <id>npm-pre-integration-test</id>
-            <goals>
-              <goal>npm</goal>
-            </goals>
-            <configuration>
-              <arguments>run pre-test</arguments>
-            </configuration>
-            <phase>pre-integration-test</phase>
-          </execution>
-          <execution>
-            <id>npm-integration-test-failSafeTest</id>
-            <goals>
-              <goal>npm</goal>
-            </goals>
-            <configuration>
-              <arguments>run test</arguments>
-              <testFailureIgnore>true</testFailureIgnore>
-            </configuration>
-            <phase>integration-test</phase>
-          </execution>
-          <execution>
-            <id>npm-integration-test-failOnError</id>
-            <goals>
-              <goal>npm</goal>
-            </goals>
-            <configuration>
-              <arguments>run test</arguments>
-              <failOnError>false</failOnError>
-            </configuration>
-            <phase>integration-test</phase>
-          </execution>
-          <execution>
-            <id>npm-post-integration-test</id>
-            <goals>
-              <goal>npm</goal>
-            </goals>
-            <configuration>
-              <arguments>run post-test</arguments>
-              <testFailureIgnore>true</testFailureIgnore>
-            </configuration>
-            <phase>post-integration-test</phase>
           </execution>
 
         </executions>

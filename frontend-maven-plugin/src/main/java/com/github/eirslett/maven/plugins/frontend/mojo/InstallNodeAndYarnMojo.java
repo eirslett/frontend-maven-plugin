@@ -18,7 +18,7 @@ import com.github.eirslett.maven.plugins.frontend.lib.YarnInstaller;
 public final class InstallNodeAndYarnMojo extends AbstractFrontendMojo {
 
     /**
-     * Where to download Node.js binary from. Defaults to http://nodejs.org/dist/
+     * Where to download Node.js binary from. Defaults to https://nodejs.org/dist/
      */
     @Parameter(property = "nodeDownloadRoot", required = false,
         defaultValue = NodeInstaller.DEFAULT_NODEJS_DOWNLOAD_ROOT)
