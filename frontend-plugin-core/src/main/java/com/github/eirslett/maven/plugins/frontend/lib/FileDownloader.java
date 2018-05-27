@@ -83,64 +83,41 @@ final class DefaultFileDownloader implements FileDownloader {
     }
 
     private CloseableHttpResponse execute(String requestUrl, String userName, String password) throws IOException {
-        CloseableHttpResponse response;
-        Proxy proxy = proxyConfig.getProxyForUrl(requestUrl);
+        final HttpGet request = new HttpGet(requestUrl);
+        final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+
+        final Proxy proxy = proxyConfig.getProxyForUrl(requestUrl);
         if (proxy != null) {
             LOGGER.info("Downloading via proxy " + proxy.toString());
-            return executeViaProxy(proxy, requestUrl);
+
+            final RequestConfig requestConfig = RequestConfig.custom()
+                .setProxy(new HttpHost(proxy.host, proxy.port))
+                .build();
+            request.setConfig(requestConfig);
+
+            if (proxy.useAuthentication()) {
+                credentialsProvider.setCredentials(
+                    new AuthScope(proxy.host, proxy.port),
+                    new UsernamePasswordCredentials(proxy.username, proxy.password));
+            }
         } else {
             LOGGER.info("No proxy was configured, downloading directly");
-            if (StringUtils.isNotEmpty(userName) && StringUtils.isNotEmpty(password)) {
-                LOGGER.info("Using credentials (" + userName + ") from settings.xml");
-                // Auth target host
-                URL aURL = new URL(requestUrl);
-                HttpClientContext localContext = makeLocalContext(aURL);
-                CredentialsProvider credentialsProvider = makeCredentialsProvider(
-                    aURL.getHost(),
-                    aURL.getPort(),
-                    userName,
-                    password);
-                response = buildHttpClient(credentialsProvider).execute(new HttpGet(requestUrl),localContext);
-            } else {
-                response = buildHttpClient(null).execute(new HttpGet(requestUrl));
-            }
-        }
-        return response;
-    }
-
-    private CloseableHttpResponse executeViaProxy(Proxy proxy, String requestUrl) throws IOException {
-        final CloseableHttpClient proxyClient;
-        if (proxy.useAuthentication()){
-            proxyClient = buildHttpClient(makeCredentialsProvider(proxy.host,proxy.port,proxy.username,proxy.password));
-        } else {
-            proxyClient = buildHttpClient(null);
         }
 
-        final HttpHost proxyHttpHost = new HttpHost(proxy.host, proxy.port);
+        if (StringUtils.isNotEmpty(userName) && StringUtils.isNotEmpty(password)) {
+            LOGGER.info("Using credentials (" + userName + ") from settings.xml");
+            // Auth target host
+            URL targetUrl = new URL(requestUrl);
+            credentialsProvider.setCredentials(
+                new AuthScope(targetUrl.getHost(), targetUrl.getPort()),
+                new UsernamePasswordCredentials(userName, password));
+            final HttpClientContext localContext = makeLocalContext(targetUrl);
 
-        final RequestConfig requestConfig = RequestConfig.custom().setProxy(proxyHttpHost).build();
+            return buildHttpClient(credentialsProvider)
+                .execute(request, localContext);
+        }
 
-        final HttpGet request = new HttpGet(requestUrl);
-        request.setConfig(requestConfig);
-
-        return proxyClient.execute(request);
-    }
-
-    private CloseableHttpClient buildHttpClient(CredentialsProvider credentialsProvider) {
-    	return HttpClients.custom()
-    			.disableContentCompression()
-    			.useSystemProperties()
-    			.setDefaultCredentialsProvider(credentialsProvider)
-    			.build();
-    }
-
-    private CredentialsProvider makeCredentialsProvider(String host, int port, String username, String password) {
-        CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
-        credentialsProvider.setCredentials(
-                new AuthScope(host, port),
-                new UsernamePasswordCredentials(username, password)
-        );
-        return credentialsProvider;
+        return buildHttpClient(credentialsProvider).execute(request);
     }
 
     private HttpClientContext makeLocalContext(URL requestUrl) {
@@ -155,5 +132,13 @@ final class DefaultFileDownloader implements FileDownloader {
         HttpClientContext localContext = HttpClientContext.create();
         localContext.setAuthCache(authCache);
         return localContext;
+    }
+
+    private CloseableHttpClient buildHttpClient(CredentialsProvider credentialsProvider) {
+        return HttpClients.custom()
+                .disableContentCompression()
+                .useSystemProperties()
+                .setDefaultCredentialsProvider(credentialsProvider)
+                .build();
     }
 }
