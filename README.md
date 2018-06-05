@@ -404,29 +404,21 @@ You can set this property on the different goals. Or choose to set it for all th
 
 If you have [configured proxy settings for Maven](http://maven.apache.org/guides/mini/guide-proxies.html)
 in your settings.xml file, the plugin will automatically use the proxy for downloading node and npm, as well
-as [passing the proxy to npm commands](https://docs.npmjs.com/misc/config#proxy).
+as passing the proxy to [npm](https://docs.npmjs.com/misc/config#proxy), yarn and [bower](https://github.com/bower/spec/blob/master/config.md#proxy)
+commands.
 
-**Non Proxy Hosts:** npm does not currently support non proxy hosts - if you are using a proxy and npm install is 
-is not downloading from your repository, it may be because it cannot be accessed through your proxy. 
-If that is the case, you can stop the npm execution from inheriting the Maven proxy settings like this:
+**Non Proxy Hosts:** npm/yarn/bower currently do not support non proxy hosts - if you are using a proxy and install is 
+is not downloading from your repository, it may be because it cannot be accessed through your proxy.
+
+If that is the case, you can stop the execution from inheriting the Maven proxy settings like this:
 
 ```xml
 <configuration>
     <npmInheritsProxyConfigFromMaven>false</npmInheritsProxyConfigFromMaven>
-</configuration>
-```
-
-If you have [configured proxy settings for Maven](http://maven.apache.org/guides/mini/guide-proxies.html)
-in your settings.xml file, the plugin will automatically [pass the proxy to bower commands](https://docs.npmjs.com/misc/config#proxy).
-If that is the case, you can stop the bower execution from inheriting the Maven proxy settings like this:
-
-```xml
-<configuration>
+    <yarnInheritsProxyConfigFromMaven>false</yarnInheritsProxyConfigFromMaven>
     <bowerInheritsProxyConfigFromMaven>false</bowerInheritsProxyConfigFromMaven>
 </configuration>
 ```
-
-
 
 #### Environment variables
 
