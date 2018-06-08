@@ -155,7 +155,9 @@ final class ProcessExecutor {
             if (logLevel == 0) {
                 logger.info(line);
             } else {
-                if (line.startsWith("npm WARN ")) {
+                if (line.startsWith("npm info ")) {
+                    logger.info(line);
+                } else if (line.startsWith("npm WARN ")) {
                     logger.warn(line);
                 } else {
                     logger.error(line);
