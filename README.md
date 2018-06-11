@@ -426,6 +426,22 @@ If that is the case, you can stop the bower execution from inheriting the Maven 
 </configuration>
 ```
 
+If you want to disable proxy for Yarn you can use `yarnInheritsProxyConfigFromMaven`. When you have proxy settings in your settings.xlm file if you don't use this param it will run code below with proxy settings, in some cases you don't want that. Adding this param into the configuration section will solve this issue
+
+```xml
+<execution>
+    <id>tests</id>
+    <goals>
+        <goal>yarn</goal>
+    </goals>
+    <phase>compile</phase>
+    <configuration>
+        <yarnInheritsProxyConfigFromMaven>false</yarnInheritsProxyConfigFromMaven>
+        <arguments>run test</arguments>
+    </configuration>
+</execution>
+
+```
 
 
 #### Environment variables
