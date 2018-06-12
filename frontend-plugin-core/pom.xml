@@ -58,5 +58,140 @@
             <artifactId>slf4j-api</artifactId>
             <version>1.7.5</version>
         </dependency>
+        <dependency>
+		    <groupId>junit</groupId>
+		    <artifactId>junit</artifactId>
+		    <version>4.12</version>
+		</dependency>
     </dependencies>
+    
+	<build>
+		<pluginManagement>
+		    <plugins>
+		    		<plugin>
+			    		<artifactId>maven-antrun-plugin</artifactId>
+			    		<version>1.8</version>
+					<executions>
+						<execution>
+							<phase>integration-test</phase>
+							<configuration>
+								<target>
+								
+								<mkdir dir="${project.build.directory}/copy-src/parent"/>
+								<mkdir dir="${project.build.directory}/copy-src/parent/child"/>
+								<mkdir dir="${project.build.directory}/copy-src/parent/child/grandchild"/>
+								
+								<!--  THE FOLLOWING WILL CREATE EMPTY FILES WITH PERMISSIONS (WITH READ PERMISSIONS AS THE BASE) -->
+								
+								<!-- Create a set of files with rwx permission combinations under the parent directory -->
+								<touch file="${project.build.directory}/copy-src/parent/readonly"/>
+								<touch file="${project.build.directory}/copy-src/parent/readwrite"/>
+								<touch file="${project.build.directory}/copy-src/parent/readexecute"/>
+								<touch file="${project.build.directory}/copy-src/parent/readwriteexecute"/>
+								
+								<!-- Create a set of files with rwx permission combinations under the child directory -->
+								<touch file="${project.build.directory}/copy-src/parent/child/readonly"/>
+								<touch file="${project.build.directory}/copy-src/parent/child/readwrite"/>
+								<touch file="${project.build.directory}/copy-src/parent/child/readexecute"/>
+								<touch file="${project.build.directory}/copy-src/parent/child/readwriteexecute"/>
+								
+								<!-- Create a set of files with rwx permission combinations under the grandchild directory -->
+								<touch file="${project.build.directory}/copy-src/parent/child/grandchild/readonly"/>
+								<touch file="${project.build.directory}/copy-src/parent/child/grandchild/readwrite"/>
+								<touch file="${project.build.directory}/copy-src/parent/child/grandchild/readexecute"/>
+								<touch file="${project.build.directory}/copy-src/parent/child/grandchild/readwriteexecute"/>
+								
+								<!-- set file permissions to match file name in parent directory -->
+								<chmod file="${project.build.directory}/copy-src/parent/readonly" perm="400"/>
+								<chmod file="${project.build.directory}/copy-src/parent/readwrite" perm="600"/>
+								<chmod file="${project.build.directory}/copy-src/parent/readexecute" perm="500"/>
+								<chmod file="${project.build.directory}/copy-src/parent/readwriteexecute" perm="700"/>
+								
+								<!-- set file permissions to match file name in child directory -->
+								<chmod file="${project.build.directory}/copy-src/parent/child/readonly" perm="400"/>
+								<chmod file="${project.build.directory}/copy-src/parent/child/readwrite" perm="600"/>
+								<chmod file="${project.build.directory}/copy-src/parent/child/readexecute" perm="500"/>
+								<chmod file="${project.build.directory}/copy-src/parent/child/readwriteexecute" perm="700"/>
+								
+								<!-- set file permissions to match file name in grandchild directory -->
+								<chmod file="${project.build.directory}/copy-src/parent/child/grandchild/readonly" perm="400"/>
+								<chmod file="${project.build.directory}/copy-src/parent/child/grandchild/readwrite" perm="600"/>
+								<chmod file="${project.build.directory}/copy-src/parent/child/grandchild/readexecute" perm="500"/>
+								<chmod file="${project.build.directory}/copy-src/parent/child/grandchild/readwriteexecute" perm="700"/>
+								
+								
+								</target>
+							</configuration>
+							<goals>
+								<goal>run</goal>
+							</goals>
+						</execution>
+			        </executions>
+				</plugin>
+		      <plugin>
+		         <groupId>org.apache.maven.plugins</groupId>
+		         <artifactId>maven-failsafe-plugin</artifactId>
+		         <version>2.20.1</version>
+		         <executions>
+			        <execution>
+			          <id>integration-test</id>
+			          <goals>
+			            <goal>integration-test</goal>
+			          </goals>
+			         <configuration>
+			           <systemPropertyVariables>
+			             <propertyName>srcDirectory</propertyName>
+			             <srcDirectory>${project.build.directory}/copy-src/</srcDirectory>
+			             <propertyName>destDirectory</propertyName>
+			             <destDirectory>${project.build.directory}/copy-dest/</destDirectory>
+			           </systemPropertyVariables>
+			         </configuration>
+			        </execution>
+			        </executions>
+		      </plugin>
+		    </plugins>
+	    </pluginManagement>
+	</build>
+	
+	<profiles>
+		  <profile>
+		  <id>Linux</id>
+		  <activation>
+			<os>
+			  <family>unix</family>
+			</os>
+		  </activation>
+		  <build>
+		  <plugins>
+			  <plugin>
+			  <artifactId>maven-antrun-plugin</artifactId>
+			  </plugin>
+			  <plugin>
+		         <groupId>org.apache.maven.plugins</groupId>
+		         <artifactId>maven-failsafe-plugin</artifactId>
+		      </plugin>
+			</plugins>
+			</build>
+		  </profile>
+		  <profile>
+		  <id>MAC</id>
+		  <activation>
+			<os>
+			  <family>mac</family>
+			</os>
+		  </activation>
+		  <build>
+		  <plugins>
+			  <plugin>
+			  <artifactId>maven-antrun-plugin</artifactId>
+			  </plugin>
+			  <plugin>
+		         <groupId>org.apache.maven.plugins</groupId>
+		         <artifactId>maven-failsafe-plugin</artifactId>
+		      </plugin>
+			</plugins>
+			</build>
+		  </profile>
+	</profiles>
+  
 </project>

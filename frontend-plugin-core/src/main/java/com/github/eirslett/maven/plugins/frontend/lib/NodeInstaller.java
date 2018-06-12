@@ -3,6 +3,9 @@ package com.github.eirslett.maven.plugins.frontend.lib;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 
 import org.apache.commons.io.FileUtils;
@@ -166,7 +169,7 @@ public class NodeInstaller {
                         longNodeFilename + File.separator + "lib" + File.separator + "node_modules");
                     File nodeModulesDirectory = new File(destinationDirectory, "node_modules");
                     File npmDirectory = new File(nodeModulesDirectory, "npm");
-                    FileUtils.copyDirectory(tmpNodeModulesDir, nodeModulesDirectory);
+                    Utils.copyDirectoryContents(tmpNodeModulesDir, nodeModulesDirectory);
                     this.logger.info("Extracting NPM");
                     // create a copy of the npm scripts next to the node executable
                     for (String script : Arrays.asList("npm", "npm.cmd")) {
@@ -228,7 +231,7 @@ public class NodeInstaller {
                     File tmpNodeModulesDir =
                         new File(tmpDirectory, longNodeFilename + File.separator + "node_modules");
                     File nodeModulesDirectory = new File(destinationDirectory, "node_modules");
-                    FileUtils.copyDirectory(tmpNodeModulesDir, nodeModulesDirectory);
+                    Utils.copyDirectoryContents(tmpNodeModulesDir, nodeModulesDirectory);
                 }
                 deleteTempDirectory(tmpDirectory);
 
@@ -262,7 +265,7 @@ public class NodeInstaller {
             downloadFileIfMissing(downloadUrl, binary, this.userName, this.password);
 
             this.logger.info("Copying node binary from {} to {}", binary, destination);
-            FileUtils.copyFile(binary, destination);
+            Files.copy(Paths.get(binary.getAbsolutePath()), Paths.get(destination.getAbsolutePath()), StandardCopyOption.COPY_ATTRIBUTES);
 
             this.logger.info("Installed node locally.");
         } catch (DownloadException e) {
@@ -314,4 +317,5 @@ public class NodeInstaller {
         this.logger.info("Downloading {} to {}", downloadUrl, destination);
         this.fileDownloader.download(downloadUrl, destination.getPath(), userName, password);
     }
+
 }

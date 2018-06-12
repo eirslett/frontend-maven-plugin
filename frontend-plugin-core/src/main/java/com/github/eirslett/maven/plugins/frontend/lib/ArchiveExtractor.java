@@ -38,6 +38,11 @@ interface ArchiveExtractor {
 final class DefaultArchiveExtractor implements ArchiveExtractor {
 
     private static final Logger LOG = LoggerFactory.getLogger(DefaultArchiveExtractor.class);
+    
+    //File permissions rwx represented
+    private int READ_FILE_MASK = 0100;
+    private int WRITE_FILE_MASK = 0010;
+    private int EXECUTE_FILE_MASK = 0001;
 
     private void prepDestination(File path, boolean directory) throws IOException {
         if (directory) {
@@ -115,16 +120,17 @@ final class DefaultArchiveExtractor implements ArchiveExtractor {
                                 }
 				                if (!tarEntry.isDirectory()) {
 				                    destPath.createNewFile();
-				                    boolean isExecutable = (tarEntry.getMode() & 0100) > 0;
-				                    destPath.setExecutable(isExecutable);
-
-		                        OutputStream out = null;
-		                        try {
-		                            out = new FileOutputStream(destPath);
-		                            IOUtils.copy(tarIn, out);
-		                        } finally {
-		                            IOUtils.closeQuietly(out);
-		                        }
+				                    
+				                    setFilePermissions(tarEntry, destPath);
+				             
+				                    OutputStream out = null;
+			                        try {
+			                        		out = new FileOutputStream(destPath);
+			                        		IOUtils.copy(tarIn, out);
+			                            
+			                        } finally {
+			                            IOUtils.closeQuietly(out);
+			                        }
 				                }
 				                tarEntry = tarIn.getNextTarEntry();
 				            }
@@ -138,4 +144,11 @@ final class DefaultArchiveExtractor implements ArchiveExtractor {
                     + "'", e);
         }
     }
+    
+    void setFilePermissions(TarArchiveEntry tarEntry, File destPath){
+	    
+	    boolean isExecutable = (tarEntry.getMode() & EXECUTE_FILE_MASK) > 0;
+
+	    destPath.setExecutable(isExecutable);
+	}
 }
