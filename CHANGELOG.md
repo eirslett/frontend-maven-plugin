@@ -4,6 +4,9 @@ Last public release: [![Maven Central](https://maven-badges.herokuapp.com/maven-
 
 ## Changelog
 
+### 1.7
+* Add goal to call node directly, mainly for calling alternate packager or global cli
+
 ### 1.5
 
 * Revert support for the maven.frontend.failOnError flag ([#572](https://github.com/eirslett/frontend-maven-plugin/pull/572)), due to
