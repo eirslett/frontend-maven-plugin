@@ -57,6 +57,7 @@ to see how it should be set up: https://github.com/eirslett/frontend-maven-plugi
  - [Installing node and npm](#installing-node-and-npm)
  - [Installing node and yarn](#installing-node-and-yarn)
  - Running 
+    - [node](#running-node)
     - [npm](#running-npm)
     - [yarn](#running-yarn)
     - [bower](#running-bower)
@@ -161,6 +162,38 @@ https://github.com/eirslett/frontend-maven-plugin/blob/master/frontend-maven-plu
         <yarnDownloadRoot>http://myproxy.example.org/yarn/</yarnDownloadRoot>        
     </configuration>
 </plugin>
+```
+
+### Running node
+
+A low level node call. Usefull to call alternate packager or global cli not already implemented in this plugin.
+All node call will use your [working directory](#working-directory).
+By default, colors will be shown in the log.
+
+```xml
+<execution>
+    <id>node custom call</id>
+    <goals>
+        <goal>node</goal>
+    </goals>
+
+    <!-- optional: default phase is "generate-resources" -->
+    <phase>generate-resources</phase>
+
+    <configuration>
+        <!-- optional: The default argument is actually
+        "-v", so unless you need to run some other node command,
+        you can remove this whole <configuration> section.
+        -->
+        <!-- this sample call the pnpm package manager cli 
+        previously installed with npm install -g pnpm.
+        jsFile root folder is [Installation Directory](#installation-directory)
+        In this case the resolved path is : [Installation Directory]/node/node_modules/pnpm/lib/bin/pnpm.js
+        -->
+        <jsFile>/node/node_modules/pnpm/lib/bin/pnpm.js</jsFile>
+        <arguments>install</arguments>
+    </configuration>
+</execution>
 ```
 
 ### Running npm
