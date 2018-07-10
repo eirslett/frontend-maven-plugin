@@ -43,7 +43,7 @@ public class ArgumentsParserTest {
     public void testArgumentsWithMixedQuotes() {
         ArgumentsParser parser = new ArgumentsParser();
 
-        assertArrayEquals(new Object[] { "foo", "\"bar 'foobar'\"" }, parser.parse("foo \"bar 'foobar'\"").toArray());
+        assertArrayEquals(new Object[] { "foo", "\"bar 'foo bar'\"" }, parser.parse("foo \"bar 'foo bar'\"").toArray());
         assertArrayEquals(new Object[] { "foo", "\"bar 'foo\"", "'bar " }, parser.parse("foo \"bar 'foo\" 'bar ").toArray());
     }
 
