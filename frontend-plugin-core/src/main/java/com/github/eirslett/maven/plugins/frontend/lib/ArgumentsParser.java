@@ -7,11 +7,6 @@ import java.util.List;
 
 class ArgumentsParser {
 
-    enum State {
-        NEUTRAL,
-        QUOTED
-    }
-
     private final List<String> additionalArguments;
 
     ArgumentsParser() {
@@ -45,20 +40,23 @@ class ArgumentsParser {
 
         final List<String> arguments = new LinkedList<>();
         final StringBuilder argumentBuilder = new StringBuilder();
-        State state = State.NEUTRAL;
+        Character quote = null;
 
         for (int i = 0, l = args.length(); i < l; i++) {
             char c = args.charAt(i);
 
-            if (Character.isWhitespace(c) && state != State.QUOTED) {
+            if (Character.isWhitespace(c) && quote == null) {
                 addArgument(argumentBuilder, arguments);
                 continue;
             } else if (c == '"' || c == '\'') {
-                if (state == State.NEUTRAL) {
-                    state = State.QUOTED;
-                } else {
-                    state = State.NEUTRAL;
-                }
+                // explicit boxing allows us to use object caching of the Character class
+                Character currentQuote = Character.valueOf(c);
+                if (quote == null) {
+                    quote = currentQuote;
+                } else if (quote.equals(currentQuote)){
+                    quote = null;
+                } // else
+                // we ignore the case when a quoted argument contains the other kind of quote
             }
 
             argumentBuilder.append(c);
