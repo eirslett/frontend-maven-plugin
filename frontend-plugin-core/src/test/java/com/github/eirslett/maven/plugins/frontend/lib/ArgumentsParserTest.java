@@ -40,6 +40,14 @@ public class ArgumentsParserTest {
     }
 
     @Test
+    public void testArgumentsWithMixedQuotes() {
+        ArgumentsParser parser = new ArgumentsParser();
+
+        assertArrayEquals(new Object[] { "foo", "\"bar 'foobar'\"" }, parser.parse("foo \"bar 'foobar'\"").toArray());
+        assertArrayEquals(new Object[] { "foo", "\"bar 'foo\"", "'bar " }, parser.parse("foo \"bar 'foo\" 'bar ").toArray());
+    }
+
+    @Test
     public void testAdditionalArgumentsNoIntersection() {
         ArgumentsParser parser = new ArgumentsParser(Arrays.asList("foo", "bar"));
 
