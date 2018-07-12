@@ -4,9 +4,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Locale;
 
 import org.apache.commons.io.FileUtils;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.type.TypeReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,7 +16,19 @@ public class NPMInstaller {
 
     private static final String VERSION = "version";
 
+    public static final String NPM_DOWNLOAD_ROOT;
+
     public static final String DEFAULT_NPM_DOWNLOAD_ROOT = "https://registry.npmjs.org/npm/-/";
+
+    private static final String CHINESE_NPM_DOWNLOAD_ROOT = "https://registry.npm.taobao.org/npm/-/";
+
+    static {
+        if (Locale.getDefault().getCountry().equals("CN")) {
+            NPM_DOWNLOAD_ROOT = CHINESE_NPM_DOWNLOAD_ROOT;
+        } else {
+            NPM_DOWNLOAD_ROOT = DEFAULT_NPM_DOWNLOAD_ROOT;
+        }
+    }
 
     private static final Object LOCK = new Object();
 
@@ -76,7 +90,7 @@ public class NPMInstaller {
         // use static lock object for a synchronized block
         synchronized (LOCK) {
             if (this.npmDownloadRoot == null || this.npmDownloadRoot.isEmpty()) {
-                this.npmDownloadRoot = DEFAULT_NPM_DOWNLOAD_ROOT;
+                this.npmDownloadRoot = NPM_DOWNLOAD_ROOT;
             }
             if (!npmProvided() && !npmIsAlreadyInstalled()) {
                 installNpm();
@@ -89,7 +103,8 @@ public class NPMInstaller {
             final File npmPackageJson = new File(
                 this.config.getInstallDirectory() + Utils.normalize("/node/node_modules/npm/package.json"));
             if (npmPackageJson.exists()) {
-                HashMap<String, Object> data = new ObjectMapper().readValue(npmPackageJson, HashMap.class);
+                TypeReference<HashMap<String,Object>> typeRef = new TypeReference<HashMap<String,Object>>() {};
+                HashMap<String, Object> data = new ObjectMapper().readValue(npmPackageJson, typeRef);
                 if (data.containsKey(VERSION)) {
                     final String foundNpmVersion = data.get(VERSION).toString();
                     if (foundNpmVersion.equals(this.npmVersion)) {

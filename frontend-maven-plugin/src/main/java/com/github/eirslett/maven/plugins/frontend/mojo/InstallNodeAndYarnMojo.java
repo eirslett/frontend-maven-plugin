@@ -21,7 +21,7 @@ public final class InstallNodeAndYarnMojo extends AbstractFrontendMojo {
      * Where to download Node.js binary from. Defaults to https://nodejs.org/dist/
      */
     @Parameter(property = "nodeDownloadRoot", required = false,
-        defaultValue = NodeInstaller.DEFAULT_NODEJS_DOWNLOAD_ROOT)
+        defaultValue = "")
     private String nodeDownloadRoot;
 
     /**

@@ -3,6 +3,9 @@ package com.github.eirslett.maven.plugins.frontend.lib;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 
 import org.apache.commons.io.FileUtils;
@@ -149,14 +152,20 @@ public class YarnInstaller {
     }
 
     private void ensureCorrectYarnRootDirectory(File installDirectory, String yarnVersion) throws IOException {
-        File yarnRootDirectory = new File(installDirectory, YARN_ROOT_DIRECTORY);
-        if (!yarnRootDirectory.exists()) {
+        Path _yarnRootDirectory = Paths.get(installDirectory.toString(), YARN_ROOT_DIRECTORY);
+
+        System.out.println("-------------edwardlol-------------");
+        System.out.println("install dir: " + installDirectory);
+        System.out.println("root dir: " + YARN_ROOT_DIRECTORY);
+        System.out.println("-------------edwardlol-------------");
+        if (!Files.exists(_yarnRootDirectory)) {
             logger.debug("Yarn root directory not found, checking for yarn-{}", yarnVersion);
-            // Handle renaming Yarn 1.X root to YARN_ROOT_DIRECTORY
-            File yarnOneXDirectory = new File(installDirectory, "yarn-" + yarnVersion);
-            if (yarnOneXDirectory.isDirectory()) {
-                if (!yarnOneXDirectory.renameTo(yarnRootDirectory)) {
-                    throw new IOException("Could not rename versioned yarn root directory to " + YARN_ROOT_DIRECTORY);
+            Path _yarnOneXDirectory = Paths.get(installDirectory.toString(), "yarn-" + yarnVersion);
+            if (Files.isDirectory(_yarnOneXDirectory)) {
+                try {
+                    Files.move(_yarnOneXDirectory, _yarnRootDirectory);
+                } catch (IOException e) {
+                    throw new IOException("Could not rename versioned yarn root directory to " + YARN_ROOT_DIRECTORY, e);
                 }
             } else {
                 throw new FileNotFoundException("Could not find yarn distribution directory during extract");

@@ -19,13 +19,13 @@ public final class InstallNodeAndNpmMojo extends AbstractFrontendMojo {
     /**
      * Where to download Node.js binary from. Defaults to https://nodejs.org/dist/
      */
-    @Parameter(property = "nodeDownloadRoot", required = false, defaultValue = NodeInstaller.DEFAULT_NODEJS_DOWNLOAD_ROOT)
+    @Parameter(property = "nodeDownloadRoot", required = false, defaultValue = "")
     private String nodeDownloadRoot;
 
     /**
      * Where to download NPM binary from. Defaults to https://registry.npmjs.org/npm/-/
      */
-    @Parameter(property = "npmDownloadRoot", required = false, defaultValue = NPMInstaller.DEFAULT_NPM_DOWNLOAD_ROOT)
+    @Parameter(property = "npmDownloadRoot", required = false, defaultValue = "")
     private String npmDownloadRoot;
 
     /**
@@ -108,14 +108,14 @@ public final class InstallNodeAndNpmMojo extends AbstractFrontendMojo {
     }
 
     private String getNodeDownloadRoot() {
-        if (downloadRoot != null && !"".equals(downloadRoot) && NodeInstaller.DEFAULT_NODEJS_DOWNLOAD_ROOT.equals(nodeDownloadRoot)) {
+        if (downloadRoot != null && !"".equals(downloadRoot) && NodeInstaller.NODEJS_DOWNLOAD_ROOT.equals(nodeDownloadRoot)) {
             return downloadRoot;
         }
         return nodeDownloadRoot;
     }
 
     private String getNpmDownloadRoot() {
-        if (downloadRoot != null && !"".equals(downloadRoot) && NPMInstaller.DEFAULT_NPM_DOWNLOAD_ROOT.equals(npmDownloadRoot)) {
+        if (downloadRoot != null && !"".equals(downloadRoot) && NPMInstaller.NPM_DOWNLOAD_ROOT.equals(npmDownloadRoot)) {
             return downloadRoot;
         }
         return npmDownloadRoot;

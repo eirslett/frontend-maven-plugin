@@ -3,11 +3,15 @@ package com.github.eirslett.maven.plugins.frontend.lib;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -58,7 +62,8 @@ final class DefaultFileDownloader implements FileDownloader {
         // force tls to 1.2 since github removed weak cryptographic standards
         // https://blog.github.com/2018-02-02-weak-cryptographic-standards-removal-notice/
         System.setProperty("https.protocols", "TLSv1.2");
-        String fixedDownloadUrl = downloadUrl;
+        String fixedDownloadUrl = FilenameUtils.separatorsToUnix(downloadUrl);
+
         try {
             fixedDownloadUrl = FilenameUtils.separatorsToUnix(fixedDownloadUrl);
             URI downloadURI = new URI(fixedDownloadUrl);
@@ -72,14 +77,27 @@ final class DefaultFileDownloader implements FileDownloader {
                     throw new DownloadException("Got error code "+ statusCode +" from the server.");
                 }
                 new File(FilenameUtils.getFullPathNoEndSeparator(destination)).mkdirs();
-                ReadableByteChannel rbc = Channels.newChannel(response.getEntity().getContent());
-                FileOutputStream fos = new FileOutputStream(destination);
-                fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
-                fos.close();
+                try (ReadableByteChannel rbc = Channels.newChannel(response.getEntity().getContent());
+                     FileOutputStream fos = new FileOutputStream(destination)) {
+                    fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+                }
             }
         } catch (IOException | URISyntaxException e) {
             throw new DownloadException("Could not download " + fixedDownloadUrl, e);
         }
+
+//        try {
+//            URL url = new URL(fixedDownloadUrl);
+//            new File(FilenameUtils.getFullPathNoEndSeparator(destination)).mkdirs();
+//
+//            try (InputStream is = url.openStream()) {
+//                Files.copy(is, Paths.get(destination));
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        } catch (MalformedURLException e) {
+//            e.printStackTrace();
+//        }
     }
 
     private CloseableHttpResponse execute(String requestUrl, String userName, String password) throws IOException {

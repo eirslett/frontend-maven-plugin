@@ -1,0 +1,1669 @@
+[INFO] Scanning for projects...
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Build Order:
+[INFO] 
+[INFO] Frontend Plugins
+[INFO] frontend-plugin-core
+[INFO] Maven Frontend Plugin
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building Frontend Plugins 1.7-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-enforcer-plugin:1.0:enforce (enforce-maven) @ frontend-plugins ---
+[INFO] 
+[INFO] --- maven-install-plugin:2.4:install (default-install) @ frontend-plugins ---
+[INFO] Installing D:\workspace\frontend-maven-plugin\pom.xml to C:\Users\hzzhoujunlin\.m2\repository\com\github\eirslett\frontend-plugins\1.7-SNAPSHOT\frontend-plugins-1.7-SNAPSHOT.pom
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building frontend-plugin-core 1.7-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-enforcer-plugin:1.0:enforce (enforce-maven) @ frontend-plugin-core ---
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ frontend-plugin-core ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] skip non existing resourceDirectory D:\workspace\frontend-maven-plugin\frontend-plugin-core\src\main\resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:compile (default-compile) @ frontend-plugin-core ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 33 source files to D:\workspace\frontend-maven-plugin\frontend-plugin-core\target\classes
+[WARNING] /D:/workspace/frontend-maven-plugin/frontend-plugin-core/src/main/java/com/github/eirslett/maven/plugins/frontend/lib/NPMInstaller.java: D:\workspace\frontend-maven-plugin\frontend-plugin-core\src\main\java\com\github\eirslett\maven\plugins\frontend\lib\NPMInstaller.javaÊ¹ÓÃÁËÎ´¾­¼ì²é»ò²»°²È«µÄ²Ù×÷¡£
+[WARNING] /D:/workspace/frontend-maven-plugin/frontend-plugin-core/src/main/java/com/github/eirslett/maven/plugins/frontend/lib/NPMInstaller.java: ÓÐ¹ØÏêÏ¸ÐÅÏ¢, ÇëÊ¹ÓÃ -Xlint:unchecked ÖØÐÂ±àÒë¡£
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:testResources (default-testResources) @ frontend-plugin-core ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] skip non existing resourceDirectory D:\workspace\frontend-maven-plugin\frontend-plugin-core\src\test\resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:testCompile (default-testCompile) @ frontend-plugin-core ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- maven-surefire-plugin:2.12.4:test (default-test) @ frontend-plugin-core ---
+[INFO] No tests to run.
+[INFO] 
+[INFO] --- maven-jar-plugin:2.4:jar (default-jar) @ frontend-plugin-core ---
+[INFO] Building jar: D:\workspace\frontend-maven-plugin\frontend-plugin-core\target\frontend-plugin-core-1.7-SNAPSHOT.jar
+[INFO] 
+[INFO] --- maven-install-plugin:2.4:install (default-install) @ frontend-plugin-core ---
+[INFO] Installing D:\workspace\frontend-maven-plugin\frontend-plugin-core\target\frontend-plugin-core-1.7-SNAPSHOT.jar to C:\Users\hzzhoujunlin\.m2\repository\com\github\eirslett\frontend-plugin-core\1.7-SNAPSHOT\frontend-plugin-core-1.7-SNAPSHOT.jar
+[INFO] Installing D:\workspace\frontend-maven-plugin\frontend-plugin-core\pom.xml to C:\Users\hzzhoujunlin\.m2\repository\com\github\eirslett\frontend-plugin-core\1.7-SNAPSHOT\frontend-plugin-core-1.7-SNAPSHOT.pom
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building Maven Frontend Plugin 1.7-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-enforcer-plugin:1.0:enforce (enforce-maven) @ frontend-maven-plugin ---
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ frontend-maven-plugin ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Copying 1 resource
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:compile (default-compile) @ frontend-maven-plugin ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 14 source files to D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\classes
+[INFO] 
+[INFO] --- maven-plugin-plugin:3.5.2:descriptor (default-descriptor) @ frontend-maven-plugin ---
+[INFO] Using 'UTF-8' encoding to read mojo source files.
+[INFO] java-javadoc mojo extractor found 0 mojo descriptor.
+[WARNING] Deprecated @Component annotation for 'execution' field in com.github.eirslett.maven.plugins.frontend.mojo.GruntMojo: replace with @Parameter( defaultValue = "${mojoExecution}", readonly = true )
+[WARNING] Deprecated @Component annotation for 'execution' field in com.github.eirslett.maven.plugins.frontend.mojo.InstallNodeAndNpmMojo: replace with @Parameter( defaultValue = "${mojoExecution}", readonly = true )
+[WARNING] Deprecated @Component annotation for 'execution' field in com.github.eirslett.maven.plugins.frontend.mojo.InstallNodeAndYarnMojo: replace with @Parameter( defaultValue = "${mojoExecution}", readonly = true )
+[WARNING] Deprecated @Component annotation for 'execution' field in com.github.eirslett.maven.plugins.frontend.mojo.YarnMojo: replace with @Parameter( defaultValue = "${mojoExecution}", readonly = true )
+[WARNING] Deprecated @Component annotation for 'execution' field in com.github.eirslett.maven.plugins.frontend.mojo.JspmMojo: replace with @Parameter( defaultValue = "${mojoExecution}", readonly = true )
+[WARNING] Deprecated @Component annotation for 'execution' field in com.github.eirslett.maven.plugins.frontend.mojo.BowerMojo: replace with @Parameter( defaultValue = "${mojoExecution}", readonly = true )
+[WARNING] Deprecated @Component annotation for 'execution' field in com.github.eirslett.maven.plugins.frontend.mojo.KarmaRunMojo: replace with @Parameter( defaultValue = "${mojoExecution}", readonly = true )
+[WARNING] Deprecated @Component annotation for 'execution' field in com.github.eirslett.maven.plugins.frontend.mojo.WebpackMojo: replace with @Parameter( defaultValue = "${mojoExecution}", readonly = true )
+[WARNING] Deprecated @Component annotation for 'execution' field in com.github.eirslett.maven.plugins.frontend.mojo.GulpMojo: replace with @Parameter( defaultValue = "${mojoExecution}", readonly = true )
+[WARNING] Deprecated @Component annotation for 'execution' field in com.github.eirslett.maven.plugins.frontend.mojo.NpmMojo: replace with @Parameter( defaultValue = "${mojoExecution}", readonly = true )
+[WARNING] Deprecated @Component annotation for 'execution' field in com.github.eirslett.maven.plugins.frontend.mojo.EmberMojo: replace with @Parameter( defaultValue = "${mojoExecution}", readonly = true )
+[INFO] java-annotations mojo extractor found 11 mojo descriptors.
+[INFO] 
+[INFO] --- maven-plugin-plugin:3.5.2:descriptor (mojo-descriptor) @ frontend-maven-plugin ---
+[INFO] Using 'UTF-8' encoding to read mojo source files.
+[INFO] java-javadoc mojo extractor found 0 mojo descriptor.
+[WARNING] Deprecated @Component annotation for 'execution' field in com.github.eirslett.maven.plugins.frontend.mojo.GruntMojo: replace with @Parameter( defaultValue = "${mojoExecution}", readonly = true )
+[WARNING] Deprecated @Component annotation for 'execution' field in com.github.eirslett.maven.plugins.frontend.mojo.InstallNodeAndNpmMojo: replace with @Parameter( defaultValue = "${mojoExecution}", readonly = true )
+[WARNING] Deprecated @Component annotation for 'execution' field in com.github.eirslett.maven.plugins.frontend.mojo.InstallNodeAndYarnMojo: replace with @Parameter( defaultValue = "${mojoExecution}", readonly = true )
+[WARNING] Deprecated @Component annotation for 'execution' field in com.github.eirslett.maven.plugins.frontend.mojo.YarnMojo: replace with @Parameter( defaultValue = "${mojoExecution}", readonly = true )
+[WARNING] Deprecated @Component annotation for 'execution' field in com.github.eirslett.maven.plugins.frontend.mojo.JspmMojo: replace with @Parameter( defaultValue = "${mojoExecution}", readonly = true )
+[WARNING] Deprecated @Component annotation for 'execution' field in com.github.eirslett.maven.plugins.frontend.mojo.BowerMojo: replace with @Parameter( defaultValue = "${mojoExecution}", readonly = true )
+[WARNING] Deprecated @Component annotation for 'execution' field in com.github.eirslett.maven.plugins.frontend.mojo.KarmaRunMojo: replace with @Parameter( defaultValue = "${mojoExecution}", readonly = true )
+[WARNING] Deprecated @Component annotation for 'execution' field in com.github.eirslett.maven.plugins.frontend.mojo.WebpackMojo: replace with @Parameter( defaultValue = "${mojoExecution}", readonly = true )
+[WARNING] Deprecated @Component annotation for 'execution' field in com.github.eirslett.maven.plugins.frontend.mojo.GulpMojo: replace with @Parameter( defaultValue = "${mojoExecution}", readonly = true )
+[WARNING] Deprecated @Component annotation for 'execution' field in com.github.eirslett.maven.plugins.frontend.mojo.NpmMojo: replace with @Parameter( defaultValue = "${mojoExecution}", readonly = true )
+[WARNING] Deprecated @Component annotation for 'execution' field in com.github.eirslett.maven.plugins.frontend.mojo.EmberMojo: replace with @Parameter( defaultValue = "${mojoExecution}", readonly = true )
+[INFO] java-annotations mojo extractor found 11 mojo descriptors.
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:testResources (default-testResources) @ frontend-maven-plugin ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] skip non existing resourceDirectory D:\workspace\frontend-maven-plugin\frontend-maven-plugin\src\test\resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:testCompile (default-testCompile) @ frontend-maven-plugin ---
+[INFO] Nothing to compile - all classes are up to date
+[INFO] 
+[INFO] --- maven-surefire-plugin:2.12.4:test (default-test) @ frontend-maven-plugin ---
+[INFO] No tests to run.
+[INFO] 
+[INFO] --- maven-jar-plugin:2.4:jar (default-jar) @ frontend-maven-plugin ---
+[INFO] Building jar: D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\frontend-maven-plugin-1.7-SNAPSHOT.jar
+[INFO] 
+[INFO] --- maven-plugin-plugin:3.5.2:addPluginArtifactMetadata (default-addPluginArtifactMetadata) @ frontend-maven-plugin ---
+[INFO] 
+[INFO] --- mrm-maven-plugin:1.0-beta-2:start (default) @ frontend-maven-plugin ---
+[INFO] Configuring Mock Repository Manager to proxy through this Maven instance
+[INFO] Starting Mock Repository Manager
+[INFO] Logging to org.slf4j.impl.SimpleLogger(org.mortbay.log) via org.mortbay.log.Slf4jLog
+[INFO] jetty-6.1.5
+[INFO] Started SocketConnector@0.0.0.0:65098
+[INFO] Mock Repository Manager http://localhost:65098 is started.
+[INFO] Setting property 'repository.proxy.url' to 'http://localhost:65098'.
+[INFO] 
+[INFO] --- maven-invoker-plugin:2.0.0:install (default) @ frontend-maven-plugin ---
+[INFO] Installing D:\workspace\frontend-maven-plugin\pom.xml to D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\local-repo\com\github\eirslett\frontend-plugins\1.7-SNAPSHOT\frontend-plugins-1.7-SNAPSHOT.pom
+[INFO] Installing D:\workspace\frontend-maven-plugin\frontend-plugin-core\pom.xml to D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\local-repo\com\github\eirslett\frontend-plugin-core\1.7-SNAPSHOT\frontend-plugin-core-1.7-SNAPSHOT.pom
+[INFO] Installing D:\workspace\frontend-maven-plugin\frontend-plugin-core\target\frontend-plugin-core-1.7-SNAPSHOT.jar to D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\local-repo\com\github\eirslett\frontend-plugin-core\1.7-SNAPSHOT\frontend-plugin-core-1.7-SNAPSHOT.jar
+[INFO] Installing D:\workspace\frontend-maven-plugin\frontend-plugin-core\pom.xml to D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\local-repo\com\github\eirslett\frontend-plugin-core\1.7-SNAPSHOT\frontend-plugin-core-1.7-SNAPSHOT.pom
+[INFO] Installing D:\workspace\frontend-maven-plugin\frontend-maven-plugin\pom.xml to D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\local-repo\com\github\eirslett\frontend-maven-plugin\1.7-SNAPSHOT\frontend-maven-plugin-1.7-SNAPSHOT.pom
+[INFO] Installing D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\frontend-maven-plugin-1.7-SNAPSHOT.jar to D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\local-repo\com\github\eirslett\frontend-maven-plugin\1.7-SNAPSHOT\frontend-maven-plugin-1.7-SNAPSHOT.jar
+[INFO] 
+[INFO] --- maven-invoker-plugin:2.0.0:run (default) @ frontend-maven-plugin ---
+[INFO] Building: custom-install-directory\pom.xml
+[INFO] Apache Maven 3.3.9 (bb52d8502b132ec0a5a3f4c09453c07478323dc5; 2015-11-11T00:41:47+08:00)
+[INFO] Maven home: D:\Program Files\apache\maven\3.3.9\bin\..
+[INFO] Java version: 1.8.0_152, vendor: Oracle Corporation
+[INFO] Java home: D:\Program Files\Java\jdk1.8.0_152\jre
+[INFO] Default locale: zh_CN, platform encoding: GBK
+[INFO] OS name: "windows 7", version: "6.1", arch: "amd64", family: "dos"
+[INFO] [DEBUG] Created new class realm maven.api
+[INFO] [DEBUG] Importing foreign packages into class realm maven.api
+[INFO] [DEBUG]   Imported: javax.enterprise.inject.* < plexus.core
+[INFO] [DEBUG]   Imported: javax.enterprise.util.* < plexus.core
+[INFO] [DEBUG]   Imported: javax.inject.* < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.* < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.artifact < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.classrealm < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.cli < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.configuration < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.exception < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.execution < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.execution.scope < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.lifecycle < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.model < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.monitor < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.plugin < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.profiles < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.project < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.reporting < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.repository < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.rtinfo < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.settings < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.toolchain < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.usability < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.wagon.* < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.wagon.authentication < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.wagon.authorization < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.wagon.events < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.wagon.observers < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.wagon.proxy < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.wagon.repository < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.wagon.resource < plexus.core
+[INFO] [DEBUG]   Imported: org.codehaus.classworlds < plexus.core
+[INFO] [DEBUG]   Imported: org.codehaus.plexus.* < plexus.core
+[INFO] [DEBUG]   Imported: org.codehaus.plexus.classworlds < plexus.core
+[INFO] [DEBUG]   Imported: org.codehaus.plexus.component < plexus.core
+[INFO] [DEBUG]   Imported: org.codehaus.plexus.configuration < plexus.core
+[INFO] [DEBUG]   Imported: org.codehaus.plexus.container < plexus.core
+[INFO] [DEBUG]   Imported: org.codehaus.plexus.context < plexus.core
+[INFO] [DEBUG]   Imported: org.codehaus.plexus.lifecycle < plexus.core
+[INFO] [DEBUG]   Imported: org.codehaus.plexus.logging < plexus.core
+[INFO] [DEBUG]   Imported: org.codehaus.plexus.personality < plexus.core
+[INFO] [DEBUG]   Imported: org.codehaus.plexus.util.xml.Xpp3Dom < plexus.core
+[INFO] [DEBUG]   Imported: org.codehaus.plexus.util.xml.pull.XmlPullParser < plexus.core
+[INFO] [DEBUG]   Imported: org.codehaus.plexus.util.xml.pull.XmlPullParserException < plexus.core
+[INFO] [DEBUG]   Imported: org.codehaus.plexus.util.xml.pull.XmlSerializer < plexus.core
+[INFO] [DEBUG]   Imported: org.eclipse.aether.* < plexus.core
+[INFO] [DEBUG]   Imported: org.eclipse.aether.artifact < plexus.core
+[INFO] [DEBUG]   Imported: org.eclipse.aether.collection < plexus.core
+[INFO] [DEBUG]   Imported: org.eclipse.aether.deployment < plexus.core
+[INFO] [DEBUG]   Imported: org.eclipse.aether.graph < plexus.core
+[INFO] [DEBUG]   Imported: org.eclipse.aether.impl < plexus.core
+[INFO] [DEBUG]   Imported: org.eclipse.aether.installation < plexus.core
+[INFO] [DEBUG]   Imported: org.eclipse.aether.internal.impl < plexus.core
+[INFO] [DEBUG]   Imported: org.eclipse.aether.metadata < plexus.core
+[INFO] [DEBUG]   Imported: org.eclipse.aether.repository < plexus.core
+[INFO] [DEBUG]   Imported: org.eclipse.aether.resolution < plexus.core
+[INFO] [DEBUG]   Imported: org.eclipse.aether.spi < plexus.core
+[INFO] [DEBUG]   Imported: org.eclipse.aether.transfer < plexus.core
+[INFO] [DEBUG]   Imported: org.eclipse.aether.version < plexus.core
+[INFO] [DEBUG]   Imported: org.slf4j.* < plexus.core
+[INFO] [DEBUG]   Imported: org.slf4j.helpers.* < plexus.core
+[INFO] [DEBUG]   Imported: org.slf4j.spi.* < plexus.core
+[INFO] [DEBUG] Populating class realm maven.api
+[INFO] [INFO] Error stacktraces are turned on.
+[INFO] [DEBUG] Reading global settings from D:\Program Files\apache\maven\3.3.9\bin\..\conf\settings.xml
+[INFO] [DEBUG] Reading user settings from D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\interpolated-settings.xml
+[INFO] [DEBUG] Reading global toolchains from D:\Program Files\apache\maven\3.3.9\bin\..\conf\toolchains.xml
+[INFO] [DEBUG] Reading user toolchains from C:\Users\hzzhoujunlin\.m2\toolchains.xml
+[INFO] [DEBUG] Using local repository at D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\local-repo
+[INFO] [DEBUG] Using manager EnhancedLocalRepositoryManager with priority 10.0 for D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\local-repo
+[INFO] [INFO] Scanning for projects...
+[INFO] [DEBUG] Using mirror mrm-maven-plugin (http://localhost:65098) for local.central (http://localhost:65098).
+[INFO] [DEBUG] Using mirror alimaven (http://maven.aliyun.com/nexus/content/groups/public/) for central (https://repo.maven.apache.org/maven2).
+[INFO] [DEBUG] Extension realms for project com.github.eirslett:example:pom:0: (none)
+[INFO] [DEBUG] Looking up lifecyle mappings for packaging pom from ClassRealm[plexus.core, parent: null]
+[INFO] [DEBUG] === REACTOR BUILD PLAN ================================================
+[INFO] [DEBUG] Project: com.github.eirslett:example:pom:0
+[INFO] [DEBUG] Tasks:   [package]
+[INFO] [DEBUG] Style:   Regular
+[INFO] [DEBUG] =======================================================================
+[INFO] [INFO]                                                                         
+[INFO] [INFO] ------------------------------------------------------------------------
+[INFO] [INFO] Building example 0
+[INFO] [INFO] ------------------------------------------------------------------------
+[INFO] [DEBUG] Lifecycle default -> [validate, initialize, generate-sources, process-sources, generate-resources, process-resources, compile, process-classes, generate-test-sources, process-test-sources, generate-test-resources, process-test-resources, test-compile, process-test-classes, test, prepare-package, package, pre-integration-test, integration-test, post-integration-test, verify, install, deploy]
+[INFO] [DEBUG] Lifecycle clean -> [pre-clean, clean, post-clean]
+[INFO] [DEBUG] Lifecycle site -> [pre-site, site, post-site, site-deploy]
+[INFO] [DEBUG] Skipped remote request for com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT/maven-metadata.xml, locally installed metadata up-to-date.
+[INFO] [DEBUG] Skipped remote request for com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT/maven-metadata.xml, locally installed metadata up-to-date.
+[INFO] [DEBUG] Skipped remote request for com.github.eirslett:frontend-plugins:1.7-SNAPSHOT/maven-metadata.xml, locally installed metadata up-to-date.
+[INFO] [DEBUG] Using mirror mrm-maven-plugin (http://localhost:65098) for sonatype-nexus-snapshots (https://oss.sonatype.org/content/repositories/snapshots).
+[INFO] [DEBUG] Lifecycle default -> [validate, initialize, generate-sources, process-sources, generate-resources, process-resources, compile, process-classes, generate-test-sources, process-test-sources, generate-test-resources, process-test-resources, test-compile, process-test-classes, test, prepare-package, package, pre-integration-test, integration-test, post-integration-test, verify, install, deploy]
+[INFO] [DEBUG] Lifecycle clean -> [pre-clean, clean, post-clean]
+[INFO] [DEBUG] Lifecycle site -> [pre-site, site, post-site, site-deploy]
+[INFO] [DEBUG] === PROJECT BUILD PLAN ================================================
+[INFO] [DEBUG] Project:       com.github.eirslett:example:0
+[INFO] [DEBUG] Dependencies (collect): []
+[INFO] [DEBUG] Dependencies (resolve): []
+[INFO] [DEBUG] Repositories (dependencies): [mrm-maven-plugin (http://localhost:65098, default, releases+snapshots), alimaven (http://maven.aliyun.com/nexus/content/groups/public/, default, releases)]
+[INFO] [DEBUG] Repositories (plugins)     : [mrm-maven-plugin (http://localhost:65098, default, releases+snapshots), alimaven (http://maven.aliyun.com/nexus/content/groups/public/, default, releases)]
+[INFO] [DEBUG] -----------------------------------------------------------------------
+[INFO] [DEBUG] Goal:          com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT:install-node-and-npm (install node and npm)
+[INFO] [DEBUG] Style:         Regular
+[INFO] [DEBUG] Configuration: <?xml version="1.0" encoding="UTF-8"?>
+[INFO] <configuration>
+[INFO]   <downloadRoot default-value="">${downloadRoot}</downloadRoot>
+[INFO]   <installDirectory>target</installDirectory>
+[INFO]   <nodeDownloadRoot default-value="https://nodejs.org/dist/">${nodeDownloadRoot}</nodeDownloadRoot>
+[INFO]   <nodeVersion>v8.11.1</nodeVersion>
+[INFO]   <npmDownloadRoot default-value="https://registry.npmjs.org/npm/-/">${npmDownloadRoot}</npmDownloadRoot>
+[INFO]   <npmVersion default-value="provided">5.6.0</npmVersion>
+[INFO]   <project default-value="${project}"/>
+[INFO]   <repositorySystemSession default-value="${repositorySystemSession}"/>
+[INFO]   <serverId default-value="">${serverId}</serverId>
+[INFO]   <session default-value="${session}">${session}</session>
+[INFO]   <skip default-value="${skip.installnodenpm}">${skip.installnodenpm}</skip>
+[INFO]   <skipTests default-value="false">${skipTests}</skipTests>
+[INFO]   <testFailureIgnore default-value="false">${maven.test.failure.ignore}</testFailureIgnore>
+[INFO]   <workingDirectory default-value="${basedir}">${workingDirectory}</workingDirectory>
+[INFO]   <execution default-value="${mojoExecution}"/>
+[INFO] </configuration>
+[INFO] [DEBUG] -----------------------------------------------------------------------
+[INFO] [DEBUG] Goal:          com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT:npm (npm install)
+[INFO] [DEBUG] Style:         Regular
+[INFO] [DEBUG] Configuration: <?xml version="1.0" encoding="UTF-8"?>
+[INFO] <configuration>
+[INFO]   <arguments default-value="install">install</arguments>
+[INFO]   <installDirectory>target</installDirectory>
+[INFO]   <npmInheritsProxyConfigFromMaven default-value="true">${frontend.npm.npmInheritsProxyConfigFromMaven}</npmInheritsProxyConfigFromMaven>
+[INFO]   <npmRegistryURL default-value="">${npmRegistryURL}</npmRegistryURL>
+[INFO]   <project default-value="${project}"/>
+[INFO]   <repositorySystemSession default-value="${repositorySystemSession}"/>
+[INFO]   <session default-value="${session}">${session}</session>
+[INFO]   <skip default-value="${skip.npm}">${skip.npm}</skip>
+[INFO]   <skipTests default-value="false">${skipTests}</skipTests>
+[INFO]   <testFailureIgnore default-value="false">${maven.test.failure.ignore}</testFailureIgnore>
+[INFO]   <workingDirectory default-value="${basedir}">${workingDirectory}</workingDirectory>
+[INFO]   <execution default-value="${mojoExecution}"/>
+[INFO] </configuration>
+[INFO] [DEBUG] =======================================================================
+[INFO] [INFO] 
+[INFO] [INFO] --- frontend-maven-plugin:1.7-SNAPSHOT:install-node-and-npm (install node and npm) @ example ---
+[INFO] [DEBUG] Skipped remote request for com.github.eirslett:frontend-plugin-core:1.7-SNAPSHOT/maven-metadata.xml, locally installed metadata up-to-date.
+[INFO] [DEBUG] Skipped remote request for com.github.eirslett:frontend-plugin-core:1.7-SNAPSHOT/maven-metadata.xml, locally installed metadata up-to-date.
+[INFO] [DEBUG] Using mirror mrm-maven-plugin (http://localhost:65098) for apache.snapshots (http://repository.apache.org/snapshots).
+[INFO] [DEBUG] Using mirror mrm-maven-plugin (http://localhost:65098) for apache.snapshots (http://people.apache.org/repo/m2-snapshot-repository).
+[INFO] [DEBUG] Using transporter WagonTransporter with priority -1.0 for http://localhost:65098
+[INFO] [DEBUG] Using connector BasicRepositoryConnector with priority 0.0 for http://localhost:65098
+[INFO] [INFO] Downloading: http://localhost:65098/org/codehaus/plexus/plexus-utils/3.0.10/plexus-utils-3.0.10.pom
+[INFO] [INFO] Downloaded: http://localhost:65098/org/codehaus/plexus/plexus-utils/3.0.10/plexus-utils-3.0.10.pom (4 KB at 16.2 KB/sec)
+[INFO] [DEBUG] Writing tracking file D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\local-repo\org\codehaus\plexus\plexus-utils\3.0.10\_remote.repositories
+[INFO] [DEBUG] Writing tracking file D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\local-repo\org\codehaus\plexus\plexus-utils\3.0.10\plexus-utils-3.0.10.pom.lastUpdated
+[INFO] [DEBUG] Using transporter WagonTransporter with priority -1.0 for http://localhost:65098
+[INFO] [DEBUG] Using connector BasicRepositoryConnector with priority 0.0 for http://localhost:65098
+[INFO] [INFO] Downloading: http://localhost:65098/org/codehaus/plexus/plexus/3.3/plexus-3.3.pom
+[INFO] [INFO] Downloaded: http://localhost:65098/org/codehaus/plexus/plexus/3.3/plexus-3.3.pom (20 KB at 498.3 KB/sec)
+[INFO] [DEBUG] Writing tracking file D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\local-repo\org\codehaus\plexus\plexus\3.3\_remote.repositories
+[INFO] [DEBUG] Writing tracking file D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\local-repo\org\codehaus\plexus\plexus\3.3\plexus-3.3.pom.lastUpdated
+[INFO] [DEBUG] Using mirror mrm-maven-plugin (http://localhost:65098) for repository.jboss.org (http://repository.jboss.org/maven2).
+[INFO] [DEBUG] Using mirror mrm-maven-plugin (http://localhost:65098) for snapshots.jboss.org (http://snapshots.jboss.org/maven2).
+[INFO] [DEBUG] Using mirror mrm-maven-plugin (http://localhost:65098) for oss.sonatype.org/jboss-snapshots (http://oss.sonatype.org/content/repositories/jboss-snapshots).
+[INFO] [DEBUG] Using transporter WagonTransporter with priority -1.0 for http://localhost:65098
+[INFO] [DEBUG] Using connector BasicRepositoryConnector with priority 0.0 for http://localhost:65098
+[INFO] [INFO] Downloading: http://localhost:65098/org/codehaus/plexus/plexus-classworlds/2.4/plexus-classworlds-2.4.pom
+[INFO] [INFO] Downloaded: http://localhost:65098/org/codehaus/plexus/plexus-classworlds/2.4/plexus-classworlds-2.4.pom (4 KB at 135.4 KB/sec)
+[INFO] [DEBUG] Writing tracking file D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\local-repo\org\codehaus\plexus\plexus-classworlds\2.4\_remote.repositories
+[INFO] [DEBUG] Writing tracking file D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\local-repo\org\codehaus\plexus\plexus-classworlds\2.4\plexus-classworlds-2.4.pom.lastUpdated
+[INFO] [DEBUG] Using transporter WagonTransporter with priority -1.0 for http://localhost:65098
+[INFO] [DEBUG] Using connector BasicRepositoryConnector with priority 0.0 for http://localhost:65098
+[INFO] [INFO] Downloading: http://localhost:65098/org/codehaus/plexus/plexus-utils/2.1/plexus-utils-2.1.pom
+[INFO] [INFO] Downloaded: http://localhost:65098/org/codehaus/plexus/plexus-utils/2.1/plexus-utils-2.1.pom (4 KB at 78.8 KB/sec)
+[INFO] [DEBUG] Writing tracking file D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\local-repo\org\codehaus\plexus\plexus-utils\2.1\_remote.repositories
+[INFO] [DEBUG] Writing tracking file D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\local-repo\org\codehaus\plexus\plexus-utils\2.1\plexus-utils-2.1.pom.lastUpdated
+[INFO] [DEBUG] Using transporter WagonTransporter with priority -1.0 for http://localhost:65098
+[INFO] [DEBUG] Using connector BasicRepositoryConnector with priority 0.0 for http://localhost:65098
+[INFO] [INFO] Downloading: http://localhost:65098/org/sonatype/spice/spice-parent/16/spice-parent-16.pom
+[INFO] [INFO] Downloaded: http://localhost:65098/org/sonatype/spice/spice-parent/16/spice-parent-16.pom (9 KB at 220.6 KB/sec)
+[INFO] [DEBUG] Writing tracking file D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\local-repo\org\sonatype\spice\spice-parent\16\_remote.repositories
+[INFO] [DEBUG] Writing tracking file D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\local-repo\org\sonatype\spice\spice-parent\16\spice-parent-16.pom.lastUpdated
+[INFO] [DEBUG] Using transporter WagonTransporter with priority -1.0 for http://localhost:65098
+[INFO] [DEBUG] Using connector BasicRepositoryConnector with priority 0.0 for http://localhost:65098
+[INFO] [INFO] Downloading: http://localhost:65098/org/apache/maven/maven-artifact/3.0/maven-artifact-3.0.pom
+[INFO] [INFO] Downloaded: http://localhost:65098/org/apache/maven/maven-artifact/3.0/maven-artifact-3.0.pom (2 KB at 58.8 KB/sec)
+[INFO] [DEBUG] Writing tracking file D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\local-repo\org\apache\maven\maven-artifact\3.0\_remote.repositories
+[INFO] [DEBUG] Writing tracking file D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\local-repo\org\apache\maven\maven-artifact\3.0\maven-artifact-3.0.pom.lastUpdated
+[INFO] [DEBUG] Using transporter WagonTransporter with priority -1.0 for http://localhost:65098
+[INFO] [DEBUG] Using connector BasicRepositoryConnector with priority 0.0 for http://localhost:65098
+[INFO] [INFO] Downloading: http://localhost:65098/org/apache/maven/maven/3.0/maven-3.0.pom
+[INFO] [INFO] Downloaded: http://localhost:65098/org/apache/maven/maven/3.0/maven-3.0.pom (22 KB at 548.0 KB/sec)
+[INFO] [DEBUG] Writing tracking file D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\local-repo\org\apache\maven\maven\3.0\_remote.repositories
+[INFO] [DEBUG] Writing tracking file D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\local-repo\org\apache\maven\maven\3.0\maven-3.0.pom.lastUpdated
+[INFO] [DEBUG] Using transporter WagonTransporter with priority -1.0 for http://localhost:65098
+[INFO] [DEBUG] Using connector BasicRepositoryConnector with priority 0.0 for http://localhost:65098
+[INFO] [INFO] Downloading: http://localhost:65098/org/apache/maven/maven-parent/15/maven-parent-15.pom
+[INFO] [INFO] Downloaded: http://localhost:65098/org/apache/maven/maven-parent/15/maven-parent-15.pom (24 KB at 532.7 KB/sec)
+[INFO] [DEBUG] Writing tracking file D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\local-repo\org\apache\maven\maven-parent\15\_remote.repositories
+[INFO] [DEBUG] Writing tracking file D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\local-repo\org\apache\maven\maven-parent\15\maven-parent-15.pom.lastUpdated
+[INFO] [DEBUG] Using transporter WagonTransporter with priority -1.0 for http://localhost:65098
+[INFO] [DEBUG] Using connector BasicRepositoryConnector with priority 0.0 for http://localhost:65098
+[INFO] [INFO] Downloading: http://localhost:65098/org/apache/apache/6/apache-6.pom
+[INFO] [INFO] Downloaded: http://localhost:65098/org/apache/apache/6/apache-6.pom (13 KB at 260.3 KB/sec)
+[INFO] [DEBUG] Writing tracking file D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\local-repo\org\apache\apache\6\_remote.repositories
+[INFO] [DEBUG] Writing tracking file D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\local-repo\org\apache\apache\6\apache-6.pom.lastUpdated
+[INFO] [DEBUG] Using transporter WagonTransporter with priority -1.0 for http://localhost:65098
+[INFO] [DEBUG] Using connector BasicRepositoryConnector with priority 0.0 for http://localhost:65098
+[INFO] [INFO] Downloading: http://localhost:65098/org/codehaus/plexus/plexus-utils/2.0.4/plexus-utils-2.0.4.pom
+[INFO] [INFO] Downloaded: http://localhost:65098/org/codehaus/plexus/plexus-utils/2.0.4/plexus-utils-2.0.4.pom (4 KB at 108.5 KB/sec)
+[INFO] [DEBUG] Writing tracking file D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\local-repo\org\codehaus\plexus\plexus-utils\2.0.4\_remote.repositories
+[INFO] [DEBUG] Writing tracking file D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\local-repo\org\codehaus\plexus\plexus-utils\2.0.4\plexus-utils-2.0.4.pom.lastUpdated
+[INFO] [DEBUG] Using transporter WagonTransporter with priority -1.0 for http://localhost:65098
+[INFO] [DEBUG] Using connector BasicRepositoryConnector with priority 0.0 for http://localhost:65098
+[INFO] [INFO] Downloading: http://localhost:65098/org/codehaus/plexus/plexus/2.0.6/plexus-2.0.6.pom
+[INFO] [INFO] Downloaded: http://localhost:65098/org/codehaus/plexus/plexus/2.0.6/plexus-2.0.6.pom (17 KB at 545.7 KB/sec)
+[INFO] [DEBUG] Writing tracking file D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\local-repo\org\codehaus\plexus\plexus\2.0.6\_remote.repositories
+[INFO] [DEBUG] Writing tracking file D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\local-repo\org\codehaus\plexus\plexus\2.0.6\plexus-2.0.6.pom.lastUpdated
+[INFO] [DEBUG] Using transporter WagonTransporter with priority -1.0 for http://localhost:65098
+[INFO] [DEBUG] Using connector BasicRepositoryConnector with priority 0.0 for http://localhost:65098
+[INFO] [INFO] Downloading: http://localhost:65098/org/codehaus/plexus/plexus-utils/1.5.8/plexus-utils-1.5.8.pom
+[INFO] [INFO] Downloaded: http://localhost:65098/org/codehaus/plexus/plexus-utils/1.5.8/plexus-utils-1.5.8.pom (8 KB at 262.5 KB/sec)
+[INFO] [DEBUG] Writing tracking file D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\local-repo\org\codehaus\plexus\plexus-utils\1.5.8\_remote.repositories
+[INFO] [DEBUG] Writing tracking file D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\local-repo\org\codehaus\plexus\plexus-utils\1.5.8\plexus-utils-1.5.8.pom.lastUpdated
+[INFO] [DEBUG] Using transporter WagonTransporter with priority -1.0 for http://localhost:65098
+[INFO] [DEBUG] Using connector BasicRepositoryConnector with priority 0.0 for http://localhost:65098
+[INFO] [INFO] Downloading: http://localhost:65098/org/codehaus/plexus/plexus/2.0.2/plexus-2.0.2.pom
+[INFO] [INFO] Downloaded: http://localhost:65098/org/codehaus/plexus/plexus/2.0.2/plexus-2.0.2.pom (12 KB at 472.4 KB/sec)
+[INFO] [DEBUG] Writing tracking file D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\local-repo\org\codehaus\plexus\plexus\2.0.2\_remote.repositories
+[INFO] [DEBUG] Writing tracking file D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\local-repo\org\codehaus\plexus\plexus\2.0.2\plexus-2.0.2.pom.lastUpdated
+[INFO] [DEBUG] Dependency collection stats: {ConflictMarker.analyzeTime=0, ConflictMarker.markTime=1, ConflictMarker.nodeCount=39, ConflictIdSorter.graphTime=0, ConflictIdSorter.topsortTime=1, ConflictIdSorter.conflictIdCount=31, ConflictIdSorter.conflictIdCycleCount=0, ConflictResolver.totalTime=5, ConflictResolver.conflictItemCount=38, DefaultDependencyCollector.collectTime=3287, DefaultDependencyCollector.transformTime=25}
+[INFO] [DEBUG] com.github.eirslett:frontend-maven-plugin:jar:1.7-SNAPSHOT:
+[INFO] [DEBUG]    com.github.eirslett:frontend-plugin-core:jar:1.7-SNAPSHOT:compile
+[INFO] [DEBUG]       org.codehaus.jackson:jackson-mapper-asl:jar:1.9.13:compile
+[INFO] [DEBUG]       org.codehaus.jackson:jackson-core-asl:jar:1.9.13:compile
+[INFO] [DEBUG]       org.apache.commons:commons-compress:jar:1.5:compile
+[INFO] [DEBUG]          org.tukaani:xz:jar:1.2:compile
+[INFO] [DEBUG]       commons-io:commons-io:jar:1.3.2:compile
+[INFO] [DEBUG]       org.apache.commons:commons-exec:jar:1.3:compile
+[INFO] [DEBUG]       org.apache.httpcomponents:httpclient:jar:4.5.1:compile
+[INFO] [DEBUG]          org.apache.httpcomponents:httpcore:jar:4.4.3:compile
+[INFO] [DEBUG]          commons-logging:commons-logging:jar:1.2:compile
+[INFO] [DEBUG]          commons-codec:commons-codec:jar:1.9:compile
+[INFO] [DEBUG]       org.codehaus.plexus:plexus-utils:jar:3.0.22:compile
+[INFO] [DEBUG]       org.slf4j:slf4j-api:jar:1.7.5:compile
+[INFO] [DEBUG]    org.apache.maven:maven-plugin-api:jar:3.1.0:compile
+[INFO] [DEBUG]       org.apache.maven:maven-model:jar:3.1.0:compile
+[INFO] [DEBUG]       org.apache.maven:maven-artifact:jar:3.1.0:compile
+[INFO] [DEBUG]       org.eclipse.sisu:org.eclipse.sisu.plexus:jar:0.0.0.M2a:compile
+[INFO] [DEBUG]          javax.enterprise:cdi-api:jar:1.0:compile
+[INFO] [DEBUG]             javax.annotation:jsr250-api:jar:1.0:compile
+[INFO] [DEBUG]             javax.inject:javax.inject:jar:1:compile
+[INFO] [DEBUG]          com.google.guava:guava:jar:10.0.1:compile
+[INFO] [DEBUG]             com.google.code.findbugs:jsr305:jar:1.3.9:compile
+[INFO] [DEBUG]          org.sonatype.sisu:sisu-guice:jar:no_aop:3.1.0:compile
+[INFO] [DEBUG]             aopalliance:aopalliance:jar:1.0:compile
+[INFO] [DEBUG]          org.eclipse.sisu:org.eclipse.sisu.inject:jar:0.0.0.M2a:compile
+[INFO] [DEBUG]             asm:asm:jar:3.3.1:compile
+[INFO] [DEBUG]          org.codehaus.plexus:plexus-component-annotations:jar:1.5.5:compile
+[INFO] [DEBUG]          org.codehaus.plexus:plexus-classworlds:jar:2.4:compile
+[INFO] [DEBUG]    org.apache.maven.plugin-tools:maven-plugin-annotations:jar:3.2:compile
+[INFO] [DEBUG]    org.sonatype.plexus:plexus-build-api:jar:0.0.7:compile
+[INFO] [DEBUG] Using transporter WagonTransporter with priority -1.0 for http://localhost:65098
+[INFO] [DEBUG] Using connector BasicRepositoryConnector with priority 0.0 for http://localhost:65098
+[INFO] [INFO] Downloading: http://localhost:65098/org/codehaus/plexus/plexus-classworlds/2.4/plexus-classworlds-2.4.jar
+[INFO] [INFO] Downloaded: http://localhost:65098/org/codehaus/plexus/plexus-classworlds/2.4/plexus-classworlds-2.4.jar (46 KB at 193.1 KB/sec)
+[INFO] [DEBUG] Writing tracking file D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\local-repo\org\codehaus\plexus\plexus-classworlds\2.4\_remote.repositories
+[INFO] [DEBUG] Writing tracking file D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\local-repo\org\codehaus\plexus\plexus-classworlds\2.4\plexus-classworlds-2.4.jar.lastUpdated
+[INFO] [DEBUG] Created new class realm plugin>com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT
+[INFO] [DEBUG] Importing foreign packages into class realm plugin>com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT
+[INFO] [DEBUG]   Imported:  < maven.api
+[INFO] [DEBUG] Populating class realm plugin>com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT
+[INFO] [DEBUG]   Included: com.github.eirslett:frontend-maven-plugin:jar:1.7-SNAPSHOT
+[INFO] [DEBUG]   Included: com.github.eirslett:frontend-plugin-core:jar:1.7-SNAPSHOT
+[INFO] [DEBUG]   Included: org.codehaus.jackson:jackson-mapper-asl:jar:1.9.13
+[INFO] [DEBUG]   Included: org.codehaus.jackson:jackson-core-asl:jar:1.9.13
+[INFO] [DEBUG]   Included: org.apache.commons:commons-compress:jar:1.5
+[INFO] [DEBUG]   Included: org.tukaani:xz:jar:1.2
+[INFO] [DEBUG]   Included: commons-io:commons-io:jar:1.3.2
+[INFO] [DEBUG]   Included: org.apache.commons:commons-exec:jar:1.3
+[INFO] [DEBUG]   Included: org.apache.httpcomponents:httpclient:jar:4.5.1
+[INFO] [DEBUG]   Included: org.apache.httpcomponents:httpcore:jar:4.4.3
+[INFO] [DEBUG]   Included: commons-logging:commons-logging:jar:1.2
+[INFO] [DEBUG]   Included: commons-codec:commons-codec:jar:1.9
+[INFO] [DEBUG]   Included: org.codehaus.plexus:plexus-utils:jar:3.0.22
+[INFO] [DEBUG]   Included: javax.enterprise:cdi-api:jar:1.0
+[INFO] [DEBUG]   Included: javax.annotation:jsr250-api:jar:1.0
+[INFO] [DEBUG]   Included: com.google.guava:guava:jar:10.0.1
+[INFO] [DEBUG]   Included: com.google.code.findbugs:jsr305:jar:1.3.9
+[INFO] [DEBUG]   Included: org.sonatype.sisu:sisu-guice:jar:no_aop:3.1.0
+[INFO] [DEBUG]   Included: aopalliance:aopalliance:jar:1.0
+[INFO] [DEBUG]   Included: org.eclipse.sisu:org.eclipse.sisu.inject:jar:0.0.0.M2a
+[INFO] [DEBUG]   Included: asm:asm:jar:3.3.1
+[INFO] [DEBUG]   Included: org.codehaus.plexus:plexus-component-annotations:jar:1.5.5
+[INFO] [DEBUG]   Included: org.apache.maven.plugin-tools:maven-plugin-annotations:jar:3.2
+[INFO] [DEBUG]   Included: org.sonatype.plexus:plexus-build-api:jar:0.0.7
+[INFO] [DEBUG] Configuring mojo com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT:install-node-and-npm from plugin realm ClassRealm[plugin>com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT, parent: sun.misc.Launcher$AppClassLoader@33909752]
+[INFO] [DEBUG] Configuring mojo 'com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT:install-node-and-npm' with basic configurator -->
+[INFO] [DEBUG]   (f) installDirectory = D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\custom-install-directory\target
+[INFO] [DEBUG]   (f) nodeDownloadRoot = https://nodejs.org/dist/
+[INFO] [DEBUG]   (f) nodeVersion = v8.11.1
+[INFO] [DEBUG]   (f) npmDownloadRoot = https://registry.npmjs.org/npm/-/
+[INFO] [DEBUG]   (f) npmVersion = 5.6.0
+[INFO] [DEBUG]   (f) project = MavenProject: com.github.eirslett:example:0 @ D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\custom-install-directory\pom.xml
+[INFO] [DEBUG]   (f) repositorySystemSession = org.eclipse.aether.DefaultRepositorySystemSession@26f3d90c
+[INFO] [DEBUG]   (f) session = org.apache.maven.execution.MavenSession@3c49fab6
+[INFO] [DEBUG]   (f) skipTests = false
+[INFO] [DEBUG]   (f) testFailureIgnore = false
+[INFO] [DEBUG]   (f) workingDirectory = D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\custom-install-directory
+[INFO] [DEBUG]   (f) execution = com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT:install-node-and-npm {execution: install node and npm}
+[INFO] [DEBUG] -- end configuration --
+[INFO] [INFO] Installing node version v8.11.1
+[INFO] [DEBUG] Creating install directory D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\custom-install-directory\target\node
+[INFO] [INFO] Downloading https://nodejs.org/dist/v8.11.1/win-x64/node.exe to D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\local-repo\com\github\eirslett\node\8.11.1\node-8.11.1-win-x64.exe
+[INFO] [INFO] Copying node binary from D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\local-repo\com\github\eirslett\node\8.11.1\node-8.11.1-win-x64.exe to D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\custom-install-directory\target\node\node.exe
+[INFO] [INFO] Installed node locally.
+[INFO] [INFO] Installing npm version 5.6.0
+[INFO] [INFO] Downloading https://registry.npmjs.org/npm/-/npm-5.6.0.tgz to D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\local-repo\com\github\eirslett\npm\5.6.0\npm-5.6.0.tar.gz
+[INFO] [INFO] Unpacking D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\local-repo\com\github\eirslett\npm\5.6.0\npm-5.6.0.tar.gz into D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\custom-install-directory\target\node\node_modules
+[INFO] [INFO] Installed npm locally.
+[INFO] [INFO] 
+[INFO] [INFO] --- frontend-maven-plugin:1.7-SNAPSHOT:npm (npm install) @ example ---
+[INFO] [DEBUG] Configuring mojo com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT:npm from plugin realm ClassRealm[plugin>com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT, parent: sun.misc.Launcher$AppClassLoader@33909752]
+[INFO] [DEBUG] Configuring mojo 'com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT:npm' with basic configurator -->
+[INFO] [DEBUG]   (f) arguments = install
+[INFO] [DEBUG]   (f) installDirectory = D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\custom-install-directory\target
+[INFO] [DEBUG]   (f) npmInheritsProxyConfigFromMaven = true
+[INFO] [DEBUG]   (f) project = MavenProject: com.github.eirslett:example:0 @ D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\custom-install-directory\pom.xml
+[INFO] [DEBUG]   (f) repositorySystemSession = org.eclipse.aether.DefaultRepositorySystemSession@26f3d90c
+[INFO] [DEBUG]   (f) session = org.apache.maven.execution.MavenSession@3c49fab6
+[INFO] [DEBUG]   (f) skipTests = false
+[INFO] [DEBUG]   (f) testFailureIgnore = false
+[INFO] [DEBUG]   (f) workingDirectory = D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\custom-install-directory
+[INFO] [DEBUG]   (f) execution = com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT:npm {execution: npm install}
+[INFO] [DEBUG] -- end configuration --
+[INFO] [INFO] Running 'npm install' in D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\custom-install-directory
+[INFO] [DEBUG] Executing command line [D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\custom-install-directory\target\node\node.exe, D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\custom-install-directory\target\node\node_modules\npm\bin\npm-cli.js, install]
+[INFO] [ERROR] npm notice created a lockfile as package-lock.json. You should commit this file.
+[INFO] [WARNING] npm WARN example@0.0.1 No description
+[INFO] [WARNING] npm WARN example@0.0.1 No repository field.
+[INFO] [WARNING] npm WARN example@0.0.1 No license field.
+[INFO] [ERROR] 
+[INFO] [INFO] added 57 packages in 20.646s
+[INFO] [DEBUG] Exit value 0
+[INFO] [INFO] ------------------------------------------------------------------------
+[INFO] [INFO] BUILD SUCCESS
+[INFO] [INFO] ------------------------------------------------------------------------
+[INFO] [INFO] Total time: 02:21 min
+[INFO] [INFO] Finished at: 2018-07-16T19:24:46+08:00
+[INFO] [INFO] Final Memory: 15M/281M
+[INFO] [INFO] ------------------------------------------------------------------------
+[INFO] run script verify.groovy
+[INFO] Running post-build script: D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\custom-install-directory\verify.groovy
+[INFO] Finished post-build script: D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\custom-install-directory\verify.groovy
+[INFO] ..SUCCESS (145.4 s)
+[INFO] Building: custom-working-directory\pom.xml
+[INFO] Apache Maven 3.3.9 (bb52d8502b132ec0a5a3f4c09453c07478323dc5; 2015-11-11T00:41:47+08:00)
+[INFO] Maven home: D:\Program Files\apache\maven\3.3.9\bin\..
+[INFO] Java version: 1.8.0_152, vendor: Oracle Corporation
+[INFO] Java home: D:\Program Files\Java\jdk1.8.0_152\jre
+[INFO] Default locale: zh_CN, platform encoding: GBK
+[INFO] OS name: "windows 7", version: "6.1", arch: "amd64", family: "dos"
+[INFO] [DEBUG] Created new class realm maven.api
+[INFO] [DEBUG] Importing foreign packages into class realm maven.api
+[INFO] [DEBUG]   Imported: javax.enterprise.inject.* < plexus.core
+[INFO] [DEBUG]   Imported: javax.enterprise.util.* < plexus.core
+[INFO] [DEBUG]   Imported: javax.inject.* < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.* < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.artifact < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.classrealm < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.cli < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.configuration < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.exception < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.execution < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.execution.scope < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.lifecycle < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.model < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.monitor < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.plugin < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.profiles < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.project < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.reporting < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.repository < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.rtinfo < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.settings < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.toolchain < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.usability < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.wagon.* < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.wagon.authentication < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.wagon.authorization < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.wagon.events < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.wagon.observers < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.wagon.proxy < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.wagon.repository < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.wagon.resource < plexus.core
+[INFO] [DEBUG]   Imported: org.codehaus.classworlds < plexus.core
+[INFO] [DEBUG]   Imported: org.codehaus.plexus.* < plexus.core
+[INFO] [DEBUG]   Imported: org.codehaus.plexus.classworlds < plexus.core
+[INFO] [DEBUG]   Imported: org.codehaus.plexus.component < plexus.core
+[INFO] [DEBUG]   Imported: org.codehaus.plexus.configuration < plexus.core
+[INFO] [DEBUG]   Imported: org.codehaus.plexus.container < plexus.core
+[INFO] [DEBUG]   Imported: org.codehaus.plexus.context < plexus.core
+[INFO] [DEBUG]   Imported: org.codehaus.plexus.lifecycle < plexus.core
+[INFO] [DEBUG]   Imported: org.codehaus.plexus.logging < plexus.core
+[INFO] [DEBUG]   Imported: org.codehaus.plexus.personality < plexus.core
+[INFO] [DEBUG]   Imported: org.codehaus.plexus.util.xml.Xpp3Dom < plexus.core
+[INFO] [DEBUG]   Imported: org.codehaus.plexus.util.xml.pull.XmlPullParser < plexus.core
+[INFO] [DEBUG]   Imported: org.codehaus.plexus.util.xml.pull.XmlPullParserException < plexus.core
+[INFO] [DEBUG]   Imported: org.codehaus.plexus.util.xml.pull.XmlSerializer < plexus.core
+[INFO] [DEBUG]   Imported: org.eclipse.aether.* < plexus.core
+[INFO] [DEBUG]   Imported: org.eclipse.aether.artifact < plexus.core
+[INFO] [DEBUG]   Imported: org.eclipse.aether.collection < plexus.core
+[INFO] [DEBUG]   Imported: org.eclipse.aether.deployment < plexus.core
+[INFO] [DEBUG]   Imported: org.eclipse.aether.graph < plexus.core
+[INFO] [DEBUG]   Imported: org.eclipse.aether.impl < plexus.core
+[INFO] [DEBUG]   Imported: org.eclipse.aether.installation < plexus.core
+[INFO] [DEBUG]   Imported: org.eclipse.aether.internal.impl < plexus.core
+[INFO] [DEBUG]   Imported: org.eclipse.aether.metadata < plexus.core
+[INFO] [DEBUG]   Imported: org.eclipse.aether.repository < plexus.core
+[INFO] [DEBUG]   Imported: org.eclipse.aether.resolution < plexus.core
+[INFO] [DEBUG]   Imported: org.eclipse.aether.spi < plexus.core
+[INFO] [DEBUG]   Imported: org.eclipse.aether.transfer < plexus.core
+[INFO] [DEBUG]   Imported: org.eclipse.aether.version < plexus.core
+[INFO] [DEBUG]   Imported: org.slf4j.* < plexus.core
+[INFO] [DEBUG]   Imported: org.slf4j.helpers.* < plexus.core
+[INFO] [DEBUG]   Imported: org.slf4j.spi.* < plexus.core
+[INFO] [DEBUG] Populating class realm maven.api
+[INFO] [INFO] Error stacktraces are turned on.
+[INFO] [DEBUG] Reading global settings from D:\Program Files\apache\maven\3.3.9\bin\..\conf\settings.xml
+[INFO] [DEBUG] Reading user settings from D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\interpolated-settings.xml
+[INFO] [DEBUG] Reading global toolchains from D:\Program Files\apache\maven\3.3.9\bin\..\conf\toolchains.xml
+[INFO] [DEBUG] Reading user toolchains from C:\Users\hzzhoujunlin\.m2\toolchains.xml
+[INFO] [DEBUG] Using local repository at D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\local-repo
+[INFO] [DEBUG] Using manager EnhancedLocalRepositoryManager with priority 10.0 for D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\local-repo
+[INFO] [INFO] Scanning for projects...
+[INFO] [DEBUG] Using mirror mrm-maven-plugin (http://localhost:65098) for local.central (http://localhost:65098).
+[INFO] [DEBUG] Using mirror alimaven (http://maven.aliyun.com/nexus/content/groups/public/) for central (https://repo.maven.apache.org/maven2).
+[INFO] [DEBUG] Extension realms for project com.github.eirslett:example:pom:0: (none)
+[INFO] [DEBUG] Looking up lifecyle mappings for packaging pom from ClassRealm[plexus.core, parent: null]
+[INFO] [DEBUG] === REACTOR BUILD PLAN ================================================
+[INFO] [DEBUG] Project: com.github.eirslett:example:pom:0
+[INFO] [DEBUG] Tasks:   [package]
+[INFO] [DEBUG] Style:   Regular
+[INFO] [DEBUG] =======================================================================
+[INFO] [INFO]                                                                         
+[INFO] [INFO] ------------------------------------------------------------------------
+[INFO] [INFO] Building example 0
+[INFO] [INFO] ------------------------------------------------------------------------
+[INFO] [DEBUG] Lifecycle default -> [validate, initialize, generate-sources, process-sources, generate-resources, process-resources, compile, process-classes, generate-test-sources, process-test-sources, generate-test-resources, process-test-resources, test-compile, process-test-classes, test, prepare-package, package, pre-integration-test, integration-test, post-integration-test, verify, install, deploy]
+[INFO] [DEBUG] Lifecycle clean -> [pre-clean, clean, post-clean]
+[INFO] [DEBUG] Lifecycle site -> [pre-site, site, post-site, site-deploy]
+[INFO] [DEBUG] Skipped remote request for com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT/maven-metadata.xml, locally installed metadata up-to-date.
+[INFO] [DEBUG] Skipped remote request for com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT/maven-metadata.xml, locally installed metadata up-to-date.
+[INFO] [DEBUG] Skipped remote request for com.github.eirslett:frontend-plugins:1.7-SNAPSHOT/maven-metadata.xml, locally installed metadata up-to-date.
+[INFO] [DEBUG] Using mirror mrm-maven-plugin (http://localhost:65098) for sonatype-nexus-snapshots (https://oss.sonatype.org/content/repositories/snapshots).
+[INFO] [DEBUG] Lifecycle default -> [validate, initialize, generate-sources, process-sources, generate-resources, process-resources, compile, process-classes, generate-test-sources, process-test-sources, generate-test-resources, process-test-resources, test-compile, process-test-classes, test, prepare-package, package, pre-integration-test, integration-test, post-integration-test, verify, install, deploy]
+[INFO] [DEBUG] Lifecycle clean -> [pre-clean, clean, post-clean]
+[INFO] [DEBUG] Lifecycle site -> [pre-site, site, post-site, site-deploy]
+[INFO] [DEBUG] === PROJECT BUILD PLAN ================================================
+[INFO] [DEBUG] Project:       com.github.eirslett:example:0
+[INFO] [DEBUG] Dependencies (collect): []
+[INFO] [DEBUG] Dependencies (resolve): []
+[INFO] [DEBUG] Repositories (dependencies): [mrm-maven-plugin (http://localhost:65098, default, releases+snapshots), alimaven (http://maven.aliyun.com/nexus/content/groups/public/, default, releases)]
+[INFO] [DEBUG] Repositories (plugins)     : [mrm-maven-plugin (http://localhost:65098, default, releases+snapshots), alimaven (http://maven.aliyun.com/nexus/content/groups/public/, default, releases)]
+[INFO] [DEBUG] -----------------------------------------------------------------------
+[INFO] [DEBUG] Goal:          com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT:install-node-and-npm (install node and npm)
+[INFO] [DEBUG] Style:         Regular
+[INFO] [DEBUG] Configuration: <?xml version="1.0" encoding="UTF-8"?>
+[INFO] <configuration>
+[INFO]   <downloadRoot default-value="">${downloadRoot}</downloadRoot>
+[INFO]   <installDirectory>${installDirectory}</installDirectory>
+[INFO]   <nodeDownloadRoot default-value="https://nodejs.org/dist/">${nodeDownloadRoot}</nodeDownloadRoot>
+[INFO]   <nodeVersion>v8.11.1</nodeVersion>
+[INFO]   <npmDownloadRoot default-value="https://registry.npmjs.org/npm/-/">${npmDownloadRoot}</npmDownloadRoot>
+[INFO]   <npmVersion default-value="provided">5.6.0</npmVersion>
+[INFO]   <project default-value="${project}"/>
+[INFO]   <repositorySystemSession default-value="${repositorySystemSession}"/>
+[INFO]   <serverId default-value="">${serverId}</serverId>
+[INFO]   <session default-value="${session}">${session}</session>
+[INFO]   <skip default-value="${skip.installnodenpm}">${skip.installnodenpm}</skip>
+[INFO]   <skipTests default-value="false">${skipTests}</skipTests>
+[INFO]   <testFailureIgnore default-value="false">${maven.test.failure.ignore}</testFailureIgnore>
+[INFO]   <workingDirectory default-value="${basedir}">src/main/frontend</workingDirectory>
+[INFO]   <execution default-value="${mojoExecution}"/>
+[INFO] </configuration>
+[INFO] [DEBUG] -----------------------------------------------------------------------
+[INFO] [DEBUG] Goal:          com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT:npm (npm install)
+[INFO] [DEBUG] Style:         Regular
+[INFO] [DEBUG] Configuration: <?xml version="1.0" encoding="UTF-8"?>
+[INFO] <configuration>
+[INFO]   <arguments default-value="install">install</arguments>
+[INFO]   <installDirectory>${installDirectory}</installDirectory>
+[INFO]   <npmInheritsProxyConfigFromMaven default-value="true">${frontend.npm.npmInheritsProxyConfigFromMaven}</npmInheritsProxyConfigFromMaven>
+[INFO]   <npmRegistryURL default-value="">${npmRegistryURL}</npmRegistryURL>
+[INFO]   <project default-value="${project}"/>
+[INFO]   <repositorySystemSession default-value="${repositorySystemSession}"/>
+[INFO]   <session default-value="${session}">${session}</session>
+[INFO]   <skip default-value="${skip.npm}">${skip.npm}</skip>
+[INFO]   <skipTests default-value="false">${skipTests}</skipTests>
+[INFO]   <testFailureIgnore default-value="false">${maven.test.failure.ignore}</testFailureIgnore>
+[INFO]   <workingDirectory default-value="${basedir}">src/main/frontend</workingDirectory>
+[INFO]   <execution default-value="${mojoExecution}"/>
+[INFO] </configuration>
+[INFO] [DEBUG] =======================================================================
+[INFO] [INFO] 
+[INFO] [INFO] --- frontend-maven-plugin:1.7-SNAPSHOT:install-node-and-npm (install node and npm) @ example ---
+[INFO] [DEBUG] Skipped remote request for com.github.eirslett:frontend-plugin-core:1.7-SNAPSHOT/maven-metadata.xml, locally installed metadata up-to-date.
+[INFO] [DEBUG] Skipped remote request for com.github.eirslett:frontend-plugin-core:1.7-SNAPSHOT/maven-metadata.xml, locally installed metadata up-to-date.
+[INFO] [DEBUG] Using mirror mrm-maven-plugin (http://localhost:65098) for apache.snapshots (http://repository.apache.org/snapshots).
+[INFO] [DEBUG] Using mirror mrm-maven-plugin (http://localhost:65098) for apache.snapshots (http://people.apache.org/repo/m2-snapshot-repository).
+[INFO] [DEBUG] Using mirror mrm-maven-plugin (http://localhost:65098) for repository.jboss.org (http://repository.jboss.org/maven2).
+[INFO] [DEBUG] Using mirror mrm-maven-plugin (http://localhost:65098) for snapshots.jboss.org (http://snapshots.jboss.org/maven2).
+[INFO] [DEBUG] Using mirror mrm-maven-plugin (http://localhost:65098) for oss.sonatype.org/jboss-snapshots (http://oss.sonatype.org/content/repositories/jboss-snapshots).
+[INFO] [DEBUG] Dependency collection stats: {ConflictMarker.analyzeTime=1, ConflictMarker.markTime=0, ConflictMarker.nodeCount=39, ConflictIdSorter.graphTime=1, ConflictIdSorter.topsortTime=0, ConflictIdSorter.conflictIdCount=31, ConflictIdSorter.conflictIdCycleCount=0, ConflictResolver.totalTime=7, ConflictResolver.conflictItemCount=38, DefaultDependencyCollector.collectTime=475, DefaultDependencyCollector.transformTime=10}
+[INFO] [DEBUG] com.github.eirslett:frontend-maven-plugin:jar:1.7-SNAPSHOT:
+[INFO] [DEBUG]    com.github.eirslett:frontend-plugin-core:jar:1.7-SNAPSHOT:compile
+[INFO] [DEBUG]       org.codehaus.jackson:jackson-mapper-asl:jar:1.9.13:compile
+[INFO] [DEBUG]       org.codehaus.jackson:jackson-core-asl:jar:1.9.13:compile
+[INFO] [DEBUG]       org.apache.commons:commons-compress:jar:1.5:compile
+[INFO] [DEBUG]          org.tukaani:xz:jar:1.2:compile
+[INFO] [DEBUG]       commons-io:commons-io:jar:1.3.2:compile
+[INFO] [DEBUG]       org.apache.commons:commons-exec:jar:1.3:compile
+[INFO] [DEBUG]       org.apache.httpcomponents:httpclient:jar:4.5.1:compile
+[INFO] [DEBUG]          org.apache.httpcomponents:httpcore:jar:4.4.3:compile
+[INFO] [DEBUG]          commons-logging:commons-logging:jar:1.2:compile
+[INFO] [DEBUG]          commons-codec:commons-codec:jar:1.9:compile
+[INFO] [DEBUG]       org.codehaus.plexus:plexus-utils:jar:3.0.22:compile
+[INFO] [DEBUG]       org.slf4j:slf4j-api:jar:1.7.5:compile
+[INFO] [DEBUG]    org.apache.maven:maven-plugin-api:jar:3.1.0:compile
+[INFO] [DEBUG]       org.apache.maven:maven-model:jar:3.1.0:compile
+[INFO] [DEBUG]       org.apache.maven:maven-artifact:jar:3.1.0:compile
+[INFO] [DEBUG]       org.eclipse.sisu:org.eclipse.sisu.plexus:jar:0.0.0.M2a:compile
+[INFO] [DEBUG]          javax.enterprise:cdi-api:jar:1.0:compile
+[INFO] [DEBUG]             javax.annotation:jsr250-api:jar:1.0:compile
+[INFO] [DEBUG]             javax.inject:javax.inject:jar:1:compile
+[INFO] [DEBUG]          com.google.guava:guava:jar:10.0.1:compile
+[INFO] [DEBUG]             com.google.code.findbugs:jsr305:jar:1.3.9:compile
+[INFO] [DEBUG]          org.sonatype.sisu:sisu-guice:jar:no_aop:3.1.0:compile
+[INFO] [DEBUG]             aopalliance:aopalliance:jar:1.0:compile
+[INFO] [DEBUG]          org.eclipse.sisu:org.eclipse.sisu.inject:jar:0.0.0.M2a:compile
+[INFO] [DEBUG]             asm:asm:jar:3.3.1:compile
+[INFO] [DEBUG]          org.codehaus.plexus:plexus-component-annotations:jar:1.5.5:compile
+[INFO] [DEBUG]          org.codehaus.plexus:plexus-classworlds:jar:2.4:compile
+[INFO] [DEBUG]    org.apache.maven.plugin-tools:maven-plugin-annotations:jar:3.2:compile
+[INFO] [DEBUG]    org.sonatype.plexus:plexus-build-api:jar:0.0.7:compile
+[INFO] [DEBUG] Created new class realm plugin>com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT
+[INFO] [DEBUG] Importing foreign packages into class realm plugin>com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT
+[INFO] [DEBUG]   Imported:  < maven.api
+[INFO] [DEBUG] Populating class realm plugin>com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT
+[INFO] [DEBUG]   Included: com.github.eirslett:frontend-maven-plugin:jar:1.7-SNAPSHOT
+[INFO] [DEBUG]   Included: com.github.eirslett:frontend-plugin-core:jar:1.7-SNAPSHOT
+[INFO] [DEBUG]   Included: org.codehaus.jackson:jackson-mapper-asl:jar:1.9.13
+[INFO] [DEBUG]   Included: org.codehaus.jackson:jackson-core-asl:jar:1.9.13
+[INFO] [DEBUG]   Included: org.apache.commons:commons-compress:jar:1.5
+[INFO] [DEBUG]   Included: org.tukaani:xz:jar:1.2
+[INFO] [DEBUG]   Included: commons-io:commons-io:jar:1.3.2
+[INFO] [DEBUG]   Included: org.apache.commons:commons-exec:jar:1.3
+[INFO] [DEBUG]   Included: org.apache.httpcomponents:httpclient:jar:4.5.1
+[INFO] [DEBUG]   Included: org.apache.httpcomponents:httpcore:jar:4.4.3
+[INFO] [DEBUG]   Included: commons-logging:commons-logging:jar:1.2
+[INFO] [DEBUG]   Included: commons-codec:commons-codec:jar:1.9
+[INFO] [DEBUG]   Included: org.codehaus.plexus:plexus-utils:jar:3.0.22
+[INFO] [DEBUG]   Included: javax.enterprise:cdi-api:jar:1.0
+[INFO] [DEBUG]   Included: javax.annotation:jsr250-api:jar:1.0
+[INFO] [DEBUG]   Included: com.google.guava:guava:jar:10.0.1
+[INFO] [DEBUG]   Included: com.google.code.findbugs:jsr305:jar:1.3.9
+[INFO] [DEBUG]   Included: org.sonatype.sisu:sisu-guice:jar:no_aop:3.1.0
+[INFO] [DEBUG]   Included: aopalliance:aopalliance:jar:1.0
+[INFO] [DEBUG]   Included: org.eclipse.sisu:org.eclipse.sisu.inject:jar:0.0.0.M2a
+[INFO] [DEBUG]   Included: asm:asm:jar:3.3.1
+[INFO] [DEBUG]   Included: org.codehaus.plexus:plexus-component-annotations:jar:1.5.5
+[INFO] [DEBUG]   Included: org.apache.maven.plugin-tools:maven-plugin-annotations:jar:3.2
+[INFO] [DEBUG]   Included: org.sonatype.plexus:plexus-build-api:jar:0.0.7
+[INFO] [DEBUG] Configuring mojo com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT:install-node-and-npm from plugin realm ClassRealm[plugin>com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT, parent: sun.misc.Launcher$AppClassLoader@33909752]
+[INFO] [DEBUG] Configuring mojo 'com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT:install-node-and-npm' with basic configurator -->
+[INFO] [DEBUG]   (f) nodeDownloadRoot = https://nodejs.org/dist/
+[INFO] [DEBUG]   (f) nodeVersion = v8.11.1
+[INFO] [DEBUG]   (f) npmDownloadRoot = https://registry.npmjs.org/npm/-/
+[INFO] [DEBUG]   (f) npmVersion = 5.6.0
+[INFO] [DEBUG]   (f) project = MavenProject: com.github.eirslett:example:0 @ D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\custom-working-directory\pom.xml
+[INFO] [DEBUG]   (f) repositorySystemSession = org.eclipse.aether.DefaultRepositorySystemSession@6a1d204a
+[INFO] [DEBUG]   (f) session = org.apache.maven.execution.MavenSession@62dae245
+[INFO] [DEBUG]   (f) skipTests = false
+[INFO] [DEBUG]   (f) testFailureIgnore = false
+[INFO] [DEBUG]   (f) workingDirectory = D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\custom-working-directory\src\main\frontend
+[INFO] [DEBUG]   (f) execution = com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT:install-node-and-npm {execution: install node and npm}
+[INFO] [DEBUG] -- end configuration --
+[INFO] [INFO] Installing node version v8.11.1
+[INFO] [DEBUG] Creating install directory D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\custom-working-directory\src\main\frontend\node
+[INFO] [INFO] Copying node binary from D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\local-repo\com\github\eirslett\node\8.11.1\node-8.11.1-win-x64.exe to D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\custom-working-directory\src\main\frontend\node\node.exe
+[INFO] [INFO] Installed node locally.
+[INFO] [INFO] Installing npm version 5.6.0
+[INFO] [INFO] Unpacking D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\local-repo\com\github\eirslett\npm\5.6.0\npm-5.6.0.tar.gz into D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\custom-working-directory\src\main\frontend\node\node_modules
+[INFO] [INFO] Installed npm locally.
+[INFO] [INFO] 
+[INFO] [INFO] --- frontend-maven-plugin:1.7-SNAPSHOT:npm (npm install) @ example ---
+[INFO] [DEBUG] Configuring mojo com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT:npm from plugin realm ClassRealm[plugin>com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT, parent: sun.misc.Launcher$AppClassLoader@33909752]
+[INFO] [DEBUG] Configuring mojo 'com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT:npm' with basic configurator -->
+[INFO] [DEBUG]   (f) arguments = install
+[INFO] [DEBUG]   (f) npmInheritsProxyConfigFromMaven = true
+[INFO] [DEBUG]   (f) project = MavenProject: com.github.eirslett:example:0 @ D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\custom-working-directory\pom.xml
+[INFO] [DEBUG]   (f) repositorySystemSession = org.eclipse.aether.DefaultRepositorySystemSession@6a1d204a
+[INFO] [DEBUG]   (f) session = org.apache.maven.execution.MavenSession@62dae245
+[INFO] [DEBUG]   (f) skipTests = false
+[INFO] [DEBUG]   (f) testFailureIgnore = false
+[INFO] [DEBUG]   (f) workingDirectory = D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\custom-working-directory\src\main\frontend
+[INFO] [DEBUG]   (f) execution = com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT:npm {execution: npm install}
+[INFO] [DEBUG] -- end configuration --
+[INFO] [INFO] Running 'npm install' in D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\custom-working-directory\src\main\frontend
+[INFO] [DEBUG] Executing command line [D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\custom-working-directory\src\main\frontend\node\node.exe, D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\custom-working-directory\src\main\frontend\node\node_modules\npm\bin\npm-cli.js, install]
+[INFO] [ERROR] npm notice created a lockfile as package-lock.json. You should commit this file.
+[INFO] [WARNING] npm WARN example@0.0.1 No description
+[INFO] [WARNING] npm WARN example@0.0.1 No repository field.
+[INFO] [WARNING] npm WARN example@0.0.1 No license field.
+[INFO] [ERROR] 
+[INFO] [INFO] added 57 packages in 18.848s
+[INFO] [DEBUG] Exit value 0
+[INFO] [INFO] ------------------------------------------------------------------------
+[INFO] [INFO] BUILD SUCCESS
+[INFO] [INFO] ------------------------------------------------------------------------
+[INFO] [INFO] Total time: 01:39 min
+[INFO] [INFO] Finished at: 2018-07-16T19:26:28+08:00
+[INFO] [INFO] Final Memory: 10M/155M
+[INFO] [INFO] ------------------------------------------------------------------------
+[INFO] run script verify.groovy
+[INFO] Running post-build script: D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\custom-working-directory\verify.groovy
+[INFO] Finished post-build script: D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\custom-working-directory\verify.groovy
+[INFO] ..SUCCESS (101.8 s)
+[INFO] Building: example project\pom.xml
+[INFO] Apache Maven 3.3.9 (bb52d8502b132ec0a5a3f4c09453c07478323dc5; 2015-11-11T00:41:47+08:00)
+[INFO] Maven home: D:\Program Files\apache\maven\3.3.9\bin\..
+[INFO] Java version: 1.8.0_152, vendor: Oracle Corporation
+[INFO] Java home: D:\Program Files\Java\jdk1.8.0_152\jre
+[INFO] Default locale: zh_CN, platform encoding: GBK
+[INFO] OS name: "windows 7", version: "6.1", arch: "amd64", family: "dos"
+[INFO] [DEBUG] Created new class realm maven.api
+[INFO] [DEBUG] Importing foreign packages into class realm maven.api
+[INFO] [DEBUG]   Imported: javax.enterprise.inject.* < plexus.core
+[INFO] [DEBUG]   Imported: javax.enterprise.util.* < plexus.core
+[INFO] [DEBUG]   Imported: javax.inject.* < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.* < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.artifact < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.classrealm < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.cli < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.configuration < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.exception < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.execution < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.execution.scope < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.lifecycle < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.model < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.monitor < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.plugin < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.profiles < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.project < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.reporting < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.repository < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.rtinfo < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.settings < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.toolchain < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.usability < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.wagon.* < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.wagon.authentication < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.wagon.authorization < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.wagon.events < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.wagon.observers < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.wagon.proxy < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.wagon.repository < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.wagon.resource < plexus.core
+[INFO] [DEBUG]   Imported: org.codehaus.classworlds < plexus.core
+[INFO] [DEBUG]   Imported: org.codehaus.plexus.* < plexus.core
+[INFO] [DEBUG]   Imported: org.codehaus.plexus.classworlds < plexus.core
+[INFO] [DEBUG]   Imported: org.codehaus.plexus.component < plexus.core
+[INFO] [DEBUG]   Imported: org.codehaus.plexus.configuration < plexus.core
+[INFO] [DEBUG]   Imported: org.codehaus.plexus.container < plexus.core
+[INFO] [DEBUG]   Imported: org.codehaus.plexus.context < plexus.core
+[INFO] [DEBUG]   Imported: org.codehaus.plexus.lifecycle < plexus.core
+[INFO] [DEBUG]   Imported: org.codehaus.plexus.logging < plexus.core
+[INFO] [DEBUG]   Imported: org.codehaus.plexus.personality < plexus.core
+[INFO] [DEBUG]   Imported: org.codehaus.plexus.util.xml.Xpp3Dom < plexus.core
+[INFO] [DEBUG]   Imported: org.codehaus.plexus.util.xml.pull.XmlPullParser < plexus.core
+[INFO] [DEBUG]   Imported: org.codehaus.plexus.util.xml.pull.XmlPullParserException < plexus.core
+[INFO] [DEBUG]   Imported: org.codehaus.plexus.util.xml.pull.XmlSerializer < plexus.core
+[INFO] [DEBUG]   Imported: org.eclipse.aether.* < plexus.core
+[INFO] [DEBUG]   Imported: org.eclipse.aether.artifact < plexus.core
+[INFO] [DEBUG]   Imported: org.eclipse.aether.collection < plexus.core
+[INFO] [DEBUG]   Imported: org.eclipse.aether.deployment < plexus.core
+[INFO] [DEBUG]   Imported: org.eclipse.aether.graph < plexus.core
+[INFO] [DEBUG]   Imported: org.eclipse.aether.impl < plexus.core
+[INFO] [DEBUG]   Imported: org.eclipse.aether.installation < plexus.core
+[INFO] [DEBUG]   Imported: org.eclipse.aether.internal.impl < plexus.core
+[INFO] [DEBUG]   Imported: org.eclipse.aether.metadata < plexus.core
+[INFO] [DEBUG]   Imported: org.eclipse.aether.repository < plexus.core
+[INFO] [DEBUG]   Imported: org.eclipse.aether.resolution < plexus.core
+[INFO] [DEBUG]   Imported: org.eclipse.aether.spi < plexus.core
+[INFO] [DEBUG]   Imported: org.eclipse.aether.transfer < plexus.core
+[INFO] [DEBUG]   Imported: org.eclipse.aether.version < plexus.core
+[INFO] [DEBUG]   Imported: org.slf4j.* < plexus.core
+[INFO] [DEBUG]   Imported: org.slf4j.helpers.* < plexus.core
+[INFO] [DEBUG]   Imported: org.slf4j.spi.* < plexus.core
+[INFO] [DEBUG] Populating class realm maven.api
+[INFO] [INFO] Error stacktraces are turned on.
+[INFO] [DEBUG] Reading global settings from D:\Program Files\apache\maven\3.3.9\bin\..\conf\settings.xml
+[INFO] [DEBUG] Reading user settings from D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\interpolated-settings.xml
+[INFO] [DEBUG] Reading global toolchains from D:\Program Files\apache\maven\3.3.9\bin\..\conf\toolchains.xml
+[INFO] [DEBUG] Reading user toolchains from C:\Users\hzzhoujunlin\.m2\toolchains.xml
+[INFO] [DEBUG] Using local repository at D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\local-repo
+[INFO] [DEBUG] Using manager EnhancedLocalRepositoryManager with priority 10.0 for D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\local-repo
+[INFO] [INFO] Scanning for projects...
+[INFO] [DEBUG] Using mirror mrm-maven-plugin (http://localhost:65098) for local.central (http://localhost:65098).
+[INFO] [DEBUG] Using mirror alimaven (http://maven.aliyun.com/nexus/content/groups/public/) for central (https://repo.maven.apache.org/maven2).
+[INFO] [DEBUG] Extension realms for project com.github.eirslett:example:pom:0: (none)
+[INFO] [DEBUG] Looking up lifecyle mappings for packaging pom from ClassRealm[plexus.core, parent: null]
+[INFO] [DEBUG] === REACTOR BUILD PLAN ================================================
+[INFO] [DEBUG] Project: com.github.eirslett:example:pom:0
+[INFO] [DEBUG] Tasks:   [clean, verify]
+[INFO] [DEBUG] Style:   Regular
+[INFO] [DEBUG] =======================================================================
+[INFO] [INFO]                                                                         
+[INFO] [INFO] ------------------------------------------------------------------------
+[INFO] [INFO] Building example 0
+[INFO] [INFO] ------------------------------------------------------------------------
+[INFO] [DEBUG] Lifecycle default -> [validate, initialize, generate-sources, process-sources, generate-resources, process-resources, compile, process-classes, generate-test-sources, process-test-sources, generate-test-resources, process-test-resources, test-compile, process-test-classes, test, prepare-package, package, pre-integration-test, integration-test, post-integration-test, verify, install, deploy]
+[INFO] [DEBUG] Lifecycle clean -> [pre-clean, clean, post-clean]
+[INFO] [DEBUG] Lifecycle site -> [pre-site, site, post-site, site-deploy]
+[INFO] [DEBUG] Skipped remote request for com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT/maven-metadata.xml, locally installed metadata up-to-date.
+[INFO] [DEBUG] Skipped remote request for com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT/maven-metadata.xml, locally installed metadata up-to-date.
+[INFO] [DEBUG] Skipped remote request for com.github.eirslett:frontend-plugins:1.7-SNAPSHOT/maven-metadata.xml, locally installed metadata up-to-date.
+[INFO] [DEBUG] Using mirror mrm-maven-plugin (http://localhost:65098) for sonatype-nexus-snapshots (https://oss.sonatype.org/content/repositories/snapshots).
+[INFO] [DEBUG] Lifecycle default -> [validate, initialize, generate-sources, process-sources, generate-resources, process-resources, compile, process-classes, generate-test-sources, process-test-sources, generate-test-resources, process-test-resources, test-compile, process-test-classes, test, prepare-package, package, pre-integration-test, integration-test, post-integration-test, verify, install, deploy]
+[INFO] [DEBUG] Lifecycle clean -> [pre-clean, clean, post-clean]
+[INFO] [DEBUG] Lifecycle site -> [pre-site, site, post-site, site-deploy]
+[INFO] [DEBUG] Using transporter WagonTransporter with priority -1.0 for http://localhost:65098
+[INFO] [DEBUG] Using connector BasicRepositoryConnector with priority 0.0 for http://localhost:65098
+[INFO] [INFO] Downloading: http://localhost:65098/org/apache/maven/plugins/maven-clean-plugin/2.5/maven-clean-plugin-2.5.pom
+[INFO] [INFO] Downloaded: http://localhost:65098/org/apache/maven/plugins/maven-clean-plugin/2.5/maven-clean-plugin-2.5.pom (4 KB at 33.3 KB/sec)
+[INFO] [DEBUG] Writing tracking file D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\local-repo\org\apache\maven\plugins\maven-clean-plugin\2.5\_remote.repositories
+[INFO] [DEBUG] Writing tracking file D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\local-repo\org\apache\maven\plugins\maven-clean-plugin\2.5\maven-clean-plugin-2.5.pom.lastUpdated
+[INFO] [DEBUG] Using transporter WagonTransporter with priority -1.0 for http://localhost:65098
+[INFO] [DEBUG] Using connector BasicRepositoryConnector with priority 0.0 for http://localhost:65098
+[INFO] [INFO] Downloading: http://localhost:65098/org/apache/maven/plugins/maven-plugins/22/maven-plugins-22.pom
+[INFO] [INFO] Downloaded: http://localhost:65098/org/apache/maven/plugins/maven-plugins/22/maven-plugins-22.pom (13 KB at 344.1 KB/sec)
+[INFO] [DEBUG] Writing tracking file D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\local-repo\org\apache\maven\plugins\maven-plugins\22\_remote.repositories
+[INFO] [DEBUG] Writing tracking file D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\local-repo\org\apache\maven\plugins\maven-plugins\22\maven-plugins-22.pom.lastUpdated
+[INFO] [DEBUG] Using mirror mrm-maven-plugin (http://localhost:65098) for apache.snapshots (http://repository.apache.org/snapshots).
+[INFO] [DEBUG] Using transporter WagonTransporter with priority -1.0 for http://localhost:65098
+[INFO] [DEBUG] Using connector BasicRepositoryConnector with priority 0.0 for http://localhost:65098
+[INFO] [INFO] Downloading: http://localhost:65098/org/apache/maven/maven-parent/21/maven-parent-21.pom
+[INFO] [INFO] Downloaded: http://localhost:65098/org/apache/maven/maven-parent/21/maven-parent-21.pom (26 KB at 830.3 KB/sec)
+[INFO] [DEBUG] Writing tracking file D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\local-repo\org\apache\maven\maven-parent\21\_remote.repositories
+[INFO] [DEBUG] Writing tracking file D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\local-repo\org\apache\maven\maven-parent\21\maven-parent-21.pom.lastUpdated
+[INFO] [DEBUG] Using transporter WagonTransporter with priority -1.0 for http://localhost:65098
+[INFO] [DEBUG] Using connector BasicRepositoryConnector with priority 0.0 for http://localhost:65098
+[INFO] [INFO] Downloading: http://localhost:65098/org/apache/apache/10/apache-10.pom
+[INFO] [INFO] Downloaded: http://localhost:65098/org/apache/apache/10/apache-10.pom (15 KB at 336.1 KB/sec)
+[INFO] [DEBUG] Writing tracking file D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\local-repo\org\apache\apache\10\_remote.repositories
+[INFO] [DEBUG] Writing tracking file D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\local-repo\org\apache\apache\10\apache-10.pom.lastUpdated
+[INFO] [DEBUG] Using transporter WagonTransporter with priority -1.0 for http://localhost:65098
+[INFO] [DEBUG] Using connector BasicRepositoryConnector with priority 0.0 for http://localhost:65098
+[INFO] [INFO] Downloading: http://localhost:65098/org/apache/maven/plugins/maven-clean-plugin/2.5/maven-clean-plugin-2.5.jar
+[INFO] [INFO] Downloaded: http://localhost:65098/org/apache/maven/plugins/maven-clean-plugin/2.5/maven-clean-plugin-2.5.jar (25 KB at 231.3 KB/sec)
+[INFO] [DEBUG] Writing tracking file D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\local-repo\org\apache\maven\plugins\maven-clean-plugin\2.5\_remote.repositories
+[INFO] [DEBUG] Writing tracking file D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\local-repo\org\apache\maven\plugins\maven-clean-plugin\2.5\maven-clean-plugin-2.5.jar.lastUpdated
+[INFO] [DEBUG] Lifecycle default -> [validate, initialize, generate-sources, process-sources, generate-resources, process-resources, compile, process-classes, generate-test-sources, process-test-sources, generate-test-resources, process-test-resources, test-compile, process-test-classes, test, prepare-package, package, pre-integration-test, integration-test, post-integration-test, verify, install, deploy]
+[INFO] [DEBUG] Lifecycle clean -> [pre-clean, clean, post-clean]
+[INFO] [DEBUG] Lifecycle site -> [pre-site, site, post-site, site-deploy]
+[INFO] [DEBUG] Lifecycle default -> [validate, initialize, generate-sources, process-sources, generate-resources, process-resources, compile, process-classes, generate-test-sources, process-test-sources, generate-test-resources, process-test-resources, test-compile, process-test-classes, test, prepare-package, package, pre-integration-test, integration-test, post-integration-test, verify, install, deploy]
+[INFO] [DEBUG] Lifecycle clean -> [pre-clean, clean, post-clean]
+[INFO] [DEBUG] Lifecycle site -> [pre-site, site, post-site, site-deploy]
+[INFO] [DEBUG] Lifecycle default -> [validate, initialize, generate-sources, process-sources, generate-resources, process-resources, compile, process-classes, generate-test-sources, process-test-sources, generate-test-resources, process-test-resources, test-compile, process-test-classes, test, prepare-package, package, pre-integration-test, integration-test, post-integration-test, verify, install, deploy]
+[INFO] [DEBUG] Lifecycle clean -> [pre-clean, clean, post-clean]
+[INFO] [DEBUG] Lifecycle site -> [pre-site, site, post-site, site-deploy]
+[INFO] [DEBUG] === PROJECT BUILD PLAN ================================================
+[INFO] [DEBUG] Project:       com.github.eirslett:example:0
+[INFO] [DEBUG] Dependencies (collect): []
+[INFO] [DEBUG] Dependencies (resolve): []
+[INFO] [DEBUG] Repositories (dependencies): [mrm-maven-plugin (http://localhost:65098, default, releases+snapshots), alimaven (http://maven.aliyun.com/nexus/content/groups/public/, default, releases)]
+[INFO] [DEBUG] Repositories (plugins)     : [mrm-maven-plugin (http://localhost:65098, default, releases+snapshots), alimaven (http://maven.aliyun.com/nexus/content/groups/public/, default, releases)]
+[INFO] [DEBUG] -----------------------------------------------------------------------
+[INFO] [DEBUG] Goal:          org.apache.maven.plugins:maven-clean-plugin:2.5:clean (default-clean)
+[INFO] [DEBUG] Style:         Regular
+[INFO] [DEBUG] Configuration: <?xml version="1.0" encoding="UTF-8"?>
+[INFO] <configuration>
+[INFO]   <directory default-value="${project.build.directory}"/>
+[INFO]   <excludeDefaultDirectories default-value="false">${clean.excludeDefaultDirectories}</excludeDefaultDirectories>
+[INFO]   <failOnError default-value="true">${maven.clean.failOnError}</failOnError>
+[INFO]   <followSymLinks default-value="false">${clean.followSymLinks}</followSymLinks>
+[INFO]   <outputDirectory default-value="${project.build.outputDirectory}"/>
+[INFO]   <reportDirectory default-value="${project.reporting.outputDirectory}"/>
+[INFO]   <retryOnError default-value="true">${maven.clean.retryOnError}</retryOnError>
+[INFO]   <skip default-value="false">${clean.skip}</skip>
+[INFO]   <testOutputDirectory default-value="${project.build.testOutputDirectory}"/>
+[INFO]   <verbose>${clean.verbose}</verbose>
+[INFO] </configuration>
+[INFO] [DEBUG] -----------------------------------------------------------------------
+[INFO] [DEBUG] Goal:          com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT:install-node-and-npm (install node and npm)
+[INFO] [DEBUG] Style:         Regular
+[INFO] [DEBUG] Configuration: <?xml version="1.0" encoding="UTF-8"?>
+[INFO] <configuration>
+[INFO]   <downloadRoot default-value="">${downloadRoot}</downloadRoot>
+[INFO]   <installDirectory>${installDirectory}</installDirectory>
+[INFO]   <nodeDownloadRoot default-value="https://nodejs.org/dist/">${nodeDownloadRoot}</nodeDownloadRoot>
+[INFO]   <nodeVersion>v8.11.1</nodeVersion>
+[INFO]   <npmDownloadRoot default-value="https://registry.npmjs.org/npm/-/">${npmDownloadRoot}</npmDownloadRoot>
+[INFO]   <npmVersion default-value="provided">5.6.0</npmVersion>
+[INFO]   <project default-value="${project}"/>
+[INFO]   <repositorySystemSession default-value="${repositorySystemSession}"/>
+[INFO]   <serverId default-value="">${serverId}</serverId>
+[INFO]   <session default-value="${session}">${session}</session>
+[INFO]   <skip default-value="${skip.installnodenpm}">${skip.installnodenpm}</skip>
+[INFO]   <skipTests default-value="false">${skipTests}</skipTests>
+[INFO]   <testFailureIgnore default-value="false">${maven.test.failure.ignore}</testFailureIgnore>
+[INFO]   <workingDirectory default-value="${basedir}">${workingDirectory}</workingDirectory>
+[INFO]   <execution default-value="${mojoExecution}"/>
+[INFO] </configuration>
+[INFO] [DEBUG] -----------------------------------------------------------------------
+[INFO] [DEBUG] Goal:          com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT:npm (npm install)
+[INFO] [DEBUG] Style:         Regular
+[INFO] [DEBUG] Configuration: <?xml version="1.0" encoding="UTF-8"?>
+[INFO] <configuration>
+[INFO]   <arguments default-value="install">install</arguments>
+[INFO]   <installDirectory>${installDirectory}</installDirectory>
+[INFO]   <npmInheritsProxyConfigFromMaven default-value="true">${frontend.npm.npmInheritsProxyConfigFromMaven}</npmInheritsProxyConfigFromMaven>
+[INFO]   <npmRegistryURL default-value="">${npmRegistryURL}</npmRegistryURL>
+[INFO]   <project default-value="${project}"/>
+[INFO]   <repositorySystemSession default-value="${repositorySystemSession}"/>
+[INFO]   <session default-value="${session}">${session}</session>
+[INFO]   <skip default-value="${skip.npm}">${skip.npm}</skip>
+[INFO]   <skipTests default-value="false">${skipTests}</skipTests>
+[INFO]   <testFailureIgnore default-value="false">${maven.test.failure.ignore}</testFailureIgnore>
+[INFO]   <workingDirectory default-value="${basedir}">${workingDirectory}</workingDirectory>
+[INFO]   <execution default-value="${mojoExecution}"/>
+[INFO] </configuration>
+[INFO] [DEBUG] -----------------------------------------------------------------------
+[INFO] [DEBUG] Goal:          com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT:npm (npm run build)
+[INFO] [DEBUG] Style:         Regular
+[INFO] [DEBUG] Configuration: <?xml version="1.0" encoding="UTF-8"?>
+[INFO] <configuration>
+[INFO]   <arguments default-value="install">run build</arguments>
+[INFO]   <installDirectory>${installDirectory}</installDirectory>
+[INFO]   <npmInheritsProxyConfigFromMaven default-value="true">${frontend.npm.npmInheritsProxyConfigFromMaven}</npmInheritsProxyConfigFromMaven>
+[INFO]   <npmRegistryURL default-value="">${npmRegistryURL}</npmRegistryURL>
+[INFO]   <project default-value="${project}"/>
+[INFO]   <repositorySystemSession default-value="${repositorySystemSession}"/>
+[INFO]   <session default-value="${session}">${session}</session>
+[INFO]   <skip default-value="${skip.npm}">${skip.npm}</skip>
+[INFO]   <skipTests default-value="false">${skipTests}</skipTests>
+[INFO]   <testFailureIgnore default-value="false">${maven.test.failure.ignore}</testFailureIgnore>
+[INFO]   <workingDirectory default-value="${basedir}">${workingDirectory}</workingDirectory>
+[INFO]   <execution default-value="${mojoExecution}"/>
+[INFO] </configuration>
+[INFO] [DEBUG] -----------------------------------------------------------------------
+[INFO] [DEBUG] Goal:          com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT:bower (bower install)
+[INFO] [DEBUG] Style:         Regular
+[INFO] [DEBUG] Configuration: <?xml version="1.0" encoding="UTF-8"?>
+[INFO] <configuration>
+[INFO]   <arguments default-value="install">install</arguments>
+[INFO]   <bowerInheritsProxyConfigFromMaven default-value="true">${frontend.bower.bowerInheritsProxyConfigFromMaven}</bowerInheritsProxyConfigFromMaven>
+[INFO]   <installDirectory>${installDirectory}</installDirectory>
+[INFO]   <project default-value="${project}"/>
+[INFO]   <repositorySystemSession default-value="${repositorySystemSession}"/>
+[INFO]   <session default-value="${session}">${session}</session>
+[INFO]   <skip default-value="${skip.bower}">${skip.bower}</skip>
+[INFO]   <skipTests default-value="false">${skipTests}</skipTests>
+[INFO]   <testFailureIgnore default-value="false">${maven.test.failure.ignore}</testFailureIgnore>
+[INFO]   <workingDirectory default-value="${basedir}">${workingDirectory}</workingDirectory>
+[INFO]   <execution default-value="${mojoExecution}"/>
+[INFO] </configuration>
+[INFO] [DEBUG] -----------------------------------------------------------------------
+[INFO] [DEBUG] Goal:          com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT:jspm (jspm install)
+[INFO] [DEBUG] Style:         Regular
+[INFO] [DEBUG] Configuration: <?xml version="1.0" encoding="UTF-8"?>
+[INFO] <configuration>
+[INFO]   <arguments default-value="install">--version</arguments>
+[INFO]   <installDirectory>${installDirectory}</installDirectory>
+[INFO]   <project default-value="${project}"/>
+[INFO]   <repositorySystemSession default-value="${repositorySystemSession}"/>
+[INFO]   <skip default-value="${skip.jspm}">${skip.jspm}</skip>
+[INFO]   <skipTests default-value="false">${skipTests}</skipTests>
+[INFO]   <testFailureIgnore default-value="false">${maven.test.failure.ignore}</testFailureIgnore>
+[INFO]   <workingDirectory default-value="${basedir}">${workingDirectory}</workingDirectory>
+[INFO]   <execution default-value="${mojoExecution}"/>
+[INFO] </configuration>
+[INFO] [DEBUG] -----------------------------------------------------------------------
+[INFO] [DEBUG] Goal:          com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT:grunt (grunt build)
+[INFO] [DEBUG] Style:         Regular
+[INFO] [DEBUG] Configuration: <?xml version="1.0" encoding="UTF-8"?>
+[INFO] <configuration>
+[INFO]   <arguments>--no-color</arguments>
+[INFO]   <installDirectory>${installDirectory}</installDirectory>
+[INFO]   <outputdir>${outputdir}</outputdir>
+[INFO]   <project default-value="${project}"/>
+[INFO]   <repositorySystemSession default-value="${repositorySystemSession}"/>
+[INFO]   <skip default-value="${skip.grunt}">${skip.grunt}</skip>
+[INFO]   <skipTests default-value="false">${skipTests}</skipTests>
+[INFO]   <srcdir>${srcdir}</srcdir>
+[INFO]   <testFailureIgnore default-value="false">${maven.test.failure.ignore}</testFailureIgnore>
+[INFO]   <triggerfiles>${triggerfiles}</triggerfiles>
+[INFO]   <workingDirectory default-value="${basedir}">${workingDirectory}</workingDirectory>
+[INFO]   <execution default-value="${mojoExecution}"/>
+[INFO] </configuration>
+[INFO] [DEBUG] -----------------------------------------------------------------------
+[INFO] [DEBUG] Goal:          com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT:gulp (gulp build)
+[INFO] [DEBUG] Style:         Regular
+[INFO] [DEBUG] Configuration: <?xml version="1.0" encoding="UTF-8"?>
+[INFO] <configuration>
+[INFO]   <arguments>${frontend.gulp.arguments}</arguments>
+[INFO]   <environmentVariables>
+[INFO]     <NODE_ENV>production</NODE_ENV>
+[INFO]   </environmentVariables>
+[INFO]   <installDirectory>${installDirectory}</installDirectory>
+[INFO]   <outputdir>${outputdir}</outputdir>
+[INFO]   <project default-value="${project}"/>
+[INFO]   <repositorySystemSession default-value="${repositorySystemSession}"/>
+[INFO]   <skip default-value="${skip.gulp}">${skip.gulp}</skip>
+[INFO]   <skipTests default-value="false">${skipTests}</skipTests>
+[INFO]   <srcdir>${srcdir}</srcdir>
+[INFO]   <testFailureIgnore default-value="false">${maven.test.failure.ignore}</testFailureIgnore>
+[INFO]   <triggerfiles>${triggerfiles}</triggerfiles>
+[INFO]   <workingDirectory default-value="${basedir}">${workingDirectory}</workingDirectory>
+[INFO]   <execution default-value="${mojoExecution}"/>
+[INFO] </configuration>
+[INFO] [DEBUG] -----------------------------------------------------------------------
+[INFO] [DEBUG] Goal:          com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT:karma (javascript tests)
+[INFO] [DEBUG] Style:         Regular
+[INFO] [DEBUG] Configuration: <?xml version="1.0" encoding="UTF-8"?>
+[INFO] <configuration>
+[INFO]   <installDirectory>${installDirectory}</installDirectory>
+[INFO]   <karmaConfPath default-value="karma.conf.js">src/test/javascript/karma.conf.ci.js</karmaConfPath>
+[INFO]   <project default-value="${project}"/>
+[INFO]   <repositorySystemSession default-value="${repositorySystemSession}"/>
+[INFO]   <skip default-value="${skip.karma}">${skip.karma}</skip>
+[INFO]   <skipTests default-value="false">${skipTests}</skipTests>
+[INFO]   <testFailureIgnore default-value="false">${maven.test.failure.ignore}</testFailureIgnore>
+[INFO]   <workingDirectory default-value="${basedir}">${workingDirectory}</workingDirectory>
+[INFO]   <execution default-value="${mojoExecution}"/>
+[INFO] </configuration>
+[INFO] [DEBUG] =======================================================================
+[INFO] [INFO] 
+[INFO] [INFO] --- maven-clean-plugin:2.5:clean (default-clean) @ example ---
+[INFO] [DEBUG] Using transporter WagonTransporter with priority -1.0 for http://localhost:65098
+[INFO] [DEBUG] Using connector BasicRepositoryConnector with priority 0.0 for http://localhost:65098
+[INFO] [INFO] Downloading: http://localhost:65098/org/apache/maven/maven-plugin-api/2.0.6/maven-plugin-api-2.0.6.pom
+[INFO] [INFO] Downloaded: http://localhost:65098/org/apache/maven/maven-plugin-api/2.0.6/maven-plugin-api-2.0.6.pom (2 KB at 30.9 KB/sec)
+[INFO] [DEBUG] Writing tracking file D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\local-repo\org\apache\maven\maven-plugin-api\2.0.6\_remote.repositories
+[INFO] [DEBUG] Writing tracking file D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\local-repo\org\apache\maven\maven-plugin-api\2.0.6\maven-plugin-api-2.0.6.pom.lastUpdated
+[INFO] [DEBUG] Using transporter WagonTransporter with priority -1.0 for http://localhost:65098
+[INFO] [DEBUG] Using connector BasicRepositoryConnector with priority 0.0 for http://localhost:65098
+[INFO] [INFO] Downloading: http://localhost:65098/org/apache/maven/maven/2.0.6/maven-2.0.6.pom
+[INFO] [INFO] Downloaded: http://localhost:65098/org/apache/maven/maven/2.0.6/maven-2.0.6.pom (9 KB at 315.5 KB/sec)
+[INFO] [DEBUG] Writing tracking file D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\local-repo\org\apache\maven\maven\2.0.6\_remote.repositories
+[INFO] [DEBUG] Writing tracking file D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\local-repo\org\apache\maven\maven\2.0.6\maven-2.0.6.pom.lastUpdated
+[INFO] [DEBUG] Using transporter WagonTransporter with priority -1.0 for http://localhost:65098
+[INFO] [DEBUG] Using connector BasicRepositoryConnector with priority 0.0 for http://localhost:65098
+[INFO] [INFO] Downloading: http://localhost:65098/org/apache/maven/maven-parent/5/maven-parent-5.pom
+[INFO] [INFO] Downloaded: http://localhost:65098/org/apache/maven/maven-parent/5/maven-parent-5.pom (15 KB at 391.6 KB/sec)
+[INFO] [DEBUG] Writing tracking file D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\local-repo\org\apache\maven\maven-parent\5\_remote.repositories
+[INFO] [DEBUG] Writing tracking file D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\local-repo\org\apache\maven\maven-parent\5\maven-parent-5.pom.lastUpdated
+[INFO] [DEBUG] Using transporter WagonTransporter with priority -1.0 for http://localhost:65098
+[INFO] [DEBUG] Using connector BasicRepositoryConnector with priority 0.0 for http://localhost:65098
+[INFO] [INFO] Downloading: http://localhost:65098/org/apache/apache/3/apache-3.pom
+[INFO] [INFO] Downloaded: http://localhost:65098/org/apache/apache/3/apache-3.pom (4 KB at 95.7 KB/sec)
+[INFO] [DEBUG] Writing tracking file D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\local-repo\org\apache\apache\3\_remote.repositories
+[INFO] [DEBUG] Writing tracking file D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\local-repo\org\apache\apache\3\apache-3.pom.lastUpdated
+[INFO] [DEBUG] Using mirror mrm-maven-plugin (http://localhost:65098) for apache.snapshots (http://people.apache.org/repo/m2-snapshot-repository).
+[INFO] [DEBUG] Using transporter WagonTransporter with priority -1.0 for http://localhost:65098
+[INFO] [DEBUG] Using connector BasicRepositoryConnector with priority 0.0 for http://localhost:65098
+[INFO] [INFO] Downloading: http://localhost:65098/org/codehaus/plexus/plexus-utils/3.0/plexus-utils-3.0.pom
+[INFO] [INFO] Downloaded: http://localhost:65098/org/codehaus/plexus/plexus-utils/3.0/plexus-utils-3.0.pom (4 KB at 104.5 KB/sec)
+[INFO] [DEBUG] Writing tracking file D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\local-repo\org\codehaus\plexus\plexus-utils\3.0\_remote.repositories
+[INFO] [DEBUG] Writing tracking file D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\local-repo\org\codehaus\plexus\plexus-utils\3.0\plexus-utils-3.0.pom.lastUpdated
+[INFO] [DEBUG] Dependency collection stats: {ConflictMarker.analyzeTime=1, ConflictMarker.markTime=0, ConflictMarker.nodeCount=3, ConflictIdSorter.graphTime=1, ConflictIdSorter.topsortTime=0, ConflictIdSorter.conflictIdCount=3, ConflictIdSorter.conflictIdCycleCount=0, ConflictResolver.totalTime=2, ConflictResolver.conflictItemCount=3, DefaultDependencyCollector.collectTime=344, DefaultDependencyCollector.transformTime=6}
+[INFO] [DEBUG] org.apache.maven.plugins:maven-clean-plugin:jar:2.5:
+[INFO] [DEBUG]    org.apache.maven:maven-plugin-api:jar:2.0.6:compile
+[INFO] [DEBUG]    org.codehaus.plexus:plexus-utils:jar:3.0:compile
+[INFO] [DEBUG] Using transporter WagonTransporter with priority -1.0 for http://localhost:65098
+[INFO] [DEBUG] Using connector BasicRepositoryConnector with priority 0.0 for http://localhost:65098
+[INFO] [INFO] Downloading: http://localhost:65098/org/apache/maven/maven-plugin-api/2.0.6/maven-plugin-api-2.0.6.jar
+[INFO] [INFO] Downloading: http://localhost:65098/org/codehaus/plexus/plexus-utils/3.0/plexus-utils-3.0.jar
+[INFO] [INFO] Downloaded: http://localhost:65098/org/codehaus/plexus/plexus-utils/3.0/plexus-utils-3.0.jar (221 KB at 2943.6 KB/sec)
+[INFO] [INFO] Downloaded: http://localhost:65098/org/apache/maven/maven-plugin-api/2.0.6/maven-plugin-api-2.0.6.jar (13 KB at 101.3 KB/sec)
+[INFO] [DEBUG] Writing tracking file D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\local-repo\org\apache\maven\maven-plugin-api\2.0.6\_remote.repositories
+[INFO] [DEBUG] Writing tracking file D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\local-repo\org\apache\maven\maven-plugin-api\2.0.6\maven-plugin-api-2.0.6.jar.lastUpdated
+[INFO] [DEBUG] Writing tracking file D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\local-repo\org\codehaus\plexus\plexus-utils\3.0\_remote.repositories
+[INFO] [DEBUG] Writing tracking file D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\local-repo\org\codehaus\plexus\plexus-utils\3.0\plexus-utils-3.0.jar.lastUpdated
+[INFO] [DEBUG] Created new class realm plugin>org.apache.maven.plugins:maven-clean-plugin:2.5
+[INFO] [DEBUG] Importing foreign packages into class realm plugin>org.apache.maven.plugins:maven-clean-plugin:2.5
+[INFO] [DEBUG]   Imported:  < maven.api
+[INFO] [DEBUG] Populating class realm plugin>org.apache.maven.plugins:maven-clean-plugin:2.5
+[INFO] [DEBUG]   Included: org.apache.maven.plugins:maven-clean-plugin:jar:2.5
+[INFO] [DEBUG]   Included: org.codehaus.plexus:plexus-utils:jar:3.0
+[INFO] [DEBUG] Configuring mojo org.apache.maven.plugins:maven-clean-plugin:2.5:clean from plugin realm ClassRealm[plugin>org.apache.maven.plugins:maven-clean-plugin:2.5, parent: sun.misc.Launcher$AppClassLoader@33909752]
+[INFO] [DEBUG] Configuring mojo 'org.apache.maven.plugins:maven-clean-plugin:2.5:clean' with basic configurator -->
+[INFO] [DEBUG]   (f) directory = D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\example project\target
+[INFO] [DEBUG]   (f) excludeDefaultDirectories = false
+[INFO] [DEBUG]   (f) failOnError = true
+[INFO] [DEBUG]   (f) followSymLinks = false
+[INFO] [DEBUG]   (f) outputDirectory = D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\example project\target\classes
+[INFO] [DEBUG]   (f) reportDirectory = D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\example project\target\site
+[INFO] [DEBUG]   (f) retryOnError = true
+[INFO] [DEBUG]   (f) skip = false
+[INFO] [DEBUG]   (f) testOutputDirectory = D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\example project\target\test-classes
+[INFO] [DEBUG] -- end configuration --
+[INFO] [DEBUG] Skipping non-existing directory D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\example project\target
+[INFO] [DEBUG] Skipping non-existing directory D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\example project\target\classes
+[INFO] [DEBUG] Skipping non-existing directory D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\example project\target\test-classes
+[INFO] [DEBUG] Skipping non-existing directory D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\example project\target\site
+[INFO] [INFO] 
+[INFO] [INFO] --- frontend-maven-plugin:1.7-SNAPSHOT:install-node-and-npm (install node and npm) @ example ---
+[INFO] [DEBUG] Skipped remote request for com.github.eirslett:frontend-plugin-core:1.7-SNAPSHOT/maven-metadata.xml, locally installed metadata up-to-date.
+[INFO] [DEBUG] Skipped remote request for com.github.eirslett:frontend-plugin-core:1.7-SNAPSHOT/maven-metadata.xml, locally installed metadata up-to-date.
+[INFO] [DEBUG] Using mirror mrm-maven-plugin (http://localhost:65098) for repository.jboss.org (http://repository.jboss.org/maven2).
+[INFO] [DEBUG] Using mirror mrm-maven-plugin (http://localhost:65098) for snapshots.jboss.org (http://snapshots.jboss.org/maven2).
+[INFO] [DEBUG] Using mirror mrm-maven-plugin (http://localhost:65098) for oss.sonatype.org/jboss-snapshots (http://oss.sonatype.org/content/repositories/jboss-snapshots).
+[INFO] [DEBUG] Dependency collection stats: {ConflictMarker.analyzeTime=1, ConflictMarker.markTime=0, ConflictMarker.nodeCount=39, ConflictIdSorter.graphTime=0, ConflictIdSorter.topsortTime=0, ConflictIdSorter.conflictIdCount=31, ConflictIdSorter.conflictIdCycleCount=0, ConflictResolver.totalTime=6, ConflictResolver.conflictItemCount=38, DefaultDependencyCollector.collectTime=349, DefaultDependencyCollector.transformTime=7}
+[INFO] [DEBUG] com.github.eirslett:frontend-maven-plugin:jar:1.7-SNAPSHOT:
+[INFO] [DEBUG]    com.github.eirslett:frontend-plugin-core:jar:1.7-SNAPSHOT:compile
+[INFO] [DEBUG]       org.codehaus.jackson:jackson-mapper-asl:jar:1.9.13:compile
+[INFO] [DEBUG]       org.codehaus.jackson:jackson-core-asl:jar:1.9.13:compile
+[INFO] [DEBUG]       org.apache.commons:commons-compress:jar:1.5:compile
+[INFO] [DEBUG]          org.tukaani:xz:jar:1.2:compile
+[INFO] [DEBUG]       commons-io:commons-io:jar:1.3.2:compile
+[INFO] [DEBUG]       org.apache.commons:commons-exec:jar:1.3:compile
+[INFO] [DEBUG]       org.apache.httpcomponents:httpclient:jar:4.5.1:compile
+[INFO] [DEBUG]          org.apache.httpcomponents:httpcore:jar:4.4.3:compile
+[INFO] [DEBUG]          commons-logging:commons-logging:jar:1.2:compile
+[INFO] [DEBUG]          commons-codec:commons-codec:jar:1.9:compile
+[INFO] [DEBUG]       org.codehaus.plexus:plexus-utils:jar:3.0.22:compile
+[INFO] [DEBUG]       org.slf4j:slf4j-api:jar:1.7.5:compile
+[INFO] [DEBUG]    org.apache.maven:maven-plugin-api:jar:3.1.0:compile
+[INFO] [DEBUG]       org.apache.maven:maven-model:jar:3.1.0:compile
+[INFO] [DEBUG]       org.apache.maven:maven-artifact:jar:3.1.0:compile
+[INFO] [DEBUG]       org.eclipse.sisu:org.eclipse.sisu.plexus:jar:0.0.0.M2a:compile
+[INFO] [DEBUG]          javax.enterprise:cdi-api:jar:1.0:compile
+[INFO] [DEBUG]             javax.annotation:jsr250-api:jar:1.0:compile
+[INFO] [DEBUG]             javax.inject:javax.inject:jar:1:compile
+[INFO] [DEBUG]          com.google.guava:guava:jar:10.0.1:compile
+[INFO] [DEBUG]             com.google.code.findbugs:jsr305:jar:1.3.9:compile
+[INFO] [DEBUG]          org.sonatype.sisu:sisu-guice:jar:no_aop:3.1.0:compile
+[INFO] [DEBUG]             aopalliance:aopalliance:jar:1.0:compile
+[INFO] [DEBUG]          org.eclipse.sisu:org.eclipse.sisu.inject:jar:0.0.0.M2a:compile
+[INFO] [DEBUG]             asm:asm:jar:3.3.1:compile
+[INFO] [DEBUG]          org.codehaus.plexus:plexus-component-annotations:jar:1.5.5:compile
+[INFO] [DEBUG]          org.codehaus.plexus:plexus-classworlds:jar:2.4:compile
+[INFO] [DEBUG]    org.apache.maven.plugin-tools:maven-plugin-annotations:jar:3.2:compile
+[INFO] [DEBUG]    org.sonatype.plexus:plexus-build-api:jar:0.0.7:compile
+[INFO] [DEBUG] Created new class realm plugin>com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT
+[INFO] [DEBUG] Importing foreign packages into class realm plugin>com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT
+[INFO] [DEBUG]   Imported:  < maven.api
+[INFO] [DEBUG] Populating class realm plugin>com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT
+[INFO] [DEBUG]   Included: com.github.eirslett:frontend-maven-plugin:jar:1.7-SNAPSHOT
+[INFO] [DEBUG]   Included: com.github.eirslett:frontend-plugin-core:jar:1.7-SNAPSHOT
+[INFO] [DEBUG]   Included: org.codehaus.jackson:jackson-mapper-asl:jar:1.9.13
+[INFO] [DEBUG]   Included: org.codehaus.jackson:jackson-core-asl:jar:1.9.13
+[INFO] [DEBUG]   Included: org.apache.commons:commons-compress:jar:1.5
+[INFO] [DEBUG]   Included: org.tukaani:xz:jar:1.2
+[INFO] [DEBUG]   Included: commons-io:commons-io:jar:1.3.2
+[INFO] [DEBUG]   Included: org.apache.commons:commons-exec:jar:1.3
+[INFO] [DEBUG]   Included: org.apache.httpcomponents:httpclient:jar:4.5.1
+[INFO] [DEBUG]   Included: org.apache.httpcomponents:httpcore:jar:4.4.3
+[INFO] [DEBUG]   Included: commons-logging:commons-logging:jar:1.2
+[INFO] [DEBUG]   Included: commons-codec:commons-codec:jar:1.9
+[INFO] [DEBUG]   Included: org.codehaus.plexus:plexus-utils:jar:3.0.22
+[INFO] [DEBUG]   Included: javax.enterprise:cdi-api:jar:1.0
+[INFO] [DEBUG]   Included: javax.annotation:jsr250-api:jar:1.0
+[INFO] [DEBUG]   Included: com.google.guava:guava:jar:10.0.1
+[INFO] [DEBUG]   Included: com.google.code.findbugs:jsr305:jar:1.3.9
+[INFO] [DEBUG]   Included: org.sonatype.sisu:sisu-guice:jar:no_aop:3.1.0
+[INFO] [DEBUG]   Included: aopalliance:aopalliance:jar:1.0
+[INFO] [DEBUG]   Included: org.eclipse.sisu:org.eclipse.sisu.inject:jar:0.0.0.M2a
+[INFO] [DEBUG]   Included: asm:asm:jar:3.3.1
+[INFO] [DEBUG]   Included: org.codehaus.plexus:plexus-component-annotations:jar:1.5.5
+[INFO] [DEBUG]   Included: org.apache.maven.plugin-tools:maven-plugin-annotations:jar:3.2
+[INFO] [DEBUG]   Included: org.sonatype.plexus:plexus-build-api:jar:0.0.7
+[INFO] [DEBUG] Configuring mojo com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT:install-node-and-npm from plugin realm ClassRealm[plugin>com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT, parent: sun.misc.Launcher$AppClassLoader@33909752]
+[INFO] [DEBUG] Configuring mojo 'com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT:install-node-and-npm' with basic configurator -->
+[INFO] [DEBUG]   (f) nodeDownloadRoot = https://nodejs.org/dist/
+[INFO] [DEBUG]   (f) nodeVersion = v8.11.1
+[INFO] [DEBUG]   (f) npmDownloadRoot = https://registry.npmjs.org/npm/-/
+[INFO] [DEBUG]   (f) npmVersion = 5.6.0
+[INFO] [DEBUG]   (f) project = MavenProject: com.github.eirslett:example:0 @ D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\example project\pom.xml
+[INFO] [DEBUG]   (f) repositorySystemSession = org.eclipse.aether.DefaultRepositorySystemSession@7af707e0
+[INFO] [DEBUG]   (f) session = org.apache.maven.execution.MavenSession@737edcfa
+[INFO] [DEBUG]   (f) skipTests = false
+[INFO] [DEBUG]   (f) testFailureIgnore = false
+[INFO] [DEBUG]   (f) workingDirectory = D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\example project
+[INFO] [DEBUG]   (f) execution = com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT:install-node-and-npm {execution: install node and npm}
+[INFO] [DEBUG] -- end configuration --
+[INFO] [INFO] Installing node version v8.11.1
+[INFO] [DEBUG] Creating install directory D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\example project\node
+[INFO] [INFO] Copying node binary from D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\local-repo\com\github\eirslett\node\8.11.1\node-8.11.1-win-x64.exe to D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\example project\node\node.exe
+[INFO] [INFO] Installed node locally.
+[INFO] [INFO] Installing npm version 5.6.0
+[INFO] [INFO] Unpacking D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\local-repo\com\github\eirslett\npm\5.6.0\npm-5.6.0.tar.gz into D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\example project\node\node_modules
+[INFO] [INFO] Installed npm locally.
+[INFO] [INFO] 
+[INFO] [INFO] --- frontend-maven-plugin:1.7-SNAPSHOT:npm (npm install) @ example ---
+[INFO] [DEBUG] Configuring mojo com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT:npm from plugin realm ClassRealm[plugin>com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT, parent: sun.misc.Launcher$AppClassLoader@33909752]
+[INFO] [DEBUG] Configuring mojo 'com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT:npm' with basic configurator -->
+[INFO] [DEBUG]   (f) arguments = install
+[INFO] [DEBUG]   (f) npmInheritsProxyConfigFromMaven = true
+[INFO] [DEBUG]   (f) project = MavenProject: com.github.eirslett:example:0 @ D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\example project\pom.xml
+[INFO] [DEBUG]   (f) repositorySystemSession = org.eclipse.aether.DefaultRepositorySystemSession@7af707e0
+[INFO] [DEBUG]   (f) session = org.apache.maven.execution.MavenSession@737edcfa
+[INFO] [DEBUG]   (f) skipTests = false
+[INFO] [DEBUG]   (f) testFailureIgnore = false
+[INFO] [DEBUG]   (f) workingDirectory = D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\example project
+[INFO] [DEBUG]   (f) execution = com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT:npm {execution: npm install}
+[INFO] [DEBUG] -- end configuration --
+[INFO] [INFO] Running 'npm install' in D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\example project
+[INFO] [DEBUG] Executing command line [D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\example project\node\node.exe, D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\example project\node\node_modules\npm\bin\npm-cli.js, install]
+[INFO] [WARNING] npm WARN deprecated bower@1.8.4: We don't recommend using Bower for new projects. Please consider Yarn and Webpack or Parcel. You can read how to migrate legacy project here: https://bower.io/blog/2017/how-to-migrate-away-from-bower/
+[INFO] [WARNING] npm WARN deprecated gulp-util@3.0.8: gulp-util is deprecated - replace it, following the guidelines at https://medium.com/gulpjs/gulp-util-ca3b1f9f9ac5
+[INFO] [WARNING] npm WARN deprecated graceful-fs@3.0.11: please upgrade to graceful-fs 4 for compatibility with current and future versions of Node.js
+[INFO] [WARNING] npm WARN deprecated nodemailer@2.7.2: All versions below 4.0.1 of Nodemailer are deprecated. See https://nodemailer.com/status/
+[INFO] [WARNING] npm WARN deprecated minimatch@2.0.10: Please update to minimatch 3.0.2 or higher to avoid a RegExp DoS issue
+[INFO] [WARNING] npm WARN deprecated mailcomposer@4.0.1: This project is unmaintained
+[INFO] [WARNING] npm WARN deprecated socks@1.1.9: If using 2.x branch, please upgrade to at least 2.1.6 to avoid a serious bug with socket data flow and an import issue introduced in 2.1.0
+[INFO] [WARNING] npm WARN deprecated uws@9.14.0: stop using this version
+[INFO] [WARNING] npm WARN deprecated node-uuid@1.4.8: Use uuid module instead
+[INFO] [WARNING] npm WARN deprecated buildmail@4.0.1: This project is unmaintained
+[INFO] [WARNING] npm WARN deprecated minimatch@0.2.14: Please update to minimatch 3.0.2 or higher to avoid a RegExp DoS issue
+[INFO] [WARNING] npm WARN deprecated graceful-fs@1.2.3: please upgrade to graceful-fs 4 for compatibility with current and future versions of Node.js
+[INFO] [WARNING] npm WARN deprecated socks@1.1.10: If using 2.x branch, please upgrade to at least 2.1.6 to avoid a serious bug with socket data flow and an import issue introduced in 2.1.0
+[INFO] [INFO] 
+[INFO] [INFO] > uws@9.14.0 install D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\example project\node_modules\uws
+[INFO] [INFO] > node-gyp rebuild > build_log.txt 2>&1 || exit 0
+[INFO] [INFO] 
+[INFO] [INFO] 
+[INFO] [INFO] > phantomjs-prebuilt@2.1.16 install D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\example project\node_modules\phantomjs-prebuilt
+[INFO] [INFO] > node install.js
+[INFO] [INFO] 
+[INFO] [INFO] PhantomJS not found on PATH
+[INFO] [INFO] Download already available at C:\Users\HZZHOU~1\AppData\Local\Temp\phantomjs\phantomjs-2.1.1-windows.zip
+[INFO] [INFO] Verified checksum of previously downloaded file
+[INFO] [INFO] Extracting zip contents
+[INFO] [INFO] Removing D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\example project\node_modules\phantomjs-prebuilt\lib\phantom
+[INFO] [INFO] Copying extracted folder C:\Users\HZZHOU~1\AppData\Local\Temp\phantomjs\phantomjs-2.1.1-windows.zip-extract-1531740782871\phantomjs-2.1.1-windows -> D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\example project\node_modules\phantomjs-prebuilt\lib\phantom
+[INFO] [INFO] Writing location.js file
+[INFO] [INFO] Done. Phantomjs binary available at D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\example project\node_modules\phantomjs-prebuilt\lib\phantom\bin\phantomjs.exe
+[INFO] [ERROR] npm notice created a lockfile as package-lock.json. You should commit this file.
+[INFO] [WARNING] npm WARN example@0.0.1 No repository field.
+[INFO] [WARNING] npm WARN example@0.0.1 No license field.
+[INFO] [WARNING] npm WARN optional SKIPPING OPTIONAL DEPENDENCY: fsevents@1.2.4 (node_modules\fsevents):
+[INFO] [WARNING] npm WARN notsup SKIPPING OPTIONAL DEPENDENCY: Unsupported platform for fsevents@1.2.4: wanted {"os":"darwin","arch":"any"} (current: {"os":"win32","arch":"x64"})
+[INFO] [ERROR] 
+[INFO] [INFO] added 757 packages in 330.65s
+[INFO] [DEBUG] Exit value 0
+[INFO] [INFO] 
+[INFO] [INFO] --- frontend-maven-plugin:1.7-SNAPSHOT:npm (npm run build) @ example ---
+[INFO] [DEBUG] Configuring mojo com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT:npm from plugin realm ClassRealm[plugin>com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT, parent: sun.misc.Launcher$AppClassLoader@33909752]
+[INFO] [DEBUG] Configuring mojo 'com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT:npm' with basic configurator -->
+[INFO] [DEBUG]   (f) arguments = run build
+[INFO] [DEBUG]   (f) npmInheritsProxyConfigFromMaven = true
+[INFO] [DEBUG]   (f) project = MavenProject: com.github.eirslett:example:0 @ D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\example project\pom.xml
+[INFO] [DEBUG]   (f) repositorySystemSession = org.eclipse.aether.DefaultRepositorySystemSession@7af707e0
+[INFO] [DEBUG]   (f) session = org.apache.maven.execution.MavenSession@737edcfa
+[INFO] [DEBUG]   (f) skipTests = false
+[INFO] [DEBUG]   (f) testFailureIgnore = false
+[INFO] [DEBUG]   (f) workingDirectory = D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\example project
+[INFO] [DEBUG]   (f) execution = com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT:npm {execution: npm run build}
+[INFO] [DEBUG] -- end configuration --
+[INFO] [INFO] Running 'npm run build' in D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\example project
+[INFO] [DEBUG] Executing command line [D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\example project\node\node.exe, D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\example project\node\node_modules\npm\bin\npm-cli.js, run, build]
+[INFO] [INFO] 
+[INFO] [INFO] > example@0.0.1 prebuild D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\example project
+[INFO] [INFO] > npm install
+[INFO] [INFO] 
+[INFO] [WARNING] npm WARN example@0.0.1 No repository field.
+[INFO] [WARNING] npm WARN example@0.0.1 No license field.
+[INFO] [WARNING] npm WARN optional SKIPPING OPTIONAL DEPENDENCY: fsevents@1.2.4 (node_modules\fsevents):
+[INFO] [WARNING] npm WARN notsup SKIPPING OPTIONAL DEPENDENCY: Unsupported platform for fsevents@1.2.4: wanted {"os":"darwin","arch":"any"} (current: {"os":"win32","arch":"x64"})
+[INFO] [ERROR] 
+[INFO] [INFO] up to date in 12.105s
+[INFO] [INFO] 
+[INFO] [INFO] > example@0.0.1 build D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\example project
+[INFO] [INFO] > gulp
+[INFO] [INFO] 
+[INFO] [INFO] [19:33:33] Using gulpfile D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\example project\gulpfile.js
+[INFO] [INFO] [19:33:33] Starting 'default'...
+[INFO] [INFO] gulp runs as expected
+[INFO] [INFO] [19:33:33] Finished 'default' after 169 Î¼s
+[INFO] [DEBUG] Exit value 0
+[INFO] [INFO] 
+[INFO] [INFO] --- frontend-maven-plugin:1.7-SNAPSHOT:bower (bower install) @ example ---
+[INFO] [DEBUG] Configuring mojo com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT:bower from plugin realm ClassRealm[plugin>com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT, parent: sun.misc.Launcher$AppClassLoader@33909752]
+[INFO] [DEBUG] Configuring mojo 'com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT:bower' with basic configurator -->
+[INFO] [DEBUG]   (f) arguments = install
+[INFO] [DEBUG]   (f) bowerInheritsProxyConfigFromMaven = true
+[INFO] [DEBUG]   (f) project = MavenProject: com.github.eirslett:example:0 @ D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\example project\pom.xml
+[INFO] [DEBUG]   (f) repositorySystemSession = org.eclipse.aether.DefaultRepositorySystemSession@7af707e0
+[INFO] [DEBUG]   (f) session = org.apache.maven.execution.MavenSession@737edcfa
+[INFO] [DEBUG]   (f) skipTests = false
+[INFO] [DEBUG]   (f) testFailureIgnore = false
+[INFO] [DEBUG]   (f) workingDirectory = D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\example project
+[INFO] [DEBUG]   (f) execution = com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT:bower {execution: bower install}
+[INFO] [DEBUG] -- end configuration --
+[INFO] [INFO] Running 'bower install' in D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\example project
+[INFO] [DEBUG] Executing command line [D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\example project\node\node.exe, D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\example project\node_modules\bower\bin\bower, install]
+[INFO] [INFO] bower jquery#~3.3.1             cached https://github.com/jquery/jquery-dist.git#3.3.1
+[INFO] [INFO] bower jquery#~3.3.1           validate 3.3.1 against https://github.com/jquery/jquery-dist.git#~3.3.1
+[INFO] [INFO] bower jquery#~3.3.1            install jquery#3.3.1
+[INFO] [INFO] 
+[INFO] [INFO] jquery#3.3.1 bower_components\jquery
+[INFO] [DEBUG] Exit value 0
+[INFO] [INFO] 
+[INFO] [INFO] --- frontend-maven-plugin:1.7-SNAPSHOT:jspm (jspm install) @ example ---
+[INFO] [DEBUG] Configuring mojo com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT:jspm from plugin realm ClassRealm[plugin>com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT, parent: sun.misc.Launcher$AppClassLoader@33909752]
+[INFO] [DEBUG] Configuring mojo 'com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT:jspm' with basic configurator -->
+[INFO] [DEBUG]   (f) arguments = --version
+[INFO] [DEBUG]   (f) project = MavenProject: com.github.eirslett:example:0 @ D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\example project\pom.xml
+[INFO] [DEBUG]   (f) repositorySystemSession = org.eclipse.aether.DefaultRepositorySystemSession@7af707e0
+[INFO] [DEBUG]   (f) skipTests = false
+[INFO] [DEBUG]   (f) testFailureIgnore = false
+[INFO] [DEBUG]   (f) workingDirectory = D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\example project
+[INFO] [DEBUG]   (f) execution = com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT:jspm {execution: jspm install}
+[INFO] [DEBUG] -- end configuration --
+[INFO] [INFO] Running 'jspm.js --version' in D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\example project
+[INFO] [DEBUG] Executing command line [D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\example project\node\node.exe, D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\example project\node_modules\jspm\jspm.js, --version]
+[INFO] [INFO] 0.16.53
+[INFO] [INFO] Running against local jspm install.
+[INFO] [DEBUG] Exit value 0
+[INFO] [INFO] 
+[INFO] [INFO] --- frontend-maven-plugin:1.7-SNAPSHOT:grunt (grunt build) @ example ---
+[INFO] [DEBUG] Configuring mojo com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT:grunt from plugin realm ClassRealm[plugin>com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT, parent: sun.misc.Launcher$AppClassLoader@33909752]
+[INFO] [DEBUG] Configuring mojo 'com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT:grunt' with basic configurator -->
+[INFO] [DEBUG]   (f) arguments = --no-color
+[INFO] [DEBUG]   (f) project = MavenProject: com.github.eirslett:example:0 @ D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\example project\pom.xml
+[INFO] [DEBUG]   (f) repositorySystemSession = org.eclipse.aether.DefaultRepositorySystemSession@7af707e0
+[INFO] [DEBUG]   (f) skipTests = false
+[INFO] [DEBUG]   (f) testFailureIgnore = false
+[INFO] [DEBUG]   (f) triggerfiles = []
+[INFO] [DEBUG]   (f) workingDirectory = D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\example project
+[INFO] [DEBUG]   (f) execution = com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT:grunt {execution: grunt build}
+[INFO] [DEBUG] -- end configuration --
+[INFO] [INFO] Running 'grunt --no-color' in D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\example project
+[INFO] [DEBUG] Executing command line [D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\example project\node\node.exe, D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\example project\node_modules\grunt-cli\bin\grunt, --no-color]
+[INFO] [INFO] Running "jshint:files" (jshint) task
+[INFO] [INFO] >> 5 files lint free.
+[INFO] [INFO] 
+[INFO] [INFO] Done.
+[INFO] [DEBUG] Exit value 0
+[INFO] [INFO] 
+[INFO] [INFO] --- frontend-maven-plugin:1.7-SNAPSHOT:gulp (gulp build) @ example ---
+[INFO] [DEBUG] Configuring mojo com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT:gulp from plugin realm ClassRealm[plugin>com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT, parent: sun.misc.Launcher$AppClassLoader@33909752]
+[INFO] [DEBUG] Configuring mojo 'com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT:gulp' with basic configurator -->
+[INFO] [DEBUG]   (f) environmentVariables = {NODE_ENV=production}
+[INFO] [DEBUG]   (f) project = MavenProject: com.github.eirslett:example:0 @ D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\example project\pom.xml
+[INFO] [DEBUG]   (f) repositorySystemSession = org.eclipse.aether.DefaultRepositorySystemSession@7af707e0
+[INFO] [DEBUG]   (f) skipTests = false
+[INFO] [DEBUG]   (f) testFailureIgnore = false
+[INFO] [DEBUG]   (f) triggerfiles = []
+[INFO] [DEBUG]   (f) workingDirectory = D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\example project
+[INFO] [DEBUG]   (f) execution = com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT:gulp {execution: gulp build}
+[INFO] [DEBUG] -- end configuration --
+[INFO] [INFO] Running 'gulp.js ' in D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\example project
+[INFO] [DEBUG] Executing command line [D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\example project\node\node.exe, D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\example project\node_modules\gulp\bin\gulp.js]
+[INFO] [INFO] [19:33:43] Using gulpfile D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\example project\gulpfile.js
+[INFO] [INFO] [19:33:43] Starting 'default'...
+[INFO] [INFO] gulp runs as expected on production
+[INFO] [INFO] [19:33:43] Finished 'default' after 165 Î¼s
+[INFO] [DEBUG] Exit value 0
+[INFO] [INFO] 
+[INFO] [INFO] --- frontend-maven-plugin:1.7-SNAPSHOT:karma (javascript tests) @ example ---
+[INFO] [DEBUG] Configuring mojo com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT:karma from plugin realm ClassRealm[plugin>com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT, parent: sun.misc.Launcher$AppClassLoader@33909752]
+[INFO] [DEBUG] Configuring mojo 'com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT:karma' with basic configurator -->
+[INFO] [DEBUG]   (f) karmaConfPath = src/test/javascript/karma.conf.ci.js
+[INFO] [DEBUG]   (f) project = MavenProject: com.github.eirslett:example:0 @ D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\example project\pom.xml
+[INFO] [DEBUG]   (f) repositorySystemSession = org.eclipse.aether.DefaultRepositorySystemSession@7af707e0
+[INFO] [DEBUG]   (f) skipTests = false
+[INFO] [DEBUG]   (f) testFailureIgnore = false
+[INFO] [DEBUG]   (f) workingDirectory = D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\example project
+[INFO] [DEBUG]   (f) execution = com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT:karma {execution: javascript tests}
+[INFO] [DEBUG] -- end configuration --
+[INFO] [INFO] Running 'karma start src/test/javascript/karma.conf.ci.js' in D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\example project
+[INFO] [DEBUG] Executing command line [D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\example project\node\node.exe, D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\example project\node_modules\karma\bin\karma, start, src/test/javascript/karma.conf.ci.js]
+[INFO] [INFO] [32m16 07 2018 19:33:44.756:INFO [karma]: [39mKarma v2.0.4 server started at http://0.0.0.0:9876/
+[INFO] [INFO] [32m16 07 2018 19:33:44.759:INFO [launcher]: [39mLaunching browser PhantomJS with unlimited concurrency
+[INFO] [INFO] [32m16 07 2018 19:33:44.776:INFO [launcher]: [39mStarting browser PhantomJS
+[INFO] [INFO] [32m16 07 2018 19:33:50.471:INFO [PhantomJS 2.1.1 (Windows 7 0.0.0)]: [39mConnected on socket EooxgFF-tBoAo4gdAAAA with id 63650262
+[INFO] [INFO] PhantomJS 2.1.1 (Windows 7 0.0.0): Executed 0 of 1 SUCCESS (0 secs / 0 secs)
+[INFO] [INFO] [1A[2KPhantomJS 2.1.1 (Windows 7 0.0.0): Executed 1 of 1 SUCCESS (0 secs / 0.001 secs)
+[INFO] [INFO] [1A[2KPhantomJS 2.1.1 (Windows 7 0.0.0): Executed 1 of 1 SUCCESS (0.001 secs / 0.001 secs)
+[INFO] [INFO] TOTAL: 1 SUCCESS
+[INFO] [DEBUG] Exit value 0
+[INFO] [INFO] ------------------------------------------------------------------------
+[INFO] [INFO] BUILD SUCCESS
+[INFO] [INFO] ------------------------------------------------------------------------
+[INFO] [INFO] Total time: 07:20 min
+[INFO] [INFO] Finished at: 2018-07-16T19:33:50+08:00
+[INFO] [INFO] Final Memory: 10M/161M
+[INFO] [INFO] ------------------------------------------------------------------------
+[INFO] run script verify.groovy
+[INFO] Running post-build script: D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\example project\verify.groovy
+[INFO] Finished post-build script: D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\example project\verify.groovy
+[INFO] ..SUCCESS (442.0 s)
+[INFO] Building: node-provided-npm\pom.xml
+[INFO] Apache Maven 3.3.9 (bb52d8502b132ec0a5a3f4c09453c07478323dc5; 2015-11-11T00:41:47+08:00)
+[INFO] Maven home: D:\Program Files\apache\maven\3.3.9\bin\..
+[INFO] Java version: 1.8.0_152, vendor: Oracle Corporation
+[INFO] Java home: D:\Program Files\Java\jdk1.8.0_152\jre
+[INFO] Default locale: zh_CN, platform encoding: GBK
+[INFO] OS name: "windows 7", version: "6.1", arch: "amd64", family: "dos"
+[INFO] [DEBUG] Created new class realm maven.api
+[INFO] [DEBUG] Importing foreign packages into class realm maven.api
+[INFO] [DEBUG]   Imported: javax.enterprise.inject.* < plexus.core
+[INFO] [DEBUG]   Imported: javax.enterprise.util.* < plexus.core
+[INFO] [DEBUG]   Imported: javax.inject.* < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.* < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.artifact < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.classrealm < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.cli < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.configuration < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.exception < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.execution < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.execution.scope < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.lifecycle < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.model < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.monitor < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.plugin < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.profiles < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.project < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.reporting < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.repository < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.rtinfo < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.settings < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.toolchain < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.usability < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.wagon.* < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.wagon.authentication < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.wagon.authorization < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.wagon.events < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.wagon.observers < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.wagon.proxy < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.wagon.repository < plexus.core
+[INFO] [DEBUG]   Imported: org.apache.maven.wagon.resource < plexus.core
+[INFO] [DEBUG]   Imported: org.codehaus.classworlds < plexus.core
+[INFO] [DEBUG]   Imported: org.codehaus.plexus.* < plexus.core
+[INFO] [DEBUG]   Imported: org.codehaus.plexus.classworlds < plexus.core
+[INFO] [DEBUG]   Imported: org.codehaus.plexus.component < plexus.core
+[INFO] [DEBUG]   Imported: org.codehaus.plexus.configuration < plexus.core
+[INFO] [DEBUG]   Imported: org.codehaus.plexus.container < plexus.core
+[INFO] [DEBUG]   Imported: org.codehaus.plexus.context < plexus.core
+[INFO] [DEBUG]   Imported: org.codehaus.plexus.lifecycle < plexus.core
+[INFO] [DEBUG]   Imported: org.codehaus.plexus.logging < plexus.core
+[INFO] [DEBUG]   Imported: org.codehaus.plexus.personality < plexus.core
+[INFO] [DEBUG]   Imported: org.codehaus.plexus.util.xml.Xpp3Dom < plexus.core
+[INFO] [DEBUG]   Imported: org.codehaus.plexus.util.xml.pull.XmlPullParser < plexus.core
+[INFO] [DEBUG]   Imported: org.codehaus.plexus.util.xml.pull.XmlPullParserException < plexus.core
+[INFO] [DEBUG]   Imported: org.codehaus.plexus.util.xml.pull.XmlSerializer < plexus.core
+[INFO] [DEBUG]   Imported: org.eclipse.aether.* < plexus.core
+[INFO] [DEBUG]   Imported: org.eclipse.aether.artifact < plexus.core
+[INFO] [DEBUG]   Imported: org.eclipse.aether.collection < plexus.core
+[INFO] [DEBUG]   Imported: org.eclipse.aether.deployment < plexus.core
+[INFO] [DEBUG]   Imported: org.eclipse.aether.graph < plexus.core
+[INFO] [DEBUG]   Imported: org.eclipse.aether.impl < plexus.core
+[INFO] [DEBUG]   Imported: org.eclipse.aether.installation < plexus.core
+[INFO] [DEBUG]   Imported: org.eclipse.aether.internal.impl < plexus.core
+[INFO] [DEBUG]   Imported: org.eclipse.aether.metadata < plexus.core
+[INFO] [DEBUG]   Imported: org.eclipse.aether.repository < plexus.core
+[INFO] [DEBUG]   Imported: org.eclipse.aether.resolution < plexus.core
+[INFO] [DEBUG]   Imported: org.eclipse.aether.spi < plexus.core
+[INFO] [DEBUG]   Imported: org.eclipse.aether.transfer < plexus.core
+[INFO] [DEBUG]   Imported: org.eclipse.aether.version < plexus.core
+[INFO] [DEBUG]   Imported: org.slf4j.* < plexus.core
+[INFO] [DEBUG]   Imported: org.slf4j.helpers.* < plexus.core
+[INFO] [DEBUG]   Imported: org.slf4j.spi.* < plexus.core
+[INFO] [DEBUG] Populating class realm maven.api
+[INFO] [INFO] Error stacktraces are turned on.
+[INFO] [DEBUG] Reading global settings from D:\Program Files\apache\maven\3.3.9\bin\..\conf\settings.xml
+[INFO] [DEBUG] Reading user settings from D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\interpolated-settings.xml
+[INFO] [DEBUG] Reading global toolchains from D:\Program Files\apache\maven\3.3.9\bin\..\conf\toolchains.xml
+[INFO] [DEBUG] Reading user toolchains from C:\Users\hzzhoujunlin\.m2\toolchains.xml
+[INFO] [DEBUG] Using local repository at D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\local-repo
+[INFO] [DEBUG] Using manager EnhancedLocalRepositoryManager with priority 10.0 for D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\local-repo
+[INFO] [INFO] Scanning for projects...
+[INFO] [DEBUG] Using mirror mrm-maven-plugin (http://localhost:65098) for local.central (http://localhost:65098).
+[INFO] [DEBUG] Using mirror alimaven (http://maven.aliyun.com/nexus/content/groups/public/) for central (https://repo.maven.apache.org/maven2).
+[INFO] [DEBUG] Extension realms for project com.github.eirslett:example:pom:0: (none)
+[INFO] [DEBUG] Looking up lifecyle mappings for packaging pom from ClassRealm[plexus.core, parent: null]
+[INFO] [DEBUG] === REACTOR BUILD PLAN ================================================
+[INFO] [DEBUG] Project: com.github.eirslett:example:pom:0
+[INFO] [DEBUG] Tasks:   [package]
+[INFO] [DEBUG] Style:   Regular
+[INFO] [DEBUG] =======================================================================
+[INFO] [INFO]                                                                         
+[INFO] [INFO] ------------------------------------------------------------------------
+[INFO] [INFO] Building example 0
+[INFO] [INFO] ------------------------------------------------------------------------
+[INFO] [DEBUG] Lifecycle default -> [validate, initialize, generate-sources, process-sources, generate-resources, process-resources, compile, process-classes, generate-test-sources, process-test-sources, generate-test-resources, process-test-resources, test-compile, process-test-classes, test, prepare-package, package, pre-integration-test, integration-test, post-integration-test, verify, install, deploy]
+[INFO] [DEBUG] Lifecycle clean -> [pre-clean, clean, post-clean]
+[INFO] [DEBUG] Lifecycle site -> [pre-site, site, post-site, site-deploy]
+[INFO] [DEBUG] Skipped remote request for com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT/maven-metadata.xml, locally installed metadata up-to-date.
+[INFO] [DEBUG] Skipped remote request for com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT/maven-metadata.xml, locally installed metadata up-to-date.
+[INFO] [DEBUG] Skipped remote request for com.github.eirslett:frontend-plugins:1.7-SNAPSHOT/maven-metadata.xml, locally installed metadata up-to-date.
+[INFO] [DEBUG] Using mirror mrm-maven-plugin (http://localhost:65098) for sonatype-nexus-snapshots (https://oss.sonatype.org/content/repositories/snapshots).
+[INFO] [DEBUG] Lifecycle default -> [validate, initialize, generate-sources, process-sources, generate-resources, process-resources, compile, process-classes, generate-test-sources, process-test-sources, generate-test-resources, process-test-resources, test-compile, process-test-classes, test, prepare-package, package, pre-integration-test, integration-test, post-integration-test, verify, install, deploy]
+[INFO] [DEBUG] Lifecycle clean -> [pre-clean, clean, post-clean]
+[INFO] [DEBUG] Lifecycle site -> [pre-site, site, post-site, site-deploy]
+[INFO] [DEBUG] === PROJECT BUILD PLAN ================================================
+[INFO] [DEBUG] Project:       com.github.eirslett:example:0
+[INFO] [DEBUG] Dependencies (collect): []
+[INFO] [DEBUG] Dependencies (resolve): []
+[INFO] [DEBUG] Repositories (dependencies): [mrm-maven-plugin (http://localhost:65098, default, releases+snapshots), alimaven (http://maven.aliyun.com/nexus/content/groups/public/, default, releases)]
+[INFO] [DEBUG] Repositories (plugins)     : [mrm-maven-plugin (http://localhost:65098, default, releases+snapshots), alimaven (http://maven.aliyun.com/nexus/content/groups/public/, default, releases)]
+[INFO] [DEBUG] -----------------------------------------------------------------------
+[INFO] [DEBUG] Goal:          com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT:install-node-and-npm (install node and npm)
+[INFO] [DEBUG] Style:         Regular
+[INFO] [DEBUG] Configuration: <?xml version="1.0" encoding="UTF-8"?>
+[INFO] <configuration>
+[INFO]   <downloadRoot default-value="">${downloadRoot}</downloadRoot>
+[INFO]   <installDirectory>target</installDirectory>
+[INFO]   <nodeDownloadRoot default-value="https://nodejs.org/dist/">${nodeDownloadRoot}</nodeDownloadRoot>
+[INFO]   <nodeVersion>v8.11.1</nodeVersion>
+[INFO]   <npmDownloadRoot default-value="https://registry.npmjs.org/npm/-/">${npmDownloadRoot}</npmDownloadRoot>
+[INFO]   <npmVersion default-value="provided">${npmVersion}</npmVersion>
+[INFO]   <project default-value="${project}"/>
+[INFO]   <repositorySystemSession default-value="${repositorySystemSession}"/>
+[INFO]   <serverId default-value="">${serverId}</serverId>
+[INFO]   <session default-value="${session}">${session}</session>
+[INFO]   <skip default-value="${skip.installnodenpm}">${skip.installnodenpm}</skip>
+[INFO]   <skipTests default-value="false">${skipTests}</skipTests>
+[INFO]   <testFailureIgnore default-value="false">${maven.test.failure.ignore}</testFailureIgnore>
+[INFO]   <workingDirectory default-value="${basedir}">${workingDirectory}</workingDirectory>
+[INFO]   <execution default-value="${mojoExecution}"/>
+[INFO] </configuration>
+[INFO] [DEBUG] -----------------------------------------------------------------------
+[INFO] [DEBUG] Goal:          com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT:npm (npm install)
+[INFO] [DEBUG] Style:         Regular
+[INFO] [DEBUG] Configuration: <?xml version="1.0" encoding="UTF-8"?>
+[INFO] <configuration>
+[INFO]   <arguments default-value="install">install</arguments>
+[INFO]   <installDirectory>target</installDirectory>
+[INFO]   <npmInheritsProxyConfigFromMaven default-value="true">${frontend.npm.npmInheritsProxyConfigFromMaven}</npmInheritsProxyConfigFromMaven>
+[INFO]   <npmRegistryURL default-value="">${npmRegistryURL}</npmRegistryURL>
+[INFO]   <project default-value="${project}"/>
+[INFO]   <repositorySystemSession default-value="${repositorySystemSession}"/>
+[INFO]   <session default-value="${session}">${session}</session>
+[INFO]   <skip default-value="${skip.npm}">${skip.npm}</skip>
+[INFO]   <skipTests default-value="false">${skipTests}</skipTests>
+[INFO]   <testFailureIgnore default-value="false">${maven.test.failure.ignore}</testFailureIgnore>
+[INFO]   <workingDirectory default-value="${basedir}">${workingDirectory}</workingDirectory>
+[INFO]   <execution default-value="${mojoExecution}"/>
+[INFO] </configuration>
+[INFO] [DEBUG] =======================================================================
+[INFO] [INFO] 
+[INFO] [INFO] --- frontend-maven-plugin:1.7-SNAPSHOT:install-node-and-npm (install node and npm) @ example ---
+[INFO] [DEBUG] Skipped remote request for com.github.eirslett:frontend-plugin-core:1.7-SNAPSHOT/maven-metadata.xml, locally installed metadata up-to-date.
+[INFO] [DEBUG] Skipped remote request for com.github.eirslett:frontend-plugin-core:1.7-SNAPSHOT/maven-metadata.xml, locally installed metadata up-to-date.
+[INFO] [DEBUG] Using mirror mrm-maven-plugin (http://localhost:65098) for apache.snapshots (http://repository.apache.org/snapshots).
+[INFO] [DEBUG] Using mirror mrm-maven-plugin (http://localhost:65098) for apache.snapshots (http://people.apache.org/repo/m2-snapshot-repository).
+[INFO] [DEBUG] Using mirror mrm-maven-plugin (http://localhost:65098) for repository.jboss.org (http://repository.jboss.org/maven2).
+[INFO] [DEBUG] Using mirror mrm-maven-plugin (http://localhost:65098) for snapshots.jboss.org (http://snapshots.jboss.org/maven2).
+[INFO] [DEBUG] Using mirror mrm-maven-plugin (http://localhost:65098) for oss.sonatype.org/jboss-snapshots (http://oss.sonatype.org/content/repositories/jboss-snapshots).
+[INFO] [DEBUG] Dependency collection stats: {ConflictMarker.analyzeTime=0, ConflictMarker.markTime=1, ConflictMarker.nodeCount=39, ConflictIdSorter.graphTime=1, ConflictIdSorter.topsortTime=0, ConflictIdSorter.conflictIdCount=31, ConflictIdSorter.conflictIdCycleCount=0, ConflictResolver.totalTime=8, ConflictResolver.conflictItemCount=38, DefaultDependencyCollector.collectTime=471, DefaultDependencyCollector.transformTime=12}
+[INFO] [DEBUG] com.github.eirslett:frontend-maven-plugin:jar:1.7-SNAPSHOT:
+[INFO] [DEBUG]    com.github.eirslett:frontend-plugin-core:jar:1.7-SNAPSHOT:compile
+[INFO] [DEBUG]       org.codehaus.jackson:jackson-mapper-asl:jar:1.9.13:compile
+[INFO] [DEBUG]       org.codehaus.jackson:jackson-core-asl:jar:1.9.13:compile
+[INFO] [DEBUG]       org.apache.commons:commons-compress:jar:1.5:compile
+[INFO] [DEBUG]          org.tukaani:xz:jar:1.2:compile
+[INFO] [DEBUG]       commons-io:commons-io:jar:1.3.2:compile
+[INFO] [DEBUG]       org.apache.commons:commons-exec:jar:1.3:compile
+[INFO] [DEBUG]       org.apache.httpcomponents:httpclient:jar:4.5.1:compile
+[INFO] [DEBUG]          org.apache.httpcomponents:httpcore:jar:4.4.3:compile
+[INFO] [DEBUG]          commons-logging:commons-logging:jar:1.2:compile
+[INFO] [DEBUG]          commons-codec:commons-codec:jar:1.9:compile
+[INFO] [DEBUG]       org.codehaus.plexus:plexus-utils:jar:3.0.22:compile
+[INFO] [DEBUG]       org.slf4j:slf4j-api:jar:1.7.5:compile
+[INFO] [DEBUG]    org.apache.maven:maven-plugin-api:jar:3.1.0:compile
+[INFO] [DEBUG]       org.apache.maven:maven-model:jar:3.1.0:compile
+[INFO] [DEBUG]       org.apache.maven:maven-artifact:jar:3.1.0:compile
+[INFO] [DEBUG]       org.eclipse.sisu:org.eclipse.sisu.plexus:jar:0.0.0.M2a:compile
+[INFO] [DEBUG]          javax.enterprise:cdi-api:jar:1.0:compile
+[INFO] [DEBUG]             javax.annotation:jsr250-api:jar:1.0:compile
+[INFO] [DEBUG]             javax.inject:javax.inject:jar:1:compile
+[INFO] [DEBUG]          com.google.guava:guava:jar:10.0.1:compile
+[INFO] [DEBUG]             com.google.code.findbugs:jsr305:jar:1.3.9:compile
+[INFO] [DEBUG]          org.sonatype.sisu:sisu-guice:jar:no_aop:3.1.0:compile
+[INFO] [DEBUG]             aopalliance:aopalliance:jar:1.0:compile
+[INFO] [DEBUG]          org.eclipse.sisu:org.eclipse.sisu.inject:jar:0.0.0.M2a:compile
+[INFO] [DEBUG]             asm:asm:jar:3.3.1:compile
+[INFO] [DEBUG]          org.codehaus.plexus:plexus-component-annotations:jar:1.5.5:compile
+[INFO] [DEBUG]          org.codehaus.plexus:plexus-classworlds:jar:2.4:compile
+[INFO] [DEBUG]    org.apache.maven.plugin-tools:maven-plugin-annotations:jar:3.2:compile
+[INFO] [DEBUG]    org.sonatype.plexus:plexus-build-api:jar:0.0.7:compile
+[INFO] [DEBUG] Created new class realm plugin>com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT
+[INFO] [DEBUG] Importing foreign packages into class realm plugin>com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT
+[INFO] [DEBUG]   Imported:  < maven.api
+[INFO] [DEBUG] Populating class realm plugin>com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT
+[INFO] [DEBUG]   Included: com.github.eirslett:frontend-maven-plugin:jar:1.7-SNAPSHOT
+[INFO] [DEBUG]   Included: com.github.eirslett:frontend-plugin-core:jar:1.7-SNAPSHOT
+[INFO] [DEBUG]   Included: org.codehaus.jackson:jackson-mapper-asl:jar:1.9.13
+[INFO] [DEBUG]   Included: org.codehaus.jackson:jackson-core-asl:jar:1.9.13
+[INFO] [DEBUG]   Included: org.apache.commons:commons-compress:jar:1.5
+[INFO] [DEBUG]   Included: org.tukaani:xz:jar:1.2
+[INFO] [DEBUG]   Included: commons-io:commons-io:jar:1.3.2
+[INFO] [DEBUG]   Included: org.apache.commons:commons-exec:jar:1.3
+[INFO] [DEBUG]   Included: org.apache.httpcomponents:httpclient:jar:4.5.1
+[INFO] [DEBUG]   Included: org.apache.httpcomponents:httpcore:jar:4.4.3
+[INFO] [DEBUG]   Included: commons-logging:commons-logging:jar:1.2
+[INFO] [DEBUG]   Included: commons-codec:commons-codec:jar:1.9
+[INFO] [DEBUG]   Included: org.codehaus.plexus:plexus-utils:jar:3.0.22
+[INFO] [DEBUG]   Included: javax.enterprise:cdi-api:jar:1.0
+[INFO] [DEBUG]   Included: javax.annotation:jsr250-api:jar:1.0
+[INFO] [DEBUG]   Included: com.google.guava:guava:jar:10.0.1
+[INFO] [DEBUG]   Included: com.google.code.findbugs:jsr305:jar:1.3.9
+[INFO] [DEBUG]   Included: org.sonatype.sisu:sisu-guice:jar:no_aop:3.1.0
+[INFO] [DEBUG]   Included: aopalliance:aopalliance:jar:1.0
+[INFO] [DEBUG]   Included: org.eclipse.sisu:org.eclipse.sisu.inject:jar:0.0.0.M2a
+[INFO] [DEBUG]   Included: asm:asm:jar:3.3.1
+[INFO] [DEBUG]   Included: org.codehaus.plexus:plexus-component-annotations:jar:1.5.5
+[INFO] [DEBUG]   Included: org.apache.maven.plugin-tools:maven-plugin-annotations:jar:3.2
+[INFO] [DEBUG]   Included: org.sonatype.plexus:plexus-build-api:jar:0.0.7
+[INFO] [DEBUG] Configuring mojo com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT:install-node-and-npm from plugin realm ClassRealm[plugin>com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT, parent: sun.misc.Launcher$AppClassLoader@33909752]
+[INFO] [DEBUG] Configuring mojo 'com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT:install-node-and-npm' with basic configurator -->
+[INFO] [DEBUG]   (f) installDirectory = D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\node-provided-npm\target
+[INFO] [DEBUG]   (f) nodeDownloadRoot = https://nodejs.org/dist/
+[INFO] [DEBUG]   (f) nodeVersion = v8.11.1
+[INFO] [DEBUG]   (f) npmDownloadRoot = https://registry.npmjs.org/npm/-/
+[INFO] [DEBUG]   (f) npmVersion = provided
+[INFO] [DEBUG]   (f) project = MavenProject: com.github.eirslett:example:0 @ D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\node-provided-npm\pom.xml
+[INFO] [DEBUG]   (f) repositorySystemSession = org.eclipse.aether.DefaultRepositorySystemSession@63cd604c
+[INFO] [DEBUG]   (f) session = org.apache.maven.execution.MavenSession@40dd3977
+[INFO] [DEBUG]   (f) skipTests = false
+[INFO] [DEBUG]   (f) testFailureIgnore = false
+[INFO] [DEBUG]   (f) workingDirectory = D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\node-provided-npm
+[INFO] [DEBUG]   (f) execution = com.github.eirslett:frontend-maven-plugin:1.7-SNAPSHOT:install-node-and-npm {execution: install node and npm}
+[INFO] [DEBUG] -- end configuration --
+[INFO] [INFO] Installing node version v8.11.1
+[INFO] [DEBUG] Creating install directory D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\node-provided-npm\target\node
+[INFO] [DEBUG] Creating temporary directory D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\it\node-provided-npm\target\node\tmp
+[INFO] [INFO] Downloading https://nodejs.org/dist/v8.11.1/node-v8.11.1-win-x64.zip to D:\workspace\frontend-maven-plugin\frontend-maven-plugin\target\local-repo\com\github\eirslett\node\8.11.1\node-8.11.1-win-x64.zip
+ÖÕÖ¹Åú´¦Àí²Ù×÷Âð(Y/N)? 
+ÖÕÖ¹Åú´¦Àí²Ù×÷Âð(Y/N)? 
