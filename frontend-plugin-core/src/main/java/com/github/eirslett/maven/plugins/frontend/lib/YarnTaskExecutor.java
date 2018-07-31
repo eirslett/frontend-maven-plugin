@@ -20,7 +20,7 @@ abstract class YarnTaskExecutor {
 
     private final String taskName;
 
-    private final List<String> additionalArguments;
+    private final ArgumentsParser argumentsParser;
 
     private final YarnExecutorConfig config;
 
@@ -42,7 +42,7 @@ abstract class YarnTaskExecutor {
         logger = LoggerFactory.getLogger(getClass());
         this.config = config;
         this.taskName = taskName;
-        this.additionalArguments = additionalArguments;
+        this.argumentsParser = new ArgumentsParser(additionalArguments);
     }
 
     private static String getTaskNameFromLocation(String taskLocation) {
@@ -66,17 +66,7 @@ abstract class YarnTaskExecutor {
     }
 
     private List<String> getArguments(String args) {
-        List<String> arguments = new ArrayList<>();
-        if (args != null && !args.equals("null") && !args.isEmpty()) {
-            arguments.addAll(Arrays.asList(args.split("\\s+")));
-        }
-
-        for (String argument : additionalArguments) {
-            if (!arguments.contains(argument)) {
-                arguments.add(argument);
-            }
-        }
-        return arguments;
+        return argumentsParser.parse(args);
     }
 
     private static String taskToString(String taskName, List<String> arguments) {
