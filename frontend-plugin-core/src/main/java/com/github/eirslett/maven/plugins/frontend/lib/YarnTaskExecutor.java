@@ -3,7 +3,6 @@ package com.github.eirslett.maven.plugins.frontend.lib;
 import static com.github.eirslett.maven.plugins.frontend.lib.Utils.implode;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -50,23 +49,23 @@ abstract class YarnTaskExecutor {
     }
 
     public final void execute(String args, Map<String, String> environment) throws TaskRunnerException {
-        final List<String> arguments = getArguments(args);
+        final List<String> arguments = argumentsParser.parse(args);
         logger.info("Running " + taskToString(taskName, arguments) + " in " + config.getWorkingDirectory());
 
         try {
+            beforeExecute(arguments, environment);
             final int result =
                 new YarnExecutor(config, arguments, environment).executeAndRedirectOutput(logger);
             if (result != 0) {
                 throw new TaskRunnerException(
                     taskToString(taskName, arguments) + " failed. (error code " + result + ")");
             }
-        } catch (ProcessExecutionException e) {
+        } catch (Exception e) {
             throw new TaskRunnerException(taskToString(taskName, arguments) + " failed.", e);
         }
     }
 
-    private List<String> getArguments(String args) {
-        return argumentsParser.parse(args);
+    protected void beforeExecute(List<String> arguments, Map<String, String> environment) throws Exception {
     }
 
     private static String taskToString(String taskName, List<String> arguments) {

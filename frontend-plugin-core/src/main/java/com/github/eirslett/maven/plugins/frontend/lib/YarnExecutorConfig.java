@@ -2,7 +2,7 @@ package com.github.eirslett.maven.plugins.frontend.lib;
 
 import java.io.File;
 
-public interface YarnExecutorConfig {
+public interface YarnExecutorConfig extends ExecutorConfig {
 
     File getNodePath();
 

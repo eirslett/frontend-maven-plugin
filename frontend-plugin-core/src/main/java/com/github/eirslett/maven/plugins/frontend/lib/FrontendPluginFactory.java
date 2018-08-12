@@ -41,12 +41,12 @@ public final class FrontendPluginFactory {
         return new DefaultJspmRunner(getExecutorConfig());
     }
 
-    public NpmRunner getNpmRunner(ProxyConfig proxy, String npmRegistryURL) {
-        return new DefaultNpmRunner(getExecutorConfig(), proxy, npmRegistryURL);
+    public NpmRunner getNpmRunner(ProxyConfig proxy, NpmRegistryConfig registryConfig) {
+        return new DefaultNpmRunner(getExecutorConfig(), proxy, registryConfig);
     }
 
-    public YarnRunner getYarnRunner(ProxyConfig proxy, String npmRegistryURL) {
-        return new DefaultYarnRunner(new InstallYarnExecutorConfig(getInstallConfig()), proxy, npmRegistryURL);
+    public YarnRunner getYarnRunner(ProxyConfig proxy, NpmRegistryConfig registryConfig) {
+        return new DefaultYarnRunner(new InstallYarnExecutorConfig(getInstallConfig()), proxy, registryConfig);
     }
 
     public GruntRunner getGruntRunner(){
