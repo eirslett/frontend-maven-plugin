@@ -53,6 +53,13 @@
       <artifactId>plexus-build-api</artifactId>
       <version>0.0.7</version>
     </dependency>
+
+    <dependency>
+      <groupId>org.mock-server</groupId>
+      <artifactId>mockserver-client-java</artifactId>
+      <version>5.3.0</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>
@@ -110,6 +117,7 @@
           <postBuildHookScript>verify</postBuildHookScript>
           <filterProperties>
             <repository.proxy.url>${repository.proxy.url}</repository.proxy.url>
+            <npm.registry.url>http://localhost:${npm.registry.port}</npm.registry.url>
           </filterProperties>
         </configuration>
 
@@ -120,6 +128,55 @@
               <goal>install</goal>
               <goal>run</goal>
               <goal>verify</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <version>3.0.0</version>
+        <executions>
+          <execution>
+            <id>npm-registry-mock-server-generate-random-port</id>
+            <phase>pre-integration-test</phase>
+            <goals>
+              <goal>reserve-network-port</goal>
+            </goals>
+            <configuration>
+              <randomPort>true</randomPort>
+              <portNames>
+                <name>npm.registry.port</name>
+              </portNames>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.mock-server</groupId>
+        <artifactId>mockserver-maven-plugin</artifactId>
+        <version>5.3.0</version>
+        <configuration>
+          <serverPort>${npm.registry.port}</serverPort>
+          <logLevel>INFO</logLevel>
+          <initializationClass>com.github.eirslett.maven.plugins.frontend.NpmRegistryMock</initializationClass>
+          <skip>${skipTests}</skip>
+        </configuration>
+        <executions>
+          <execution>
+            <id>npm-registry-mock-server-start</id>
+            <phase>pre-integration-test</phase>
+            <goals>
+              <goal>start</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>npm-registry-mock-server-stop</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>stop</goal>
             </goals>
           </execution>
         </executions>

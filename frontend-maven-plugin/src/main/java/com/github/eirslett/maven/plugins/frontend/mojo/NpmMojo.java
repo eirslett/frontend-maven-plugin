@@ -1,13 +1,12 @@
 package com.github.eirslett.maven.plugins.frontend.mojo;
 
-import com.github.eirslett.maven.plugins.frontend.lib.FrontendPluginFactory;
-import com.github.eirslett.maven.plugins.frontend.lib.ProxyConfig;
-import com.github.eirslett.maven.plugins.frontend.lib.TaskRunnerException;
+import com.github.eirslett.maven.plugins.frontend.lib.*;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.settings.Server;
 import org.apache.maven.settings.crypto.SettingsDecrypter;
 import org.sonatype.plexus.build.incremental.BuildContext;
 
@@ -33,7 +32,13 @@ public final class NpmMojo extends AbstractFrontendMojo {
      */
     @Parameter(property = NPM_REGISTRY_URL, required = false, defaultValue = "")
     private String npmRegistryURL;
-    
+
+    /**
+     * Server Id for access to npm registry
+     */
+    @Parameter(property = "npmRegistryServerId", defaultValue = "")
+    private String npmRegistryServerId;
+
     @Parameter(property = "session", defaultValue = "${session}", readonly = true)
     private MavenSession session;
 
@@ -59,7 +64,8 @@ public final class NpmMojo extends AbstractFrontendMojo {
         File packageJson = new File(workingDirectory, "package.json");
         if (buildContext == null || buildContext.hasDelta(packageJson) || !buildContext.isIncremental()) {
             ProxyConfig proxyConfig = getProxyConfig();
-            factory.getNpmRunner(proxyConfig, getRegistryUrl()).execute(arguments, environmentVariables);
+            NpmRegistryConfig registryConfig = getRegistryConfig();
+            factory.getNpmRunner(proxyConfig, registryConfig).execute(arguments, environmentVariables);
         } else {
             getLog().info("Skipping npm install as package.json unchanged");
         }
@@ -74,8 +80,22 @@ public final class NpmMojo extends AbstractFrontendMojo {
         }
     }
 
-    private String getRegistryUrl() {
+    private NpmRegistryConfig getRegistryConfig() {
         // check to see if overridden via `-D`, otherwise fallback to pom value
-        return System.getProperty(NPM_REGISTRY_URL, npmRegistryURL);
+        final String registryURL = System.getProperty(NPM_REGISTRY_URL, npmRegistryURL);
+        if (null == registryURL || registryURL.isEmpty()) {
+            return null;
+        }
+
+        String username = null;
+        String password = null;
+        if (null != npmRegistryServerId && !npmRegistryServerId.isEmpty()) {
+            Server server = MojoUtils.decryptServer(npmRegistryServerId, session, decrypter);
+            if (null != server) {
+                username = server.getUsername();
+                password = server.getPassword();
+            }
+        }
+        return new NpmRegistryConfig(registryURL, username, password);
     }
 }

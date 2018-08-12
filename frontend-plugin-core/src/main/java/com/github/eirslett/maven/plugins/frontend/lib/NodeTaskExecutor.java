@@ -4,15 +4,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
-import static com.github.eirslett.maven.plugins.frontend.lib.Utils.implode;
-import static com.github.eirslett.maven.plugins.frontend.lib.Utils.normalize;
-import static com.github.eirslett.maven.plugins.frontend.lib.Utils.prepend;
-import java.util.Map;
+import static com.github.eirslett.maven.plugins.frontend.lib.Utils.*;
 
 abstract class NodeTaskExecutor {
     private static final String DS = "//";
@@ -51,15 +45,17 @@ abstract class NodeTaskExecutor {
 
     public final void execute(String args, Map<String, String> environment) throws TaskRunnerException {
         final String absoluteTaskLocation = getAbsoluteTaskLocation();
-        final List<String> arguments = getArguments(args);
-        logger.info("Running " + taskToString(taskName, arguments) + " in " + config.getWorkingDirectory());
+        final List<String> arguments = argumentsParser.parse(args);
+        final Map<String, String> environment_ = environment == null ? new HashMap<String, String>() : new HashMap<>(environment);
 
         try {
-            final int result = new NodeExecutor(config, prepend(absoluteTaskLocation, arguments), environment).executeAndRedirectOutput(logger);
+            beforeExecute(arguments, environment_);
+            logger.info("Running " + taskToString(taskName, arguments) + " in " + config.getWorkingDirectory());
+            final int result = new NodeExecutor(config, prepend(absoluteTaskLocation, arguments), environment_).executeAndRedirectOutput(logger);
             if (result != 0) {
                 throw new TaskRunnerException(taskToString(taskName, arguments) + " failed. (error code " + result + ")");
             }
-        } catch (ProcessExecutionException e) {
+        } catch (Exception e) {
             throw new TaskRunnerException(taskToString(taskName, arguments) + " failed.", e);
         }
     }
@@ -76,10 +72,7 @@ abstract class NodeTaskExecutor {
         return location;
     }
 
-
-
-    private List<String> getArguments(String args) {
-        return argumentsParser.parse(args);
+    protected void beforeExecute(List<String> arguments, Map<String, String> environment) throws Exception {
     }
 
     private static String taskToString(String taskName, List<String> arguments) {
