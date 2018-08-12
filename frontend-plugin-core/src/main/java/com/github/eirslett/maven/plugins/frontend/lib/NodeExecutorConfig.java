@@ -2,7 +2,7 @@ package com.github.eirslett.maven.plugins.frontend.lib;
 
 import java.io.File;
 
-public interface NodeExecutorConfig {
+public interface NodeExecutorConfig extends ExecutorConfig {
   File getNodePath();
   File getNpmPath();
   File getInstallDirectory();

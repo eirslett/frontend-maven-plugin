@@ -1,5 +1,12 @@
 <?xml version="1.0"?>
 <settings>
+  <servers>
+    <server>
+      <id>private-npm-repository</id>
+        <username>username</username>
+        <password>password</password>
+    </server>
+  </servers>
   <mirrors>
     <mirror>
       <id>mrm-maven-plugin</id>
