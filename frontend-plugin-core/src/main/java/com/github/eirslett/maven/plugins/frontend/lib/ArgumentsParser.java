@@ -9,12 +9,19 @@ class ArgumentsParser {
 
     private final List<String> additionalArguments;
 
+    private final boolean additionalArgumentsFirst;
+
     ArgumentsParser() {
-        this(Collections.<String>emptyList());
+        this(Collections.<String>emptyList(), false);
     }
 
     ArgumentsParser(List<String> additionalArguments) {
+    	this(additionalArguments, false);
+    }
+
+    ArgumentsParser(List<String> additionalArguments, boolean additionalArgumentsFirst) {
         this.additionalArguments = additionalArguments;
+        this.additionalArgumentsFirst = additionalArgumentsFirst;
     }
 
     /**
@@ -34,11 +41,16 @@ class ArgumentsParser {
      * @return an mutable copy of the list of all arguments
      */
     List<String> parse(String args) {
-        if (args == null || "null".equals(args) || args.isEmpty()) {
-            return Collections.emptyList();
+        final List<String> arguments = new LinkedList<>();
+
+        if (additionalArgumentsFirst) {
+            addAdditionalArguments(arguments);
         }
 
-        final List<String> arguments = new LinkedList<>();
+        if (args == null || "null".equals(args) || args.isEmpty()) {
+            return arguments;
+        }
+
         final StringBuilder argumentBuilder = new StringBuilder();
         Character quote = null;
 
@@ -64,12 +76,18 @@ class ArgumentsParser {
 
         addArgument(argumentBuilder, arguments);
 
+        if (!additionalArgumentsFirst) {
+            addAdditionalArguments(arguments);
+        }
+
+        return arguments;
+    }
+
+    private void addAdditionalArguments(final List<String> arguments) {
         for (String argument : this.additionalArguments) {
             addArgument(argument, arguments);
         }
-
-        return new ArrayList<>(arguments);
-    }
+	}
 
     private static void addArgument(StringBuilder argumentBuilder, List<String> arguments) {
         if (argumentBuilder.length() > 0) {

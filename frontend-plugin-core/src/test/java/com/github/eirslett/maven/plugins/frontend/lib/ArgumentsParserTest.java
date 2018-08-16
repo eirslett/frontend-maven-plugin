@@ -60,4 +60,11 @@ public class ArgumentsParserTest {
 
         assertArrayEquals(new Object[] { "bar", "foobar", "foo" }, parser.parse("bar foobar").toArray());
     }
+
+    @Test
+    public void testPlacingAdditionalArgumentsFirst() {
+        ArgumentsParser parser = new ArgumentsParser(Arrays.asList("--first", "--second"), true);
+
+        assertArrayEquals(new Object[] { "--first", "--second", "third", "--fourth" }, parser.parse("third --fourth").toArray());
+    }
 }

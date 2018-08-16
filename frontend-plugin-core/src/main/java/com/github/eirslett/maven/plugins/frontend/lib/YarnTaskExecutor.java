@@ -42,7 +42,7 @@ abstract class YarnTaskExecutor {
         logger = LoggerFactory.getLogger(getClass());
         this.config = config;
         this.taskName = taskName;
-        this.argumentsParser = new ArgumentsParser(additionalArguments);
+        this.argumentsParser = new ArgumentsParser(additionalArguments, true);
     }
 
     private static String getTaskNameFromLocation(String taskLocation) {
@@ -54,8 +54,7 @@ abstract class YarnTaskExecutor {
         logger.info("Running " + taskToString(taskName, arguments) + " in " + config.getWorkingDirectory());
 
         try {
-            final int result =
-                new YarnExecutor(config, arguments, environment).executeAndRedirectOutput(logger);
+            final int result = createExecutor(arguments, environment).executeAndRedirectOutput(logger);
             if (result != 0) {
                 throw new TaskRunnerException(
                     taskToString(taskName, arguments) + " failed. (error code " + result + ")");
@@ -63,6 +62,10 @@ abstract class YarnTaskExecutor {
         } catch (ProcessExecutionException e) {
             throw new TaskRunnerException(taskToString(taskName, arguments) + " failed.", e);
         }
+    }
+
+    YarnExecutor createExecutor(final List<String> arguments, Map<String, String> environment) {
+        return new YarnExecutor(config, arguments, environment);
     }
 
     private List<String> getArguments(String args) {
