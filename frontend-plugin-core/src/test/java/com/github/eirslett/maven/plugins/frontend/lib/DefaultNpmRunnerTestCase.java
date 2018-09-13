@@ -11,6 +11,7 @@ import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.List;
 
 public class DefaultNpmRunnerTestCase {
 
@@ -37,15 +38,14 @@ public class DefaultNpmRunnerTestCase {
     String npmRegistryURL = "";
 
     // Act
-    Class<?> c =
+    Class<?> classUnderTest =
         Reflector.forName("com.github.eirslett.maven.plugins.frontend.lib.DefaultNpmRunner");
-    Method m = c.getDeclaredMethod(
+    Method methodUnderTest = classUnderTest.getDeclaredMethod(
         "buildArguments",
         Reflector.forName("com.github.eirslett.maven.plugins.frontend.lib.ProxyConfig"),
         Reflector.forName("java.lang.String"));
-    m.setAccessible(true);
-    java.util.List<String> retval =
-        (java.util.List<String>)m.invoke(null, proxyConfig, npmRegistryURL);
+    methodUnderTest.setAccessible(true);
+    List<String> retval = (List<String>)methodUnderTest.invoke(null, proxyConfig, npmRegistryURL);
 
     // Assert result
     ArrayList<String> arrayList1 = new ArrayList<String>();
@@ -74,15 +74,14 @@ public class DefaultNpmRunnerTestCase {
     String npmRegistryURL = "\"\"";
 
     // Act
-    Class<?> c =
+    Class<?> classUnderTest =
         Reflector.forName("com.github.eirslett.maven.plugins.frontend.lib.DefaultNpmRunner");
-    Method m = c.getDeclaredMethod(
+    Method methodUnderTest = classUnderTest.getDeclaredMethod(
         "buildArguments",
         Reflector.forName("com.github.eirslett.maven.plugins.frontend.lib.ProxyConfig"),
         Reflector.forName("java.lang.String"));
-    m.setAccessible(true);
-    java.util.List<String> retval =
-        (java.util.List<String>)m.invoke(null, proxyConfig, npmRegistryURL);
+    methodUnderTest.setAccessible(true);
+    List<String> retval = (List<String>)methodUnderTest.invoke(null, proxyConfig, npmRegistryURL);
 
     // Assert result
     ArrayList<String> arrayList1 = new ArrayList<String>();

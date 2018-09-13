@@ -34,16 +34,17 @@ public class NPMInstallerTestCase {
     Reflector.setField(objectUnderTest, "password", null);
     Reflector.setField(objectUnderTest, "config", null);
     Reflector.setField(objectUnderTest, "fileDownloader", null);
-    Reflector.setField(objectUnderTest, "npmVersion", "");
+    Reflector.setField(objectUnderTest, "npmVersion", "\"@00h");
     Reflector.setField(objectUnderTest, "npmDownloadRoot", null);
     Reflector.setField(objectUnderTest, "archiveExtractor", null);
     Reflector.setField(objectUnderTest, "userName", null);
 
     // Act
-    Class<?> c = Reflector.forName("com.github.eirslett.maven.plugins.frontend.lib.NPMInstaller");
-    Method m = c.getDeclaredMethod("npmProvided");
-    m.setAccessible(true);
-    boolean retval = (boolean)m.invoke(objectUnderTest);
+    Class<?> classUnderTest =
+        Reflector.forName("com.github.eirslett.maven.plugins.frontend.lib.NPMInstaller");
+    Method methodUnderTest = classUnderTest.getDeclaredMethod("npmProvided");
+    methodUnderTest.setAccessible(true);
+    boolean retval = (boolean)methodUnderTest.invoke(objectUnderTest);
 
     // Assert result
     Assert.assertEquals(false, retval);

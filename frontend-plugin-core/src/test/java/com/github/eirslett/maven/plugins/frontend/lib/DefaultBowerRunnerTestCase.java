@@ -11,6 +11,7 @@ import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.List;
 
 public class DefaultBowerRunnerTestCase {
 
@@ -34,13 +35,13 @@ public class DefaultBowerRunnerTestCase {
     Reflector.setField(proxyConfig, "proxies", arrayList);
 
     // Act
-    Class<?> c =
+    Class<?> classUnderTest =
         Reflector.forName("com.github.eirslett.maven.plugins.frontend.lib.DefaultBowerRunner");
-    Method m = c.getDeclaredMethod(
+    Method methodUnderTest = classUnderTest.getDeclaredMethod(
         "buildArguments",
         Reflector.forName("com.github.eirslett.maven.plugins.frontend.lib.ProxyConfig"));
-    m.setAccessible(true);
-    java.util.List<String> retval = (java.util.List<String>)m.invoke(null, proxyConfig);
+    methodUnderTest.setAccessible(true);
+    List<String> retval = (List<String>)methodUnderTest.invoke(null, proxyConfig);
 
     // Assert result
     ArrayList<String> arrayList1 = new ArrayList<String>();
