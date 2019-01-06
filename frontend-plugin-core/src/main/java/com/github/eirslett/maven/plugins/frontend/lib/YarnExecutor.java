@@ -16,6 +16,7 @@ final class YarnExecutor {
         List<String> localPaths = new ArrayList<>();
         localPaths.add(config.getYarnPath().getParent());
         localPaths.add(config.getNodePath().getParent());
+        localPaths.add(config.getNodePath().getParent() + "/node_modules/npm/bin");
         executor = new ProcessExecutor(config.getWorkingDirectory(), localPaths,
             Utils.prepend(yarn, arguments), config.getPlatform(), additionalEnvironment);
     }
