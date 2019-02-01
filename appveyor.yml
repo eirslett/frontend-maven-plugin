@@ -1,0 +1,32 @@
+ 
+version: '{build}'
+skip_tags: true
+clone_depth: 10
+environment:
+  MAVEN_VERSION: 3.5.4
+  matrix:
+    - JAVA_HOME: C:\Program Files\Java\jdk1.8.0
+    - JAVA_HOME: C:\Program Files\Java\jdk11
+install:
+  - ps: |
+      Add-Type -AssemblyName System.IO.Compression.FileSystem
+      if (!(Test-Path -Path "C:\maven" )) {
+        Write-Host "Downloading Maven $env:MAVEN_VERSION"
+        (new-object System.Net.WebClient).DownloadFile("http://apache.rediris.es/maven/maven-3/$env:MAVEN_VERSION/binaries/apache-maven-$env:MAVEN_VERSION-bin.zip", 'C:\maven-bin.zip')
+        [System.IO.Compression.ZipFile]::ExtractToDirectory("C:\maven-bin.zip", "C:\maven")
+      }
+  - cmd: SET M2_HOME=C:\maven\apache-maven-%MAVEN_VERSION%
+  # Prepend Java entry, remove Ruby entry (C:\Ruby193\bin;) from PATH
+  - cmd: SET PATH=%M2_HOME%\bin;%JAVA_HOME%\bin;%PATH:C:\Ruby193\bin;=%;
+  # Required to avoid errors with JDK 8 because TSL 1.0 & 1.1 support was removed
+  - cmd: SET MAVEN_OPTS=-Xmx2g -Dhttps.protocols=TLSv1.2
+  - cmd: SET JAVA_OPTS=-Xmx2g
+  - cmd: mvn --version
+  - cmd: java -version
+build_script:
+  - mvn clean package --batch-mode -DskipTest -Dhttps.protocols=TLSv1.2
+test_script:
+  - mvn clean install --batch-mode
+cache:
+  - C:\maven\ -> appveyor.yml
+  - C:\Users\appveyor\.m2\ -> pom.xml
