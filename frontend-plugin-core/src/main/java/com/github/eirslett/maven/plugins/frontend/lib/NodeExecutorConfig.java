@@ -8,6 +8,7 @@ public interface NodeExecutorConfig {
   File getInstallDirectory();
   File getWorkingDirectory();
   Platform getPlatform();
+  File getGlobalPath(String relativePath);
 }
 
 final class InstallNodeExecutorConfig implements NodeExecutorConfig {
@@ -31,6 +32,13 @@ final class InstallNodeExecutorConfig implements NodeExecutorConfig {
   @Override
   public File getNpmPath() {
     return new File(installConfig.getInstallDirectory() + Utils.normalize(NPM));
+  }
+  
+  @Override
+  public File getGlobalPath(String relativePath) {
+	String path = relativePath.replace('\\', '/');
+	path = path.startsWith("/") ? path : '/' + path;
+    return new File(installConfig.getInstallDirectory() + Utils.normalize(path));
   }
 
   @Override

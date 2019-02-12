@@ -68,6 +68,10 @@ public final class FrontendPluginFactory {
     public WebpackRunner getWebpackRunner(){
         return new DefaultWebpackRunner(getExecutorConfig());
     }
+    
+    public NodeRunner getNodeRunner(String jsTarget, ProxyConfig proxy) {
+        return new DefaultNodeRunner(jsTarget, getExecutorConfig(), proxy);
+    }
 
     private NodeExecutorConfig getExecutorConfig() {
         return new InstallNodeExecutorConfig(getInstallConfig());
