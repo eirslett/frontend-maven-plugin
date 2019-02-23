@@ -1,10 +1,12 @@
 language: java
-# Run on OSX and Linux
 matrix:
   include:
-    - os: linux
-      jdk: openjdk8
-    - os: osx
-      #osx_image: beta-xcode6.1
-# Run Integration tests
-script: "mvn test && mvn clean verify"
+  - os: linux
+    jdk: openjdk8
+  - os: osx
+script: mvn test && mvn clean verify
+env:
+  global:
+  - secure: YBdTKc5juLQGzurNJcoEuzkUEjSfavEJa3z1NmaNFISDswI3DG4eHsBrNJiBkEYHP0RhZxvGY+xpciyH4vthMQczs7EpZrMHqr9sOovCizkVXxI/nUlCTWlWTrQEnoyoAj18cDC0M2pJ5tgQoId+TwdySLPd8+aGLOF6uTR0V9U=
+  - secure: T9SClKKwe9iTJq94L/XxZBR6XGuZo5bn6+p5t97K/23VQb+1w3HXRcqDiR/kFnZa74KtdARc4s+dsTPz18Y6eiraybW7zE00rqWnLNg0pRcoaXwTSPqm2NpJA1PhnG6Y7pCbNNtJFB4WBa8lmUqrIwgEy1rE8gyJlTfAoDgrNEw=
+  - secure: J239znDCwf91fC9oMvPSw9xb+iQhbGaVcP4p1l82QKhcDHnQ8nYirT0DFeMVu8XUK5IaaxmvAsKh8ri58HbUCJwOz1F3VZ99rNM8p5/63KC+89ZvPKxjHNQHCYyKc9x/XdzOy+n1cTbFFgGAFOXJNyU2AtWkUGjP+8UILiPWBuo=
