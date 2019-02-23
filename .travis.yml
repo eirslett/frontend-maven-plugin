@@ -4,12 +4,14 @@ matrix:
   - os: linux
     jdk: openjdk8
   - os: osx
-script: mvn test && mvn clean verify
+script: mvn test && mvn clean verify -PintegrationTests
 deploy:
+  skip_cleanup: true
   provider: script
   script: ./travis/deploy.sh
   on:
     branch: master
+    tags: true
     os: linux
 env:
   global:
