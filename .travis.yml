@@ -12,7 +12,6 @@ deploy:
   on:
     branch: master
     tags: true
-    os: linux
 env:
   global:
   - secure: YBdTKc5juLQGzurNJcoEuzkUEjSfavEJa3z1NmaNFISDswI3DG4eHsBrNJiBkEYHP0RhZxvGY+xpciyH4vthMQczs7EpZrMHqr9sOovCizkVXxI/nUlCTWlWTrQEnoyoAj18cDC0M2pJ5tgQoId+TwdySLPd8+aGLOF6uTR0V9U=
