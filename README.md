@@ -29,7 +29,7 @@ running common javascript tasks such as minification, obfuscation, compression, 
 
 ## Requirements
 
-* _Maven 3_ and _Java 1.7_
+* _Maven 3_ and _Java 1.8_
 * For _Maven 2_ support take a look at the [wiki](https://github.com/eirslett/frontend-maven-plugin/wiki#maven-2).
 
 ## Installation
