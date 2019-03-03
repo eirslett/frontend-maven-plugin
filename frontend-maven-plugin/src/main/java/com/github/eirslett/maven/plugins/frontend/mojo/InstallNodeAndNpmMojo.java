@@ -1,17 +1,21 @@
 package com.github.eirslett.maven.plugins.frontend.mojo;
 
-import com.github.eirslett.maven.plugins.frontend.lib.FrontendPluginFactory;
-import com.github.eirslett.maven.plugins.frontend.lib.InstallationException;
-import com.github.eirslett.maven.plugins.frontend.lib.NPMInstaller;
-import com.github.eirslett.maven.plugins.frontend.lib.NodeInstaller;
-import com.github.eirslett.maven.plugins.frontend.lib.ProxyConfig;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.apache.maven.settings.crypto.SettingsDecrypter;
 import org.apache.maven.settings.Server;
+import org.apache.maven.settings.crypto.SettingsDecrypter;
+
+import com.github.eirslett.maven.plugins.frontend.lib.FrontendPluginFactory;
+import com.github.eirslett.maven.plugins.frontend.lib.InstallationException;
+import com.github.eirslett.maven.plugins.frontend.lib.NPMInstaller;
+import com.github.eirslett.maven.plugins.frontend.lib.NodeInstaller;
+import com.github.eirslett.maven.plugins.frontend.lib.ProxyConfig;
 
 @Mojo(name="install-node-and-npm", defaultPhase = LifecyclePhase.GENERATE_RESOURCES, threadSafe = true)
 public final class InstallNodeAndNpmMojo extends AbstractFrontendMojo {
@@ -42,6 +46,12 @@ public final class InstallNodeAndNpmMojo extends AbstractFrontendMojo {
      */
     @Parameter(property="nodeVersion", required = true)
     private String nodeVersion;
+
+    /**
+     * The platform target that this node instance can run instead of default.
+     */
+    @Parameter(property="platformTargets", required = false)
+    private List<PlatformTarget> platformTargets;
 
     /**
      * The version of NPM to install.
@@ -79,7 +89,7 @@ public final class InstallNodeAndNpmMojo extends AbstractFrontendMojo {
         String npmDownloadRoot = getNpmDownloadRoot();
         Server server = MojoUtils.decryptServer(serverId, session, decrypter);
         if (null != server) {
-            factory.getNodeInstaller(proxyConfig)
+            factory.getNodeInstaller(proxyConfig, convertPlatformConfig(platformTargets))
                 .setNodeVersion(nodeVersion)
                 .setNodeDownloadRoot(nodeDownloadRoot)
                 .setNpmVersion(npmVersion)
@@ -94,7 +104,7 @@ public final class InstallNodeAndNpmMojo extends AbstractFrontendMojo {
                 .setPassword(server.getPassword())
                 .install();
         } else {
-            factory.getNodeInstaller(proxyConfig)
+            factory.getNodeInstaller(proxyConfig, convertPlatformConfig(platformTargets))
                 .setNodeVersion(nodeVersion)
                 .setNodeDownloadRoot(nodeDownloadRoot)
                 .setNpmVersion(npmVersion)
