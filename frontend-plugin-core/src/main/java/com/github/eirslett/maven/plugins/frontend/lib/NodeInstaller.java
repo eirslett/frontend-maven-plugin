@@ -3,6 +3,8 @@ package com.github.eirslett.maven.plugins.frontend.lib;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 
 import org.apache.commons.io.FileUtils;
@@ -151,7 +153,12 @@ public class NodeInstaller {
 
                 File destination = new File(destinationDirectory, "node");
                 this.logger.info("Copying node binary from {} to {}", nodeBinary, destination);
-                if (!nodeBinary.renameTo(destination)) {
+                if (destination.exists() && !destination.delete()) {
+                    throw new InstallationException("Could not install Node: Was not allowed to delete " + destination);
+                }
+                try {
+                    Files.move(nodeBinary.toPath(), destination.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                } catch (IOException e) {
                     throw new InstallationException("Could not install Node: Was not allowed to rename "
                         + nodeBinary + " to " + destination);
                 }
@@ -219,7 +226,9 @@ public class NodeInstaller {
 
                 File destination = new File(destinationDirectory, "node.exe");
                 this.logger.info("Copying node binary from {} to {}", nodeBinary, destination);
-                if (!nodeBinary.renameTo(destination)) {
+                try {
+                    Files.move(nodeBinary.toPath(), destination.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                } catch (IOException e) {
                     throw new InstallationException("Could not install Node: Was not allowed to rename "
                         + nodeBinary + " to " + destination);
                 }

@@ -4,6 +4,10 @@ Last public release: [![Maven Central](https://maven-badges.herokuapp.com/maven-
 
 ## Changelog
 
+### 1.7.6
+
+* Fix #670: Plugin will no longer fail to install node.exe if node.exe already exists 
+
 ### 1.5
 
 * Revert support for the maven.frontend.failOnError flag ([#572](https://github.com/eirslett/frontend-maven-plugin/pull/572)), due to
