@@ -7,6 +7,7 @@ Last public release: [![Maven Central](https://maven-badges.herokuapp.com/maven-
 ### 1.7.6
 
 * Fix #670: Plugin will no longer fail to install node.exe if node.exe already exists 
+* Fix #794: Plugin will self-repair if previous node/npm/yarn archive download was interrupted
 
 ### 1.5
 

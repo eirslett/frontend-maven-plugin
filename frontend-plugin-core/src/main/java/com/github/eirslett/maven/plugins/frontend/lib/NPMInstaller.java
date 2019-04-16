@@ -1,5 +1,6 @@
 package com.github.eirslett.maven.plugins.frontend.lib;
 
+import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -139,12 +140,28 @@ public class NPMInstaller {
                 this.logger.warn("Failed to delete existing NPM installation.");
             }
 
-            extractFile(archive, nodeModulesDirectory);
+            File packageDirectory = new File(nodeModulesDirectory, "package");
+            try {
+                extractFile(archive, nodeModulesDirectory);
+            } catch (ArchiveExtractionException e) {
+                if (e.getCause() instanceof EOFException) {
+                    // https://github.com/eirslett/frontend-maven-plugin/issues/794
+                    // The downloading was probably interrupted and archive file is incomplete:
+                    // delete it to retry from scratch
+                    this.logger.error("The archive file {} is corrupted and will be deleted. "
+                            + "Please try the build again.", archive.getPath());
+                    archive.delete();
+                    if (packageDirectory.exists()) {
+                        FileUtils.deleteDirectory(packageDirectory);
+                    }
+                }
+
+                throw e;
+            }
 
             // handles difference between old and new download root (nodejs.org/dist/npm and
             // registry.npmjs.org)
             // see https://github.com/eirslett/frontend-maven-plugin/issues/65#issuecomment-52024254
-            File packageDirectory = new File(nodeModulesDirectory, "package");
             if (packageDirectory.exists() && !npmDirectory.exists()) {
                 if (!packageDirectory.renameTo(npmDirectory)) {
                     this.logger.warn("Cannot rename NPM directory, making a copy.");
