@@ -1,5 +1,6 @@
 package com.github.eirslett.maven.plugins.frontend.lib;
 
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -122,7 +123,23 @@ public class YarnInstaller {
                 logger.warn("Failed to delete existing Yarn installation.");
             }
 
-            extractFile(archive, installDirectory);
+            try {
+                extractFile(archive, installDirectory);
+            } catch (ArchiveExtractionException e) {
+                if (e.getCause() instanceof EOFException) {
+                    // https://github.com/eirslett/frontend-maven-plugin/issues/794
+                    // The downloading was probably interrupted and archive file is incomplete:
+                    // delete it to retry from scratch
+                    this.logger.error("The archive file {} is corrupted and will be deleted. "
+                            + "Please try the build again.", archive.getPath());
+                    archive.delete();
+                    if (installDirectory.exists()) {
+                        FileUtils.deleteDirectory(installDirectory);
+                    }
+                }
+
+                throw e;
+            }
 
             ensureCorrectYarnRootDirectory(installDirectory, yarnVersion);
 

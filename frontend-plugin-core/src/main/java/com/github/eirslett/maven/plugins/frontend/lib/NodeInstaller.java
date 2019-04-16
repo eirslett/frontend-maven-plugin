@@ -1,5 +1,6 @@
 package com.github.eirslett.maven.plugins.frontend.lib;
 
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -140,7 +141,21 @@ public class NodeInstaller {
 
             downloadFileIfMissing(downloadUrl, archive, this.userName, this.password);
 
-            extractFile(archive, tmpDirectory);
+            try {
+                extractFile(archive, tmpDirectory);
+            } catch (ArchiveExtractionException e) {
+                if (e.getCause() instanceof EOFException) {
+                    // https://github.com/eirslett/frontend-maven-plugin/issues/794
+                    // The downloading was probably interrupted and archive file is incomplete:
+                    // delete it to retry from scratch
+                    this.logger.error("The archive file {} is corrupted and will be deleted. "
+                            + "Please try the build again.", archive.getPath());
+                    archive.delete();
+                    FileUtils.deleteDirectory(tmpDirectory);
+                }
+
+                throw e;
+            }
 
             // Search for the node binary
             File nodeBinary =
