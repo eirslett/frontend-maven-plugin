@@ -1,6 +1,6 @@
 package com.github.eirslett.maven.plugins.frontend.lib;
 
-enum Architecture { x86, x64, ppc64le, s390x, arm64;
+enum Architecture { x86, x64, ppc64le, s390x, arm64, armv7l;
     public static Architecture guess(){
         String arch = System.getProperty("os.arch");
         if (arch.equals("ppc64le")) {
@@ -9,6 +9,8 @@ enum Architecture { x86, x64, ppc64le, s390x, arm64;
             return arm64;
         } else if (arch.equals("s390x")) {
                 return s390x;		
+        } else if (arch.equals("armv7l")) {
+                return armv7l;		
         } else {
             return arch.contains("64") ? x64 : x86;
         }
