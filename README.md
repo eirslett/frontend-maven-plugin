@@ -443,6 +443,22 @@ If you want to disable proxy for Yarn you can use `yarnInheritsProxyConfigFromMa
 
 ```
 
+If you want to disable proxy for installing node, npm and yarn you can use `installNodeAndNpmDirectly`(for npm)
+or `installNodeAndYarnDirectly`(for yarn). The plugin uses the maven proxy settings in your settings.xml file to
+download node,npm and yarn by default, it may cause the download to fail if the resource cannot be accessed through
+your proxy,you can configure the plugin like this to download node,npm and yarn directly:
+
+```xml
+<plugin>
+    ...
+    <configuration>
+        <installNodeAndNpmDirectly>false</installNodeAndNpmDirectly>
+        <installNodeAndYarnDirectly>false</installNodeAndYarnDirectly>
+    </configuration>
+</plugin>
+
+```
+
 
 #### Environment variables
 

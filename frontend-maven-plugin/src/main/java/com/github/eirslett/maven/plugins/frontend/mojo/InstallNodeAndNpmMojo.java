@@ -1,17 +1,13 @@
 package com.github.eirslett.maven.plugins.frontend.mojo;
 
-import com.github.eirslett.maven.plugins.frontend.lib.FrontendPluginFactory;
-import com.github.eirslett.maven.plugins.frontend.lib.InstallationException;
-import com.github.eirslett.maven.plugins.frontend.lib.NPMInstaller;
-import com.github.eirslett.maven.plugins.frontend.lib.NodeInstaller;
-import com.github.eirslett.maven.plugins.frontend.lib.ProxyConfig;
+import com.github.eirslett.maven.plugins.frontend.lib.*;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.apache.maven.settings.crypto.SettingsDecrypter;
 import org.apache.maven.settings.Server;
+import org.apache.maven.settings.crypto.SettingsDecrypter;
 
 @Mojo(name="install-node-and-npm", defaultPhase = LifecyclePhase.GENERATE_RESOURCES, threadSafe = true)
 public final class InstallNodeAndNpmMojo extends AbstractFrontendMojo {
@@ -64,6 +60,12 @@ public final class InstallNodeAndNpmMojo extends AbstractFrontendMojo {
     @Parameter(property = "skip.installnodenpm", defaultValue = "${skip.installnodenpm}")
     private boolean skip;
 
+    /**
+     * Ignore maven proxy settings, download Node.js and NPM directly
+     */
+    @Parameter(property = "installNodeAndNpmDirectly", required = false, defaultValue = "false")
+    private boolean installNodeAndNpmDirectly;
+
     @Component(role = SettingsDecrypter.class)
     private SettingsDecrypter decrypter;
 
@@ -74,7 +76,7 @@ public final class InstallNodeAndNpmMojo extends AbstractFrontendMojo {
 
     @Override
     public void execute(FrontendPluginFactory factory) throws InstallationException {
-        ProxyConfig proxyConfig = MojoUtils.getProxyConfig(session, decrypter);
+        ProxyConfig proxyConfig = getProxyConfig();
         String nodeDownloadRoot = getNodeDownloadRoot();
         String npmDownloadRoot = getNpmDownloadRoot();
         Server server = MojoUtils.decryptServer(serverId, session, decrypter);
@@ -105,6 +107,14 @@ public final class InstallNodeAndNpmMojo extends AbstractFrontendMojo {
                 .setNpmDownloadRoot(npmDownloadRoot)
                 .install();
         }
+    }
+
+    private ProxyConfig getProxyConfig() {
+        if (installNodeAndNpmDirectly) {
+            getLog().info("Ignore maven proxy settings, will download Node.js and NPM directly");
+            return MojoUtils.getProxyConfig(null, decrypter);
+        }
+        return MojoUtils.getProxyConfig(session, decrypter);
     }
 
     private String getNodeDownloadRoot() {

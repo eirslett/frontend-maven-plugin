@@ -59,6 +59,12 @@ public final class InstallNodeAndYarnMojo extends AbstractFrontendMojo {
     @Parameter(property = "skip.installyarn", alias = "skip.installyarn", defaultValue = "${skip.installyarn}")
     private boolean skip;
 
+    /**
+     * Ignore maven proxy settings, download Node.js and Yarn directly
+     */
+    @Parameter(property = "installNodeAndYarnDirectly", required = false, defaultValue = "false")
+    private boolean installNodeAndYarnDirectly;
+
     @Component(role = SettingsDecrypter.class)
     private SettingsDecrypter decrypter;
 
@@ -69,7 +75,7 @@ public final class InstallNodeAndYarnMojo extends AbstractFrontendMojo {
 
     @Override
     public void execute(FrontendPluginFactory factory) throws InstallationException {
-        ProxyConfig proxyConfig = MojoUtils.getProxyConfig(this.session, this.decrypter);
+        ProxyConfig proxyConfig = getProxyConfig();
         Server server = MojoUtils.decryptServer(this.serverId, this.session, this.decrypter);
         if (null != server) {
             factory.getNodeInstaller(proxyConfig).setNodeDownloadRoot(this.nodeDownloadRoot)
@@ -84,6 +90,14 @@ public final class InstallNodeAndYarnMojo extends AbstractFrontendMojo {
             factory.getYarnInstaller(proxyConfig).setYarnDownloadRoot(this.yarnDownloadRoot)
                 .setYarnVersion(this.yarnVersion).install();
         }
+    }
+
+    private ProxyConfig getProxyConfig() {
+        if (installNodeAndYarnDirectly) {
+            getLog().info("Ignore maven proxy settings, will download Node.js and NPM directly");
+            return MojoUtils.getProxyConfig(null, decrypter);
+        }
+        return MojoUtils.getProxyConfig(session, decrypter);
     }
 
 }
