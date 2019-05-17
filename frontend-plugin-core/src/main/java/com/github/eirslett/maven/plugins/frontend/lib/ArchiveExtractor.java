@@ -104,13 +104,14 @@ final class DefaultArchiveExtractor implements ArchiveExtractor {
                     tarIn = new TarArchiveInputStream(new GzipCompressorInputStream(fis));
 
                     TarArchiveEntry tarEntry = tarIn.getNextTarEntry();
+                    String canonicalDestinationDirectory = new File(destinationDirectory).getCanonicalPath();
                     while (tarEntry != null) {
                         // Create a file for this tarEntry
                         final File destPath = new File(destinationDirectory + File.separator + tarEntry.getName());
                         prepDestination(destPath, tarEntry.isDirectory());
-                        if (!destPath.getCanonicalPath().startsWith(destinationDirectory)) {
+                        if (!destPath.getCanonicalPath().startsWith(canonicalDestinationDirectory)) {
                              throw new IOException(
-                                 "Expanding " + tarEntry.getName() + " would create file outside of " + destinationDirectory
+                                 "Expanding " + tarEntry.getName() + " would create file outside of " + canonicalDestinationDirectory
                              );
                         }
                         if (!tarEntry.isDirectory()) {
