@@ -406,7 +406,7 @@ If you have [configured proxy settings for Maven](http://maven.apache.org/guides
 in your settings.xml file, the plugin will automatically use the proxy for downloading node and npm, as well
 as [passing the proxy to npm commands](https://docs.npmjs.com/misc/config#proxy).
 
-**Non Proxy Hosts:** npm does not currently support non proxy hosts - if you are using a proxy and npm install is 
+**Non Proxy Hosts:** npm does not currently support non proxy hosts - if you are using a proxy and npm install
 is not downloading from your repository, it may be because it cannot be accessed through your proxy. 
 If that is the case, you can stop the npm execution from inheriting the Maven proxy settings like this:
 
@@ -426,7 +426,7 @@ If that is the case, you can stop the bower execution from inheriting the Maven 
 </configuration>
 ```
 
-If you want to disable proxy for Yarn you can use `yarnInheritsProxyConfigFromMaven`. When you have proxy settings in your settings.xlm file if you don't use this param it will run code below with proxy settings, in some cases you don't want that. Adding this param into the configuration section will solve this issue
+If you want to disable proxy for Yarn you can use `yarnInheritsProxyConfigFromMaven`. When you have proxy settings in your settings.xml file if you don't use this param it will run code below with proxy settings, in some cases you don't want that. Adding this param into the configuration section will solve this issue
 
 ```xml
 <execution>
