@@ -120,7 +120,7 @@ You can also specify separate download roots for npm and node as they are stored
 </plugin>
 ```
 
-You can use Nexus repository Manager to proxy npm registries. See https://help.sonatype.com/display/NXRM3/Node+Packaged+Modules+and+npm+Registries
+You can use Nexus repository Manager to proxy npm registries. See https://help.sonatype.com/display/NXRM3/Npm+Registry
 
 **Notice:** _Remember to gitignore the `node` folder, unless you actually want to commit it._
 
