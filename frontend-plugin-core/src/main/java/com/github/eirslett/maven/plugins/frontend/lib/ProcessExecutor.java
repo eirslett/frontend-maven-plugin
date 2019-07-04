@@ -155,6 +155,10 @@ final class ProcessExecutor {
             if (logLevel == 0) {
                 logger.info(line);
             } else {
+                // suppress logging empty/blank lines
+                if (line == null || line.isEmpty())
+                    return;
+
                 if (line.startsWith("npm WARN ")) {
                     logger.warn(line);
                 } else {
