@@ -1,6 +1,10 @@
 package com.github.eirslett.maven.plugins.frontend.lib;
 
-enum Architecture { x86, x64, ppc64le, s390x, arm64;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
+enum Architecture { x86, x64, ppc64le, s390x, arm64, armv6l, armv7l;
     public static Architecture guess(){
         String arch = System.getProperty("os.arch");
         if (arch.equals("ppc64le")) {
@@ -9,6 +13,25 @@ enum Architecture { x86, x64, ppc64le, s390x, arm64;
             return arm64;
         } else if (arch.equals("s390x")) {
                 return s390x;		
+        } else if (arch.equals("arm")) {
+            final Process p;
+            try {
+                p = Runtime.getRuntime().exec("uname -a");
+                p.waitFor();
+                final BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+                final String line = reader.readLine();
+                if (line.contains(armv6l.name())) {
+                    return armv6l;
+                } else {
+                    return armv7l;
+                }
+            }
+            catch (IOException e) {
+                return armv7l;
+            }
+            catch (InterruptedException e) {
+                return armv7l;
+            }
         } else {
             return arch.contains("64") ? x64 : x86;
         }
