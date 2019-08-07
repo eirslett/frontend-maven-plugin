@@ -61,9 +61,7 @@ final class ProcessExecutor {
 
     public int executeAndRedirectOutput(final Logger logger) throws ProcessExecutionException {
         OutputStream stdout = new LoggerOutputStream(logger, 0);
-        OutputStream stderr = new LoggerOutputStream(logger, 1);
-
-        return execute(logger, stdout, stderr);
+        return execute(logger, stdout, stdout);
     }
 
     private int execute(final Logger logger, final OutputStream stdout, final OutputStream stderr)
@@ -159,15 +157,7 @@ final class ProcessExecutor {
 
         @Override
         protected void processLine(final String line, final int logLevel) {
-            if (logLevel == 0) {
-                logger.info(line);
-            } else {
-                if (line.startsWith("npm WARN ")) {
-                    logger.warn(line);
-                } else {
-                    logger.error(line);
-                }
-            }
+            logger.info(line);
         }
     }
 }
