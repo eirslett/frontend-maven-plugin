@@ -317,7 +317,13 @@ public class NodeInstaller {
     private void deleteTempDirectory(File tmpDirectory) throws IOException {
         if (tmpDirectory != null && tmpDirectory.exists()) {
             this.logger.debug("Deleting temporary directory {}", tmpDirectory);
-            FileUtils.deleteDirectory(tmpDirectory);
+            try {
+                FileUtils.deleteDirectory(tmpDirectory);
+            } catch (IOException e) {
+                this.logger.warn(
+                    "Temporary directory could not be deleted, please delete it manually. Tempdir location: {}", 
+                    tmpDirectory.getPath());
+            }
         }
     }
 
