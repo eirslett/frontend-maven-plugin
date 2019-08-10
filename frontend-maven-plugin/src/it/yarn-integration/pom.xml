@@ -28,7 +28,7 @@
                         </goals>
                         <configuration>
                             <nodeVersion>v10.16.2</nodeVersion>
-                            <npmVersion>6.9.0</npmVersion>
+                            <yarnVersion>v1.17.3</yarnVersion>
                         </configuration>
                     </execution>
 
