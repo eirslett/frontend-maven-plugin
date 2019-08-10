@@ -25,8 +25,8 @@
             </goals>
             <configuration>
               <!-- See https://nodejs.org/en/download/ for latest node and npm (lts) versions -->
-              <nodeVersion>v8.11.1</nodeVersion>
-              <npmVersion>5.6.0</npmVersion>
+              <nodeVersion>v10.16.2</nodeVersion>
+              <npmVersion>6.9.0</npmVersion>
             </configuration>
           </execution>
 
