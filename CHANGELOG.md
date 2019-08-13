@@ -4,6 +4,10 @@ Last public release: [![Maven Central](https://maven-badges.herokuapp.com/maven-
 
 ## Changelog
 
+### 1.7.7
+
+* Allow repeating arguments
+
 ### 1.7.6
 
 * Fix #670: Plugin will no longer fail to install node.exe if node.exe already exists 

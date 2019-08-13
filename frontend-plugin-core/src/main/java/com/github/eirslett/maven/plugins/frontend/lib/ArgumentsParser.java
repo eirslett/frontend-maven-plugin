@@ -65,7 +65,9 @@ class ArgumentsParser {
         addArgument(argumentBuilder, arguments);
 
         for (String argument : this.additionalArguments) {
-            addArgument(argument, arguments);
+            if (!arguments.contains(argument)) {
+                arguments.add(argument);
+            }
         }
 
         return new ArrayList<>(arguments);
@@ -74,14 +76,8 @@ class ArgumentsParser {
     private static void addArgument(StringBuilder argumentBuilder, List<String> arguments) {
         if (argumentBuilder.length() > 0) {
             String argument = argumentBuilder.toString();
-            addArgument(argument, arguments);
-            argumentBuilder.setLength(0);
-        }
-    }
-
-    private static void addArgument(String argument, List<String> arguments) {
-        if (!arguments.contains(argument)) {
             arguments.add(argument);
+            argumentBuilder.setLength(0);
         }
     }
 }

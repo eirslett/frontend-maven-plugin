@@ -15,7 +15,7 @@ public class ArgumentsParserTest {
 
         assertEquals(0, parser.parse(null).size());
         assertEquals(0, parser.parse("null").size());
-        assertEquals(0, parser.parse(String.valueOf("")).size());
+        assertEquals(0, parser.parse("").size());
     }
 
     @Test
@@ -48,7 +48,7 @@ public class ArgumentsParserTest {
     }
 
     @Test
-    public void testAdditionalArgumentsNoIntersection() {
+    public void testAdditionalArguments() {
         ArgumentsParser parser = new ArgumentsParser(Arrays.asList("foo", "bar"));
 
         assertArrayEquals(new Object[] { "foobar", "foo", "bar" }, parser.parse("foobar").toArray());
@@ -59,5 +59,12 @@ public class ArgumentsParserTest {
         ArgumentsParser parser = new ArgumentsParser(Arrays.asList("foo", "foobar"));
 
         assertArrayEquals(new Object[] { "bar", "foobar", "foo" }, parser.parse("bar foobar").toArray());
+    }
+
+    @Test
+    public void testRepeatingArguments() {
+        ArgumentsParser parser = new ArgumentsParser();
+
+        assertArrayEquals(new Object[] { "foo", "foo", "foo" }, parser.parse("foo foo foo").toArray());
     }
 }
