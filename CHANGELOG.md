@@ -4,6 +4,11 @@ Last public release: [![Maven Central](https://maven-badges.herokuapp.com/maven-
 
 ## Changelog
 
+### 1.8.0
+
+* The plugin always logs output from npm/runners as INFO, not WARN or ERROR.
+* Support for quirky Windows handling of PATH environment variables.
+
 ### 1.7.6
 
 * Fix #670: Plugin will no longer fail to install node.exe if node.exe already exists 
