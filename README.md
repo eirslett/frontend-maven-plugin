@@ -85,15 +85,17 @@ present).
 ```xml
 <plugin>
     ...
-    <execution>
-        <!-- optional: you don't really need execution ids, but it looks nice in your build log. -->
-        <id>install node and npm</id>
-        <goals>
-            <goal>install-node-and-npm</goal>
-        </goals>
-        <!-- optional: default phase is "generate-resources" -->
-        <phase>generate-resources</phase>
-    </execution>
+    <executions>
+        <execution>
+            <!-- optional: you don't really need execution ids, but it looks nice in your build log. -->
+            <id>install node and npm</id>
+            <goals>
+                <goal>install-node-and-npm</goal>
+            </goals>
+            <!-- optional: default phase is "generate-resources" -->
+            <phase>generate-resources</phase>
+        </execution>
+    </executions>
     <configuration>
         <nodeVersion>v4.6.0</nodeVersion>
 
