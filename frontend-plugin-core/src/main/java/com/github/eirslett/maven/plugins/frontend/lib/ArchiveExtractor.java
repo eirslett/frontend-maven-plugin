@@ -106,11 +106,12 @@ final class DefaultArchiveExtractor implements ArchiveExtractor {
 				            TarArchiveEntry tarEntry = tarIn.getNextTarEntry();
 				            while (tarEntry != null) {
 				                // Create a file for this tarEntry
+						final File directoryPath = new File(destinationDirectory);
 				                final File destPath = new File(destinationDirectory + File.separator + tarEntry.getName());
 		                    prepDestination(destPath, tarEntry.isDirectory());
-                                if (!destPath.getCanonicalPath().startsWith(destinationDirectory)) {
+                                if (!destPath.getCanonicalPath().startsWith(directoryPath.getCanonicalPath())) {
                                      throw new IOException(
-                                             "Expanding " + tarEntry.getName() + " would create file outside of " + destinationDirectory
+                                             "Expanding " + tarEntry.getName() + " would create file " + destPath.getCanonicalPath() + ", which is outside of " + directoryPath.getCanonicalPath()
                                      );
                                 }
 				                if (!tarEntry.isDirectory()) {
