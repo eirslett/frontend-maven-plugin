@@ -46,7 +46,7 @@ final class DefaultArchiveExtractor implements ArchiveExtractor {
             if (!path.getParentFile().exists()) {
                 path.getParentFile().mkdirs();
             }
-            if(!path.getParentFile().canWrite()) {
+            if (!path.getParentFile().canWrite()) {
                 throw new AccessDeniedException(
                         String.format("Could not get write permissions for '%s'", path.getParentFile().getAbsolutePath()));
             }
@@ -60,17 +60,17 @@ final class DefaultArchiveExtractor implements ArchiveExtractor {
         try (FileInputStream fis = new FileInputStream(archiveFile)) {
             if ("msi".equals(FileUtils.getExtension(archiveFile.getAbsolutePath()))) {
                 String command = "msiexec /a " + archiveFile.getAbsolutePath() + " /qn TARGETDIR=\""
-                    + destinationDirectory + "\"";
+                        + destinationDirectory + "\"";
                 Process child = Runtime.getRuntime().exec(command);
                 try {
                     int result = child.waitFor();
                     if (result != 0) {
                         throw new ArchiveExtractionException(
-                            "Could not extract " + archiveFile.getAbsolutePath() + "; return code " + result);
+                                "Could not extract " + archiveFile.getAbsolutePath() + "; return code " + result);
                     }
                 } catch (InterruptedException e) {
                     throw new ArchiveExtractionException(
-                        "Unexpected interruption of while waiting for extraction process", e);
+                            "Unexpected interruption of while waiting for extraction process", e);
                 }
             } else if ("zip".equals(FileUtils.getExtension(archiveFile.getAbsolutePath()))) {
                 ZipFile zipFile = new ZipFile(archiveFile);
@@ -80,7 +80,7 @@ final class DefaultArchiveExtractor implements ArchiveExtractor {
                         ZipEntry entry = entries.nextElement();
                         final File destPath = new File(destinationDirectory + File.separator + entry.getName());
                         prepDestination(destPath, entry.isDirectory());
-                        if(!entry.isDirectory()){
+                        if (!entry.isDirectory()) {
                             InputStream in = null;
                             OutputStream out = null;
                             try {
@@ -104,16 +104,18 @@ final class DefaultArchiveExtractor implements ArchiveExtractor {
                     tarIn = new TarArchiveInputStream(new GzipCompressorInputStream(fis));
 
                     TarArchiveEntry tarEntry = tarIn.getNextTarEntry();
-                    String canonicalDestinationDirectory = new File(destinationDirectory).getCanonicalPath();
                     while (tarEntry != null) {
                         // Create a file for this tarEntry
                         final File destPath = new File(destinationDirectory + File.separator + tarEntry.getName());
                         prepDestination(destPath, tarEntry.isDirectory());
-                        if (!destPath.getCanonicalPath().startsWith(canonicalDestinationDirectory)) {
-                             throw new IOException(
-                                 "Expanding " + tarEntry.getName() + " would create file outside of " + canonicalDestinationDirectory
-                             );
+
+
+                        if (!startsWithPath(destPath.getCanonicalPath(), destinationDirectory)) {
+                            throw new IOException(
+                                    "Expanding " + tarEntry.getName() + " would create file outside of " + destinationDirectory
+                            );
                         }
+
                         if (!tarEntry.isDirectory()) {
                             destPath.createNewFile();
                             boolean isExecutable = (tarEntry.getMode() & 0100) > 0;
@@ -137,6 +139,48 @@ final class DefaultArchiveExtractor implements ArchiveExtractor {
             throw new ArchiveExtractionException("Could not extract archive: '"
                     + archive
                     + "'", e);
+        }
+    }
+
+    /**
+     * Do multiple file system checks that should enable the plugin to work on any file system
+     * whether or not it's case sensitive or not.
+     *
+     * @param destPath
+     * @param destDir
+     * @return
+     */
+    private boolean startsWithPath(String destPath, String destDir) {
+        if (destDir.startsWith(destDir)) {
+            return true;
+        } else if (destDir.length() > destPath.length()) {
+            return false;
+        } else {
+            /*
+             * The first check should handle case-sensitive file systems. We need this
+             * in order to weed out case-sensitive file systems with a non-existent path
+             * that slipped through the first test.
+             */
+            if (new File(destPath).exists() && !(new File(destPath.toLowerCase()).exists())) {
+                return false;
+            }
+
+            boolean retVal = true;
+            for (int index = 0; index < destDir.length(); index++) {
+                char left = destPath.charAt(index);
+                char right = destDir.charAt(index);
+
+                if (left != right) {
+                    char leftUc = Character.toUpperCase(left);
+                    char rightUc = Character.toUpperCase(right);
+
+                    if (leftUc != rightUc) {
+                        retVal = false;
+                    }
+                }
+            }
+
+            return retVal;
         }
     }
 }
