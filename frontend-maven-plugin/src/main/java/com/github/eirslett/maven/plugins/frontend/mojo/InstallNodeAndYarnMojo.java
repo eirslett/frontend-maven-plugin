@@ -32,6 +32,14 @@ public final class InstallNodeAndYarnMojo extends AbstractFrontendMojo {
     private String yarnDownloadRoot;
 
     /**
+     * Full path minus version to download Yarn binary from. No default. Ends with slash.
+     * Example: https://a-host.a-domain/blah/blah/-/ of  https://a-host.a-domain/blah/blah/-/yarn-1.17.3.tgz
+     */
+    @Parameter(property = "yarnDownloadUrl", required = false,
+        defaultValue = "")
+    private String yarnDownloadUrl;
+
+    /**
      * The version of Node.js to install. IMPORTANT! Most Node.js version names start with 'v', for example
      * 'v0.10.18'
      */
@@ -43,6 +51,12 @@ public final class InstallNodeAndYarnMojo extends AbstractFrontendMojo {
      */
     @Parameter(property = "yarnVersion", required = true)
     private String yarnVersion;
+
+    /**
+     * The tarball extension of Yarn to install, something like tgz, tar.gz, etc.
+     */
+    @Parameter(property = "yarnExtension", required = false, defaultValue = "")
+    private String yarnExtension;
 
     /**
      * Server Id for download username and password
@@ -81,8 +95,13 @@ public final class InstallNodeAndYarnMojo extends AbstractFrontendMojo {
         } else {
             factory.getNodeInstaller(proxyConfig).setNodeDownloadRoot(this.nodeDownloadRoot)
                 .setNodeVersion(this.nodeVersion).install();
-            factory.getYarnInstaller(proxyConfig).setYarnDownloadRoot(this.yarnDownloadRoot)
-                .setYarnVersion(this.yarnVersion).install();
+            if (this.yarnDownloadUrl != null && !this.yarnDownloadUrl.isEmpty()) {
+                factory.getYarnInstaller(proxyConfig).setYarnVersion(this.yarnVersion)
+                    .install(this.yarnDownloadUrl, this.yarnExtension);
+            } else {
+                factory.getYarnInstaller(proxyConfig).setYarnDownloadRoot(this.yarnDownloadRoot)
+                    .setYarnVersion(this.yarnVersion).install();
+            }
         }
     }
 
