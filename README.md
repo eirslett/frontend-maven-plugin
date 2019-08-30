@@ -140,7 +140,7 @@ present).
 Have a look at the example `POM` to see how it should be set up with Yarn: 
 https://github.com/eirslett/frontend-maven-plugin/blob/master/frontend-maven-plugin/src/it/yarn-integration/pom.xml
 
-
+For standard default node and yarn location
 ```xml
 <plugin>
     ...
@@ -164,6 +164,16 @@ https://github.com/eirslett/frontend-maven-plugin/blob/master/frontend-maven-plu
     </configuration>
 </plugin>
 ```
+
+To specify a custom yarn dist tar ball location:
+```xml
+        <yarnDownloadUrl>https://repository.xyz.com/content/repositories/public/yarn/</yarnDownloadUrl>
+        <yarnVersion>1.17.3</yarnVersion>
+        <yarnExtension>tgz</yarnExtension>
+```
+Then the program will look for a tar file at:
+```<yarnDownloadUrl>/yarn-<yarnVersion>.tgz```, which translates to
+```https://repository.xyz.com/content/repositories/public/yarn/yarn-1.17.3.tgz```
 
 ### Running npm
 
