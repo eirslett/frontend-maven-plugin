@@ -81,53 +81,54 @@ final class DefaultArchiveExtractor implements ArchiveExtractor {
                         final File destPath = new File(destinationDirectory + File.separator + entry.getName());
                         prepDestination(destPath, entry.isDirectory());
                         if(!entry.isDirectory()){
-		                        InputStream in = null;
-		                        OutputStream out = null;
-		                        try {
-		                            in = zipFile.getInputStream(entry);
-		                            out = new FileOutputStream(destPath);
-		                            IOUtils.copy(in, out);
-		                        } finally {
-		                            IOUtils.closeQuietly(in);
-		                            IOUtils.closeQuietly(out);
-		                        }
+                            InputStream in = null;
+                            OutputStream out = null;
+                            try {
+                                in = zipFile.getInputStream(entry);
+                                out = new FileOutputStream(destPath);
+                                IOUtils.copy(in, out);
+                            } finally {
+                                IOUtils.closeQuietly(in);
+                                IOUtils.closeQuietly(out);
+                            }
                         }
                     }
                 } finally {
                     zipFile.close();
                 }
             } else {
-		            // TarArchiveInputStream can be constructed with a normal FileInputStream if
-		            // we ever need to extract regular '.tar' files.
+                // TarArchiveInputStream can be constructed with a normal FileInputStream if
+                // we ever need to extract regular '.tar' files.
                 TarArchiveInputStream tarIn = null;
                 try {
-				            tarIn = new TarArchiveInputStream(new GzipCompressorInputStream(fis));
+                    tarIn = new TarArchiveInputStream(new GzipCompressorInputStream(fis));
 
-				            TarArchiveEntry tarEntry = tarIn.getNextTarEntry();
-				            while (tarEntry != null) {
-				                // Create a file for this tarEntry
-				                final File destPath = new File(destinationDirectory + File.separator + tarEntry.getName());
-		                    prepDestination(destPath, tarEntry.isDirectory());
-                                if (!destPath.getCanonicalPath().startsWith(destinationDirectory)) {
-                                     throw new IOException(
-                                             "Expanding " + tarEntry.getName() + " would create file outside of " + destinationDirectory
-                                     );
-                                }
-				                if (!tarEntry.isDirectory()) {
-				                    destPath.createNewFile();
-				                    boolean isExecutable = (tarEntry.getMode() & 0100) > 0;
-				                    destPath.setExecutable(isExecutable);
+                    TarArchiveEntry tarEntry = tarIn.getNextTarEntry();
+                    String canonicalDestinationDirectory = new File(destinationDirectory).getCanonicalPath();
+                    while (tarEntry != null) {
+                        // Create a file for this tarEntry
+                        final File destPath = new File(destinationDirectory + File.separator + tarEntry.getName());
+                        prepDestination(destPath, tarEntry.isDirectory());
+                        if (!destPath.getCanonicalPath().startsWith(canonicalDestinationDirectory)) {
+                             throw new IOException(
+                                 "Expanding " + tarEntry.getName() + " would create file outside of " + canonicalDestinationDirectory
+                             );
+                        }
+                        if (!tarEntry.isDirectory()) {
+                            destPath.createNewFile();
+                            boolean isExecutable = (tarEntry.getMode() & 0100) > 0;
+                            destPath.setExecutable(isExecutable);
 
-		                        OutputStream out = null;
-		                        try {
-		                            out = new FileOutputStream(destPath);
-		                            IOUtils.copy(tarIn, out);
-		                        } finally {
-		                            IOUtils.closeQuietly(out);
-		                        }
-				                }
-				                tarEntry = tarIn.getNextTarEntry();
-				            }
+                            OutputStream out = null;
+                            try {
+                                out = new FileOutputStream(destPath);
+                                IOUtils.copy(tarIn, out);
+                            } finally {
+                                IOUtils.closeQuietly(out);
+                            }
+                        }
+                        tarEntry = tarIn.getNextTarEntry();
+                    }
                 } finally {
                     IOUtils.closeQuietly(tarIn);
                 }
