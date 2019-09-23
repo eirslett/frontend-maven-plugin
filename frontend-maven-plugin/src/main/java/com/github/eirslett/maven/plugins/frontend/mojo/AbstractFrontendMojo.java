@@ -36,6 +36,15 @@ public abstract class AbstractFrontendMojo extends AbstractMojo {
     protected boolean testFailureIgnore;
 
     /**
+     * Set this to true to ignore a failure during any execution task. Its use is NOT RECOMMENDED, but quite convenient on
+     * occasion.
+     *
+     * @since 1.8.1
+     */
+    @Parameter(property = "maven.frontend.ignore.errors", defaultValue = "false")
+    protected boolean ignoreErrors;
+    
+    /**
      * The base directory for running all Node commands. (Usually the directory that contains package.json)
      */
     @Parameter(defaultValue = "${basedir}", property = "workingDirectory", required = false)
@@ -96,6 +105,8 @@ public abstract class AbstractFrontendMojo extends AbstractMojo {
             } catch (TaskRunnerException e) {
                 if (testFailureIgnore && isTestingPhase()) {
                     getLog().error("There are test failures.\nFailed to run task: " + e.getMessage(), e);
+                } else if (ignoreErrors) {
+                    getLog().info("There are ignored errors during task: " + e.getMessage());
                 } else {
                     throw new MojoFailureException("Failed to run task", e);
                 }
