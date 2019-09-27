@@ -1,5 +1,12 @@
 package com.github.eirslett.maven.plugins.frontend.lib;
 
+import java.io.File;
+import java.util.Arrays;
+import java.util.Collections;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 enum Architecture { x86, x64, ppc64le, s390x, arm64, armv7l;
     public static Architecture guess(){
         String arch = System.getProperty("os.arch");
@@ -53,10 +60,32 @@ enum OS { Windows, Mac, Linux, SunOS;
 class Platform {
     private final OS os;
     private final Architecture architecture;
+    private final boolean experimentalArchitecture;
+    private final String nodeClassifierSuffix;
 
     public Platform(OS os, Architecture architecture) {
         this.os = os;
         this.architecture = architecture;
+        
+        // guess experimental architecture (eg. Alpine Linux) using "ldd" command
+        String stdout = "";
+        Logger logger = LoggerFactory.getLogger(getClass());
+        try {
+            ProcessExecutor executor = new ProcessExecutor(new File("/"), Collections.emptyList(),
+                    Utils.prepend("ldd", Arrays.asList("/bin/true")),
+                    this, Collections.emptyMap());
+            stdout = executor.executeAndGetResult(logger);
+        } catch (ProcessExecutionException e) {
+            logger.warn(e.getMessage());
+        }
+        if (stdout.indexOf("ld-musl-x86_64") > -1) {
+            this.experimentalArchitecture = true;
+            this.nodeClassifierSuffix = "-musl";
+        }
+        else {
+            this.experimentalArchitecture = false;
+            this.nodeClassifierSuffix = "";
+        }
     }
 
     public static Platform guess(){
@@ -79,6 +108,10 @@ class Platform {
 
     public boolean isMac(){
         return os == OS.Mac;
+    }
+    
+    public boolean isExperimentalArchitecture() {
+        return experimentalArchitecture;
     }
 
     public String getLongNodeFilename(String nodeVersion, boolean archiveOnWindows) {
@@ -110,6 +143,6 @@ class Platform {
     }
 
     public String getNodeClassifier() {
-        return this.getCodename() + "-" + this.architecture.name();
+        return this.getCodename() + "-" + this.architecture.name() + this.nodeClassifierSuffix;
     }
 }

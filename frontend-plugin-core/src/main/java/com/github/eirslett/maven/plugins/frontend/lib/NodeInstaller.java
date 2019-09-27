@@ -17,7 +17,9 @@ public class NodeInstaller {
     public static final String INSTALL_PATH = "/node";
 
     public static final String DEFAULT_NODEJS_DOWNLOAD_ROOT = "https://nodejs.org/dist/";
-
+    
+    public static final String DEFAULT_NODEJS_EXPERIMENTAL_DOWNLOAD_ROOT = "https://unofficial-builds.nodejs.org/download/release/";
+    
     private static final Object LOCK = new Object();
 
     private String npmVersion, nodeVersion, nodeDownloadRoot, userName, password;
@@ -81,6 +83,9 @@ public class NodeInstaller {
         synchronized (LOCK) {
             if (this.nodeDownloadRoot == null || this.nodeDownloadRoot.isEmpty()) {
                 this.nodeDownloadRoot = DEFAULT_NODEJS_DOWNLOAD_ROOT;
+            }
+            if (this.config.getPlatform().isExperimentalArchitecture() && DEFAULT_NODEJS_DOWNLOAD_ROOT.equals(this.nodeDownloadRoot)) {
+                this.nodeDownloadRoot = DEFAULT_NODEJS_EXPERIMENTAL_DOWNLOAD_ROOT;
             }
             if (!nodeIsAlreadyInstalled()) {
                 this.logger.info("Installing node version {}", this.nodeVersion);
