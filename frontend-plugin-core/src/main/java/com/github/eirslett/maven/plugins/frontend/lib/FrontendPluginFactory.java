@@ -69,6 +69,10 @@ public final class FrontendPluginFactory {
         return new DefaultWebpackRunner(getExecutorConfig());
     }
 
+    public RollupRunner getRollupRunner(){
+        return new DefaultRollupRunner(getExecutorConfig());
+    }
+
     private NodeExecutorConfig getExecutorConfig() {
         return new InstallNodeExecutorConfig(getInstallConfig());
     }
