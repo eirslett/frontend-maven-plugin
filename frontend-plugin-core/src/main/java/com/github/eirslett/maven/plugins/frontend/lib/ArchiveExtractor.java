@@ -151,36 +151,16 @@ final class DefaultArchiveExtractor implements ArchiveExtractor {
      * @return
      */
     private boolean startsWithPath(String destPath, String destDir) {
-        if (destDir.startsWith(destDir)) {
+        if (destPath.startsWith(destDir)) {
             return true;
         } else if (destDir.length() > destPath.length()) {
             return false;
         } else {
-            /*
-             * The first check should handle case-sensitive file systems. We need this
-             * in order to weed out case-sensitive file systems with a non-existent path
-             * that slipped through the first test.
-             */
             if (new File(destPath).exists() && !(new File(destPath.toLowerCase()).exists())) {
                 return false;
             }
 
-            boolean retVal = true;
-            for (int index = 0; index < destDir.length(); index++) {
-                char left = destPath.charAt(index);
-                char right = destDir.charAt(index);
-
-                if (left != right) {
-                    char leftUc = Character.toUpperCase(left);
-                    char rightUc = Character.toUpperCase(right);
-
-                    if (leftUc != rightUc) {
-                        retVal = false;
-                    }
-                }
-            }
-
-            return retVal;
+            return destPath.toLowerCase().startsWith(destDir.toLowerCase());
         }
     }
 }
