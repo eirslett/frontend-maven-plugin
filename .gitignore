@@ -10,3 +10,6 @@ bin
 travis/codesigning.asc
 frontend-plugin-core/target
 frontend-maven-plugin/target
+
+#macOS
+.DS_Store
