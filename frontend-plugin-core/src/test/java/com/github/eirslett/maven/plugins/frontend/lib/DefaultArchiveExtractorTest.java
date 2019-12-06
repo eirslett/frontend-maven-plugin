@@ -57,10 +57,10 @@ public class DefaultArchiveExtractorTest {
         extractor.extract(BAD_TAR, link.toString());
     }
 
-    private Path createSymlinkOrSkipTest(Path link, Path target) throws IOException {
+    private Path createSymlinkOrSkipTest(Path link, Path target) {
         try {
             return Files.createSymbolicLink(link, target);
-        } catch (UnsupportedOperationException e) {
+        } catch (UnsupportedOperationException | IOException e) {
             assumeTrue("symlinks not supported", false);
             return null;
         }
