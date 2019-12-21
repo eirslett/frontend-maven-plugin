@@ -82,6 +82,7 @@ public class NPMInstaller {
             if (!npmProvided() && !npmIsAlreadyInstalled()) {
                 installNpm();
             }
+            copyNpmScripts();
         }
     }
 
@@ -169,16 +170,6 @@ public class NPMInstaller {
                 }
             }
 
-            // create a copy of the npm scripts next to the node executable
-            for (String script : Arrays.asList("npm", "npm.cmd")) {
-                File scriptFile = new File(npmDirectory, "bin" + File.separator + script);
-                if (scriptFile.exists()) {
-                    File copy = new File(installDirectory, script);
-                    FileUtils.copyFile(scriptFile, copy);
-                    copy.setExecutable(true);
-                }
-            }
-
             this.logger.info("Installed npm locally.");
         } catch (DownloadException e) {
             throw new InstallationException("Could not download npm", e);
@@ -186,6 +177,31 @@ public class NPMInstaller {
             throw new InstallationException("Could not extract the npm archive", e);
         } catch (IOException e) {
             throw new InstallationException("Could not copy npm", e);
+        }
+    }
+
+    private void copyNpmScripts() throws InstallationException{
+        File installDirectory = getNodeInstallDirectory();
+
+        File nodeModulesDirectory = new File(installDirectory, "node_modules");
+        File npmDirectory = new File(nodeModulesDirectory, "npm");
+        // create a copy of the npm scripts next to the node executable
+        for (String script : Arrays.asList("npm", "npm.cmd")) {
+            File scriptFile = new File(npmDirectory, "bin" + File.separator + script);
+            if (scriptFile.exists()) {
+                File copy = new File(installDirectory, script);
+                if (!copy.exists()) {
+                    try
+                    {
+                        FileUtils.copyFile(scriptFile, copy);
+                    }
+                    catch (IOException e)
+                    {
+                        throw new InstallationException("Could not copy npm", e);
+                    }
+                    copy.setExecutable(true);
+                }
+            }
         }
     }
 
