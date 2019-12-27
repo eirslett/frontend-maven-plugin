@@ -4,6 +4,14 @@ Last public release: [![Maven Central](https://maven-badges.herokuapp.com/maven-
 
 ## Changelog
 
+### 1.9.0
+
+* Copy npm scripts, so they are available for execution ([#868](https://github.com/eirslett/frontend-maven-plugin/pull/868))
+* Regression bug fix (tar files) ([#864](https://github.com/eirslett/frontend-maven-plugin/pull/864))
+* Fix bug related to archive extraction on case-insensitive file systems ([#845](https://github.com/eirslett/frontend-maven-plugin/pull/843))
+* Regression bug fix (tar files) ([#816](https://github.com/eirslett/frontend-maven-plugin/pull/816))
+* Added support for Raspbian OS armv7l architecture ([#809](https://github.com/eirslett/frontend-maven-plugin/pull/809))
+
 ### 1.8.0
 
 * The plugin always logs output from npm/runners as INFO, not WARN or ERROR.
