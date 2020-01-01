@@ -45,6 +45,10 @@ public final class FrontendPluginFactory {
         return new DefaultNpmRunner(getExecutorConfig(), proxy, npmRegistryURL);
     }
 
+    public NpmRunner getNpmCacheRunner(ProxyConfig proxy, String npmRegistryURL) {
+        return new DefaultNpmRunner(getNpmCacheExecutorConfig(), proxy, npmRegistryURL);
+    }
+
     public YarnRunner getYarnRunner(ProxyConfig proxy, String npmRegistryURL) {
         return new DefaultYarnRunner(new InstallYarnExecutorConfig(getInstallConfig()), proxy, npmRegistryURL);
     }
@@ -69,8 +73,15 @@ public final class FrontendPluginFactory {
         return new DefaultWebpackRunner(getExecutorConfig());
     }
 
+    public boolean isNpmCacheInstalled() {
+        return getNpmCacheExecutorConfig().getNpmPath().exists();
+    }
     private NodeExecutorConfig getExecutorConfig() {
         return new InstallNodeExecutorConfig(getInstallConfig());
+    }
+
+    private NodeExecutorConfig getNpmCacheExecutorConfig() {
+        return new InstallNodeNpmCacheExecutorConfig(getInstallConfig());
     }
 
     private InstallConfig getInstallConfig() {
