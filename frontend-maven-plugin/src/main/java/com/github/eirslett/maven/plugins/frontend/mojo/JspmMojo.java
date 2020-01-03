@@ -11,7 +11,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 
 import java.io.File;
 
-@Mojo(name="jspm",  defaultPhase = LifecyclePhase.GENERATE_RESOURCES)
+@Mojo(name="jspm",  defaultPhase = LifecyclePhase.GENERATE_RESOURCES, threadSafe = true)
 public class JspmMojo extends AbstractFrontendMojo {
 
     /**
@@ -32,7 +32,7 @@ public class JspmMojo extends AbstractFrontendMojo {
     }
 
     @Override
-    protected void execute(FrontendPluginFactory factory) throws TaskRunnerException {
+    protected synchronized void execute(FrontendPluginFactory factory) throws TaskRunnerException {
         factory.getJspmRunner().execute(arguments, environmentVariables);
     }
 
