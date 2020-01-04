@@ -7,7 +7,7 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
 
-@Mojo(name="karma",  defaultPhase = LifecyclePhase.TEST)
+@Mojo(name="karma",  defaultPhase = LifecyclePhase.TEST, threadSafe = true)
 public final class KarmaRunMojo extends AbstractFrontendMojo {
 
     /**
@@ -28,7 +28,7 @@ public final class KarmaRunMojo extends AbstractFrontendMojo {
     }
 
     @Override
-    public void execute(FrontendPluginFactory factory) throws TaskRunnerException {
+    public synchronized void execute(FrontendPluginFactory factory) throws TaskRunnerException {
         factory.getKarmaRunner().execute("start " + karmaConfPath, environmentVariables);
     }
 }
