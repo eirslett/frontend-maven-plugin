@@ -8,6 +8,7 @@ import java.util.HashMap;
 
 import org.apache.commons.io.FileUtils;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.plexus.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,7 +20,7 @@ public class NPMInstaller {
 
     private static final Object LOCK = new Object();
 
-    private String nodeVersion, npmVersion, npmDownloadRoot, userName, password;
+    private String nodeVersion, npmVersion, npmDownloadRoot, userName, password, nodeLocalRoot, npmLocalRoot;
 
     private final Logger logger;
 
@@ -61,6 +62,16 @@ public class NPMInstaller {
         return this;
     }
 
+    public NPMInstaller setNodeLocalRoot(String nodeLocalRoot) {
+        this.nodeLocalRoot = nodeLocalRoot;
+        return this;
+    }
+
+    public NPMInstaller setNpmLocalRoot(String npmLocalRoot) {
+        this.npmLocalRoot = npmLocalRoot;
+        return this;
+    }
+
     private boolean npmProvided() throws InstallationException {
         if ("provided".equals(this.npmVersion)) {
             if (Integer.parseInt(this.nodeVersion.replace("v", "").split("[.]")[0]) < 4) {
@@ -80,7 +91,14 @@ public class NPMInstaller {
                 this.npmDownloadRoot = DEFAULT_NPM_DOWNLOAD_ROOT;
             }
             if (!npmProvided() && !npmIsAlreadyInstalled()) {
-                installNpm();
+
+                if(StringUtils.isNotBlank(npmLocalRoot)){
+                    installNpm(npmLocalRoot);
+                }else{
+                    installNpm(null);
+                }
+
+
             }
             copyNpmScripts();
         }
@@ -114,16 +132,23 @@ public class NPMInstaller {
         }
     }
 
-    private void installNpm() throws InstallationException {
+    private void installNpm(String npmLocalRoot) throws InstallationException {
         try {
             this.logger.info("Installing npm version {}", this.npmVersion);
-            final String downloadUrl = this.npmDownloadRoot + "npm-" + this.npmVersion + ".tgz";
 
-            CacheDescriptor cacheDescriptor = new CacheDescriptor("npm", this.npmVersion, "tar.gz");
+            File archive = null;
 
-            File archive = this.config.getCacheResolver().resolve(cacheDescriptor);
+            if(StringUtils.isNotBlank(npmLocalRoot)){
+                this.logger.info("Installing npm using local copy found at {}", this.npmLocalRoot);
+                archive = new File(npmLocalRoot);
+                this.logger.info("Local copy found at {}", archive.getAbsolutePath());
+            }else{
+                final String downloadUrl = this.npmDownloadRoot + "npm-" + this.npmVersion + ".tgz";
+                CacheDescriptor cacheDescriptor = new CacheDescriptor("npm", this.npmVersion, "tar.gz");
+                archive = this.config.getCacheResolver().resolve(cacheDescriptor);
+                downloadFileIfMissing(downloadUrl, archive, this.userName, this.password);
+            }
 
-            downloadFileIfMissing(downloadUrl, archive, this.userName, this.password);
 
             File installDirectory = getNodeInstallDirectory();
             File nodeModulesDirectory = new File(installDirectory, "node_modules");

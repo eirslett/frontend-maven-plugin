@@ -9,6 +9,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 
 import org.apache.commons.io.FileUtils;
+import org.codehaus.plexus.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,7 +21,7 @@ public class NodeInstaller {
 
     private static final Object LOCK = new Object();
 
-    private String npmVersion, nodeVersion, nodeDownloadRoot, userName, password;
+    private String npmVersion, nodeVersion, nodeDownloadRoot, userName, password, nodeLocalRoot, npmLocalRoot;
 
     private final Logger logger;
 
@@ -62,6 +63,16 @@ public class NodeInstaller {
         return this;
     }
 
+    public NodeInstaller setNodeLocalRoot(String nodeLocalRoot) {
+        this.nodeLocalRoot = nodeLocalRoot;
+        return this;
+    }
+
+    public NodeInstaller setNpmLocalRoot(String npmLocalRoot) {
+        this.npmLocalRoot = npmLocalRoot;
+        return this;
+    }
+
     private boolean npmProvided() throws InstallationException {
         if (this.npmVersion != null) {
             if ("provided".equals(this.npmVersion)) {
@@ -84,18 +95,28 @@ public class NodeInstaller {
             }
             if (!nodeIsAlreadyInstalled()) {
                 this.logger.info("Installing node version {}", this.nodeVersion);
+
+                this.logger.info("Checking if nodeLocalRoot is set");
+                if(StringUtils.isNotBlank(nodeLocalRoot)){
+                    this.logger.info("nodeLocalRoot is set. Will install using this local path instead. {} ",nodeLocalRoot);
+                }
+
                 if (!this.nodeVersion.startsWith("v")) {
                     this.logger.warn("Node version does not start with naming convention 'v'.");
                 }
+
                 if (this.config.getPlatform().isWindows()) {
                     if (npmProvided()) {
-                        installNodeWithNpmForWindows();
+                        installNodeWithNpmForWindows(nodeLocalRoot);
                     } else {
-                        installNodeForWindows();
+                        installNodeForWindows(nodeLocalRoot);
                     }
                 } else {
-                    installNodeDefault();
+                    installNodeDefault(nodeLocalRoot);
                 }
+
+
+
             }
         }
     }
@@ -124,7 +145,7 @@ public class NodeInstaller {
         }
     }
 
-    private void installNodeDefault() throws InstallationException {
+    private void installNodeDefault(String nodeLocalRoot) throws InstallationException {
         try {
             final String longNodeFilename =
                 this.config.getPlatform().getLongNodeFilename(this.nodeVersion, false);
@@ -137,7 +158,12 @@ public class NodeInstaller {
             CacheDescriptor cacheDescriptor = new CacheDescriptor("node", this.nodeVersion, classifier,
                 this.config.getPlatform().getArchiveExtension());
 
-            File archive = this.config.getCacheResolver().resolve(cacheDescriptor);
+            File archive = null;
+            if(StringUtils.isNotBlank(nodeLocalRoot)){
+                archive = new File(nodeLocalRoot);
+            }else{
+                archive = this.config.getCacheResolver().resolve(cacheDescriptor);
+            }
 
             downloadFileIfMissing(downloadUrl, archive, this.userName, this.password);
 
@@ -212,20 +238,27 @@ public class NodeInstaller {
         }
     }
 
-    private void installNodeWithNpmForWindows() throws InstallationException {
+    private void installNodeWithNpmForWindows(String nodeLocalRoot) throws InstallationException {
         try {
+
+            String classifier = this.config.getPlatform().getNodeClassifier();
+            CacheDescriptor cacheDescriptor = new CacheDescriptor("node", this.nodeVersion, classifier,
+                    this.config.getPlatform().getArchiveExtension());
+
+
+            File archive = null;
+            if(StringUtils.isNotBlank(nodeLocalRoot)){
+                archive = new File(nodeLocalRoot);
+            }else{
+                archive = this.config.getCacheResolver().resolve(cacheDescriptor);
+            }
             final String longNodeFilename =
                 this.config.getPlatform().getLongNodeFilename(this.nodeVersion, true);
             String downloadUrl = this.nodeDownloadRoot
                 + this.config.getPlatform().getNodeDownloadFilename(this.nodeVersion, true);
-            String classifier = this.config.getPlatform().getNodeClassifier();
+
 
             File tmpDirectory = getTempDirectory();
-
-            CacheDescriptor cacheDescriptor = new CacheDescriptor("node", this.nodeVersion, classifier,
-                this.config.getPlatform().getArchiveExtension());
-
-            File archive = this.config.getCacheResolver().resolve(cacheDescriptor);
 
             downloadFileIfMissing(downloadUrl, archive, this.userName, this.password);
 
@@ -268,7 +301,7 @@ public class NodeInstaller {
 
     }
 
-    private void installNodeForWindows() throws InstallationException {
+    private void installNodeForWindows(String nodeLocalRoot) throws InstallationException {
         final String downloadUrl = this.nodeDownloadRoot
             + this.config.getPlatform().getNodeDownloadFilename(this.nodeVersion, false);
         try {
@@ -281,7 +314,12 @@ public class NodeInstaller {
             CacheDescriptor cacheDescriptor =
                 new CacheDescriptor("node", this.nodeVersion, classifier, "exe");
 
-            File binary = this.config.getCacheResolver().resolve(cacheDescriptor);
+            File binary = null;
+            if(StringUtils.isNotBlank(nodeLocalRoot)){
+                binary = new File(nodeLocalRoot);
+            }else{
+                binary = this.config.getCacheResolver().resolve(cacheDescriptor);
+            }
 
             downloadFileIfMissing(downloadUrl, binary, this.userName, this.password);
 

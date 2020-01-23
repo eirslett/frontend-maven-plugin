@@ -16,6 +16,23 @@ import org.apache.maven.settings.Server;
 @Mojo(name="install-node-and-npm", defaultPhase = LifecyclePhase.GENERATE_RESOURCES, threadSafe = true)
 public final class InstallNodeAndNpmMojo extends AbstractFrontendMojo {
 
+
+    /**
+     * Where a local copy of node can be found.
+     * Useful if you just do not want to download anything. (eg some corporate build policies prevent this)
+     * If this value is set, the plugin will not attempt to download anything and instead will use the local version
+     */
+    @Parameter(property = "nodeLocalRoot", required = false)
+    private String nodeLocalRoot;
+
+    /**
+     * Where a local copy of npm can be found.
+     * Useful if you just do not want to download anything. (eg some corporate build policies prevent this)
+     * If this value is set, the plugin will not attempt to download anything and instead will use the local version
+     */
+    @Parameter(property = "npmLocalRoot", required = false)
+    private String npmLocalRoot;
+
     /**
      * Where to download Node.js binary from. Defaults to https://nodejs.org/dist/
      */
@@ -82,6 +99,7 @@ public final class InstallNodeAndNpmMojo extends AbstractFrontendMojo {
             factory.getNodeInstaller(proxyConfig)
                 .setNodeVersion(nodeVersion)
                 .setNodeDownloadRoot(nodeDownloadRoot)
+                .setNodeLocalRoot(nodeLocalRoot)
                 .setNpmVersion(npmVersion)
                 .setUserName(server.getUsername())
                 .setPassword(server.getPassword())
@@ -90,6 +108,7 @@ public final class InstallNodeAndNpmMojo extends AbstractFrontendMojo {
                 .setNodeVersion(nodeVersion)
                 .setNpmVersion(npmVersion)
                 .setNpmDownloadRoot(npmDownloadRoot)
+                .setNpmLocalRoot(npmLocalRoot)
                 .setUserName(server.getUsername())
                 .setPassword(server.getPassword())
                 .install();
@@ -97,12 +116,14 @@ public final class InstallNodeAndNpmMojo extends AbstractFrontendMojo {
             factory.getNodeInstaller(proxyConfig)
                 .setNodeVersion(nodeVersion)
                 .setNodeDownloadRoot(nodeDownloadRoot)
+                .setNodeLocalRoot(nodeLocalRoot)
                 .setNpmVersion(npmVersion)
                 .install();
             factory.getNPMInstaller(proxyConfig)
                 .setNodeVersion(this.nodeVersion)
                 .setNpmVersion(this.npmVersion)
                 .setNpmDownloadRoot(npmDownloadRoot)
+                .setNpmLocalRoot(npmLocalRoot)
                 .install();
         }
     }
