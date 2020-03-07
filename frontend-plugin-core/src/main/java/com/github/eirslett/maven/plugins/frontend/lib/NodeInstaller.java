@@ -18,6 +18,8 @@ public class NodeInstaller {
 
     public static final String DEFAULT_NODEJS_DOWNLOAD_ROOT = "https://nodejs.org/dist/";
 
+    private static final int REDOWNLOAD_MAX_RETRIES = 1;
+
     private static final Object LOCK = new Object();
 
     private String npmVersion, nodeVersion, nodeDownloadRoot, userName, password;
@@ -139,23 +141,35 @@ public class NodeInstaller {
 
             File archive = this.config.getCacheResolver().resolve(cacheDescriptor);
 
-            downloadFileIfMissing(downloadUrl, archive, this.userName, this.password);
+            int retriesCount = 0;
+            do {
+                try {
+                    downloadFileIfMissing(downloadUrl, archive, this.userName, this.password);
+                    extractFile(archive, tmpDirectory);
+                    break;
+                } catch (ArchiveExtractionException e) {
+                    if (e.getCause() instanceof EOFException) {
+                        // https://github.com/eirslett/frontend-mwaven-plugin/issues/794
+                        // The downloading was probably interrupted and archive file is incomplete:
+                        // delete it, retry to download and extract. If number of retries reaches maximum then delete it
+                        // and exit with error.
+                        this.logger.error("The archive file {} is corrupted. Trying to re-download and extract again " +
+                                "(number of retries left: {}).", archive.getPath(), REDOWNLOAD_MAX_RETRIES - retriesCount);
+                        archive.delete();
 
-            try {
-                extractFile(archive, tmpDirectory);
-            } catch (ArchiveExtractionException e) {
-                if (e.getCause() instanceof EOFException) {
-                    // https://github.com/eirslett/frontend-maven-plugin/issues/794
-                    // The downloading was probably interrupted and archive file is incomplete:
-                    // delete it to retry from scratch
-                    this.logger.error("The archive file {} is corrupted and will be deleted. "
-                            + "Please try the build again.", archive.getPath());
-                    archive.delete();
-                    FileUtils.deleteDirectory(tmpDirectory);
+                        if (retriesCount == REDOWNLOAD_MAX_RETRIES) {
+                            this.logger.error("Tried maximum {}/{} times to re-download and extract the archive {}. Failing now.",
+                                    retriesCount, REDOWNLOAD_MAX_RETRIES, archive.getPath());
+                            FileUtils.deleteDirectory(tmpDirectory);
+                            throw e;
+                        }
+
+                        retriesCount++;
+                    } else {
+                        throw e;
+                    }
                 }
-
-                throw e;
-            }
+            } while (true);
 
             // Search for the node binary
             File nodeBinary =

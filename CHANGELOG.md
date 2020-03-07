@@ -4,6 +4,10 @@ Last public release: [![Maven Central](https://maven-badges.herokuapp.com/maven-
 
 ## Changelog
 
+### 1.9.2
+
+* Add re-downloading and trying to extract again Node archive in case of EOFException ([#882](https://github.com/eirslett/frontend-maven-plugin/issues/882))
+
 ### 1.9.0
 
 * Copy npm scripts, so they are available for execution ([#868](https://github.com/eirslett/frontend-maven-plugin/pull/868))
