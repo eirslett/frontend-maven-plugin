@@ -22,12 +22,13 @@
                 <executions>
 
                     <execution>
-                        <id>install node and yarn</id>
+                        <id>install node and npm</id>
                         <goals>
-                            <goal>install-node-and-yarn</goal>
+                            <goal>install-node-and-npm</goal>
                         </goals>
                         <configuration>
                             <nodeVersion>v12.16.1</nodeVersion>
+                            <npmVersion>6.13.4</npmVersion>
                         </configuration>
                     </execution>
 
