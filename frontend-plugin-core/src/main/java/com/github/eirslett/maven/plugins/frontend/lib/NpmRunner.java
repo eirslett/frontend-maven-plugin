@@ -37,6 +37,7 @@ final class DefaultNpmRunner extends NodeTaskExecutor implements NpmRunner {
 
             arguments.add("--https-proxy=" + proxy.getUri().toString());
             arguments.add("--proxy=" + proxy.getUri().toString());
+            arguments.add("--noproxy=" + proxy.getNonProxyHosts());
         }
         
         return arguments;

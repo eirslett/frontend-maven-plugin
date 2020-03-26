@@ -62,6 +62,7 @@ public class ProxyConfig {
         public final int port;
         public final String username;
         public final String password;
+
         public final String nonProxyHosts;
 
         public Proxy(String id, String protocol, String host, int port, String username, String password, String nonProxyHosts) {
@@ -106,12 +107,26 @@ public class ProxyConfig {
             return false;
         }
 
+        /**
+         * As per https://docs.npmjs.com/misc/config#noproxy , npm expects a comma (`,`) separated list but
+         * maven settings.xml usually specifies the no proxy hosts as a bar (`|`) separated list (see
+         * http://maven.apache.org/guides/mini/guide-proxies.html) .
+         *
+         * We could do the conversion here but npm seems to accept the bar separated list regardless
+         * of what the documentation says so we do no conversion for now.
+         * @return
+         */
+        public String getNonProxyHosts() {
+            return nonProxyHosts;
+        }
+
         @Override
         public String toString() {
             return id + "{" +
                     "protocol='" + protocol + '\'' +
                     ", host='" + host + '\'' +
                     ", port=" + port +
+                    ", nonProxyHosts='" + nonProxyHosts + '\'' +
                     (useAuthentication()? ", with username/passport authentication" : "") +
                     '}';
         }
