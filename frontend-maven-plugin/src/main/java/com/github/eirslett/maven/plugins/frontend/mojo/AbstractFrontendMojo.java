@@ -1,6 +1,7 @@
 package com.github.eirslett.maven.plugins.frontend.mojo;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.maven.plugin.AbstractMojo;
@@ -17,6 +18,7 @@ import com.github.eirslett.maven.plugins.frontend.lib.TaskRunnerException;
 
 public abstract class AbstractFrontendMojo extends AbstractMojo {
 
+    public static final String INTEGRATION_TEST_FAILED_KEY = "integrationTestFailed";
     @Component
     protected MojoExecution execution;
 
@@ -34,6 +36,14 @@ public abstract class AbstractFrontendMojo extends AbstractMojo {
      */
     @Parameter(property = "maven.test.failure.ignore", defaultValue = "false")
     protected boolean testFailureIgnore;
+
+    /**
+     * Set this to true to delegate test failures until after 'post-integration' has executed.
+     *
+     * @since 1.9.2
+     */
+    @Parameter(property = "maven.it.failure.after.postIntegration", defaultValue = "false")
+    protected boolean integrationTestFailureAfterPostIntegration;
 
     /**
      * The base directory for running all Node commands. (Usually the directory that contains package.json)
@@ -71,7 +81,17 @@ public abstract class AbstractFrontendMojo extends AbstractMojo {
      */
     private boolean isTestingPhase() {
         String phase = execution.getLifecyclePhase();
-        return "test".equals(phase) || "integration-test".equals(phase);
+        return "test".equals(phase) || isIntegrationTestingPhase();
+    }
+
+    private boolean isIntegrationTestingPhase(){
+        String phase = execution.getLifecyclePhase();
+        return "integration-test".equals(phase);
+    }
+
+    private boolean isVerifyPhase(){
+        String phase = execution.getLifecyclePhase();
+        return "verify".equals(phase);
     }
 
     protected abstract void execute(FrontendPluginFactory factory) throws FrontendException;
@@ -83,6 +103,9 @@ public abstract class AbstractFrontendMojo extends AbstractMojo {
 
     @Override
     public void execute() throws MojoFailureException {
+        if(isVerifyPhase() && integrationTestsHaveFailed()){
+            throw new MojoFailureException("Some integration tests have failed during integration-test phase.");
+        }
         if (testFailureIgnore && !isTestingPhase()) {
             getLog().info("testFailureIgnore property is ignored in non test phases");
         }
@@ -96,6 +119,9 @@ public abstract class AbstractFrontendMojo extends AbstractMojo {
             } catch (TaskRunnerException e) {
                 if (testFailureIgnore && isTestingPhase()) {
                     getLog().error("There are test failures.\nFailed to run task: " + e.getMessage(), e);
+                } else if (integrationTestFailureAfterPostIntegration && isIntegrationTestingPhase()) {
+                    storeIntegrationTestFailed();
+                    getLog().error("There are test failures.\nFailed to run task: " + e.getMessage(), e);
                 } else {
                     throw new MojoFailureException("Failed to run task", e);
                 }
@@ -105,6 +131,22 @@ public abstract class AbstractFrontendMojo extends AbstractMojo {
         } else {
             getLog().info("Skipping execution.");
         }
+    }
+
+    private Boolean integrationTestsHaveFailed() {
+        Object failed = getPluginContext().get(INTEGRATION_TEST_FAILED_KEY);
+        return failed != null && (Boolean) failed;
+    }
+
+    private void storeIntegrationTestFailed() {
+        Map<String, Object> pluginContext;
+        if(getPluginContext() != null){
+            pluginContext = getPluginContext();
+        } else {
+            pluginContext = new HashMap<>();
+        }
+        pluginContext.put(INTEGRATION_TEST_FAILED_KEY, true);
+        setPluginContext(pluginContext);
     }
 
 }

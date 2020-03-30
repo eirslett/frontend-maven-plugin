@@ -3,7 +3,7 @@
     <parent>
         <artifactId>frontend-plugins</artifactId>
         <groupId>com.github.eirslett</groupId>
-        <version>1.9.1</version>
+        <version>1.9.2-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
