@@ -4,6 +4,10 @@ Last public release: [![Maven Central](https://maven-badges.herokuapp.com/maven-
 
 ## Changelog
 
+### 1.9.2
+
+* Parameter **integrationTestFailureAfterPostIntegration** logs the failures during *integration-test* phase but only fails the build during the *verify* phase.  This allows the *post-integration-test* phase to finish.  An execution with *verify* phase is required.
+
 ### 1.9.0
 
 * Copy npm scripts, so they are available for execution ([#868](https://github.com/eirslett/frontend-maven-plugin/pull/868))
