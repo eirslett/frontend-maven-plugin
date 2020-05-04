@@ -31,20 +31,32 @@ public class ArgumentsParserTest {
     public void testMultipleArgumentsWithQuotes() {
         ArgumentsParser parser = new ArgumentsParser();
 
-        assertArrayEquals(new Object[] { "foo", "\"bar foobar\"" }, parser.parse("foo \"bar foobar\"").toArray());
-        assertArrayEquals(new Object[] { "\"foo bar\"", "foobar" }, parser.parse("\"foo bar\" foobar").toArray());
-        assertArrayEquals(new Object[] { "foo", "'bar foobar'" }, parser.parse("foo 'bar foobar'").toArray());
-        assertArrayEquals(new Object[] { "'foo bar'", "foobar" }, parser.parse("'foo bar' foobar").toArray());
+        assertArrayEquals(new Object[] { "foo", "bar foobar" }, parser.parse("foo \"bar foobar\"").toArray());
+        assertArrayEquals(new Object[] { "foo bar", "foobar" }, parser.parse("\"foo bar\" foobar").toArray());
+        assertArrayEquals(new Object[] { "foo", "bar foobar" }, parser.parse("foo 'bar foobar'").toArray());
+        assertArrayEquals(new Object[] { "foo bar", "foobar" }, parser.parse("'foo bar' foobar").toArray());
         // unclosed quotes
-        assertArrayEquals(new Object[] { "foo", "\"bar foobar" }, parser.parse("foo \"bar foobar").toArray());
+        assertArrayEquals(new Object[] { "foo", "bar foobar" }, parser.parse("foo \"bar foobar").toArray());
     }
 
     @Test
     public void testArgumentsWithMixedQuotes() {
         ArgumentsParser parser = new ArgumentsParser();
 
-        assertArrayEquals(new Object[] { "foo", "\"bar 'foo bar'\"" }, parser.parse("foo \"bar 'foo bar'\"").toArray());
-        assertArrayEquals(new Object[] { "foo", "\"bar 'foo\"", "'bar " }, parser.parse("foo \"bar 'foo\" 'bar ").toArray());
+        assertArrayEquals(new Object[] { "foo", "bar 'foo bar'" }, parser.parse("foo \"bar 'foo bar'\"").toArray());
+        assertArrayEquals(new Object[] { "foo", "bar 'foo", "bar " }, parser.parse("foo \"bar 'foo\" 'bar ").toArray());
+    }
+
+    @Test
+    public void testArgumentsWithRetainedQuotes() {
+        ArgumentsParser parser = new ArgumentsParser();
+
+        assertArrayEquals(new Object[] { "foo", "\"bar foobar\"" }, parser.parse("foo '\"bar foobar\"'").toArray());
+        assertArrayEquals(new Object[] { "\"foo bar\"", "foobar" }, parser.parse("'\"foo bar\"' foobar").toArray());
+        assertArrayEquals(new Object[] { "foo", "'bar foobar'" }, parser.parse("foo \"'bar foobar'\"").toArray());
+        assertArrayEquals(new Object[] { "'foo bar'", "foobar" }, parser.parse("\"'foo bar'\" foobar").toArray());
+        // unclosed quotes
+        assertArrayEquals(new Object[] { "foo", "\"bar foobar" }, parser.parse("foo '\"bar foobar").toArray());
     }
 
     @Test

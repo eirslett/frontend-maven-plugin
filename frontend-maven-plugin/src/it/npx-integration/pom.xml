@@ -42,6 +42,16 @@
                         </configuration>
                     </execution>
 
+                    <execution>
+                        <id>npx -c test</id>
+                        <goals>
+                            <goal>npx</goal>
+                        </goals>
+                        <configuration>
+                            <arguments>-p cowsay -c 'cowsay command'</arguments>
+                        </configuration>
+                    </execution>
+
                 </executions>
             </plugin>
         </plugins>

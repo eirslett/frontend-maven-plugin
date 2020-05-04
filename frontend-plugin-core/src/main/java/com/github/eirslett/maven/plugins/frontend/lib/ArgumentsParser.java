@@ -55,11 +55,14 @@ class ArgumentsParser {
                     quote = currentQuote;
                 } else if (quote.equals(currentQuote)){
                     quote = null;
-                } // else
-                // we ignore the case when a quoted argument contains the other kind of quote
+                } else {
+                    // we ignore the case when a quoted argument contains the other kind of quote
+                    argumentBuilder.append(c);
+                }
+            } else {
+                argumentBuilder.append(c);
             }
 
-            argumentBuilder.append(c);
         }
 
         addArgument(argumentBuilder, arguments);
