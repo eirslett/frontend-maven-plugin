@@ -470,7 +470,7 @@ tag of an execution like this:
 
 ```xml
 <configuration>
-    <maven.test.failure.ignore>true</maven.test.failure.ignore>
+    <testFailureIgnore>true</testFailureIgnore>
 </configuration>
 ```
 
