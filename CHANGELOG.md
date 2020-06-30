@@ -4,6 +4,10 @@ Last public release: [![Maven Central](https://maven-badges.herokuapp.com/maven-
 
 ## Changelog
 
+### 1.10.1
+
+* Gulp goal tries to use gulp-cli if is installed as direct dependency (#913)
+
 ### 1.9.0
 
 * Copy npm scripts, so they are available for execution ([#868](https://github.com/eirslett/frontend-maven-plugin/pull/868))
