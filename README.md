@@ -264,7 +264,7 @@ By default, colors will be shown in the log.
 ### Running gulp
 
 Very similar to the Grunt execution. It will run gulp according to the `gulpfile.js` in your working directory.
-By default, colors will be shown in the log.
+By default, colors will be shown in the log. If you desire to use a gulpfile write as ES6 module, it's necessary to install 'gulp-cli' 2.3.0 or greater.
 
 ```xml
 <execution>
