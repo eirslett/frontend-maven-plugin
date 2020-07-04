@@ -108,7 +108,7 @@ present).
 </plugin>
 ```
 
-You can also specify separate download roots for npm and node as they are stored in separate repos.
+You can also specify separate download roots for npm and node as they are stored in separate repos. In case the root configured requires authentication, you can specify a server ID from your maven settings file:
 
 ```xml
 <plugin>
@@ -116,6 +116,8 @@ You can also specify separate download roots for npm and node as they are stored
     <configuration>
         <!-- optional: where to download node from. Defaults to https://nodejs.org/dist/ -->
         <nodeDownloadRoot>http://myproxy.example.org/nodejs/</nodeDownloadRoot>
+	<!-- optional: credentials to use from Maven settings to download node -->
+        <serverId>server001</serverId>
         <!-- optional: where to download npm from. Defaults to https://registry.npmjs.org/npm/-/ -->
         <npmDownloadRoot>https://myproxy.example.org/npm/</npmDownloadRoot>
     </configuration>
