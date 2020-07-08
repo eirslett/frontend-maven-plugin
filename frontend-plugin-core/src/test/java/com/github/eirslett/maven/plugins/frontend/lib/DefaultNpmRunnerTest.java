@@ -19,7 +19,8 @@ public class DefaultNpmRunnerTest {
     private final int port = 8888;
     private final String username = "someusername";
     private final String password = "somepassword";
-    private final String nonProxyHosts = "www.google.ca";
+    private final String nonProxyHosts = "www.google.ca|www.google.com";
+    private final String expectedNonProxyHosts = "www.google.ca,www.google.com";
     private final String registryUrl = "www.npm.org";
     private final String expectedUrl = "http://someusername:somepassword@localhost:8888";
 
@@ -29,7 +30,7 @@ public class DefaultNpmRunnerTest {
 
         assertThat(strings, CoreMatchers.hasItem("--proxy=" + expectedUrl));
         assertThat(strings, CoreMatchers.hasItem("--https-proxy=" + expectedUrl));
-        assertThat(strings, CoreMatchers.hasItem("--noproxy=" + nonProxyHosts));
+        assertThat(strings, CoreMatchers.hasItem("--noproxy=" + expectedNonProxyHosts));
         assertThat(strings, CoreMatchers.hasItem("--registry=" + registryUrl));
         assertEquals(4, strings.size());
     }
@@ -41,7 +42,7 @@ public class DefaultNpmRunnerTest {
 
         assertThat(strings, CoreMatchers.hasItem("--proxy=" + expectedUrl));
         assertThat(strings, CoreMatchers.hasItem("--https-proxy=" + expectedUrl));
-        assertThat(strings, CoreMatchers.hasItem("--noproxy=" + nonProxyHosts));
+        assertThat(strings, CoreMatchers.hasItem("--noproxy=" + expectedNonProxyHosts));
         assertEquals(3, strings.size());
     }
 
@@ -51,7 +52,7 @@ public class DefaultNpmRunnerTest {
 
         assertThat(strings, CoreMatchers.hasItem("--proxy=" + expectedUrl));
         assertThat(strings, CoreMatchers.hasItem("--https-proxy=" + expectedUrl));
-        assertThat(strings, CoreMatchers.hasItem("--noproxy=" + nonProxyHosts));
+        assertThat(strings, CoreMatchers.hasItem("--noproxy=" + expectedNonProxyHosts));
         assertEquals(3, strings.size());
     }
 
