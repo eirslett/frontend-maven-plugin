@@ -195,6 +195,24 @@ By default, colors will be shown in the log.
 **Notice:** _Remember to gitignore the `node_modules` folder, unless you actually want to commit it. Npm packages will 
 always be installed in `node_modules` next to your `package.json`, which is default npm behavior._
 
+#### npx
+
+You can also use [`npx` command](https://blog.npmjs.org/post/162869356040/introducing-npx-an-npm-package-runner), enabling you to execute the CLI of installed packages without a run-script, or even packages that aren't installed at all.
+
+```xml
+<execution>
+    <id>say hello</id>
+    <goals>
+        <goal>npx</goal>
+    </goals>
+
+    <phase>generate-resources</phase>
+
+    <configuration>
+        <arguments>cowsay hello</arguments>
+    </configuration>
+</execution>
+```
 
 ### Running yarn
 
