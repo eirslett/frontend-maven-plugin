@@ -5,6 +5,7 @@
 			<pluginExecutionFilter>
 				<goals>
 					<goal>install-node-and-npm</goal>
+					<goal>install-node-and-pnpm</goal>
 					<goal>install-node-and-yarn</goal>
 				</goals>
 			</pluginExecutionFilter>
@@ -19,6 +20,7 @@
             <pluginExecutionFilter>
                 <goals>
                     <goal>npm</goal>
+                    <goal>pnpm</goal>
                     <goal>yarn</goal>
                     <goal>gulp</goal>
                     <goal>grunt</goal>
