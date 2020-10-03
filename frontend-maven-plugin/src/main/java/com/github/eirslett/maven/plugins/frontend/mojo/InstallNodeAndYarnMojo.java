@@ -10,7 +10,6 @@ import org.apache.maven.settings.crypto.SettingsDecrypter;
 
 import com.github.eirslett.maven.plugins.frontend.lib.FrontendPluginFactory;
 import com.github.eirslett.maven.plugins.frontend.lib.InstallationException;
-import com.github.eirslett.maven.plugins.frontend.lib.NodeInstaller;
 import com.github.eirslett.maven.plugins.frontend.lib.ProxyConfig;
 import com.github.eirslett.maven.plugins.frontend.lib.YarnInstaller;
 
@@ -20,8 +19,7 @@ public final class InstallNodeAndYarnMojo extends AbstractFrontendMojo {
     /**
      * Where to download Node.js binary from. Defaults to https://nodejs.org/dist/
      */
-    @Parameter(property = "nodeDownloadRoot", required = false,
-        defaultValue = NodeInstaller.DEFAULT_NODEJS_DOWNLOAD_ROOT)
+    @Parameter(property = "nodeDownloadRoot", required = false)
     private String nodeDownloadRoot;
 
     /**
