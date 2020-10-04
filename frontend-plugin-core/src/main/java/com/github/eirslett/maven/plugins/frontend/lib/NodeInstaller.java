@@ -16,8 +16,6 @@ public class NodeInstaller {
 
     public static final String INSTALL_PATH = "/node";
 
-    public static final String DEFAULT_NODEJS_DOWNLOAD_ROOT = "https://nodejs.org/dist/";
-
     private static final Object LOCK = new Object();
 
     private String npmVersion, nodeVersion, nodeDownloadRoot, userName, password;
@@ -80,7 +78,7 @@ public class NodeInstaller {
         // use static lock object for a synchronized block
         synchronized (LOCK) {
             if (this.nodeDownloadRoot == null || this.nodeDownloadRoot.isEmpty()) {
-                this.nodeDownloadRoot = DEFAULT_NODEJS_DOWNLOAD_ROOT;
+                this.nodeDownloadRoot = this.config.getPlatform().getNodeDownloadRoot();
             }
             if (!nodeIsAlreadyInstalled()) {
                 this.logger.info("Installing node version {}", this.nodeVersion);
