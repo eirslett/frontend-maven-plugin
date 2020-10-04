@@ -23,3 +23,9 @@ jobs:
       - name: "Run Maven"
         shell: bash
         run: mvn clean install
+      - name: "Deploy"
+        if: github.ref == 'refs/heads/master'
+        shell: bash
+        run: |
+          echo -e "$GPG_KEY" | gpg --import
+          mvn --settings settings-github.xml deploy -Prelease -DskipTests

@@ -34,7 +34,7 @@
         <connection>scm:git:https://github.com/eirslett/frontend-maven-plugin.git</connection>
         <developerConnection>scm:git:git@github.com:eirslett/frontend-maven-plugin.git</developerConnection>
       <tag>HEAD</tag>
-  </scm>
+    </scm>
 
     <developers>
         <developer>
