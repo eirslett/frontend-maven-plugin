@@ -28,5 +28,5 @@ jobs:
         shell: bash
         run: |
           export GPG_TTY=$(tty)
-          echo -e "$GPG_KEY" | gpg --import --passphrase $GPG_PASSPHRASE
+          echo -e "$GPG_KEY" | gpg --import --passphrase $GPG_PASSPHRASE --batch --yes
           mvn --settings settings-github.xml deploy -Prelease -DskipTests
