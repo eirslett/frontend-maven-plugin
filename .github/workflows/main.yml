@@ -27,11 +27,11 @@ jobs:
         if: github.ref == 'refs/heads/master'
         shell: bash
         env:
-          GPG_KEY: {{ secrets.GPG_KEY }}
-          GPG_KEY_NAME: {{ secrets.GPG_KEY_NAME }}
-          GPG_PASSPHRASE: {{ secrets.GPG_PASSPHRASE }}
-          OSSRH_JIRA_USERNAME: {{ secrets.OSSRH_JIRA_USERNAME }}
-          OSSRH_JIRA_PASSWORD: {{ secrets.OSSRH_JIRA_PASSWORD }}
+          GPG_KEY: ${{ secrets.GPG_KEY }}
+          GPG_KEY_NAME: ${{ secrets.GPG_KEY_NAME }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          OSSRH_JIRA_USERNAME: ${{ secrets.OSSRH_JIRA_USERNAME }}
+          OSSRH_JIRA_PASSWORD: ${{ secrets.OSSRH_JIRA_PASSWORD }}
         run: |
           export GPG_TTY=$(tty)
           echo -e "$GPG_KEY" | gpg --import --passphrase $GPG_PASSPHRASE --batch --yes
