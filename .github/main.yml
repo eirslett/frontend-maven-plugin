@@ -1,0 +1,25 @@
+name: Build
+
+on: push
+
+jobs:
+  build:
+    name: "Run build"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Git checkout
+        uses: actions/checkout@v2
+      - name: Use cache
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2
+          key: "${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}"
+          restore-keys: |
+            ${{ runner.os }}-maven-
+      - name: Configure Java
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+      - name: "Run Maven"
+        shell: bash
+        run: mvn clean install
