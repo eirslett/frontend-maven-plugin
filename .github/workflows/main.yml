@@ -27,5 +27,6 @@ jobs:
         if: github.ref == 'refs/heads/master'
         shell: bash
         run: |
-          echo -e "$GPG_KEY" | gpg --import
+          export GPG_TTY=$(tty)
+          echo -e "$GPG_KEY" | gpg --import --passphrase $GPG_PASSPHRASE
           mvn --settings settings-github.xml deploy -Prelease -DskipTests
