@@ -4,7 +4,7 @@ Last public release: [![Maven Central](https://maven-badges.herokuapp.com/maven-
 
 ## Changelog
 
-### 1.10.1
+### 1.10.2
 
 * Supports Alpine Linux
 
