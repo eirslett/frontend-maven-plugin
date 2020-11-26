@@ -48,6 +48,13 @@ public class ArgumentsParserTest {
     }
 
     @Test
+    public void repeatedArgumentsAreAccepted() {
+        ArgumentsParser parser = new ArgumentsParser();
+
+        assertArrayEquals(new Object[] { "echo", "echo" }, parser.parse("echo echo").toArray());
+    }
+
+    @Test
     public void testAdditionalArgumentsNoIntersection() {
         ArgumentsParser parser = new ArgumentsParser(Arrays.asList("foo", "bar"));
 
