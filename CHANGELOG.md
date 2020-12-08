@@ -4,6 +4,10 @@ Last public release: [![Maven Central](https://maven-badges.herokuapp.com/maven-
 
 ## Changelog
 
+### 1.11.0
+
+* Upgrade Jackson dependency to Jackson 2.9.10
+
 ### 1.10.2
 
 * Supports Alpine Linux
