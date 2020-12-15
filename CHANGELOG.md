@@ -7,6 +7,7 @@ Last public release: [![Maven Central](https://maven-badges.herokuapp.com/maven-
 ### 1.11.0
 
 * Upgrade Jackson dependency to Jackson 2.9.10
+* Support Apple Silicon
 
 ### 1.10.2
 
