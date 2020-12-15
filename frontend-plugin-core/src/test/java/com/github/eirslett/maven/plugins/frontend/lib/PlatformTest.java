@@ -32,6 +32,18 @@ public class PlatformTest {
     }
 
     @Test
+    public void detect_arm_mac_download_x64_binary() {
+        mockStatic(OS.class);
+        mockStatic(Architecture.class);
+
+        when(OS.guess()).thenReturn(OS.Mac);
+        when(Architecture.guess()).thenReturn(Architecture.arm64);
+
+        Platform platform = Platform.guess();
+        assertEquals("darwin-x64", platform.getNodeClassifier());
+    }
+
+    @Test
     public void detect_linux_notAlpine() throws Exception {
         mockStatic(OS.class);
         mockStatic(Architecture.class);
