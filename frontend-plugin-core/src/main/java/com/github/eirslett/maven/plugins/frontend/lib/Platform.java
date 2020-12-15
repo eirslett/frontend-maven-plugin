@@ -135,7 +135,12 @@ class Platform {
     }
 
     public String getNodeClassifier() {
-        String result = getCodename() + "-" + architecture.name();
+        final String result;
+        if(isMac() && architecture == Architecture.arm64) { // this check is required to download the x64 binary until there is an arm64 version available for macOS (darwin).
+            result = getCodename() + "-" + Architecture.x64.name();
+        } else {
+            result = getCodename() + "-" + architecture.name();
+        }
         return classifier != null ? result + "-" + classifier : result;
     }
 }
