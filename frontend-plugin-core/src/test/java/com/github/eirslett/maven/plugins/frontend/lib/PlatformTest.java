@@ -81,4 +81,16 @@ public class PlatformTest {
         assertEquals("https://unofficial-builds.nodejs.org/download/release/",
                 platform.getNodeDownloadRoot());
     }
+
+    @Test
+    public void detect_aix_ppc64() {
+        mockStatic(OS.class);
+        mockStatic(Architecture.class);
+
+        when(OS.guess()).thenReturn(OS.AIX);
+        when(Architecture.guess()).thenReturn(Architecture.ppc64);
+
+        Platform platform = Platform.guess();
+        assertEquals("aix-ppc64", platform.getNodeClassifier());
+    }
 }
