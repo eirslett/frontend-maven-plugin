@@ -517,10 +517,10 @@ Tools and property to enable skipping
 ## Eclipse M2E support
 
 This plugin contains support for M2E, including lifecycle mappings and support for incremental builds in Eclipse.
-The `install-node-and-npm` goal will only run on a full project build. The other goals support incremental builds
-to avoid doing unnecessary work. During an incremental build the `npm` goal will only run if the `package.json` file
-has been changed. The `grunt` and `gulp` goals have new `srcdir` and `triggerfiles` optional configuration options; if
-these are set they check for changes in your source files before being run. See the wiki for more information.
+The `install-node-and-npm` and `install-node-and-yarn` goals will only run on a full project build. The other goals support incremental builds
+to avoid doing unnecessary work. Most goals have `srcdir` and `triggerfiles` optional configuration options; if
+these are set they check for changes in your source files before being run. By default, during an incremental build
+the `npm` and `yarn` goals will only run if the `package.json` file has been changed. See the wiki for more information.
 
 ## Helper scripts
 
