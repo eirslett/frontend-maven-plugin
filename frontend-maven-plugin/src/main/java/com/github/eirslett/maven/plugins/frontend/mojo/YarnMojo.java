@@ -1,7 +1,10 @@
 package com.github.eirslett.maven.plugins.frontend.mojo;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugins.annotations.Component;
@@ -21,7 +24,7 @@ public final class YarnMojo extends AbstractFrontendMojo {
     private static final String NPM_REGISTRY_URL = "npmRegistryURL";
 
     /**
-     * npm arguments. Default is "install".
+     * yarn arguments. Default is "install".
      */
     @Parameter(defaultValue = "", property = "frontend.yarn.arguments", required = false)
     private String arguments;
@@ -46,6 +49,29 @@ public final class YarnMojo extends AbstractFrontendMojo {
     private SettingsDecrypter decrypter;
 
     /**
+     * Files that should be checked for changes, in addition to the srcdir files.
+     * Defaults to package.json in the {@link #workingDirectory}.
+     */
+    @Parameter(property = "triggerfiles")
+    private List<File> triggerfiles;
+
+    /**
+     * The directory containing front end files that will be processed by yarn.
+     * If this is set then files in the directory will be checked for
+     * modifications before running yarn.
+     */
+    @Parameter(property = "srcdir")
+    private File srcdir;
+
+    /**
+     * The directory where front end files will be output by yarn. If this is
+     * set then they will be refreshed so they correctly show as modified in
+     * Eclipse.
+     */
+    @Parameter(property = "outputdir")
+    private File outputdir;
+
+    /**
      * Skips execution of this mojo.
      */
     @Parameter(property = "skip.yarn", defaultValue = "${skip.yarn}")
@@ -58,20 +84,32 @@ public final class YarnMojo extends AbstractFrontendMojo {
 
     @Override
     public synchronized void execute(FrontendPluginFactory factory) throws TaskRunnerException {
-        File packageJson = new File(this.workingDirectory, "package.json");
-        if (this.buildContext == null || this.buildContext.hasDelta(packageJson)
-            || !this.buildContext.isIncremental()) {
+        if (shouldExecute()) {
             ProxyConfig proxyConfig = getProxyConfig();
-            factory.getYarnRunner(proxyConfig, getRegistryUrl()).execute(this.arguments,
-                this.environmentVariables);
+            factory.getYarnRunner(proxyConfig, getRegistryUrl()).execute(arguments, environmentVariables);
+
+            if (outputdir != null) {
+                getLog().info("Refreshing files after 'yarn" + (arguments != null ? " " + arguments : "") + "': " + outputdir);
+                buildContext.refresh(outputdir);
+            }
         } else {
-            getLog().info("Skipping yarn install as package.json unchanged");
+            getLog().info("Skipping 'yarn" + (arguments != null ? " " + arguments : "") + "' as "
+                    + triggerfiles.stream().map(Object::toString).collect(Collectors.joining(", "))
+                    + " unchanged" + (srcdir != null ? " and no modified files in: " + srcdir : ""));
         }
+    }
+
+    private boolean shouldExecute() {
+        if (triggerfiles == null || triggerfiles.isEmpty()) {
+            triggerfiles = Arrays.asList(new File(workingDirectory, "package.json"));
+        }
+
+        return MojoUtils.shouldExecute(buildContext, triggerfiles, srcdir);
     }
 
     private ProxyConfig getProxyConfig() {
         if (this.yarnInheritsProxyConfigFromMaven) {
-            return MojoUtils.getProxyConfig(this.session, this.decrypter);
+            return MojoUtils.getProxyConfig(session, decrypter);
         } else {
             getLog().info("yarn not inheriting proxy config from Maven");
             return new ProxyConfig(Collections.<ProxyConfig.Proxy>emptyList());
@@ -80,6 +118,6 @@ public final class YarnMojo extends AbstractFrontendMojo {
 
     private String getRegistryUrl() {
         // check to see if overridden via `-D`, otherwise fallback to pom value
-        return System.getProperty(NPM_REGISTRY_URL, this.npmRegistryURL);
+        return System.getProperty(NPM_REGISTRY_URL, npmRegistryURL);
     }
 }

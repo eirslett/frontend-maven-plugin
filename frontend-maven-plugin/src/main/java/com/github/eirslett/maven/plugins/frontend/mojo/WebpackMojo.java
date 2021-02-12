@@ -11,6 +11,7 @@ import org.sonatype.plexus.build.incremental.BuildContext;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Mojo(name="webpack", defaultPhase = LifecyclePhase.GENERATE_RESOURCES, threadSafe = true)
 public final class WebpackMojo extends AbstractFrontendMojo {
@@ -64,11 +65,13 @@ public final class WebpackMojo extends AbstractFrontendMojo {
             factory.getWebpackRunner().execute(arguments, environmentVariables);
 
             if (outputdir != null) {
-                getLog().info("Refreshing files after webpack: " + outputdir);
+                getLog().info("Refreshing files after 'webpack" + (arguments != null ? " " + arguments : "") + "': " + outputdir);
                 buildContext.refresh(outputdir);
             }
         } else {
-            getLog().info("Skipping webpack as no modified files in " + srcdir);
+            getLog().info("Skipping 'webpack" + (arguments != null ? " " + arguments : "") + "' as "
+                    + triggerfiles.stream().map(Object::toString).collect(Collectors.joining(", "))
+                    + " unchanged" + (srcdir != null ? " and no modified files in: " + srcdir : ""));
         }
     }
 

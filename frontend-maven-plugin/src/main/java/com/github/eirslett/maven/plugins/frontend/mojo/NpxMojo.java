@@ -12,7 +12,10 @@ import org.apache.maven.settings.crypto.SettingsDecrypter;
 import org.sonatype.plexus.build.incremental.BuildContext;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Mojo(name="npx",  defaultPhase = LifecyclePhase.GENERATE_RESOURCES)
 public final class NpxMojo extends AbstractFrontendMojo {
@@ -20,7 +23,7 @@ public final class NpxMojo extends AbstractFrontendMojo {
     private static final String NPM_REGISTRY_URL = "npmRegistryURL";
     
     /**
-     * npm arguments. Default is "install".
+     * npx arguments. Default is "install".
      */
     @Parameter(defaultValue = "install", property = "frontend.npx.arguments", required = false)
     private String arguments;
@@ -44,6 +47,29 @@ public final class NpxMojo extends AbstractFrontendMojo {
     private SettingsDecrypter decrypter;
 
     /**
+     * Files that should be checked for changes, in addition to the srcdir files.
+     * Defaults to package.json in the {@link #workingDirectory}.
+     */
+    @Parameter(property = "triggerfiles")
+    private List<File> triggerfiles;
+
+    /**
+     * The directory containing front end files that will be processed by npx.
+     * If this is set then files in the directory will be checked for
+     * modifications before running npx.
+     */
+    @Parameter(property = "srcdir")
+    private File srcdir;
+
+    /**
+     * The directory where front end files will be output by npx. If this is
+     * set then they will be refreshed so they correctly show as modified in
+     * Eclipse.
+     */
+    @Parameter(property = "outputdir")
+    private File outputdir;
+
+    /**
      * Skips execution of this mojo.
      */
     @Parameter(property = "skip.npx", defaultValue = "${skip.npx}")
@@ -56,13 +82,27 @@ public final class NpxMojo extends AbstractFrontendMojo {
 
     @Override
     public void execute(FrontendPluginFactory factory) throws TaskRunnerException {
-        File packageJson = new File(workingDirectory, "package.json");
-        if (buildContext == null || buildContext.hasDelta(packageJson) || !buildContext.isIncremental()) {
+        if (shouldExecute()) {
             ProxyConfig proxyConfig = getProxyConfig();
             factory.getNpxRunner(proxyConfig, getRegistryUrl()).execute(arguments, environmentVariables);
+
+            if (outputdir != null) {
+                getLog().info("Refreshing files after 'npx" + (arguments != null ? " " + arguments : "") + "': " + outputdir);
+                buildContext.refresh(outputdir);
+            }
         } else {
-            getLog().info("Skipping npm install as package.json unchanged");
+            getLog().info("Skipping 'npx" + (arguments != null ? " " + arguments : "") + "' as "
+                    + triggerfiles.stream().map(Object::toString).collect(Collectors.joining(", "))
+                    + " unchanged" + (srcdir != null ? " and no modified files in: " + srcdir : ""));
         }
+    }
+
+    private boolean shouldExecute() {
+        if (triggerfiles == null || triggerfiles.isEmpty()) {
+            triggerfiles = Arrays.asList(new File(workingDirectory, "package.json"));
+        }
+
+        return MojoUtils.shouldExecute(buildContext, triggerfiles, srcdir);
     }
 
     private ProxyConfig getProxyConfig() {

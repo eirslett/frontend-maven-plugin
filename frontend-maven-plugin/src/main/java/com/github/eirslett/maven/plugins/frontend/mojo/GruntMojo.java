@@ -11,6 +11,7 @@ import org.sonatype.plexus.build.incremental.BuildContext;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Mojo(name="grunt", defaultPhase = LifecyclePhase.GENERATE_RESOURCES, threadSafe = true)
 public final class GruntMojo extends AbstractFrontendMojo {
@@ -64,11 +65,13 @@ public final class GruntMojo extends AbstractFrontendMojo {
             factory.getGruntRunner().execute(arguments, environmentVariables);
 
             if (outputdir != null) {
-                getLog().info("Refreshing files after grunt: " + outputdir);
+                getLog().info("Refreshing files after 'grunt" + (arguments != null ? " " + arguments : "") + "': " + outputdir);
                 buildContext.refresh(outputdir);
             }
         } else {
-            getLog().info("Skipping grunt as no modified files in " + srcdir);
+            getLog().info("Skipping 'grunt" + (arguments != null ? " " + arguments : "") + "' as "
+                    + triggerfiles.stream().map(Object::toString).collect(Collectors.joining(", "))
+                    + " unchanged" + (srcdir != null ? " and no modified files in: " + srcdir : ""));
         }
     }
 
