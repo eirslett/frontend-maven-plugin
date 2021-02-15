@@ -11,12 +11,13 @@ import org.sonatype.plexus.build.incremental.BuildContext;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Mojo(name="ember", defaultPhase = LifecyclePhase.GENERATE_RESOURCES, threadSafe = true)
 public final class EmberMojo extends AbstractFrontendMojo {
 
     /**
-     * Grunt arguments. Default is empty (runs just the "grunt" command).
+     * Ember arguments. Default is empty (runs just the "ember" command).
      */
     @Parameter(property = "frontend.ember.arguments")
     private String arguments;
@@ -64,11 +65,13 @@ public final class EmberMojo extends AbstractFrontendMojo {
             factory.getEmberRunner().execute(arguments, environmentVariables);
 
             if (outputdir != null) {
-                getLog().info("Refreshing files after ember: " + outputdir);
+                getLog().info("Refreshing files after 'ember" + (arguments != null ? " " + arguments : "") + "': " + outputdir);
                 buildContext.refresh(outputdir);
             }
         } else {
-            getLog().info("Skipping ember as no modified files in " + srcdir);
+            getLog().info("Skipping 'ember" + (arguments != null ? " " + arguments : "") + "' as "
+                    + triggerfiles.stream().map(Object::toString).collect(Collectors.joining(", "))
+                    + " unchanged" + (srcdir != null ? " and no modified files in: " + srcdir : ""));
         }
     }
 

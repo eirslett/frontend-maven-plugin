@@ -11,6 +11,7 @@ import org.sonatype.plexus.build.incremental.BuildContext;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Mojo(name="gulp", defaultPhase = LifecyclePhase.GENERATE_RESOURCES, threadSafe = true)
 public final class GulpMojo extends AbstractFrontendMojo {
@@ -64,11 +65,13 @@ public final class GulpMojo extends AbstractFrontendMojo {
             factory.getGulpRunner().execute(arguments, environmentVariables);
 
             if (outputdir != null) {
-                getLog().info("Refreshing files after gulp: " + outputdir);
+                getLog().info("Refreshing files after 'gulp" + (arguments != null ? " " + arguments : "") + "': " + outputdir);
                 buildContext.refresh(outputdir);
             }
         } else {
-            getLog().info("Skipping gulp as no modified files in " + srcdir);
+            getLog().info("Skipping 'gulp" + (arguments != null ? " " + arguments : "") + "' as "
+                    + triggerfiles.stream().map(Object::toString).collect(Collectors.joining(", "))
+                    + " unchanged" + (srcdir != null ? " and no modified files in: " + srcdir : ""));
         }
     }
 
