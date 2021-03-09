@@ -4,6 +4,13 @@ Last public release: [![Maven Central](https://maven-badges.herokuapp.com/maven-
 
 ## Changelog
 
+### 1.11.2
+
+
+### 1.11.1
+
+* Fix wrong binary on AIX downloaded ([#839])
+
 ### 1.11.0
 
 * Upgrade Jackson dependency to Jackson 2.9.10
