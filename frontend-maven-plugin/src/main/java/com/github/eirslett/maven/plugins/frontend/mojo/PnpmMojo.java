@@ -20,19 +20,19 @@ public final class PnpmMojo extends AbstractFrontendMojo {
     private static final String PNPM_REGISTRY_URL = "npmRegistryURL";
     
     /**
-     * npm arguments. Default is "install".
+     * pnpm arguments. Default is "install".
      */
     @Parameter(defaultValue = "install", property = "frontend.pnpm.arguments", required = false)
     private String arguments;
 
     @Parameter(property = "frontend.pnpm.pnpmInheritsProxyConfigFromMaven", required = false, defaultValue = "true")
-    private boolean npmInheritsProxyConfigFromMaven;
+    private boolean pnpmInheritsProxyConfigFromMaven;
 
     /**
      * Registry override, passed as the registry option during npm install if set.
      */
     @Parameter(property = PNPM_REGISTRY_URL, required = false, defaultValue = "")
-    private String npmRegistryURL;
+    private String pnpmRegistryURL;
     
     @Parameter(property = "session", defaultValue = "${session}", readonly = true)
     private MavenSession session;
@@ -66,7 +66,7 @@ public final class PnpmMojo extends AbstractFrontendMojo {
     }
 
     private ProxyConfig getProxyConfig() {
-        if (npmInheritsProxyConfigFromMaven) {
+        if (pnpmInheritsProxyConfigFromMaven) {
             return MojoUtils.getProxyConfig(session, decrypter);
         } else {
             getLog().info("pnpm not inheriting proxy config from Maven");
@@ -76,6 +76,6 @@ public final class PnpmMojo extends AbstractFrontendMojo {
 
     private String getRegistryUrl() {
         // check to see if overridden via `-D`, otherwise fallback to pom value
-        return System.getProperty(PNPM_REGISTRY_URL, npmRegistryURL);
+        return System.getProperty(PNPM_REGISTRY_URL, pnpmRegistryURL);
     }
 }
