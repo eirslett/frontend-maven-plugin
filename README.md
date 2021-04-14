@@ -218,7 +218,6 @@ You can also use [`npx` command](https://blog.npmjs.org/post/162869356040/introd
 
 As with npm above, all node packaged modules will be installed in the `node_modules` folder in your [working directory](#working-directory).
 
-
 ```xml
 <execution>
     <id>yarn install</id>
@@ -233,6 +232,23 @@ As with npm above, all node packaged modules will be installed in the `node_modu
         <arguments>install</arguments>
     </configuration>
 </execution>
+```
+
+#### Yarn with Private Registry
+
+NOTE: if you have a private npm registry that mirrors the npm registry, be aware that yarn.lock
+includes URLs to the npmjs.org module registry and yarn install will use these paths when installing modules.
+
+If you want yarn.lock to use your private npm registry, be sure to run these commands on your local machine before you generate yarn.lock:
+```
+yarn config set registry <your_registry_url>
+yarn install
+```
+This will create URLs in your yarn.lock file that reference your private npm registry.
+
+Another way to set a registry is to add a .npmrc file in your project's root directory that contains:
+```
+registry=<your_registry_url>
 ```
 
 ### Running bower
