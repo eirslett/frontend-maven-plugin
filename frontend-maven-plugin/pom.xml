@@ -12,7 +12,7 @@
 
   <name>Maven Frontend Plugin</name>
   <prerequisites>
-    <maven>3.1.0</maven>
+    <maven>3.6.0</maven>
   </prerequisites>
 
   <description>
@@ -32,14 +32,14 @@
     <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-core</artifactId>
-      <version>3.1.0</version>
+      <version>3.6.0</version>
       <scope>provided</scope>
     </dependency>
 
     <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-plugin-api</artifactId>
-      <version>3.5.0</version>
+      <version>3.6.0</version>
     </dependency>
 
     <dependency>
@@ -60,7 +60,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-plugin-plugin</artifactId>
-        <version>3.2</version>
+        <version>3.6.0</version>
         <configuration>
           <skipErrorNoDescriptorsFound>true</skipErrorNoDescriptorsFound>
         </configuration>
