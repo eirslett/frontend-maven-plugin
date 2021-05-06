@@ -1,6 +1,8 @@
 package com.github.eirslett.maven.plugins.frontend.lib;
 
 import java.io.File;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 enum Architecture { x86, x64, ppc64le, s390x, arm64, armv7l, ppc, ppc64;
     public static Architecture guess(){
@@ -60,6 +62,13 @@ enum OS { Windows, Mac, Linux, SunOS, AIX;
 }
 
 class Platform {
+
+    /**
+     * Node.js supports Apple silicon since v16
+     * https://github.com/nodejs/node/blob/master/doc/changelogs/CHANGELOG_V16.md#toolchain-and-compiler-upgrades
+     */
+    private static final int NODE_VERSION_THRESHOLD_MAC_ARM64 = 16;
+
     private final String nodeDownloadRoot;
     private final OS os;
     private final Architecture architecture;
@@ -117,7 +126,7 @@ class Platform {
         if(isWindows() && !archiveOnWindows){
             return "node.exe";
         } else {
-            return "node-" + nodeVersion + "-" + this.getNodeClassifier();
+            return "node-" + nodeVersion + "-" + this.getNodeClassifier(nodeVersion);
         }
     }
 
@@ -141,13 +150,30 @@ class Platform {
         }
     }
 
-    public String getNodeClassifier() {
-        final String result;
-        if(isMac() && architecture == Architecture.arm64) { // this check is required to download the x64 binary until there is an arm64 version available for macOS (darwin).
-            result = getCodename() + "-" + Architecture.x64.name();
-        } else {
-            result = getCodename() + "-" + architecture.name();
-        }
+    public String getNodeClassifier(String nodeVersion) {
+        String result = getCodename() + "-" + resolveArchitecture(nodeVersion).name();
         return classifier != null ? result + "-" + classifier : result;
     }
+
+    private Architecture resolveArchitecture(String nodeVersion) {
+        if (isMac() && architecture == Architecture.arm64) {
+            Integer nodeMajorVersion = getNodeMajorVersion(nodeVersion);
+            if (nodeMajorVersion == null || nodeMajorVersion < NODE_VERSION_THRESHOLD_MAC_ARM64) {
+                return Architecture.x64;
+            }
+        }
+
+        return architecture;
+    }
+
+    static Integer getNodeMajorVersion(String nodeVersion) {
+        Matcher matcher = Pattern.compile("^v(\\d+)\\..*$").matcher(nodeVersion);
+        if (matcher.matches()) {
+            return Integer.parseInt(matcher.group(1));
+        } else {
+            // malformed node version
+            return null;
+        }
+    }
+
 }

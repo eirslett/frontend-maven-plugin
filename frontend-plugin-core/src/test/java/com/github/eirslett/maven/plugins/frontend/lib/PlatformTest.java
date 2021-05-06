@@ -17,6 +17,10 @@ import static org.powermock.api.mockito.PowerMockito.whenNew;
 @PrepareForTest({Platform.class, OS.class, Architecture.class, File.class})
 public class PlatformTest {
 
+    private static final String NODE_VERSION_8 = "v8.17.2";
+    private static final String NODE_VERSION_15 = "v15.14.0";
+    private static final String NODE_VERSION_16 = "v16.1.0";
+
     @Test
     public void detect_win_doesntLookForAlpine() {
         mockStatic(OS.class);
@@ -26,13 +30,13 @@ public class PlatformTest {
         when(Architecture.guess()).thenReturn(Architecture.x86);
 
         Platform platform = Platform.guess();
-        assertEquals("win-x86", platform.getNodeClassifier());
+        assertEquals("win-x86", platform.getNodeClassifier(NODE_VERSION_15));
 
         verifyNoMoreInteractions(File.class); // doesn't look for a file path
     }
 
     @Test
-    public void detect_arm_mac_download_x64_binary() {
+    public void detect_arm_mac_download_x64_binary_node15() {
         mockStatic(OS.class);
         mockStatic(Architecture.class);
 
@@ -40,7 +44,19 @@ public class PlatformTest {
         when(Architecture.guess()).thenReturn(Architecture.arm64);
 
         Platform platform = Platform.guess();
-        assertEquals("darwin-x64", platform.getNodeClassifier());
+        assertEquals("darwin-x64", platform.getNodeClassifier(NODE_VERSION_15));
+    }
+
+    @Test
+    public void detect_arm_mac_download_x64_binary_node16() {
+        mockStatic(OS.class);
+        mockStatic(Architecture.class);
+
+        when(OS.guess()).thenReturn(OS.Mac);
+        when(Architecture.guess()).thenReturn(Architecture.arm64);
+
+        Platform platform = Platform.guess();
+        assertEquals("darwin-arm64", platform.getNodeClassifier(NODE_VERSION_16));
     }
 
     @Test
@@ -58,7 +74,7 @@ public class PlatformTest {
         when(alpineRelease.exists()).thenReturn(false);
 
         Platform platform = Platform.guess();
-        assertEquals("linux-x86", platform.getNodeClassifier());
+        assertEquals("linux-x86", platform.getNodeClassifier(NODE_VERSION_15));
         assertEquals("https://nodejs.org/dist/", platform.getNodeDownloadRoot());
     }
 
@@ -77,7 +93,7 @@ public class PlatformTest {
         when(alpineRelease.exists()).thenReturn(true);
 
         Platform platform = Platform.guess();
-        assertEquals("linux-x86-musl", platform.getNodeClassifier());
+        assertEquals("linux-x86-musl", platform.getNodeClassifier(NODE_VERSION_15));
         assertEquals("https://unofficial-builds.nodejs.org/download/release/",
                 platform.getNodeDownloadRoot());
     }
@@ -91,6 +107,14 @@ public class PlatformTest {
         when(Architecture.guess()).thenReturn(Architecture.ppc64);
 
         Platform platform = Platform.guess();
-        assertEquals("aix-ppc64", platform.getNodeClassifier());
+        assertEquals("aix-ppc64", platform.getNodeClassifier(NODE_VERSION_15));
     }
+
+    @Test
+    public void getNodeMajorVersion() {
+        assertEquals(Integer.valueOf(8), Platform.getNodeMajorVersion(NODE_VERSION_8));
+        assertEquals(Integer.valueOf(15), Platform.getNodeMajorVersion(NODE_VERSION_15));
+        assertEquals(Integer.valueOf(16), Platform.getNodeMajorVersion(NODE_VERSION_16));
+    }
+
 }
