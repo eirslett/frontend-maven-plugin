@@ -128,7 +128,7 @@ public class NodeInstaller {
                 this.config.getPlatform().getLongNodeFilename(this.nodeVersion, false);
             String downloadUrl = this.nodeDownloadRoot
                 + this.config.getPlatform().getNodeDownloadFilename(this.nodeVersion, false);
-            String classifier = this.config.getPlatform().getNodeClassifier();
+            String classifier = this.config.getPlatform().getNodeClassifier(this.nodeVersion);
 
             File tmpDirectory = getTempDirectory();
 
@@ -216,7 +216,7 @@ public class NodeInstaller {
                 this.config.getPlatform().getLongNodeFilename(this.nodeVersion, true);
             String downloadUrl = this.nodeDownloadRoot
                 + this.config.getPlatform().getNodeDownloadFilename(this.nodeVersion, true);
-            String classifier = this.config.getPlatform().getNodeClassifier();
+            String classifier = this.config.getPlatform().getNodeClassifier(this.nodeVersion);
 
             File tmpDirectory = getTempDirectory();
 
@@ -274,7 +274,7 @@ public class NodeInstaller {
 
             File destination = new File(destinationDirectory, "node.exe");
 
-            String classifier = this.config.getPlatform().getNodeClassifier();
+            String classifier = this.config.getPlatform().getNodeClassifier(this.nodeVersion);
 
             CacheDescriptor cacheDescriptor =
                 new CacheDescriptor("node", this.nodeVersion, classifier, "exe");

@@ -4,8 +4,8 @@ Last public release: [![Maven Central](https://maven-badges.herokuapp.com/maven-
 
 ## Changelog
 
-### 1.11.2
-
+### 1.11.4
+* Support node arm64 binaries since v16 major release
 
 ### 1.11.1
 
