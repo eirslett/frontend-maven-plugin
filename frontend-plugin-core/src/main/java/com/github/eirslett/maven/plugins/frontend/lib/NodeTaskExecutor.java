@@ -20,7 +20,7 @@ abstract class NodeTaskExecutor {
     
     private final Logger logger;
     private final String taskName;
-    private final String taskLocation;
+    private String taskLocation;
     private final ArgumentsParser argumentsParser;
     private final NodeExecutorConfig config;
 
@@ -119,5 +119,9 @@ abstract class NodeTaskExecutor {
             }
         }
         return retVal;
+    }
+
+    public void setTaskLocation(String taskLocation) {
+        this.taskLocation = taskLocation;
     }
 }
