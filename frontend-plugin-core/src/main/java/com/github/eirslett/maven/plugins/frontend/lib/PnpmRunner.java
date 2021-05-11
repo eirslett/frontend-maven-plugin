@@ -12,6 +12,10 @@ final class DefaultPnpmRunner extends NodeTaskExecutor implements PnpmRunner {
 
     public DefaultPnpmRunner(NodeExecutorConfig config, ProxyConfig proxyConfig, String npmRegistryURL) {
         super(config, TASK_NAME, config.getPnpmPath().getAbsolutePath(), buildArguments(proxyConfig, npmRegistryURL));
+
+        if (!config.getPnpmPath().exists() && config.getPnpmCjsPath().exists()) {
+            setTaskLocation(config.getPnpmCjsPath().getAbsolutePath());
+        }
     }
 
     // Visible for testing only.
