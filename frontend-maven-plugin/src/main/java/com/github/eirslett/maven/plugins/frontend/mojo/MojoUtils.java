@@ -89,7 +89,7 @@ class MojoUtils {
     }
 
     if (srcdir == null) {
-      return true;
+      return triggerfiles == null;
     }
 
     // Check for changes in the srcdir
