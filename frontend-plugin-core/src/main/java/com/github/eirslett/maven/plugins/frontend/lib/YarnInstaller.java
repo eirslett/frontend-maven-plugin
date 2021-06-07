@@ -73,6 +73,21 @@ public class YarnInstaller {
         }
     }
 
+    public void install(String yarnDownloadUrl, String yarnExtension) throws InstallationException {
+        if (yarnVersion == null || yarnVersion.isEmpty()) {
+            throw new InstallationException("yarnVersion has to be provided.");
+        }
+        if (yarnExtension == null || yarnExtension.isEmpty()) {
+            throw new InstallationException("yarnExtension has to be provided.");
+        }
+        // use static lock object for a synchronized block
+        synchronized (LOCK) {
+            if (!yarnIsAlreadyInstalled()) {
+                installYarn(yarnDownloadUrl, yarnVersion, yarnExtension);
+            }
+        }
+    }
+
     private boolean yarnIsAlreadyInstalled() {
         try {
             YarnExecutorConfig executorConfig = new InstallYarnExecutorConfig(config);
@@ -97,15 +112,27 @@ public class YarnInstaller {
     }
 
     private void installYarn() throws InstallationException {
+        String downloadUrl = yarnDownloadRoot + yarnVersion;
+        String defaultYarnExtension = "tar.gz";
+
+        try {
+            File installDirectory = getInstallDirectory();
+            ensureCorrectYarnRootDirectory(installDirectory, yarnVersion);
+        } catch (IOException e) {
+            throw new InstallationException("Could not extract the Yarn archive", e);
+        }
+
+        installYarn(downloadUrl, yarnVersion, defaultYarnExtension);
+    }
+
+    private void installYarn(String yarnDownloadUrl, String yarnVersion, String yarnExtension) throws InstallationException {
         try {
             logger.info("Installing Yarn version {}", yarnVersion);
-            String downloadUrl = yarnDownloadRoot + yarnVersion;
-            String extension = "tar.gz";
-            String fileending = "/yarn-" + yarnVersion + "." + extension;
+            String fileEnding = "/yarn-" + yarnVersion + "." + yarnExtension;
 
-            downloadUrl += fileending;
+            String downloadUrl = yarnDownloadUrl + fileEnding;
 
-            CacheDescriptor cacheDescriptor = new CacheDescriptor("yarn", yarnVersion, extension);
+            CacheDescriptor cacheDescriptor = new CacheDescriptor("yarn", yarnVersion, yarnExtension);
 
             File archive = config.getCacheResolver().resolve(cacheDescriptor);
 
@@ -141,8 +168,6 @@ public class YarnInstaller {
                 throw e;
             }
 
-            ensureCorrectYarnRootDirectory(installDirectory, yarnVersion);
-
             logger.info("Installed Yarn locally.");
         } catch (DownloadException e) {
             throw new InstallationException("Could not download Yarn", e);
@@ -160,9 +185,45 @@ public class YarnInstaller {
         return installDirectory;
     }
 
-    private void extractFile(File archive, File destinationDirectory) throws ArchiveExtractionException {
+    private File getDistDirectory(File destinationDirectory) throws IOException {
+        File distDirectory = new File(destinationDirectory,  "dist");
+        if (distDirectory.exists()) {
+            try {
+                FileUtils.deleteDirectory(distDirectory);
+            } catch (IOException e) {
+                throw new IOException("Could not clean up existing dist directory:  " + distDirectory.getName());
+            }
+        }
+        logger.info("Creating directory {}", distDirectory);
+        distDirectory.mkdir();
+        return distDirectory;
+    }
+
+    private void copyToDist(File destinationDirectory) throws IOException {
+        // Copying installed /node/yarn/yarn-<version> to /node/yarn/dist for execution path.
+        // See this: https://github.com/eirslett/frontend-maven-plugin/issues/647
+        File versionedDirectory = new File(destinationDirectory, "yarn-" +
+            (yarnVersion.startsWith("v") ? "" : "v") +
+            yarnVersion);
+        File distDirectory = getDistDirectory(destinationDirectory);
+
+        if (versionedDirectory.exists()) {
+            try {
+                logger.info("Copying {} to {}", versionedDirectory, distDirectory);
+                FileUtils.copyDirectory(versionedDirectory, distDirectory, true);
+                File distYarn = new File(distDirectory, "bin/yarn");
+                distYarn.setExecutable(true);
+            } catch (IOException e) {
+                logger.error("Failed to copy from {} to {}.", versionedDirectory, distDirectory);
+            }
+        }
+    }
+
+    private void extractFile(File archive, File destinationDirectory) throws ArchiveExtractionException, IOException {
         logger.info("Unpacking {} into {}", archive, destinationDirectory);
         archiveExtractor.extract(archive.getPath(), destinationDirectory.getPath());
+        copyToDist(destinationDirectory);
+
     }
 
     private void ensureCorrectYarnRootDirectory(File installDirectory, String yarnVersion) throws IOException {
