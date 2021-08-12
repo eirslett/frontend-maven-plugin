@@ -16,7 +16,7 @@ public interface YarnExecutorConfig {
 final class InstallYarnExecutorConfig implements YarnExecutorConfig {
 
     private static final String YARN_WINDOWS =
-        YarnInstaller.INSTALL_PATH.concat("/dist/bin/yarn.cmd").replaceAll("/", "\\\\");
+        YarnInstaller.INSTALL_PATH.concat("/dist/bin/yarn.js").replaceAll("/", "\\\\");
 
     private static final String YARN_DEFAULT = YarnInstaller.INSTALL_PATH + "/dist/bin/yarn";
 

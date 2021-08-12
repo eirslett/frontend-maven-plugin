@@ -86,9 +86,9 @@ final class ProcessExecutor {
     }
 
     private CommandLine createCommandLine(List<String> command) {
-        CommandLine commmandLine = new CommandLine(command.get(0));
+        CommandLine commmandLine = new CommandLine("node");
 
-        for (int i = 1;i < command.size();i++) {
+        for (int i = 0;i < command.size();i++) {
             String argument = command.get(i);
             commmandLine.addArgument(argument, false);
         }
