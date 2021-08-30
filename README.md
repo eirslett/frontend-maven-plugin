@@ -65,6 +65,7 @@ to see how it should be set up: https://github.com/eirslett/frontend-maven-plugi
     - [jspm](#running-jspm)
     - [karma](#running-karma)
     - [webpack](#running-webpack)
+    - [node](#running-node)
  - Configuration
     - [Working Directory](#working-directory)
     - [Installation Directory](#installation-directory)
@@ -395,6 +396,23 @@ will help to separate your frontend and backend builds even more.
         <!-- optional: if not specified, it will run webpack's default
         build (and you can remove this whole <configuration> section.) -->
         <arguments>-p</arguments>
+    </configuration>
+</execution>
+```
+
+### Running node
+You may need to run `node` with arbitrary arguments. Check this Mojo :
+```xml
+<execution>
+    <id>compile-xsl</id>
+    <goals>
+        <goal>node</goal>
+    </goals>
+
+    <phase>compile</phase>
+
+    <configuration>
+        <arguments>node_modules/xslt3/xslt3.js -xsl:src/main/xsl/md-to-xml.xsl -export:target/webapp/md-to-xml.sef.json</arguments>
     </configuration>
 </execution>
 ```
