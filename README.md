@@ -549,6 +549,7 @@ Tools and property to enable skipping
 * jspm `-Dskip.jspm`
 * karma `-Dskip.karma`
 * webpack `-Dskip.webpack`
+* node `-Dskip.node`
 
 ## Eclipse M2E support
 
