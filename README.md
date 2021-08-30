@@ -408,9 +408,11 @@ You may need to run `node` with arbitrary arguments. Check this Mojo :
     <goals>
         <goal>node</goal>
     </goals>
-
+    
+    <!-- optional: the default phase is "compile" -->
     <phase>compile</phase>
 
+    <!-- required: arguments to launch node with -->
     <configuration>
         <arguments>node_modules/xslt3/xslt3.js -xsl:src/main/xsl/md-to-xml.xsl -export:target/webapp/md-to-xml.sef.json</arguments>
     </configuration>
