@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.Map;
 
 public class NodeRunner  {
-    public static final String TASK_NAME = "node";
-    public static final String TASK_LOCATION = "node/node";
     private final NodeExecutorConfig config;
     private final ArgumentsParser argumentsParser;
     private final Logger logger = LoggerFactory.getLogger(NodeRunner.class);
