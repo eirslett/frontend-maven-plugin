@@ -53,9 +53,11 @@ class MojoUtils {
     }
 
     private static Proxy decryptProxy(Proxy proxy, SettingsDecrypter decrypter) {
+      synchronized (proxy) {
         final DefaultSettingsDecryptionRequest decryptionRequest = new DefaultSettingsDecryptionRequest(proxy);
         SettingsDecryptionResult decryptedResult = decrypter.decrypt(decryptionRequest);
         return decryptedResult.getProxy();
+      }
     }
 
     static Server decryptServer(String serverId, MavenSession mavenSession, SettingsDecrypter decrypter) {
@@ -64,9 +66,11 @@ class MojoUtils {
         }
         Server server = mavenSession.getSettings().getServer(serverId);
         if (server != null) {
+          synchronized (server) {
             final DefaultSettingsDecryptionRequest decryptionRequest = new DefaultSettingsDecryptionRequest(server);
             SettingsDecryptionResult decryptedResult = decrypter.decrypt(decryptionRequest);
             return decryptedResult.getServer();
+          }
         } else {
             LOGGER.warn("Could not find server '" + serverId + "' in settings.xml");
             return null;
