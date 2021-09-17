@@ -7,7 +7,13 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
-
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.vdurmont.semver4j.Requirement;
+import com.vdurmont.semver4j.Semver;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +33,8 @@ public class NodeInstaller {
     private final ArchiveExtractor archiveExtractor;
 
     private final FileDownloader fileDownloader;
+
+    private Requirement nodeVersionRequirement;
 
     NodeInstaller(InstallConfig config, ArchiveExtractor archiveExtractor, FileDownloader fileDownloader) {
         this.logger = LoggerFactory.getLogger(getClass());
@@ -74,13 +82,65 @@ public class NodeInstaller {
         return false;
     }
 
-    public void install() throws InstallationException {
+    public String install() throws InstallationException {
         // use static lock object for a synchronized block
         synchronized (LOCK) {
             if (this.nodeDownloadRoot == null || this.nodeDownloadRoot.isEmpty()) {
                 this.nodeDownloadRoot = this.config.getPlatform().getNodeDownloadRoot();
             }
+
+            if ("engines".equals(this.nodeVersion)) {
+                try {
+                    File packageFile = new File(this.config.getWorkingDirectory(), "package.json");
+                    HashMap<String, Object> data = new ObjectMapper().readValue(packageFile, HashMap.class);
+                    if (data.containsKey("engines")) {
+                        HashMap<String, Object> engines = (HashMap<String, Object>) data.get("engines");
+                        if (engines.containsKey("node")) {
+                            this.nodeVersionRequirement = Requirement.buildNPM((String) engines.get("node"));
+                        } else {
+                            this.logger.info("Could not read node from engines from package.json");
+                        }
+                    } else {
+                        this.logger.info("Could not read engines from package.json");
+                    }
+                } catch (IOException e) {
+                    throw new InstallationException("Could not read node engine version from package.json", e);
+                }
+            }
+
             if (!nodeIsAlreadyInstalled()) {
+                if (this.nodeVersionRequirement != null) {
+                    // download available node versions
+                    try {
+                        String downloadUrl = this.nodeDownloadRoot
+                                + "index.json";
+
+                        File tmpDirectory = getTempDirectory();
+
+                        File archive = File.createTempFile("node_versions", ".json", tmpDirectory);
+
+                        downloadFile(downloadUrl, archive, this.userName, this.password);
+
+                        HashMap<String, Object>[] data = new ObjectMapper().readValue(archive, HashMap[].class);
+
+                        List<String> nodeVersions = new LinkedList<>();
+                        for (HashMap<String, Object> d : data) {
+                            if (d.containsKey("version")) {
+                                nodeVersions.add((String) d.get("version"));
+                            }
+                        }
+
+                        // we want the oldest possible version, that satisfies the requirements
+                        Collections.reverse(nodeVersions);
+
+                        logger.debug("Available node versions: {}", nodeVersions);
+                        this.nodeVersion = nodeVersions.stream().filter(version -> nodeVersionRequirement.isSatisfiedBy(new Semver(version, Semver.SemverType.NPM))).findFirst().orElseThrow(() -> new InstallationException("Could not find matching node version satisfying requirement " + this.nodeVersionRequirement));
+                        this.logger.info("Found matching node version {} satisfying requirement {}.", this.nodeVersion, this.nodeVersionRequirement);
+                    } catch (IOException | DownloadException e) {
+                        throw new InstallationException("Could not get available node versions.", e);
+                    }
+                }
+
                 this.logger.info("Installing node version {}", this.nodeVersion);
                 if (!this.nodeVersion.startsWith("v")) {
                     this.logger.warn("Node version does not start with naming convention 'v'.");
@@ -96,6 +156,8 @@ public class NodeInstaller {
                 }
             }
         }
+
+        return nodeVersion;
     }
 
     private boolean nodeIsAlreadyInstalled() {
@@ -104,14 +166,19 @@ public class NodeInstaller {
             File nodeFile = executorConfig.getNodePath();
             if (nodeFile.exists()) {
                 final String version =
-                    new NodeExecutor(executorConfig, Arrays.asList("--version"), null).executeAndGetResult(logger);
+                        new NodeExecutor(executorConfig, Arrays.asList("--version"), null).executeAndGetResult(logger);
 
-                if (version.equals(this.nodeVersion)) {
+                if (nodeVersionRequirement != null && nodeVersionRequirement.isSatisfiedBy(new Semver(version, Semver.SemverType.NPM))) {
+                    //update version with installed version
+                    this.nodeVersion = version;
+                    this.logger.info("Node {} matches required version range {} installed.", version, nodeVersionRequirement);
+                    return true;
+                } else if (version.equals(this.nodeVersion)) {
                     this.logger.info("Node {} is already installed.", version);
                     return true;
                 } else {
                     this.logger.info("Node {} was installed, but we need version {}", version,
-                        this.nodeVersion);
+                            this.nodeVersion);
                     return false;
                 }
             } else {
