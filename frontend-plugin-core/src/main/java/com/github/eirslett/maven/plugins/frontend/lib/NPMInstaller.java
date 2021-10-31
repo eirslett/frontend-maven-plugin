@@ -185,7 +185,7 @@ public class NPMInstaller {
         File nodeModulesDirectory = new File(installDirectory, "node_modules");
         File npmDirectory = new File(nodeModulesDirectory, "npm");
         // create a copy of the npm scripts next to the node executable
-        for (String script : Arrays.asList("npm", "npm.cmd")) {
+        for (String script : Arrays.asList("npm", "npm.cmd", "npx", "npx.cmd")) {
             File scriptFile = new File(npmDirectory, "bin" + File.separator + script);
             if (scriptFile.exists()) {
                 File copy = new File(installDirectory, script);
