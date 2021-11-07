@@ -1,6 +1,7 @@
 package com.github.eirslett.maven.plugins.frontend.mojo;
 
 import java.io.File;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.maven.plugin.AbstractMojo;
@@ -53,6 +54,12 @@ public abstract class AbstractFrontendMojo extends AbstractMojo {
     @Parameter
     protected Map<String, String> environmentVariables;
 
+    /**
+     * Whether you should skip while running in the test phase (default is false)
+     */
+    @Parameter(property = "frontend.ignoredPackagings", defaultValue = "pom")
+    protected List<String> ignoredPackagings;
+
     @Parameter(defaultValue = "${project}", readonly = true)
     private MavenProject project;
 
@@ -83,6 +90,10 @@ public abstract class AbstractFrontendMojo extends AbstractMojo {
 
     @Override
     public void execute() throws MojoFailureException {
+        if (ignoredPackagings != null && project != null && ignoredPackagings.contains(project.getPackaging())) {
+            getLog().info("Ignoring execution for packaging " + project.getPackaging());
+            return;
+        }
         if (testFailureIgnore && !isTestingPhase()) {
             getLog().info("testFailureIgnore property is ignored in non test phases");
         }
