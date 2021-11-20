@@ -43,6 +43,12 @@ public final class InstallNodeAndYarnMojo extends AbstractFrontendMojo {
     private String yarnVersion;
 
     /**
+     * If Yarn Berry is used in the project
+     */
+    @Parameter(property = "isYarnBerry", required = false)
+    private boolean isYarnBerry;
+
+    /**
      * Server Id for download username and password
      */
     @Parameter(property = "serverId", defaultValue = "")
@@ -75,12 +81,12 @@ public final class InstallNodeAndYarnMojo extends AbstractFrontendMojo {
                 .setUserName(server.getUsername()).install();
             factory.getYarnInstaller(proxyConfig).setYarnDownloadRoot(this.yarnDownloadRoot)
                 .setYarnVersion(this.yarnVersion).setUserName(server.getUsername())
-                .setPassword(server.getPassword()).install();
+                .setPassword(server.getPassword()).setIsYarnBerry(isYarnBerry).install();
         } else {
             factory.getNodeInstaller(proxyConfig).setNodeDownloadRoot(this.nodeDownloadRoot)
                 .setNodeVersion(this.nodeVersion).install();
             factory.getYarnInstaller(proxyConfig).setYarnDownloadRoot(this.yarnDownloadRoot)
-                .setYarnVersion(this.yarnVersion).install();
+                .setYarnVersion(this.yarnVersion).setIsYarnBerry(isYarnBerry).install();
         }
     }
 
