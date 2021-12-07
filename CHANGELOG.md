@@ -4,6 +4,11 @@ Last public release: [![Maven Central](https://maven-badges.herokuapp.com/maven-
 
 ## Changelog
 
+### 1.12.1
+
+* update Dependency: Jackson (2.13.0), Mockito (4.1.0), JUnit (5.8.1), Hamcrest (2.2; now a direct dependency)
+* remove Dependency: Powermock
+
 ### 1.11.4
 * Support node arm64 binaries since v16 major release
 
@@ -92,4 +97,3 @@ failOnError-like behavior can be implemented by ignoring exit codes;
 * Set paths in npm helper scripts so child node processes can be spawned
 * Updated README with example for maven 2
 * Fix #322: Use proxies more correctly
-
