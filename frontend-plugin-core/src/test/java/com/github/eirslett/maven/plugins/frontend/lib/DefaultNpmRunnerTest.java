@@ -1,15 +1,15 @@
 package com.github.eirslett.maven.plugins.frontend.lib;
 
 import org.hamcrest.CoreMatchers;
-import org.junit.Test;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 
 public class DefaultNpmRunnerTest {
 
