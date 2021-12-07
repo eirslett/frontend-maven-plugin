@@ -1,20 +1,18 @@
 package com.github.eirslett.maven.plugins.frontend.lib;
 
+import org.junit.jupiter.api.Test;
+import org.mockito.MockedConstruction;
+import org.mockito.MockedStatic;
+
 import java.io.File;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
-import static org.junit.Assert.assertEquals;
-import static org.powermock.api.mockito.PowerMockito.mock;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
-import static org.powermock.api.mockito.PowerMockito.verifyNoMoreInteractions;
-import static org.powermock.api.mockito.PowerMockito.when;
-import static org.powermock.api.mockito.PowerMockito.whenNew;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstructionWithAnswer;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({Platform.class, OS.class, Architecture.class, File.class})
 public class PlatformTest {
 
     private static final String NODE_VERSION_8 = "v8.17.2";
@@ -23,79 +21,94 @@ public class PlatformTest {
 
     @Test
     public void detect_win_doesntLookForAlpine() {
-        mockStatic(OS.class);
-        mockStatic(Architecture.class);
+        try (MockedStatic<OS> osMockedStatic = mockStatic(OS.class);
+             MockedStatic<Architecture> architectureMockedStatic = mockStatic(Architecture.class)) {
 
-        when(OS.guess()).thenReturn(OS.Windows);
-        when(Architecture.guess()).thenReturn(Architecture.x86);
+            osMockedStatic.when(OS::guess).thenReturn(OS.Windows);
+            architectureMockedStatic.when(Architecture::guess).thenReturn(Architecture.x86);
 
-        Platform platform = Platform.guess();
-        assertEquals("win-x86", platform.getNodeClassifier(NODE_VERSION_15));
+            Platform platform = Platform.guess();
+            assertEquals("win-x86", platform.getNodeClassifier(NODE_VERSION_15));
 
-        verifyNoMoreInteractions(File.class); // doesn't look for a file path
+            verifyNoMoreInteractions(File.class); // doesn't look for a file path
+        }
     }
 
     @Test
     public void detect_arm_mac_download_x64_binary_node15() {
-        mockStatic(OS.class);
-        mockStatic(Architecture.class);
+        try (MockedStatic<OS> osMockedStatic = mockStatic(OS.class);
+             MockedStatic<Architecture> architectureMockedStatic = mockStatic(Architecture.class)) {
 
-        when(OS.guess()).thenReturn(OS.Mac);
-        when(Architecture.guess()).thenReturn(Architecture.arm64);
+            osMockedStatic.when(OS::guess).thenReturn(OS.Mac);
+            architectureMockedStatic.when(Architecture::guess).thenReturn(Architecture.arm64);
 
-        Platform platform = Platform.guess();
-        assertEquals("darwin-x64", platform.getNodeClassifier(NODE_VERSION_15));
+            Platform platform = Platform.guess();
+            assertEquals("darwin-x64", platform.getNodeClassifier(NODE_VERSION_15));
+        }
     }
 
     @Test
     public void detect_arm_mac_download_x64_binary_node16() {
-        mockStatic(OS.class);
-        mockStatic(Architecture.class);
+        try (MockedStatic<OS> osMockedStatic = mockStatic(OS.class);
+             MockedStatic<Architecture> architectureMockedStatic = mockStatic(Architecture.class)) {
 
-        when(OS.guess()).thenReturn(OS.Mac);
-        when(Architecture.guess()).thenReturn(Architecture.arm64);
+            osMockedStatic.when(OS::guess).thenReturn(OS.Mac);
+            architectureMockedStatic.when(Architecture::guess).thenReturn(Architecture.arm64);
 
-        Platform platform = Platform.guess();
-        assertEquals("darwin-arm64", platform.getNodeClassifier(NODE_VERSION_16));
+            Platform platform = Platform.guess();
+            assertEquals("darwin-arm64", platform.getNodeClassifier(NODE_VERSION_16));
+        }
     }
 
     @Test
     public void detect_linux_notAlpine() throws Exception {
-        mockStatic(OS.class);
-        mockStatic(Architecture.class);
-
-        when(OS.guess()).thenReturn(OS.Linux);
-        when(Architecture.guess()).thenReturn(Architecture.x86);
 
         File alpineRelease = mock(File.class);
-        whenNew(File.class)
-                .withArguments("/etc/alpine-release").thenReturn(alpineRelease);
+        try (MockedStatic<OS> osMockedStatic = mockStatic(OS.class);
+             MockedStatic<Architecture> architectureMockedStatic = mockStatic(Architecture.class);
+             MockedConstruction<File> mockedConstructionFile = mockConstructionWithAnswer(File.class, invocation -> {
+                 if ("/etc/alpine-release".equals(invocation.getArgument(0, String.class))) {
+                     return alpineRelease;
+                 } else {
+                     return invocation.callRealMethod();
+                 }
+             })) {
 
-        when(alpineRelease.exists()).thenReturn(false);
+            osMockedStatic.when(OS::guess).thenReturn(OS.Linux);
+            architectureMockedStatic.when(Architecture::guess).thenReturn(Architecture.x86);
 
-        Platform platform = Platform.guess();
-        assertEquals("linux-x86", platform.getNodeClassifier(NODE_VERSION_15));
-        assertEquals("https://nodejs.org/dist/", platform.getNodeDownloadRoot());
+            when(alpineRelease.exists()).thenReturn(false);
+
+            Platform platform = Platform.guess();
+            assertEquals("linux-x86", platform.getNodeClassifier(NODE_VERSION_15));
+            assertEquals("https://nodejs.org/dist/", platform.getNodeDownloadRoot());
+        }
     }
 
     @Test
     public void detect_linux_alpine() throws Exception {
-        mockStatic(OS.class);
-        mockStatic(Architecture.class);
-
-        when(OS.guess()).thenReturn(OS.Linux);
-        when(Architecture.guess()).thenReturn(Architecture.x86);
 
         File alpineRelease = mock(File.class);
-        whenNew(File.class).withArguments("/etc/alpine-release")
-            .thenReturn(alpineRelease);
+        try (MockedStatic<OS> osMockedStatic = mockStatic(OS.class);
+             MockedStatic<Architecture> architectureMockedStatic = mockStatic(Architecture.class);
+             MockedConstruction<File> mockedConstructionFile = mockConstructionWithAnswer(File.class, invocation -> {
+                 if ("/etc/alpine-release".equals(invocation.getArgument(0, String.class))) {
+                     return alpineRelease;
+                 } else {
+                     return invocation.callRealMethod();
+                 }
+             })) {
 
-        when(alpineRelease.exists()).thenReturn(true);
+            osMockedStatic.when(OS::guess).thenReturn(OS.Linux);
+            architectureMockedStatic.when(Architecture::guess).thenReturn(Architecture.x86);
 
-        Platform platform = Platform.guess();
-        assertEquals("linux-x86-musl", platform.getNodeClassifier(NODE_VERSION_15));
-        assertEquals("https://unofficial-builds.nodejs.org/download/release/",
-                platform.getNodeDownloadRoot());
+            when(alpineRelease.exists()).thenReturn(true);
+
+            Platform platform = Platform.guess();
+            assertEquals("linux-x86-musl", platform.getNodeClassifier(NODE_VERSION_15));
+            assertEquals("https://unofficial-builds.nodejs.org/download/release/",
+                    platform.getNodeDownloadRoot());
+        }
     }
 
     @Test
