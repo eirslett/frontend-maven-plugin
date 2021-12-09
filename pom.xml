@@ -152,7 +152,9 @@
             <id>release</id>
             <properties>
                 <gpg.executable>gpg</gpg.executable>
+                <!--suppress UnresolvedMavenProperty -->
                 <gpg.keyname>${env.GPG_KEYNAME}</gpg.keyname>
+                <!--suppress UnresolvedMavenProperty -->
                 <gpg.passphrase>${env.GPG_PASSPHRASE}</gpg.passphrase>
             </properties>
             <build>

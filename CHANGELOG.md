@@ -8,6 +8,7 @@ Last public release: [![Maven Central](https://maven-badges.herokuapp.com/maven-
 
 * update Dependency: Jackson (2.13.0), Mockito (4.1.0), JUnit (5.8.1), Hamcrest (2.2; now a direct dependency)
 * remove Dependency: Powermock
+* Add Option `useSystemNode` (true/false) which will use the system wide installation of node.js and npm. If you use that make sure you have all the tools in the PATH.
 
 ### 1.11.4
 * Support node arm64 binaries since v16 major release

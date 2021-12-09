@@ -27,6 +27,12 @@ public abstract class AbstractFrontendMojo extends AbstractMojo {
     protected Boolean skipTests;
 
     /**
+     * Whether the OS provided npm should be used (must be in PATH)
+     */
+    @Parameter(property = "useSystemNode", required = false, defaultValue = "false")
+    protected Boolean useSystemNode;
+
+    /**
      * Set this to true to ignore a failure during testing. Its use is NOT RECOMMENDED, but quite convenient on
      * occasion.
      *
@@ -92,7 +98,7 @@ public abstract class AbstractFrontendMojo extends AbstractMojo {
             }
             try {
                 execute(new FrontendPluginFactory(workingDirectory, installDirectory,
-                        new RepositoryCacheResolver(repositorySystemSession)));
+                        new RepositoryCacheResolver(repositorySystemSession), useSystemNode));
             } catch (TaskRunnerException e) {
                 if (testFailureIgnore && isTestingPhase()) {
                     getLog().error("There are test failures.\nFailed to run task: " + e.getMessage(), e);

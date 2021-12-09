@@ -7,6 +7,7 @@ public interface InstallConfig {
   File getWorkingDirectory();
   CacheResolver getCacheResolver();
   Platform getPlatform();
+  boolean isUseSystemNode();
 }
 
 final class DefaultInstallConfig implements InstallConfig {
@@ -15,15 +16,18 @@ final class DefaultInstallConfig implements InstallConfig {
   private final File workingDirectory;
   private final CacheResolver cacheResolver;
   private final Platform platform;
+  private final boolean useSystemNode;
   
   public DefaultInstallConfig(File installDirectory,
                               File workingDirectory,
                               CacheResolver cacheResolver,
-                              Platform platform) {
+                              Platform platform,
+                              boolean useSystemNode) {
     this.installDirectory = installDirectory;
     this.workingDirectory = workingDirectory;
     this.cacheResolver = cacheResolver;
     this.platform = platform;
+    this.useSystemNode = useSystemNode;
   }
 
   @Override
@@ -45,4 +49,8 @@ final class DefaultInstallConfig implements InstallConfig {
     return this.platform;
   }
 
+  @Override
+  public boolean isUseSystemNode() {
+    return useSystemNode;
+  }
 }

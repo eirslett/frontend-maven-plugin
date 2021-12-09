@@ -10,15 +10,18 @@ public final class FrontendPluginFactory {
     private final File workingDirectory;
     private final File installDirectory;
     private final CacheResolver cacheResolver;
+    private final boolean useSystemNode;
 
-    public FrontendPluginFactory(File workingDirectory, File installDirectory){
-        this(workingDirectory, installDirectory, getDefaultCacheResolver(installDirectory));
+    public FrontendPluginFactory(File workingDirectory, File installDirectory, boolean useSystemNode){
+        this(workingDirectory, installDirectory, getDefaultCacheResolver(installDirectory), useSystemNode);
     }
 
-    public FrontendPluginFactory(File workingDirectory, File installDirectory, CacheResolver cacheResolver){
+    public FrontendPluginFactory(File workingDirectory, File installDirectory, CacheResolver cacheResolver,
+                                 boolean useSystemNode){
         this.workingDirectory = workingDirectory;
         this.installDirectory = installDirectory;
         this.cacheResolver = cacheResolver;
+        this.useSystemNode = useSystemNode;
     }
 
     public NodeInstaller getNodeInstaller(ProxyConfig proxy) {
@@ -82,11 +85,15 @@ public final class FrontendPluginFactory {
     }
 
     private NodeExecutorConfig getExecutorConfig() {
-        return new InstallNodeExecutorConfig(getInstallConfig());
+        if (getInstallConfig().isUseSystemNode()) {
+            return new NodeSystemExecuterConfig(getInstallConfig());
+        } else{
+            return new InstallNodeExecutorConfig(getInstallConfig());
+        }
     }
 
     private InstallConfig getInstallConfig() {
-        return new DefaultInstallConfig(installDirectory, workingDirectory, cacheResolver, defaultPlatform);
+        return new DefaultInstallConfig(installDirectory, workingDirectory, cacheResolver, defaultPlatform, useSystemNode);
     }
 
     private static final CacheResolver getDefaultCacheResolver(File root) {
