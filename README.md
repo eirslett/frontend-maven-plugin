@@ -167,6 +167,25 @@ https://github.com/eirslett/frontend-maven-plugin/blob/master/frontend-maven-plu
 </plugin>
 ```
 
+### Omitting the installation using the locally installed environment
+
+When you use the system node installation, the plugin will try to detect your local Node.js
+installation in the system PATH and it will auto detect the npm_modules directory for that system.
+If you set that flag, the specific version will not be ensured!
+
+Using this setup is recommended in restricted environments, where you cannot download node or
+where you would download it all over the time, such as build servers,
+where you can ensure the version by a build container for example.
+
+```xml
+<plugin>
+    ...
+    <configuration>
+        <useSystemNode>true</useSystemNode>       
+    </configuration>
+</plugin>
+```
+
 ### Running npm
 
 All node packaged modules will be installed in the `node_modules` folder in your [working directory](#working-directory).
@@ -556,4 +575,3 @@ You can find a full list of [contributors here](https://github.com/eirslett/fron
 ## License
 
 [Apache 2.0](LICENSE)
-
