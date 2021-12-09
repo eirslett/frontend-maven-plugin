@@ -1,5 +1,7 @@
 package com.github.eirslett.maven.plugins.frontend.mojo;
 
+import java.io.File;
+import java.util.stream.Stream;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -15,6 +17,8 @@ import com.github.eirslett.maven.plugins.frontend.lib.YarnInstaller;
 
 @Mojo(name = "install-node-and-yarn", defaultPhase = LifecyclePhase.GENERATE_RESOURCES, threadSafe = true)
 public final class InstallNodeAndYarnMojo extends AbstractFrontendMojo {
+
+    private static final String YARNRC_YAML_FILE_NAME = ".yarnrc.yml";
 
     /**
      * Where to download Node.js binary from. Defaults to https://nodejs.org/dist/
@@ -43,12 +47,6 @@ public final class InstallNodeAndYarnMojo extends AbstractFrontendMojo {
     private String yarnVersion;
 
     /**
-     * If Yarn Berry is used in the project
-     */
-    @Parameter(property = "isYarnBerry", required = false)
-    private boolean isYarnBerry;
-
-    /**
      * Server Id for download username and password
      */
     @Parameter(property = "serverId", defaultValue = "")
@@ -71,6 +69,22 @@ public final class InstallNodeAndYarnMojo extends AbstractFrontendMojo {
         return this.skip;
     }
 
+    /**
+     * Checks whether a .yarnrc.yml file exists at the project root (in multi-module builds, it will be the Reactor project)
+     *
+     * @return true if the .yarnrc.yml file exists, false otherwise
+     */
+    private boolean isYarnrcYamlFilePresent() {
+        Stream<File> filesToCheck = Stream.of(
+                new File(session.getCurrentProject().getBasedir(), YARNRC_YAML_FILE_NAME),
+                new File(session.getRequest().getMultiModuleProjectDirectory(), YARNRC_YAML_FILE_NAME),
+                new File(session.getExecutionRootDirectory(), YARNRC_YAML_FILE_NAME)
+        );
+
+        return filesToCheck
+                .anyMatch(File::exists);
+    }
+
     @Override
     public void execute(FrontendPluginFactory factory) throws InstallationException {
         ProxyConfig proxyConfig = MojoUtils.getProxyConfig(this.session, this.decrypter);
@@ -81,12 +95,12 @@ public final class InstallNodeAndYarnMojo extends AbstractFrontendMojo {
                 .setUserName(server.getUsername()).install();
             factory.getYarnInstaller(proxyConfig).setYarnDownloadRoot(this.yarnDownloadRoot)
                 .setYarnVersion(this.yarnVersion).setUserName(server.getUsername())
-                .setPassword(server.getPassword()).setIsYarnBerry(isYarnBerry).install();
+                .setPassword(server.getPassword()).setIsYarnBerry(isYarnrcYamlFilePresent()).install();
         } else {
             factory.getNodeInstaller(proxyConfig).setNodeDownloadRoot(this.nodeDownloadRoot)
                 .setNodeVersion(this.nodeVersion).install();
             factory.getYarnInstaller(proxyConfig).setYarnDownloadRoot(this.yarnDownloadRoot)
-                .setYarnVersion(this.yarnVersion).setIsYarnBerry(isYarnBerry).install();
+                .setYarnVersion(this.yarnVersion).setIsYarnBerry(isYarnrcYamlFilePresent()).install();
         }
     }
 
