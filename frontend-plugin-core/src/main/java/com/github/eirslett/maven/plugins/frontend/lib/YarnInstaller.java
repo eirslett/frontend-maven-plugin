@@ -23,6 +23,8 @@ public class YarnInstaller {
 
     private String yarnVersion, yarnDownloadRoot, userName, password;
 
+    private boolean isYarnBerry;
+
     private final Logger logger;
 
     private final InstallConfig config;
@@ -40,6 +42,11 @@ public class YarnInstaller {
 
     public YarnInstaller setYarnVersion(String yarnVersion) {
         this.yarnVersion = yarnVersion;
+        return this;
+    }
+
+    public YarnInstaller setIsYarnBerry(boolean isYarnBerry) {
+        this.isYarnBerry = isYarnBerry;
         return this;
     }
 
@@ -85,8 +92,13 @@ public class YarnInstaller {
                     logger.info("Yarn {} is already installed.", version);
                     return true;
                 } else {
-                    logger.info("Yarn {} was installed, but we need version {}", version, yarnVersion);
-                    return false;
+                    if (isYarnBerry && Integer.parseInt(version.split("\\.")[0]) > 1) {
+                        logger.info("Yarn Berry {} is installed.", version);
+                        return true;
+                    } else{
+                        logger.info("Yarn {} was installed, but we need version {}", version, yarnVersion);
+                        return false;
+                    }
                 }
             } else {
                 return false;

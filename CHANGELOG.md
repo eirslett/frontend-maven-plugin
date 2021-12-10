@@ -8,6 +8,7 @@ Last public release: [![Maven Central](https://maven-badges.herokuapp.com/maven-
 
 * update Dependency: Jackson (2.13.0), Mockito (4.1.0), JUnit (5.8.1), Hamcrest (2.2; now a direct dependency)
 * remove Dependency: Powermock
+* Added better support for Yarn 2.x and above (Berry)
 
 ### 1.11.4
 * Support node arm64 binaries since v16 major release

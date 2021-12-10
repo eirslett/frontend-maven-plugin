@@ -139,6 +139,10 @@ Node/Yarn will only be "installed" locally to your project.
 It will not be installed globally on the whole system (and it will not interfere with any Node/Yarn installations already 
 present). 
 
+If your project is using Yarn Berry (2.x or above), the Yarn version is handled per project but a Yarn 1.x install is still needed as a "bootstrap".
+The plugin will try to detect `.yarnrc.yml` file in the current Maven project/module folder, at the root of the multi-module project if relevant, and in the folder from which the `mvn` command was run. 
+If detected, the plugin will assume your project is using Yarn Berry. It will install the 1.x Yarn version you specify with `yarnVersion` as bootstrap, then hand over to your project-specific version.   
+
 Have a look at the example `POM` to see how it should be set up with Yarn: 
 https://github.com/eirslett/frontend-maven-plugin/blob/master/frontend-maven-plugin/src/it/yarn-integration/pom.xml
 
