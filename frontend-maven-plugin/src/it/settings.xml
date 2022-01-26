@@ -1,5 +1,12 @@
 <?xml version="1.0"?>
 <settings>
+  <servers>
+    <server>
+      <id>npm-registry</id>
+        <username>username</username>
+        <password>password</password>
+    </server>
+  </servers>
   <mirrors>
     <mirror>
       <id>mrm-maven-plugin</id>

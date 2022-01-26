@@ -403,6 +403,40 @@ will help to separate your frontend and backend builds even more.
 </execution>
 ```
 
+### Running Npm Login
+
+```xml
+<execution>
+    <id>npm login</id>
+    <goals>
+        <goal>npm-login</goal>
+    </goals>
+
+    <!-- optional: the default phase is "generate-resources" -->
+    <phase>generate-resources</phase>
+
+    <configuration>
+       <npmRegistryURL>https://npm-registry.com</npmRegistryURL>
+       <npmRegistryServerId>npm-registry</npmRegistryServerId>
+    </configuration>
+</execution>
+```
+
+and server section in ~/.m2/settings.xml
+```xml
+<?xml version="1.0"?>
+<settings>
+  ... 
+  <servers>
+    <server>
+      <id>npm-registry</id>
+        <username>username</username>
+        <password>password</password>
+    </server>
+  </servers>
+  ...
+```
+
 ### Optional Configuration 
 
 #### Working directory
@@ -533,6 +567,7 @@ Tools and property to enable skipping
 * jspm `-Dskip.jspm`
 * karma `-Dskip.karma`
 * webpack `-Dskip.webpack`
+* npm-login `-Dskip.npm-login`
 
 ## Eclipse M2E support
 

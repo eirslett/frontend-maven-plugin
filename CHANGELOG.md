@@ -5,6 +5,9 @@ Last public release: [![Maven Central](https://maven-badges.herokuapp.com/maven-
 ## Changelog
 
 ### 1.12.1
+Add npm-login goal to authenticate in private npm repository
+
+### 1.12.1
 
 * update Dependency: Jackson (2.13.0), Mockito (4.1.0), JUnit (5.8.1), Hamcrest (2.2; now a direct dependency)
 * remove Dependency: Powermock
