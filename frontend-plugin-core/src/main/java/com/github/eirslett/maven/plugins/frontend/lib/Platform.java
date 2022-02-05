@@ -34,7 +34,7 @@ enum OS { Windows, Mac, Linux, SunOS, AIX;
         return  osName.contains("Windows") ? OS.Windows :
                 osName.contains("Mac") ? OS.Mac :
                         osName.contains("SunOS") ? OS.SunOS :
-                            osName.contains("Aix") ? OS.AIX :
+                            osName.toUpperCase().contains("AIX") ? OS.AIX :
                                 OS.Linux;
     }
 
