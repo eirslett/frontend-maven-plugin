@@ -8,11 +8,17 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+
+import javax.net.ssl.SSLContext;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.AuthState;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.AuthCache;
 import org.apache.http.client.CredentialsProvider;
@@ -20,11 +26,13 @@ import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.protocol.HttpClientContext;
+import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.BasicAuthCache;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.ssl.SSLContextBuilder;
 import org.codehaus.plexus.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +49,7 @@ final class DownloadException extends Exception {
 }
 
 interface FileDownloader {
-    void download(String downloadUrl, String destination, String userName, String password) throws DownloadException;
+    void download(String downloadUrl, String destination, String userName, String password, boolean trustInsecureDownloadRoot) throws DownloadException;
 }
 
 final class DefaultFileDownloader implements FileDownloader {
@@ -54,7 +62,7 @@ final class DefaultFileDownloader implements FileDownloader {
     }
 
     @Override
-    public void download(String downloadUrl, String destination, String userName, String password) throws DownloadException {
+    public void download(String downloadUrl, String destination, String userName, String password, boolean trustInsecureDownloadRoot) throws DownloadException {
         // force tls to 1.2 since github removed weak cryptographic standards
         // https://blog.github.com/2018-02-02-weak-cryptographic-standards-removal-notice/
         System.setProperty("https.protocols", "TLSv1.2");
@@ -66,7 +74,7 @@ final class DefaultFileDownloader implements FileDownloader {
                 FileUtils.copyFile(new File(downloadURI), new File(destination));
             }
             else {
-                CloseableHttpResponse response = execute(fixedDownloadUrl, userName, password);
+                CloseableHttpResponse response = execute(fixedDownloadUrl, userName, password, trustInsecureDownloadRoot);
                 int statusCode = response.getStatusLine().getStatusCode();
                 if(statusCode != 200){
                     throw new DownloadException("Got error code "+ statusCode +" from the server.");
@@ -82,12 +90,18 @@ final class DefaultFileDownloader implements FileDownloader {
         }
     }
 
-    private CloseableHttpResponse execute(String requestUrl, String userName, String password) throws IOException {
+    private CloseableHttpResponse execute(String requestUrl, String userName, String password, boolean trustInsecureDownloadRoot)
+            throws IOException, DownloadException {
         CloseableHttpResponse response;
+        SSLContext sslContext = null;
+        if (trustInsecureDownloadRoot) {
+            LOGGER.info("Trust insecure download enabled.");
+            sslContext = makeSSLContextForTrustedInsecureDownloads();
+        }
         Proxy proxy = proxyConfig.getProxyForUrl(requestUrl);
         if (proxy != null) {
             LOGGER.info("Downloading via proxy " + proxy.toString());
-            return executeViaProxy(proxy, requestUrl);
+            return executeViaProxy(proxy, sslContext, requestUrl);
         } else {
             LOGGER.info("No proxy was configured, downloading directly");
             if (StringUtils.isNotEmpty(userName) && StringUtils.isNotEmpty(password)) {
@@ -100,38 +114,48 @@ final class DefaultFileDownloader implements FileDownloader {
                     aURL.getPort(),
                     userName,
                     password);
-                response = buildHttpClient(credentialsProvider).execute(new HttpGet(requestUrl),localContext);
+                response = buildHttpClient(sslContext, credentialsProvider).execute(new HttpGet(requestUrl),localContext);
             } else {
-                response = buildHttpClient(null).execute(new HttpGet(requestUrl));
+                response = buildHttpClient(sslContext, null).execute(new HttpGet(requestUrl));
             }
         }
         return response;
     }
 
-    private CloseableHttpResponse executeViaProxy(Proxy proxy, String requestUrl) throws IOException {
-        final CloseableHttpClient proxyClient;
-        if (proxy.useAuthentication()){
-            proxyClient = buildHttpClient(makeCredentialsProvider(proxy.host,proxy.port,proxy.username,proxy.password));
-        } else {
-            proxyClient = buildHttpClient(null);
-        }
-
-        final HttpHost proxyHttpHost = new HttpHost(proxy.host, proxy.port);
-
-        final RequestConfig requestConfig = RequestConfig.custom().setProxy(proxyHttpHost).build();
-
+    private CloseableHttpResponse executeViaProxy(Proxy proxy, SSLContext sslContext, String requestUrl) throws IOException {
         final HttpGet request = new HttpGet(requestUrl);
-        request.setConfig(requestConfig);
-
-        return proxyClient.execute(request);
+        request.setConfig(RequestConfig.custom()
+                .setProxy(new HttpHost(proxy.host, proxy.port))
+                .build());
+        final CloseableHttpClient proxyClient = buildHttpClient(sslContext, null);
+        if (proxy.useAuthentication()) {
+            final AuthState authState = new AuthState();
+            authState.update(new BasicScheme(), new UsernamePasswordCredentials(proxy.username, proxy.password));
+            final HttpClientContext httpContext = HttpClientContext.create();
+            httpContext.setAttribute(HttpClientContext.PROXY_AUTH_STATE, authState);
+            return proxyClient.execute(request, httpContext);
+        } else {
+            return proxyClient.execute(request);
+        }
     }
 
-    private CloseableHttpClient buildHttpClient(CredentialsProvider credentialsProvider) {
+    private CloseableHttpClient buildHttpClient(SSLContext sslContext, CredentialsProvider credentialsProvider) {
     	return HttpClients.custom()
+                .setSSLContext(sslContext)
     			.disableContentCompression()
     			.useSystemProperties()
     			.setDefaultCredentialsProvider(credentialsProvider)
     			.build();
+    }
+
+    private SSLContext makeSSLContextForTrustedInsecureDownloads() throws DownloadException {
+        try {
+            return SSLContextBuilder.create()
+                    .loadTrustMaterial(TrustSelfSignedStrategy.INSTANCE)
+                    .build();
+        } catch (final NoSuchAlgorithmException | KeyStoreException | KeyManagementException e) {
+            throw new DownloadException("Unable to create SSLContext to trust insecure downloads.", e);
+        }
     }
 
     private CredentialsProvider makeCredentialsProvider(String host, int port, String username, String password) {

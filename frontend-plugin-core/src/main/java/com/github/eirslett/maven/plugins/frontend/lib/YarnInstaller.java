@@ -23,6 +23,8 @@ public class YarnInstaller {
 
     private String yarnVersion, yarnDownloadRoot, userName, password;
 
+    private boolean trustInsecureDownloadRoot;
+
     private boolean isYarnBerry;
 
     private final Logger logger;
@@ -52,6 +54,11 @@ public class YarnInstaller {
 
     public YarnInstaller setYarnDownloadRoot(String yarnDownloadRoot) {
         this.yarnDownloadRoot = yarnDownloadRoot;
+        return this;
+    }
+
+    public YarnInstaller setTrustInsecureDownloadRoot(boolean trustInsecureDownloadRoot) {
+        this.trustInsecureDownloadRoot = trustInsecureDownloadRoot;
         return this;
     }
 
@@ -121,7 +128,7 @@ public class YarnInstaller {
 
             File archive = config.getCacheResolver().resolve(cacheDescriptor);
 
-            downloadFileIfMissing(downloadUrl, archive, userName, password);
+            downloadFileIfMissing(downloadUrl, archive, userName, password, trustInsecureDownloadRoot);
 
             File installDirectory = getInstallDirectory();
 
@@ -193,16 +200,16 @@ public class YarnInstaller {
         }
     }
 
-    private void downloadFileIfMissing(String downloadUrl, File destination, String userName, String password)
+    private void downloadFileIfMissing(String downloadUrl, File destination, String userName, String password, boolean trustInsecureDownloadRoot)
         throws DownloadException {
         if (!destination.exists()) {
-            downloadFile(downloadUrl, destination, userName, password);
+            downloadFile(downloadUrl, destination, userName, password, trustInsecureDownloadRoot);
         }
     }
 
-    private void downloadFile(String downloadUrl, File destination, String userName, String password)
+    private void downloadFile(String downloadUrl, File destination, String userName, String password, boolean trustInsecureDownloadRoot)
         throws DownloadException {
         logger.info("Downloading {} to {}", downloadUrl, destination);
-        fileDownloader.download(downloadUrl, destination.getPath(), userName, password);
+        fileDownloader.download(downloadUrl, destination.getPath(), userName, password, trustInsecureDownloadRoot);
     }
 }

@@ -4,6 +4,13 @@ Last public release: [![Maven Central](https://maven-badges.herokuapp.com/maven-
 
 ## Changelog
 
+### 1.12.2
+
+* add Dependency: wiremock-jre8 (2.32.0)
+* add code coverage to ``DefaultFileDownloader``
+* fix bug on download files over proxy with Basic Auth
+* add new configuration ``trustInsecureDownloadRoot`` to ignore insecure HTTPS downloads 
+
 ### 1.12.1
 
 * update Dependency: Jackson (2.13.0), Mockito (4.1.0), JUnit (5.8.1), Hamcrest (2.2; now a direct dependency)

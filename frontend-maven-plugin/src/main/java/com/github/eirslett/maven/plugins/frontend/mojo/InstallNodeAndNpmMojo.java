@@ -37,6 +37,12 @@ public final class InstallNodeAndNpmMojo extends AbstractFrontendMojo {
     private String downloadRoot;
 
     /**
+     * Will trust insecure download targets. This flag applies to both the {@link #nodeDownloadRoot} and {@link #npmDownloadRoot}.
+     */
+    @Parameter(property = "trustInsecureDownloadRoot", required = false, defaultValue = "false")
+    private boolean trustInsecureDownloadRoot;
+
+    /**
      * The version of Node.js to install. IMPORTANT! Most Node.js version names start with 'v', for example 'v0.10.18'
      */
     @Parameter(property="nodeVersion", required = true)
@@ -81,6 +87,7 @@ public final class InstallNodeAndNpmMojo extends AbstractFrontendMojo {
             factory.getNodeInstaller(proxyConfig)
                 .setNodeVersion(nodeVersion)
                 .setNodeDownloadRoot(nodeDownloadRoot)
+                .setTrustInsecureDownloadRoot(trustInsecureDownloadRoot)
                 .setNpmVersion(npmVersion)
                 .setUserName(server.getUsername())
                 .setPassword(server.getPassword())
@@ -89,6 +96,7 @@ public final class InstallNodeAndNpmMojo extends AbstractFrontendMojo {
                 .setNodeVersion(nodeVersion)
                 .setNpmVersion(npmVersion)
                 .setNpmDownloadRoot(npmDownloadRoot)
+                .setTrustInsecureDownloadRoot(trustInsecureDownloadRoot)
                 .setUserName(server.getUsername())
                 .setPassword(server.getPassword())
                 .install();
@@ -96,12 +104,14 @@ public final class InstallNodeAndNpmMojo extends AbstractFrontendMojo {
             factory.getNodeInstaller(proxyConfig)
                 .setNodeVersion(nodeVersion)
                 .setNodeDownloadRoot(nodeDownloadRoot)
+                .setTrustInsecureDownloadRoot(trustInsecureDownloadRoot)
                 .setNpmVersion(npmVersion)
                 .install();
             factory.getNPMInstaller(proxyConfig)
                 .setNodeVersion(this.nodeVersion)
                 .setNpmVersion(this.npmVersion)
                 .setNpmDownloadRoot(npmDownloadRoot)
+                .setTrustInsecureDownloadRoot(trustInsecureDownloadRoot)
                 .install();
         }
     }

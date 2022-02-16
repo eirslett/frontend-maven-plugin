@@ -20,6 +20,8 @@ public class NodeInstaller {
 
     private String npmVersion, nodeVersion, nodeDownloadRoot, userName, password;
 
+    private boolean trustInsecureDownloadRoot;
+
     private final Logger logger;
 
     private final InstallConfig config;
@@ -42,6 +44,11 @@ public class NodeInstaller {
 
     public NodeInstaller setNodeDownloadRoot(String nodeDownloadRoot) {
         this.nodeDownloadRoot = nodeDownloadRoot;
+        return this;
+    }
+
+    public NodeInstaller setTrustInsecureDownloadRoot(boolean trustInsecureDownloadRoot) {
+        this.trustInsecureDownloadRoot = trustInsecureDownloadRoot;
         return this;
     }
 
@@ -137,7 +144,7 @@ public class NodeInstaller {
 
             File archive = this.config.getCacheResolver().resolve(cacheDescriptor);
 
-            downloadFileIfMissing(downloadUrl, archive, this.userName, this.password);
+            downloadFileIfMissing(downloadUrl, archive, this.userName, this.password, this.trustInsecureDownloadRoot);
 
             try {
                 extractFile(archive, tmpDirectory);
@@ -225,7 +232,7 @@ public class NodeInstaller {
 
             File archive = this.config.getCacheResolver().resolve(cacheDescriptor);
 
-            downloadFileIfMissing(downloadUrl, archive, this.userName, this.password);
+            downloadFileIfMissing(downloadUrl, archive, this.userName, this.password, this.trustInsecureDownloadRoot);
 
             extractFile(archive, tmpDirectory);
 
@@ -281,7 +288,7 @@ public class NodeInstaller {
 
             File binary = this.config.getCacheResolver().resolve(cacheDescriptor);
 
-            downloadFileIfMissing(downloadUrl, binary, this.userName, this.password);
+            downloadFileIfMissing(downloadUrl, binary, this.userName, this.password, this.trustInsecureDownloadRoot);
 
             this.logger.info("Copying node binary from {} to {}", binary, destination);
             FileUtils.copyFile(binary, destination);
@@ -324,16 +331,16 @@ public class NodeInstaller {
         this.archiveExtractor.extract(archive.getPath(), destinationDirectory.getPath());
     }
 
-    private void downloadFileIfMissing(String downloadUrl, File destination, String userName, String password)
+    private void downloadFileIfMissing(String downloadUrl, File destination, String userName, String password, boolean trustInsecureDownloadRoot)
         throws DownloadException {
         if (!destination.exists()) {
-            downloadFile(downloadUrl, destination, userName, password);
+            downloadFile(downloadUrl, destination, userName, password, trustInsecureDownloadRoot);
         }
     }
 
-    private void downloadFile(String downloadUrl, File destination, String userName, String password)
+    private void downloadFile(String downloadUrl, File destination, String userName, String password, boolean trustInsecureDownloadRoot)
         throws DownloadException {
         this.logger.info("Downloading {} to {}", downloadUrl, destination);
-        this.fileDownloader.download(downloadUrl, destination.getPath(), userName, password);
+        this.fileDownloader.download(downloadUrl, destination.getPath(), userName, password, trustInsecureDownloadRoot);
     }
 }

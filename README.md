@@ -104,6 +104,9 @@ present).
         
         <!-- optional: where to download node and npm from. Defaults to https://nodejs.org/dist/ -->
         <downloadRoot>http://myproxy.example.org/nodejs/</downloadRoot>
+        
+        <!-- optional: ignore insecure HTTPS download connections -->
+        <trustInsecureDownloadRoot>false</trustInsecureDownloadRoot>
     </configuration>
 </plugin>
 ```
@@ -120,6 +123,8 @@ You can also specify separate download roots for npm and node as they are stored
         <serverId>server001</serverId>
         <!-- optional: where to download npm from. Defaults to https://registry.npmjs.org/npm/-/ -->
         <npmDownloadRoot>https://myproxy.example.org/npm/</npmDownloadRoot>
+        <!-- optional: ignore insecure HTTPS download connections -->
+        <trustInsecureDownloadRoot>false</trustInsecureDownloadRoot>
     </configuration>
 </plugin>
 ```
@@ -166,7 +171,9 @@ https://github.com/eirslett/frontend-maven-plugin/blob/master/frontend-maven-plu
         <!-- optional: where to download node from. Defaults to https://nodejs.org/dist/ -->
         <nodeDownloadRoot>http://myproxy.example.org/nodejs/</nodeDownloadRoot>
         <!-- optional: where to download yarn from. Defaults to https://github.com/yarnpkg/yarn/releases/download/ -->
-        <yarnDownloadRoot>http://myproxy.example.org/yarn/</yarnDownloadRoot>        
+        <yarnDownloadRoot>http://myproxy.example.org/yarn/</yarnDownloadRoot>
+        <!-- optional: ignore insecure HTTPS download connections -->
+        <trustInsecureDownloadRoot>false</trustInsecureDownloadRoot>
     </configuration>
 </plugin>
 ```
