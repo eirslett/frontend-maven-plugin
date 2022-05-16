@@ -255,6 +255,25 @@ Another way to set a registry is to add a .npmrc file in your project's root dir
 registry=<your_registry_url>
 ```
 
+Also you can set a registry using a tag `npmRegistryURL`
+```
+<execution>
+    <id>yarn install</id>
+    <goals>
+        <goal>yarn</goal>
+    </goals>
+    <configuration>
+         <!-- optional: The default argument is actually
+         "install", so unless you need to run some other yarn command,
+         you can remove this whole <configuration> section.
+         -->
+        <arguments>install</arguments>
+	<!-- optional: where to download npm modules from. Defaults to https://registry.yarnpkg.com/ -->
+	<npmRegistryURL>http://myregistry.example.org/</npmRegistryURL>
+    </configuration>
+</execution>
+```
+
 ### Running bower
 
 All bower dependencies will be installed in the `bower_components` folder in your working directory.
