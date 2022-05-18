@@ -18,7 +18,7 @@ import java.util.Collections;
 public final class PnpmMojo extends AbstractFrontendMojo {
 
     private static final String PNPM_REGISTRY_URL = "npmRegistryURL";
-    
+
     /**
      * pnpm arguments. Default is "install".
      */
@@ -29,11 +29,11 @@ public final class PnpmMojo extends AbstractFrontendMojo {
     private boolean pnpmInheritsProxyConfigFromMaven;
 
     /**
-     * Registry override, passed as the registry option during npm install if set.
+     * Registry override, passed as the registry option during pnpm install if set.
      */
     @Parameter(property = PNPM_REGISTRY_URL, required = false, defaultValue = "")
     private String pnpmRegistryURL;
-    
+
     @Parameter(property = "session", defaultValue = "${session}", readonly = true)
     private MavenSession session;
 
