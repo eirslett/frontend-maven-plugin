@@ -80,7 +80,7 @@ public class PNPMInstaller {
                 HashMap<String, Object> data = new ObjectMapper().readValue(pnpmPackageJson, HashMap.class);
                 if (data.containsKey(VERSION)) {
                     final String foundPnpmVersion = data.get(VERSION).toString();
-                    if (foundPnpmVersion.equals(this.pnpmVersion)) {
+                    if (foundPnpmVersion.equals(this.pnpmVersion.replaceFirst("^v", ""))) {
                         this.logger.info("PNPM {} is already installed.", foundPnpmVersion);
                         return true;
                     } else {
