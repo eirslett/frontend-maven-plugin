@@ -20,6 +20,8 @@ public class PNPMInstaller {
 
     private String pnpmVersion, pnpmDownloadRoot, userName, password;
 
+    private boolean trustInsecureDownloadRoot;
+
     private final Logger logger;
 
     private final InstallConfig config;
@@ -46,6 +48,11 @@ public class PNPMInstaller {
 
     public PNPMInstaller setPnpmDownloadRoot(String pnpmDownloadRoot) {
         this.pnpmDownloadRoot = pnpmDownloadRoot;
+        return this;
+    }
+
+    public PNPMInstaller setTrustInsecureDownloadRoot(boolean trustInsecureDownloadRoot) {
+        this.trustInsecureDownloadRoot = trustInsecureDownloadRoot;
         return this;
     }
 
@@ -110,7 +117,7 @@ public class PNPMInstaller {
 
             File archive = this.config.getCacheResolver().resolve(cacheDescriptor);
 
-            downloadFileIfMissing(downloadUrl, archive, this.userName, this.password);
+            downloadFileIfMissing(downloadUrl, archive, this.userName, this.password, this.trustInsecureDownloadRoot);
 
             File installDirectory = getNodeInstallDirectory();
             File nodeModulesDirectory = new File(installDirectory, "node_modules");
@@ -206,16 +213,16 @@ public class PNPMInstaller {
         this.archiveExtractor.extract(archive.getPath(), destinationDirectory.getPath());
     }
 
-    private void downloadFileIfMissing(String downloadUrl, File destination, String userName, String password)
+    private void downloadFileIfMissing(String downloadUrl, File destination, String userName, String password, boolean trustInsecureDownloadRoot)
         throws DownloadException {
         if (!destination.exists()) {
-            downloadFile(downloadUrl, destination, userName, password);
+            downloadFile(downloadUrl, destination, userName, password, trustInsecureDownloadRoot);
         }
     }
 
-    private void downloadFile(String downloadUrl, File destination, String userName, String password)
+    private void downloadFile(String downloadUrl, File destination, String userName, String password, boolean trustInsecureDownloadRoot)
         throws DownloadException {
         this.logger.info("Downloading {} to {}", downloadUrl, destination);
-        this.fileDownloader.download(downloadUrl, destination.getPath(), userName, password);
+        this.fileDownloader.download(downloadUrl, destination.getPath(), userName, password, trustInsecureDownloadRoot);
     }
 }

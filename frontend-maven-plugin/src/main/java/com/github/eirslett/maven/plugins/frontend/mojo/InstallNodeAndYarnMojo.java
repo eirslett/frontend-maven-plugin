@@ -34,6 +34,12 @@ public final class InstallNodeAndYarnMojo extends AbstractFrontendMojo {
     private String yarnDownloadRoot;
 
     /**
+     * Will trust insecure download targets. This flag applies to both the {@link #nodeDownloadRoot} and {@link #yarnDownloadRoot}.
+     */
+    @Parameter(property = "trustInsecureDownloadRoot", required = false, defaultValue = "false")
+    private boolean trustInsecureDownloadRoot;
+
+    /**
      * The version of Node.js to install. IMPORTANT! Most Node.js version names start with 'v', for example
      * 'v0.10.18'
      */
@@ -91,9 +97,11 @@ public final class InstallNodeAndYarnMojo extends AbstractFrontendMojo {
         Server server = MojoUtils.decryptServer(this.serverId, this.session, this.decrypter);
         if (null != server) {
             factory.getNodeInstaller(proxyConfig).setNodeDownloadRoot(this.nodeDownloadRoot)
+                .setTrustInsecureDownloadRoot(trustInsecureDownloadRoot)
                 .setNodeVersion(this.nodeVersion).setPassword(server.getPassword())
                 .setUserName(server.getUsername()).install();
             factory.getYarnInstaller(proxyConfig).setYarnDownloadRoot(this.yarnDownloadRoot)
+                .setTrustInsecureDownloadRoot(trustInsecureDownloadRoot)
                 .setYarnVersion(this.yarnVersion).setUserName(server.getUsername())
                 .setPassword(server.getPassword()).setIsYarnBerry(isYarnrcYamlFilePresent()).install();
         } else {
