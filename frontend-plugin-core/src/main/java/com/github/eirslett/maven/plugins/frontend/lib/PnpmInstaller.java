@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.HashMap;
 import org.apache.commons.io.FileUtils;
@@ -158,6 +159,7 @@ public class PnpmInstaller {
             }
 
             this.logger.info("Installed pnpm locally.");
+
         } catch (DownloadException e) {
             throw new InstallationException("Could not download pnpm", e);
         } catch (ArchiveExtractionException e) {
@@ -187,6 +189,19 @@ public class PnpmInstaller {
                         throw new InstallationException("Could not copy pnpm", e);
                     }
                     copy.setExecutable(true);
+                }
+            }
+        }
+        // If no predefined executables exist, symlink the .cjs executable
+        File pnpmExecutable = new File(installDirectory, "pnpm");
+        if (!pnpmExecutable.exists()) {
+            File pnpmJsExecutable = new File(pnpmDirectory, "bin" + File.separator + "pnpm.cjs");
+            if (pnpmJsExecutable.exists()) {
+                this.logger.info("No pnpm executable found, creating symlink to {}", pnpmJsExecutable.toPath());
+                try {
+                    Files.createSymbolicLink(pnpmExecutable.toPath(), pnpmJsExecutable.toPath());
+                } catch (IOException e) {
+                    throw new InstallationException("Could not copy pnpm", e);
                 }
             }
         }
