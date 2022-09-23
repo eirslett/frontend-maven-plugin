@@ -192,9 +192,10 @@ public class PnpmInstaller {
                 }
             }
         }
-        // If no predefined executables exist, symlink the .cjs executable
+        // On non-windows platforms, if no predefined executables exist, symlink the .cjs executable
         File pnpmExecutable = new File(installDirectory, "pnpm");
-        if (!pnpmExecutable.exists()) {
+        if (!pnpmExecutable.exists() && !this.config.getPlatform().isWindows()) {
+
             File pnpmJsExecutable = new File(pnpmDirectory, "bin" + File.separator + "pnpm.cjs");
             if (pnpmJsExecutable.exists()) {
                 this.logger.info("No pnpm executable found, creating symlink to {}", pnpmJsExecutable.toPath());
