@@ -78,7 +78,10 @@ final class DefaultArchiveExtractor implements ArchiveExtractor {
                     Enumeration<? extends ZipEntry> entries = zipFile.entries();
                     while (entries.hasMoreElements()) {
                         ZipEntry entry = entries.nextElement();
-                        final File destPath = new File(destinationDirectory + File.separator + entry.getName());
+                        final File destPath = new File(destinationDirectory, entry.getName());
+                        if (!destPath.toPath().normalize().startsWith(destinationDirectory)) {
+                            throw new RuntimeException("Bad zip entry");
+                        }
                         prepDestination(destPath, entry.isDirectory());
                         if (!entry.isDirectory()) {
                             InputStream in = null;
@@ -107,7 +110,7 @@ final class DefaultArchiveExtractor implements ArchiveExtractor {
                     String canonicalDestinationDirectory = new File(destinationDirectory).getCanonicalPath();
                     while (tarEntry != null) {
                         // Create a file for this tarEntry
-                        final File destPath = new File(destinationDirectory + File.separator + tarEntry.getName());
+                        final File destPath = new File(destinationDirectory, tarEntry.getName());
                         prepDestination(destPath, tarEntry.isDirectory());
 
                         if (!startsWithPath(destPath.getCanonicalPath(), canonicalDestinationDirectory)) {
