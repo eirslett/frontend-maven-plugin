@@ -5,6 +5,6 @@
     "less": "~3.0.2"
   },
   "scripts": {
-    "prebuild": "pnpm install"
+    "test": "pnpm --version"
   }
 }
