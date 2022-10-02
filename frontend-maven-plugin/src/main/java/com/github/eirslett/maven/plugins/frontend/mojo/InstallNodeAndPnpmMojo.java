@@ -2,7 +2,7 @@ package com.github.eirslett.maven.plugins.frontend.mojo;
 
 import com.github.eirslett.maven.plugins.frontend.lib.FrontendPluginFactory;
 import com.github.eirslett.maven.plugins.frontend.lib.InstallationException;
-import com.github.eirslett.maven.plugins.frontend.lib.PNPMInstaller;
+import com.github.eirslett.maven.plugins.frontend.lib.PnpmInstaller;
 import com.github.eirslett.maven.plugins.frontend.lib.ProxyConfig;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugins.annotations.Component;
@@ -22,13 +22,13 @@ public final class InstallNodeAndPnpmMojo extends AbstractFrontendMojo {
     private String nodeDownloadRoot;
 
     /**
-     * Where to download NPM binary from. Defaults to https://registry.npmjs.org/npm/-/
+     * Where to download pnpm binary from. Defaults to https://registry.npmjs.org/pnpm/-/
      */
-    @Parameter(property = "pnpmDownloadRoot", required = false, defaultValue = PNPMInstaller.DEFAULT_PNPM_DOWNLOAD_ROOT)
+    @Parameter(property = "pnpmDownloadRoot", required = false, defaultValue = PnpmInstaller.DEFAULT_PNPM_DOWNLOAD_ROOT)
     private String pnpmDownloadRoot;
 
     /**
-     * Where to download Node.js and NPM binaries from.
+     * Where to download Node.js and pnpm binaries from.
      *
      * @deprecated use {@link #nodeDownloadRoot} and {@link #pnpmDownloadRoot} instead, this configuration will be used only when no {@link #nodeDownloadRoot} or {@link #pnpmDownloadRoot} is specified.
      */
@@ -43,9 +43,10 @@ public final class InstallNodeAndPnpmMojo extends AbstractFrontendMojo {
     private String nodeVersion;
 
     /**
-     * The version of NPM to install.
+     * The version of pnpm to install. Note that the version string can optionally be prefixed with
+     * 'v' (i.e., both 'v1.2.3' and '1.2.3' are valid).
      */
-    @Parameter(property = "pnpmVersion", required = false, defaultValue = "provided")
+    @Parameter(property = "pnpmVersion", required = true)
     private String pnpmVersion;
 
     /**
@@ -74,32 +75,35 @@ public final class InstallNodeAndPnpmMojo extends AbstractFrontendMojo {
     @Override
     public void execute(FrontendPluginFactory factory) throws InstallationException {
         ProxyConfig proxyConfig = MojoUtils.getProxyConfig(session, decrypter);
-        String nodeDownloadRoot = getNodeDownloadRoot();
-        String npmDownloadRoot = getPnpmDownloadRoot();
+        // Use different names to avoid confusion with fields `nodeDownloadRoot` and
+        // `pnpmDownloadRoot`.
+        //
+        // TODO: Remove the `downloadRoot` config (with breaking change) to simplify download root
+        // resolution.
+        String resolvedNodeDownloadRoot = getNodeDownloadRoot();
+        String resolvedPnpmDownloadRoot = getPnpmDownloadRoot();
         Server server = MojoUtils.decryptServer(serverId, session, decrypter);
         if (null != server) {
             factory.getNodeInstaller(proxyConfig)
                 .setNodeVersion(nodeVersion)
-                .setNodeDownloadRoot(nodeDownloadRoot)
-                .setNpmVersion(pnpmVersion)
+                .setNodeDownloadRoot(resolvedNodeDownloadRoot)
                 .setUserName(server.getUsername())
                 .setPassword(server.getPassword())
                 .install();
-            factory.getPNPMInstaller(proxyConfig)
+            factory.getPnpmInstaller(proxyConfig)
                 .setPnpmVersion(pnpmVersion)
-                .setPnpmDownloadRoot(npmDownloadRoot)
+                .setPnpmDownloadRoot(resolvedPnpmDownloadRoot)
                 .setUserName(server.getUsername())
                 .setPassword(server.getPassword())
                 .install();
         } else {
             factory.getNodeInstaller(proxyConfig)
                 .setNodeVersion(nodeVersion)
-                .setNodeDownloadRoot(nodeDownloadRoot)
-                .setNpmVersion(pnpmVersion)
+                .setNodeDownloadRoot(resolvedNodeDownloadRoot)
                 .install();
-            factory.getPNPMInstaller(proxyConfig)
+            factory.getPnpmInstaller(proxyConfig)
                 .setPnpmVersion(this.pnpmVersion)
-                .setPnpmDownloadRoot(npmDownloadRoot)
+                .setPnpmDownloadRoot(resolvedPnpmDownloadRoot)
                 .install();
         }
     }
@@ -112,7 +116,7 @@ public final class InstallNodeAndPnpmMojo extends AbstractFrontendMojo {
     }
 
     private String getPnpmDownloadRoot() {
-        if (downloadRoot != null && !"".equals(downloadRoot) && PNPMInstaller.DEFAULT_PNPM_DOWNLOAD_ROOT.equals(pnpmDownloadRoot)) {
+        if (downloadRoot != null && !"".equals(downloadRoot) && PnpmInstaller.DEFAULT_PNPM_DOWNLOAD_ROOT.equals(pnpmDownloadRoot)) {
             return downloadRoot;
         }
         return pnpmDownloadRoot;

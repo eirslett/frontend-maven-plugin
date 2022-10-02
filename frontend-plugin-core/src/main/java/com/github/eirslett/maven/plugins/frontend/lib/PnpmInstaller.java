@@ -10,7 +10,7 @@ import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class PNPMInstaller {
+public class PnpmInstaller {
 
     private static final String VERSION = "version";
 
@@ -28,33 +28,33 @@ public class PNPMInstaller {
 
     private final FileDownloader fileDownloader;
 
-    PNPMInstaller(InstallConfig config, ArchiveExtractor archiveExtractor, FileDownloader fileDownloader) {
+    PnpmInstaller(InstallConfig config, ArchiveExtractor archiveExtractor, FileDownloader fileDownloader) {
         this.logger = LoggerFactory.getLogger(getClass());
         this.config = config;
         this.archiveExtractor = archiveExtractor;
         this.fileDownloader = fileDownloader;
     }
 
-    public PNPMInstaller setNodeVersion(String nodeVersion) {
+    public PnpmInstaller setNodeVersion(String nodeVersion) {
         return this;
     }
 
-    public PNPMInstaller setPnpmVersion(String pnpmVersion) {
+    public PnpmInstaller setPnpmVersion(String pnpmVersion) {
         this.pnpmVersion = pnpmVersion;
         return this;
     }
 
-    public PNPMInstaller setPnpmDownloadRoot(String pnpmDownloadRoot) {
+    public PnpmInstaller setPnpmDownloadRoot(String pnpmDownloadRoot) {
         this.pnpmDownloadRoot = pnpmDownloadRoot;
         return this;
     }
 
-    public PNPMInstaller setUserName(String userName) {
+    public PnpmInstaller setUserName(String userName) {
         this.userName = userName;
         return this;
     }
 
-    public PNPMInstaller setPassword(String password) {
+    public PnpmInstaller setPassword(String password) {
         this.password = password;
         return this;
     }

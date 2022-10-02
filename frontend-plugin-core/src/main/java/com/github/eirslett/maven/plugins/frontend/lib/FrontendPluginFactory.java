@@ -3,7 +3,7 @@ package com.github.eirslett.maven.plugins.frontend.lib;
 import java.io.File;
 
 public final class FrontendPluginFactory {
-    
+
     private static final Platform defaultPlatform = Platform.guess();
     private static final String DEFAULT_CACHE_PATH = "cache";
 
@@ -29,17 +29,17 @@ public final class FrontendPluginFactory {
         return new NPMInstaller(getInstallConfig(), new DefaultArchiveExtractor(), new DefaultFileDownloader(proxy));
     }
 
-    public PNPMInstaller getPNPMInstaller(ProxyConfig proxy) {
-        return new PNPMInstaller(getInstallConfig(), new DefaultArchiveExtractor(), new DefaultFileDownloader(proxy));
+    public PnpmInstaller getPnpmInstaller(ProxyConfig proxy) {
+        return new PnpmInstaller(getInstallConfig(), new DefaultArchiveExtractor(), new DefaultFileDownloader(proxy));
     }
 
     public YarnInstaller getYarnInstaller(ProxyConfig proxy) {
         return new YarnInstaller(getInstallConfig(), new DefaultArchiveExtractor(), new DefaultFileDownloader(proxy));
     }
-    
+
     public BowerRunner getBowerRunner(ProxyConfig proxy) {
         return new DefaultBowerRunner(getExecutorConfig(), proxy);
-    }    
+    }
 
     public JspmRunner getJspmRunner() {
         return new DefaultJspmRunner(getExecutorConfig());
