@@ -27,8 +27,8 @@
                             <goal>install-node-and-pnpm</goal>
                         </goals>
                         <configuration>
-                            <nodeVersion>v12.18.3</nodeVersion>
-                            <pnpmVersion>v5.5.3</pnpmVersion>
+                            <nodeVersion>v16.17.1</nodeVersion>
+                            <pnpmVersion>v7.13.0</pnpmVersion>
                         </configuration>
                     </execution>
 
