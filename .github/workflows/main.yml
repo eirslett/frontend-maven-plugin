@@ -26,7 +26,7 @@ jobs:
           java-version: 1.8
       - name: "Run Maven"
         shell: bash
-        run: mvn clean install --batch-mode -PintegrationTests
+        run: mvn clean install --batch-mode -PintegrationTests -DintegrationTestProfiles=it-${{ runner.os }}
       - name: "Deploy"
         if: github.repository_owner == 'eirslett' && github.ref == 'refs/heads/master' && matrix.os == 'ubuntu-latest'
         shell: bash

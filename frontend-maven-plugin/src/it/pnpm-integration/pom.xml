@@ -27,8 +27,8 @@
                             <goal>install-node-and-pnpm</goal>
                         </goals>
                         <configuration>
-                            <nodeVersion>v12.18.3</nodeVersion>
-                            <pnpmVersion>v5.5.3</pnpmVersion>
+                            <nodeVersion>v16.17.1</nodeVersion>
+                            <pnpmVersion>v7.13.0</pnpmVersion>
                         </configuration>
                     </execution>
 
@@ -41,19 +41,65 @@
                             <arguments>install</arguments>
                         </configuration>
                     </execution>
-
-                    <execution>
-                        <id>pnpm test</id>
-                        <goals>
-                            <goal>pnpm</goal>
-                        </goals>
-                        <configuration>
-                            <arguments>test</arguments>
-                        </configuration>
-                    </execution>
-
                 </executions>
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>it-Linux</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.github.eirslett</groupId>
+                        <artifactId>frontend-maven-plugin</artifactId>
+
+                        <configuration>
+                            <installDirectory>target</installDirectory>
+                        </configuration>
+
+                        <executions>
+                            <execution>
+                                <id>pnpm test</id>
+                                <goals>
+                                    <goal>pnpm</goal>
+                                </goals>
+                                <configuration>
+                                    <arguments>test</arguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>it-macOs</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.github.eirslett</groupId>
+                        <artifactId>frontend-maven-plugin</artifactId>
+
+                        <configuration>
+                            <installDirectory>target</installDirectory>
+                        </configuration>
+
+                        <executions>
+                            <execution>
+                                <id>pnpm test</id>
+                                <goals>
+                                    <goal>pnpm</goal>
+                                </goals>
+                                <configuration>
+                                    <arguments>test</arguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
