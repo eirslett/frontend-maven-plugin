@@ -3,18 +3,15 @@
   "version": "0.0.1",
   "description": "example project for testing frontend-maven-plugin",
   "dependencies": {
-    "gulp": "^3.9.1",
     "jquery": "3.6.0"
   },
   "scripts": {
-    "prebuild": "npm install",
-    "build": "gulp",
-    "test": "web-test-runner src/**/*.test.js --node-resolve"
+    "test": "web-test-runner src/**/*.test.js --node-resolve",
+    "build": "vite build"
   },
   "devDependencies": {
     "@esm-bundle/chai": "^4.3.4-fix.0",
     "@web/test-runner": "^0.14.0",
-    "chai": "^4.3.6",
     "vite": "^3.1.6"
   }
 }
