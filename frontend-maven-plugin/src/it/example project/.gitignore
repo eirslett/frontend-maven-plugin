@@ -1,4 +1,5 @@
 target
+dist
 node
 node_modules
 log.txt
