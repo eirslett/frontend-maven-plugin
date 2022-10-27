@@ -126,6 +126,8 @@ You can also specify separate download roots for npm and node as they are stored
 
 You can use Nexus repository Manager to proxy npm registries. See https://help.sonatype.com/display/NXRM3/Npm+Registry
 
+To skip the install-node-and-npm goal, use the `-Dskip.installnodenpm` flag.
+
 **Notice:** _Remember to gitignore the `node` folder, unless you actually want to commit it._
 
 ### Installing node and yarn
@@ -170,6 +172,8 @@ https://github.com/eirslett/frontend-maven-plugin/blob/master/frontend-maven-plu
     </configuration>
 </plugin>
 ```
+
+To skip the install-node-and-yarn goal, use the `-Dskip.installyarn` flag.
 
 ### Running npm
 
@@ -547,6 +551,7 @@ Tools and property to enable skipping
 * npm `-Dskip.npm`
 * yarn `-Dskip.yarn`
 * bower `-Dskip.bower`
+* ember `-Dskip.ember`
 * grunt `-Dskip.grunt`
 * gulp `-Dskip.gulp`
 * jspm `-Dskip.jspm`
