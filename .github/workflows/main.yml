@@ -9,7 +9,7 @@ jobs:
     strategy:
       matrix:
         os: [macos-latest, ubuntu-latest, windows-latest]
-        
+
     steps:
       - name: Git checkout
         uses: actions/checkout@v2
@@ -23,7 +23,7 @@ jobs:
       - name: Configure Java
         uses: actions/setup-java@v1
         with:
-          java-version: 1.8
+          java-version: "17"
       - name: "Run Maven"
         shell: bash
         run: mvn clean install --batch-mode -PintegrationTests -DintegrationTestProfiles=it-${{ runner.os }}
