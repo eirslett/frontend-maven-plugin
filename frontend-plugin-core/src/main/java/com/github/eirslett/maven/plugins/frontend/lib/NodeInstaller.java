@@ -118,6 +118,7 @@ public class NodeInstaller {
                 return false;
             }
         } catch (ProcessExecutionException e) {
+            this.logger.warn("Unable to determine current node version: {}", e.getMessage());
             return false;
         }
     }
