@@ -78,35 +78,33 @@ class Platform {
     private final OS os;
     private final Architecture architecture;
     private final String classifier;
-    private final Supplier<Boolean> checkForAlpine;
 
     public Platform() {
-        this(OS.guess(), Architecture.guess(), Platform::checkForAlpine);
+        this(OS.guess(), Architecture.guess());
     }
 
-    public Platform(OS os, Architecture architecture, Supplier<Boolean> checkForAlpine) {
-        this("https://nodejs.org/dist/", os, architecture, checkForAlpine, null);
+    public Platform(OS os, Architecture architecture) {
+        this("https://nodejs.org/dist/", os, architecture, null);
     }
 
     public Platform(
         String nodeDownloadRoot,
         OS os,
         Architecture architecture,
-        Supplier<Boolean> checkForAlpine,
         String classifier
     ) {
         this.nodeDownloadRoot = nodeDownloadRoot;
         this.os = os;
         this.architecture = architecture;
-        this.checkForAlpine = checkForAlpine;
         this.classifier = classifier;
     }
 
     public static Platform guess() {
-        return Platform.guess(OS.guess(), Architecture.guess(), Platform::checkForAlpine);
+        return Platform.guess(OS.guess(), Architecture.guess(), Platform::CHECK_FOR_ALPINE);
     }
 
-    public static Boolean checkForAlpine() {
+    // Default implementation
+    public static Boolean CHECK_FOR_ALPINE() {
         return new File("/etc/alpine-release").exists();
     }
 
@@ -114,15 +112,15 @@ class Platform {
         // The default libc is glibc, but Alpine uses musl. When not default, the nodejs download
         // (and path within it) needs a classifier in the suffix (ex. -musl).
         // We know Alpine is in use if the release file exists, and this is the simplest check.
-        if (os == OS.Linux && checkForAlpine()) {
+        if (os == OS.Linux && checkForAlpine.get()) {
             return new Platform(
                 // Currently, musl is Experimental. The download root can be overridden with config
                 // if this changes and there's not been an update to this project, yet.
                 // See https://github.com/nodejs/node/blob/master/BUILDING.md#platform-list
                 "https://unofficial-builds.nodejs.org/download/release/",
-                os, architecture, checkForAlpine, "musl");
+                os, architecture, "musl");
         }
-        return new Platform(os, architecture, checkForAlpine);
+        return new Platform(os, architecture);
     }
 
     public String getNodeDownloadRoot(){
