@@ -1,6 +1,7 @@
 package com.github.eirslett.maven.plugins.frontend.lib;
 
 import java.io.File;
+import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -77,33 +78,51 @@ class Platform {
     private final OS os;
     private final Architecture architecture;
     private final String classifier;
+    private final Supplier<Boolean> checkForAlpine;
 
-    public Platform(OS os, Architecture architecture) {
-        this("https://nodejs.org/dist/", os, architecture, null);
+    public Platform() {
+        this(OS.guess(), Architecture.guess(), Platform::checkForAlpine);
     }
 
-    public Platform(String nodeDownloadRoot, OS os, Architecture architecture, String classifier) {
+    public Platform(OS os, Architecture architecture, Supplier<Boolean> checkForAlpine) {
+        this("https://nodejs.org/dist/", os, architecture, checkForAlpine, null);
+    }
+
+    public Platform(
+        String nodeDownloadRoot,
+        OS os,
+        Architecture architecture,
+        Supplier<Boolean> checkForAlpine,
+        String classifier
+    ) {
         this.nodeDownloadRoot = nodeDownloadRoot;
         this.os = os;
         this.architecture = architecture;
+        this.checkForAlpine = checkForAlpine;
         this.classifier = classifier;
     }
 
-    public static Platform guess(){
-        OS os = OS.guess();
-        Architecture architecture = Architecture.guess();
+    public static Platform guess() {
+        return Platform.guess(OS.guess(), Architecture.guess(), Platform::checkForAlpine);
+    }
+
+    public static Boolean checkForAlpine() {
+        return new File("/etc/alpine-release").exists();
+    }
+
+    public static Platform guess(OS os, Architecture architecture, Supplier<Boolean> checkForAlpine){
         // The default libc is glibc, but Alpine uses musl. When not default, the nodejs download
         // (and path within it) needs a classifier in the suffix (ex. -musl).
         // We know Alpine is in use if the release file exists, and this is the simplest check.
-        if (os == OS.Linux && new File("/etc/alpine-release").exists()) {
+        if (os == OS.Linux && checkForAlpine()) {
             return new Platform(
                 // Currently, musl is Experimental. The download root can be overridden with config
                 // if this changes and there's not been an update to this project, yet.
                 // See https://github.com/nodejs/node/blob/master/BUILDING.md#platform-list
                 "https://unofficial-builds.nodejs.org/download/release/",
-                os, architecture, "musl");
+                os, architecture, checkForAlpine, "musl");
         }
-        return new Platform(os, architecture);
+        return new Platform(os, architecture, checkForAlpine);
     }
 
     public String getNodeDownloadRoot(){
