@@ -29,7 +29,7 @@ running common javascript tasks such as minification, obfuscation, compression, 
 
 ## Requirements
 
-* _Maven 3_ and _Java 1.7_
+* _Maven 3.6_ and _Java 1.8_
 * For _Maven 2_ support take a look at the [wiki](https://github.com/eirslett/frontend-maven-plugin/wiki#maven-2).
 
 ## Installation
@@ -85,15 +85,17 @@ present).
 ```xml
 <plugin>
     ...
-    <execution>
-        <!-- optional: you don't really need execution ids, but it looks nice in your build log. -->
-        <id>install node and npm</id>
-        <goals>
-            <goal>install-node-and-npm</goal>
-        </goals>
-        <!-- optional: default phase is "generate-resources" -->
-        <phase>generate-resources</phase>
-    </execution>
+    <executions>
+        <execution>
+            <!-- optional: you don't really need execution ids, but it looks nice in your build log. -->
+            <id>install node and npm</id>
+            <goals>
+                <goal>install-node-and-npm</goal>
+            </goals>
+            <!-- optional: default phase is "generate-resources" -->
+            <phase>generate-resources</phase>
+        </execution>
+    </executions>
     <configuration>
         <nodeVersion>v4.6.0</nodeVersion>
 
@@ -106,7 +108,7 @@ present).
 </plugin>
 ```
 
-You can also specify separate download roots for npm and node as they are stored in separate repos.
+You can also specify separate download roots for npm and node as they are stored in separate repos. In case the root configured requires authentication, you can specify a server ID from your maven settings file:
 
 ```xml
 <plugin>
@@ -114,13 +116,15 @@ You can also specify separate download roots for npm and node as they are stored
     <configuration>
         <!-- optional: where to download node from. Defaults to https://nodejs.org/dist/ -->
         <nodeDownloadRoot>http://myproxy.example.org/nodejs/</nodeDownloadRoot>
+	<!-- optional: credentials to use from Maven settings to download node -->
+        <serverId>server001</serverId>
         <!-- optional: where to download npm from. Defaults to https://registry.npmjs.org/npm/-/ -->
         <npmDownloadRoot>https://myproxy.example.org/npm/</npmDownloadRoot>
     </configuration>
 </plugin>
 ```
 
-You can use Nexus repository Manager to proxy npm registries. See https://books.sonatype.com/nexus-book/reference/npm.html
+You can use Nexus repository Manager to proxy npm registries. See https://help.sonatype.com/display/NXRM3/Npm+Registry
 
 **Notice:** _Remember to gitignore the `node` folder, unless you actually want to commit it._
 
@@ -134,6 +138,10 @@ extracted and put into a `node` folder created in your installation directory.
 Node/Yarn will only be "installed" locally to your project. 
 It will not be installed globally on the whole system (and it will not interfere with any Node/Yarn installations already 
 present). 
+
+If your project is using Yarn Berry (2.x or above), the Yarn version is handled per project but a Yarn 1.x install is still needed as a "bootstrap".
+The plugin will try to detect `.yarnrc.yml` file in the current Maven project/module folder, at the root of the multi-module project if relevant, and in the folder from which the `mvn` command was run. 
+If detected, the plugin will assume your project is using Yarn Berry. It will install the 1.x Yarn version you specify with `yarnVersion` as bootstrap, then hand over to your project-specific version.   
 
 Have a look at the example `POM` to see how it should be set up with Yarn: 
 https://github.com/eirslett/frontend-maven-plugin/blob/master/frontend-maven-plugin/src/it/yarn-integration/pom.xml
@@ -191,11 +199,28 @@ By default, colors will be shown in the log.
 **Notice:** _Remember to gitignore the `node_modules` folder, unless you actually want to commit it. Npm packages will 
 always be installed in `node_modules` next to your `package.json`, which is default npm behavior._
 
+#### npx
+
+You can also use [`npx` command](https://blog.npmjs.org/post/162869356040/introducing-npx-an-npm-package-runner), enabling you to execute the CLI of installed packages without a run-script, or even packages that aren't installed at all.
+
+```xml
+<execution>
+    <id>say hello</id>
+    <goals>
+        <goal>npx</goal>
+    </goals>
+
+    <phase>generate-resources</phase>
+
+    <configuration>
+        <arguments>cowsay hello</arguments>
+    </configuration>
+</execution>
+```
 
 ### Running yarn
 
 As with npm above, all node packaged modules will be installed in the `node_modules` folder in your [working directory](#working-directory).
-
 
 ```xml
 <execution>
@@ -209,6 +234,42 @@ As with npm above, all node packaged modules will be installed in the `node_modu
          you can remove this whole <configuration> section.
          -->
         <arguments>install</arguments>
+    </configuration>
+</execution>
+```
+
+#### Yarn with Private Registry
+
+NOTE: if you have a private npm registry that mirrors the npm registry, be aware that yarn.lock
+includes URLs to the npmjs.org module registry and yarn install will use these paths when installing modules.
+
+If you want yarn.lock to use your private npm registry, be sure to run these commands on your local machine before you generate yarn.lock:
+```
+yarn config set registry <your_registry_url>
+yarn install
+```
+This will create URLs in your yarn.lock file that reference your private npm registry.
+
+Another way to set a registry is to add a .npmrc file in your project's root directory that contains:
+```
+registry=<your_registry_url>
+```
+
+Also you can set a registry using a tag `npmRegistryURL`
+```
+<execution>
+    <id>yarn install</id>
+    <goals>
+        <goal>yarn</goal>
+    </goals>
+    <configuration>
+         <!-- optional: The default argument is actually
+         "install", so unless you need to run some other yarn command,
+         you can remove this whole <configuration> section.
+         -->
+        <arguments>install</arguments>
+	<!-- optional: where to download npm modules from. Defaults to https://registry.yarnpkg.com/ -->
+	<npmRegistryURL>http://myregistry.example.org/</npmRegistryURL>
     </configuration>
 </execution>
 ```
@@ -406,7 +467,7 @@ If you have [configured proxy settings for Maven](http://maven.apache.org/guides
 in your settings.xml file, the plugin will automatically use the proxy for downloading node and npm, as well
 as [passing the proxy to npm commands](https://docs.npmjs.com/misc/config#proxy).
 
-**Non Proxy Hosts:** npm does not currently support non proxy hosts - if you are using a proxy and npm install is 
+**Non Proxy Hosts:** npm does not currently support non proxy hosts - if you are using a proxy and npm install
 is not downloading from your repository, it may be because it cannot be accessed through your proxy. 
 If that is the case, you can stop the npm execution from inheriting the Maven proxy settings like this:
 
@@ -426,6 +487,22 @@ If that is the case, you can stop the bower execution from inheriting the Maven 
 </configuration>
 ```
 
+If you want to disable proxy for Yarn you can use `yarnInheritsProxyConfigFromMaven`. When you have proxy settings in your settings.xml file if you don't use this param it will run code below with proxy settings, in some cases you don't want that. Adding this param into the configuration section will solve this issue
+
+```xml
+<execution>
+    <id>tests</id>
+    <goals>
+        <goal>yarn</goal>
+    </goals>
+    <phase>compile</phase>
+    <configuration>
+        <yarnInheritsProxyConfigFromMaven>false</yarnInheritsProxyConfigFromMaven>
+        <arguments>run test</arguments>
+    </configuration>
+</execution>
+
+```
 
 
 #### Environment variables
@@ -452,7 +529,7 @@ tag of an execution like this:
 
 ```xml
 <configuration>
-    <maven.test.failure.ignore>true</maven.test.failure.ignore>
+    <testFailureIgnore>true</testFailureIgnore>
 </configuration>
 ```
 
@@ -502,3 +579,4 @@ You can find a full list of [contributors here](https://github.com/eirslett/fron
 ## License
 
 [Apache 2.0](LICENSE)
+

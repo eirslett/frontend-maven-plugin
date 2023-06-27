@@ -15,7 +15,7 @@ import com.github.eirslett.maven.plugins.frontend.lib.FrontendPluginFactory;
 import com.github.eirslett.maven.plugins.frontend.lib.ProxyConfig;
 import com.github.eirslett.maven.plugins.frontend.lib.TaskRunnerException;
 
-@Mojo(name = "yarn", defaultPhase = LifecyclePhase.GENERATE_RESOURCES)
+@Mojo(name = "yarn", defaultPhase = LifecyclePhase.GENERATE_RESOURCES, threadSafe = true)
 public final class YarnMojo extends AbstractFrontendMojo {
 
     private static final String NPM_REGISTRY_URL = "npmRegistryURL";
@@ -57,7 +57,7 @@ public final class YarnMojo extends AbstractFrontendMojo {
     }
 
     @Override
-    public void execute(FrontendPluginFactory factory) throws TaskRunnerException {
+    public synchronized void execute(FrontendPluginFactory factory) throws TaskRunnerException {
         File packageJson = new File(this.workingDirectory, "package.json");
         if (this.buildContext == null || this.buildContext.hasDelta(packageJson)
             || !this.buildContext.isIncremental()) {

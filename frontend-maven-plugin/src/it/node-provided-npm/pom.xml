@@ -27,18 +27,18 @@
                             <goal>install-node-and-npm</goal>
                         </goals>
                         <configuration>
-                            <nodeVersion>v6.7.0</nodeVersion>
+                            <nodeVersion>v16.17.1</nodeVersion>
                         </configuration>
                     </execution>
 
                     <execution>
-                        <id>npm install</id>
+                        <id>npm ci</id>
                         <goals>
                             <goal>npm</goal>
                         </goals>
                         <!-- Optional configuration which provides for running any npm command -->
                         <configuration>
-                            <arguments>install</arguments>
+                            <arguments>ci</arguments>
                         </configuration>
                     </execution>
 

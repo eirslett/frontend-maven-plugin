@@ -4,7 +4,7 @@
   <parent>
     <artifactId>frontend-plugins</artifactId>
     <groupId>com.github.eirslett</groupId>
-    <version>1.7-SNAPSHOT</version>
+    <version>1.13.4-SNAPSHOT</version>
   </parent>
 
   <artifactId>frontend-maven-plugin</artifactId>
@@ -12,8 +12,12 @@
 
   <name>Maven Frontend Plugin</name>
   <prerequisites>
-    <maven>3.1.0</maven>
+    <maven>3.6.0</maven>
   </prerequisites>
+
+  <properties>
+    <integrationTestProfiles>it-Linux</integrationTestProfiles>
+  </properties>
 
   <description>
         This Maven plugin lets you install Node/NPM locally
@@ -32,20 +36,22 @@
     <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-core</artifactId>
-      <version>3.1.0</version>
+      <version>3.9.2</version>
       <scope>provided</scope>
     </dependency>
 
     <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-plugin-api</artifactId>
-      <version>3.1.0</version>
+      <version>3.9.2</version>
+      <scope>provided</scope>
     </dependency>
 
     <dependency>
       <groupId>org.apache.maven.plugin-tools</groupId>
       <artifactId>maven-plugin-annotations</artifactId>
-      <version>3.2</version>
+      <version>3.9.0</version>
+      <scope>provided</scope>
     </dependency>
 
     <dependency>
@@ -60,7 +66,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-plugin-plugin</artifactId>
-        <version>3.2</version>
+        <version>3.9.0</version>
         <configuration>
           <skipErrorNoDescriptorsFound>true</skipErrorNoDescriptorsFound>
         </configuration>
@@ -77,72 +83,79 @@
           </execution>
         </executions>
       </plugin>
-
-      <!-- For the integration test -->
       <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>mrm-maven-plugin</artifactId>
-        <version>1.0-beta-2</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>start</goal>
-              <goal>stop</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <propertyName>repository.proxy.url</propertyName>
-        </configuration>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-invoker-plugin</artifactId>
-        <version>2.0.0</version>
-
-        <configuration>
-          <debug>true</debug>
-          <projectsDirectory>src/it</projectsDirectory>
-          <cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
-          <settingsFile>src/it/settings.xml</settingsFile>
-          <localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
-          <streamLogs>true</streamLogs>
-          <postBuildHookScript>verify</postBuildHookScript>
-          <filterProperties>
-            <repository.proxy.url>${repository.proxy.url}</repository.proxy.url>
-          </filterProperties>
-        </configuration>
-
-        <executions>
-          <execution>
-            <phase>integration-test</phase>
-            <goals>
-              <goal>install</goal>
-              <goal>run</goal>
-              <goal>verify</goal>
-            </goals>
-          </execution>
-        </executions>
+        <artifactId>maven-javadoc-plugin</artifactId>
       </plugin>
     </plugins>
   </build>
 
   <profiles>
     <profile>
-      <id>Skip tests</id>
-      <activation>
-        <property>
-          <name>skipTests</name>
-        </property>
-      </activation>
+      <id>release</id>
       <build>
         <plugins>
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-invoker-plugin</artifactId>
+            <artifactId>maven-gpg-plugin</artifactId>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>integrationTests</id>
+      <build>
+        <plugins>
+          <!-- For the integration test -->
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>mrm-maven-plugin</artifactId>
+            <version>1.5.0</version>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>start</goal>
+                  <goal>stop</goal>
+                </goals>
+              </execution>
+            </executions>
             <configuration>
-              <skipInvocation>true</skipInvocation>
+              <propertyName>repository.proxy.url</propertyName>
             </configuration>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-invoker-plugin</artifactId>
+            <version>3.6.0</version>
+
+            <configuration>
+              <debug>true</debug>
+              <profiles>${integrationTestProfiles}</profiles>
+              <projectsDirectory>src/it</projectsDirectory>
+              <cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
+              <settingsFile>src/it/settings.xml</settingsFile>
+              <localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
+              <streamLogs>true</streamLogs>
+              <postBuildHookScript>verify</postBuildHookScript>
+              <filterProperties>
+                <repository.proxy.url>${repository.proxy.url}</repository.proxy.url>
+              </filterProperties>
+            </configuration>
+
+            <executions>
+              <execution>
+                <phase>integration-test</phase>
+                <goals>
+                  <goal>install</goal>
+                  <goal>run</goal>
+                  <goal>verify</goal>
+                </goals>
+              </execution>
+            </executions>
           </plugin>
         </plugins>
       </build>

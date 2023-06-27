@@ -1,31 +1,17 @@
 {
   "name": "example",
   "version": "0.0.1",
+  "description": "example project for testing frontend-maven-plugin",
   "dependencies": {
-    "bower": "~1.7.9",
-    "grunt": "~1.0.1",
-    "grunt-cli": "~1.2.0",
-    "grunt-contrib-jshint": "~1.0.0",
-    "grunt-karma": "~2.0.0",
-    "gulp": "^3.9.1",
-    "jspm": "~0.16.46",
-    "karma": "~1.3.0",
-    "karma-jasmine": "~1.0.2",
-    "karma-phantomjs-launcher": "~1.0.2",
-    "jasmine-core": "^2.5.2",
-    "phantomjs": "^2.1.7"
-  },
-  "jspm": {
-    "dependencies": {
-      "jquery": "github:jquery/jquery@^2.1.3"
-    },
-    "devDependencies": {
-      "traceur": "github:jmcriffey/bower-traceur@0.0.95",
-      "traceur-runtime": "github:jmcriffey/bower-traceur-runtime@0.0.95"
-    }
+    "jquery": "3.6.0"
   },
   "scripts": {
-    "prebuild": "npm install",
-    "build": "gulp"
+    "test": "web-test-runner src/**/*.test.js --node-resolve",
+    "build": "vite build"
+  },
+  "devDependencies": {
+    "@esm-bundle/chai": "^4.3.4-fix.0",
+    "@web/test-runner": "^0.16.1",
+    "vite": "^4.3.9"
   }
 }

@@ -12,7 +12,7 @@ import org.apache.maven.settings.crypto.SettingsDecrypter;
 
 import java.util.Collections;
 
-@Mojo(name = "bower", defaultPhase = LifecyclePhase.GENERATE_RESOURCES)
+@Mojo(name = "bower", defaultPhase = LifecyclePhase.GENERATE_RESOURCES, threadSafe = true)
 public final class BowerMojo extends AbstractFrontendMojo {
 
     /**
@@ -42,7 +42,7 @@ public final class BowerMojo extends AbstractFrontendMojo {
     }
 
     @Override
-    protected void execute(FrontendPluginFactory factory) throws TaskRunnerException {
+    protected synchronized void execute(FrontendPluginFactory factory) throws TaskRunnerException {
         ProxyConfig proxyConfig = getProxyConfig();
         factory.getBowerRunner(proxyConfig).execute(arguments, environmentVariables);
     }

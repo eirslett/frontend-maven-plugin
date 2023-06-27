@@ -3,7 +3,7 @@ package com.github.eirslett.maven.plugins.frontend.lib;
 import java.io.File;
 
 public final class FrontendPluginFactory {
-    
+
     private static final Platform defaultPlatform = Platform.guess();
     private static final String DEFAULT_CACHE_PATH = "cache";
 
@@ -29,13 +29,17 @@ public final class FrontendPluginFactory {
         return new NPMInstaller(getInstallConfig(), new DefaultArchiveExtractor(), new DefaultFileDownloader(proxy));
     }
 
+    public PnpmInstaller getPnpmInstaller(ProxyConfig proxy) {
+        return new PnpmInstaller(getInstallConfig(), new DefaultArchiveExtractor(), new DefaultFileDownloader(proxy));
+    }
+
     public YarnInstaller getYarnInstaller(ProxyConfig proxy) {
         return new YarnInstaller(getInstallConfig(), new DefaultArchiveExtractor(), new DefaultFileDownloader(proxy));
     }
-    
+
     public BowerRunner getBowerRunner(ProxyConfig proxy) {
         return new DefaultBowerRunner(getExecutorConfig(), proxy);
-    }    
+    }
 
     public JspmRunner getJspmRunner() {
         return new DefaultJspmRunner(getExecutorConfig());
@@ -43,6 +47,14 @@ public final class FrontendPluginFactory {
 
     public NpmRunner getNpmRunner(ProxyConfig proxy, String npmRegistryURL) {
         return new DefaultNpmRunner(getExecutorConfig(), proxy, npmRegistryURL);
+    }
+
+    public PnpmRunner getPnpmRunner(ProxyConfig proxyConfig, String npmRegistryUrl) {
+        return new DefaultPnpmRunner(getExecutorConfig(), proxyConfig, npmRegistryUrl);
+    }
+
+    public NpxRunner getNpxRunner(ProxyConfig proxy, String npmRegistryURL) {
+        return new DefaultNpxRunner(getExecutorConfig(), proxy, npmRegistryURL);
     }
 
     public YarnRunner getYarnRunner(ProxyConfig proxy, String npmRegistryURL) {

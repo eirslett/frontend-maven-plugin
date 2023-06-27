@@ -1,0 +1,44 @@
+name: Build
+
+on: [push, pull_request, workflow_dispatch]
+
+jobs:
+  build:
+    name: "Run build"
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+
+    steps:
+      - name: Git checkout
+        uses: actions/checkout@v3
+      - name: Use cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2
+          key: "${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}"
+          restore-keys: |
+            ${{ runner.os }}-maven3-
+      - name: Configure Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: "8"
+          distribution: temurin
+      - name: "Run Maven"
+        shell: bash
+        run: mvn clean install --batch-mode -PintegrationTests -DintegrationTestProfiles=it-${{ runner.os }}
+      - name: "Deploy"
+        if: github.repository_owner == 'eirslett' && github.ref == 'refs/heads/master' && matrix.os == 'ubuntu-latest'
+        shell: bash
+        env:
+          GPG_KEY: ${{ secrets.GPG_KEY }}
+          GPG_KEY_NAME: ${{ secrets.GPG_KEY_NAME }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          OSSRH_JIRA_USERNAME: ${{ secrets.OSSRH_JIRA_USERNAME }}
+          OSSRH_JIRA_PASSWORD: ${{ secrets.OSSRH_JIRA_PASSWORD }}
+        run: |
+          export GPG_TTY=$(tty)
+          echo -e "$GPG_KEY" | gpg --import --passphrase $GPG_PASSPHRASE --batch --yes
+          mvn --settings settings-github.xml -B deploy -Prelease -DskipTests

@@ -46,7 +46,7 @@ final class DefaultArchiveExtractor implements ArchiveExtractor {
             if (!path.getParentFile().exists()) {
                 path.getParentFile().mkdirs();
             }
-            if(!path.getParentFile().canWrite()) {
+            if (!path.getParentFile().canWrite()) {
                 throw new AccessDeniedException(
                         String.format("Could not get write permissions for '%s'", path.getParentFile().getAbsolutePath()));
             }
@@ -60,17 +60,17 @@ final class DefaultArchiveExtractor implements ArchiveExtractor {
         try (FileInputStream fis = new FileInputStream(archiveFile)) {
             if ("msi".equals(FileUtils.getExtension(archiveFile.getAbsolutePath()))) {
                 String command = "msiexec /a " + archiveFile.getAbsolutePath() + " /qn TARGETDIR=\""
-                    + destinationDirectory + "\"";
+                        + destinationDirectory + "\"";
                 Process child = Runtime.getRuntime().exec(command);
                 try {
                     int result = child.waitFor();
                     if (result != 0) {
                         throw new ArchiveExtractionException(
-                            "Could not extract " + archiveFile.getAbsolutePath() + "; return code " + result);
+                                "Could not extract " + archiveFile.getAbsolutePath() + "; return code " + result);
                     }
                 } catch (InterruptedException e) {
                     throw new ArchiveExtractionException(
-                        "Unexpected interruption of while waiting for extraction process", e);
+                            "Unexpected interruption of while waiting for extraction process", e);
                 }
             } else if ("zip".equals(FileUtils.getExtension(archiveFile.getAbsolutePath()))) {
                 ZipFile zipFile = new ZipFile(archiveFile);
@@ -78,51 +78,62 @@ final class DefaultArchiveExtractor implements ArchiveExtractor {
                     Enumeration<? extends ZipEntry> entries = zipFile.entries();
                     while (entries.hasMoreElements()) {
                         ZipEntry entry = entries.nextElement();
-                        final File destPath = new File(destinationDirectory + File.separator + entry.getName());
+                        final File destPath = new File(destinationDirectory, entry.getName());
+                        if (!destPath.toPath().normalize().startsWith(destinationDirectory)) {
+                            throw new RuntimeException("Bad zip entry");
+                        }
                         prepDestination(destPath, entry.isDirectory());
-                        if(!entry.isDirectory()){
-		                        InputStream in = null;
-		                        OutputStream out = null;
-		                        try {
-		                            in = zipFile.getInputStream(entry);
-		                            out = new FileOutputStream(destPath);
-		                            IOUtils.copy(in, out);
-		                        } finally {
-		                            IOUtils.closeQuietly(in);
-		                            IOUtils.closeQuietly(out);
-		                        }
+                        if (!entry.isDirectory()) {
+                            InputStream in = null;
+                            OutputStream out = null;
+                            try {
+                                in = zipFile.getInputStream(entry);
+                                out = new FileOutputStream(destPath);
+                                IOUtils.copy(in, out);
+                            } finally {
+                                IOUtils.closeQuietly(in);
+                                IOUtils.closeQuietly(out);
+                            }
                         }
                     }
                 } finally {
                     zipFile.close();
                 }
             } else {
-		            // TarArchiveInputStream can be constructed with a normal FileInputStream if
-		            // we ever need to extract regular '.tar' files.
+                // TarArchiveInputStream can be constructed with a normal FileInputStream if
+                // we ever need to extract regular '.tar' files.
                 TarArchiveInputStream tarIn = null;
                 try {
-				            tarIn = new TarArchiveInputStream(new GzipCompressorInputStream(fis));
+                    tarIn = new TarArchiveInputStream(new GzipCompressorInputStream(fis));
 
-				            TarArchiveEntry tarEntry = tarIn.getNextTarEntry();
-				            while (tarEntry != null) {
-				                // Create a file for this tarEntry
-				                final File destPath = new File(destinationDirectory + File.separator + tarEntry.getName());
-		                    prepDestination(destPath, tarEntry.isDirectory());
-				                if (!tarEntry.isDirectory()) {
-				                    destPath.createNewFile();
-				                    boolean isExecutable = (tarEntry.getMode() & 0100) > 0;
-				                    destPath.setExecutable(isExecutable);
+                    TarArchiveEntry tarEntry = tarIn.getNextTarEntry();
+                    String canonicalDestinationDirectory = new File(destinationDirectory).getCanonicalPath();
+                    while (tarEntry != null) {
+                        // Create a file for this tarEntry
+                        final File destPath = new File(destinationDirectory, tarEntry.getName());
+                        prepDestination(destPath, tarEntry.isDirectory());
 
-		                        OutputStream out = null;
-		                        try {
-		                            out = new FileOutputStream(destPath);
-		                            IOUtils.copy(tarIn, out);
-		                        } finally {
-		                            IOUtils.closeQuietly(out);
-		                        }
-				                }
-				                tarEntry = tarIn.getNextTarEntry();
-				            }
+                        if (!startsWithPath(destPath.getCanonicalPath(), canonicalDestinationDirectory)) {
+                            throw new IOException(
+                                    "Expanding " + tarEntry.getName() + " would create file outside of " + canonicalDestinationDirectory
+                            );
+                        }
+
+                        if (!tarEntry.isDirectory()) {
+                            destPath.createNewFile();
+                            boolean isExecutable = (tarEntry.getMode() & 0100) > 0;
+                            destPath.setExecutable(isExecutable);
+
+                            OutputStream out = null;
+                            try {
+                                out = new FileOutputStream(destPath);
+                                IOUtils.copy(tarIn, out);
+                            } finally {
+                                IOUtils.closeQuietly(out);
+                            }
+                        }
+                        tarEntry = tarIn.getNextTarEntry();
+                    }
                 } finally {
                     IOUtils.closeQuietly(tarIn);
                 }
@@ -131,6 +142,28 @@ final class DefaultArchiveExtractor implements ArchiveExtractor {
             throw new ArchiveExtractionException("Could not extract archive: '"
                     + archive
                     + "'", e);
+        }
+    }
+
+    /**
+     * Do multiple file system checks that should enable the plugin to work on any file system
+     * whether or not it's case sensitive or not.
+     *
+     * @param destPath
+     * @param destDir
+     * @return
+     */
+    private boolean startsWithPath(String destPath, String destDir) {
+        if (destPath.startsWith(destDir)) {
+            return true;
+        } else if (destDir.length() > destPath.length()) {
+            return false;
+        } else {
+            if (new File(destPath).exists() && !(new File(destPath.toLowerCase()).exists())) {
+                return false;
+            }
+
+            return destPath.toLowerCase().startsWith(destDir.toLowerCase());
         }
     }
 }

@@ -1,8 +1,11 @@
 package com.github.eirslett.maven.plugins.frontend.lib;
 
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 
 import org.apache.commons.io.FileUtils;
@@ -12,8 +15,6 @@ import org.slf4j.LoggerFactory;
 public class NodeInstaller {
 
     public static final String INSTALL_PATH = "/node";
-
-    public static final String DEFAULT_NODEJS_DOWNLOAD_ROOT = "https://nodejs.org/dist/";
 
     private static final Object LOCK = new Object();
 
@@ -77,7 +78,7 @@ public class NodeInstaller {
         // use static lock object for a synchronized block
         synchronized (LOCK) {
             if (this.nodeDownloadRoot == null || this.nodeDownloadRoot.isEmpty()) {
-                this.nodeDownloadRoot = DEFAULT_NODEJS_DOWNLOAD_ROOT;
+                this.nodeDownloadRoot = this.config.getPlatform().getNodeDownloadRoot();
             }
             if (!nodeIsAlreadyInstalled()) {
                 this.logger.info("Installing node version {}", this.nodeVersion);
@@ -117,6 +118,7 @@ public class NodeInstaller {
                 return false;
             }
         } catch (ProcessExecutionException e) {
+            this.logger.warn("Unable to determine current node version: {}", e.getMessage());
             return false;
         }
     }
@@ -127,7 +129,7 @@ public class NodeInstaller {
                 this.config.getPlatform().getLongNodeFilename(this.nodeVersion, false);
             String downloadUrl = this.nodeDownloadRoot
                 + this.config.getPlatform().getNodeDownloadFilename(this.nodeVersion, false);
-            String classifier = this.config.getPlatform().getNodeClassifier();
+            String classifier = this.config.getPlatform().getNodeClassifier(this.nodeVersion);
 
             File tmpDirectory = getTempDirectory();
 
@@ -138,7 +140,21 @@ public class NodeInstaller {
 
             downloadFileIfMissing(downloadUrl, archive, this.userName, this.password);
 
-            extractFile(archive, tmpDirectory);
+            try {
+                extractFile(archive, tmpDirectory);
+            } catch (ArchiveExtractionException e) {
+                if (e.getCause() instanceof EOFException) {
+                    // https://github.com/eirslett/frontend-maven-plugin/issues/794
+                    // The downloading was probably interrupted and archive file is incomplete:
+                    // delete it to retry from scratch
+                    this.logger.error("The archive file {} is corrupted and will be deleted. "
+                            + "Please try the build again.", archive.getPath());
+                    archive.delete();
+                    FileUtils.deleteDirectory(tmpDirectory);
+                }
+
+                throw e;
+            }
 
             // Search for the node binary
             File nodeBinary =
@@ -151,7 +167,12 @@ public class NodeInstaller {
 
                 File destination = new File(destinationDirectory, "node");
                 this.logger.info("Copying node binary from {} to {}", nodeBinary, destination);
-                if (!nodeBinary.renameTo(destination)) {
+                if (destination.exists() && !destination.delete()) {
+                    throw new InstallationException("Could not install Node: Was not allowed to delete " + destination);
+                }
+                try {
+                    Files.move(nodeBinary.toPath(), destination.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                } catch (IOException e) {
                     throw new InstallationException("Could not install Node: Was not allowed to rename "
                         + nodeBinary + " to " + destination);
                 }
@@ -196,7 +217,7 @@ public class NodeInstaller {
                 this.config.getPlatform().getLongNodeFilename(this.nodeVersion, true);
             String downloadUrl = this.nodeDownloadRoot
                 + this.config.getPlatform().getNodeDownloadFilename(this.nodeVersion, true);
-            String classifier = this.config.getPlatform().getNodeClassifier();
+            String classifier = this.config.getPlatform().getNodeClassifier(this.nodeVersion);
 
             File tmpDirectory = getTempDirectory();
 
@@ -219,7 +240,9 @@ public class NodeInstaller {
 
                 File destination = new File(destinationDirectory, "node.exe");
                 this.logger.info("Copying node binary from {} to {}", nodeBinary, destination);
-                if (!nodeBinary.renameTo(destination)) {
+                try {
+                    Files.move(nodeBinary.toPath(), destination.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                } catch (IOException e) {
                     throw new InstallationException("Could not install Node: Was not allowed to rename "
                         + nodeBinary + " to " + destination);
                 }
@@ -252,7 +275,7 @@ public class NodeInstaller {
 
             File destination = new File(destinationDirectory, "node.exe");
 
-            String classifier = this.config.getPlatform().getNodeClassifier();
+            String classifier = this.config.getPlatform().getNodeClassifier(this.nodeVersion);
 
             CacheDescriptor cacheDescriptor =
                 new CacheDescriptor("node", this.nodeVersion, classifier, "exe");

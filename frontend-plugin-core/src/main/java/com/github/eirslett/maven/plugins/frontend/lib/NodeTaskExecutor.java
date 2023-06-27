@@ -21,8 +21,8 @@ abstract class NodeTaskExecutor {
 
     private final Logger logger;
     private final String taskName;
-    private final String taskLocation;
-    private final List<String> additionalArguments;
+    private String taskLocation;
+    private final ArgumentsParser argumentsParser;
     private final NodeExecutorConfig config;
     private final Map<String, String> proxy;
 
@@ -93,17 +93,7 @@ abstract class NodeTaskExecutor {
 
 
     private List<String> getArguments(String args) {
-        List<String> arguments = new ArrayList<String>();
-        if (args != null && !args.equals("null") && !args.isEmpty()) {
-            arguments.addAll(Arrays.asList(args.split("\\s+")));
-        }
-
-        for (String argument : additionalArguments) {
-            if (!arguments.contains(argument)) {
-                arguments.add(argument);
-            }
-        }
-        return arguments;
+        return argumentsParser.parse(args);
     }
 
     private static String taskToString(String taskName, List<String> arguments) {
@@ -143,5 +133,9 @@ abstract class NodeTaskExecutor {
             }
         }
         return retVal;
+    }
+
+    public void setTaskLocation(String taskLocation) {
+        this.taskLocation = taskLocation;
     }
 }

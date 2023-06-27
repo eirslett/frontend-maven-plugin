@@ -4,6 +4,46 @@ Last public release: [![Maven Central](https://maven-badges.herokuapp.com/maven-
 
 ## Changelog
 
+### 1.12.1
+
+* update Dependency: Jackson (2.13.0), Mockito (4.1.0), JUnit (5.8.1), Hamcrest (2.2; now a direct dependency)
+* remove Dependency: Powermock
+* Added better support for Yarn 2.x and above (Berry)
+
+### 1.11.4
+* Support node arm64 binaries since v16 major release
+
+### 1.11.1
+
+* Fix wrong binary on AIX downloaded ([#839])
+
+### 1.11.0
+
+* Upgrade Jackson dependency to Jackson 2.9.10
+* Support Apple Silicon
+
+### 1.10.2
+
+* Supports Alpine Linux
+
+### 1.9.0
+
+* Copy npm scripts, so they are available for execution ([#868](https://github.com/eirslett/frontend-maven-plugin/pull/868))
+* Regression bug fix (tar files) ([#864](https://github.com/eirslett/frontend-maven-plugin/pull/864))
+* Fix bug related to archive extraction on case-insensitive file systems ([#845](https://github.com/eirslett/frontend-maven-plugin/pull/843))
+* Regression bug fix (tar files) ([#816](https://github.com/eirslett/frontend-maven-plugin/pull/816))
+* Added support for Raspbian OS armv7l architecture ([#809](https://github.com/eirslett/frontend-maven-plugin/pull/809))
+
+### 1.8.0
+
+* The plugin always logs output from npm/runners as INFO, not WARN or ERROR.
+* Support for quirky Windows handling of PATH environment variables.
+
+### 1.7.6
+
+* Fix #670: Plugin will no longer fail to install node.exe if node.exe already exists 
+* Fix #794: Plugin will self-repair if previous node/npm/yarn archive download was interrupted
+
 ### 1.5
 
 * Revert support for the maven.frontend.failOnError flag ([#572](https://github.com/eirslett/frontend-maven-plugin/pull/572)), due to
@@ -58,4 +98,3 @@ failOnError-like behavior can be implemented by ignoring exit codes;
 * Set paths in npm helper scripts so child node processes can be spawned
 * Updated README with example for maven 2
 * Fix #322: Use proxies more correctly
-
