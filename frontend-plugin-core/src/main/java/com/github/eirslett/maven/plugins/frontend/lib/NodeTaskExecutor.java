@@ -6,7 +6,6 @@ import static com.github.eirslett.maven.plugins.frontend.lib.Utils.prepend;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -47,7 +46,7 @@ abstract class NodeTaskExecutor {
         this.config = config;
         this.taskName = taskName;
         this.taskLocation = taskLocation;
-        this.additionalArguments = additionalArguments;
+        this.argumentsParser = new ArgumentsParser(additionalArguments);
         this.proxy = proxy;
     }
 
