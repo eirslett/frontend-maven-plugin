@@ -1,28 +1,29 @@
 package com.github.eirslett.maven.plugins.frontend.lib;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
 import static com.github.eirslett.maven.plugins.frontend.lib.Utils.implode;
 import static com.github.eirslett.maven.plugins.frontend.lib.Utils.normalize;
 import static com.github.eirslett.maven.plugins.frontend.lib.Utils.prepend;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 abstract class NodeTaskExecutor {
     private static final String DS = "//";
     private static final String AT = "@";
-    
+
     private final Logger logger;
     private final String taskName;
     private String taskLocation;
     private final ArgumentsParser argumentsParser;
     private final NodeExecutorConfig config;
+    private final Map<String, String> proxy;
 
     public NodeTaskExecutor(NodeExecutorConfig config, String taskLocation) {
         this(config, taskLocation, Collections.<String>emptyList());
@@ -37,11 +38,16 @@ abstract class NodeTaskExecutor {
     }
 
     public NodeTaskExecutor(NodeExecutorConfig config, String taskName, String taskLocation, List<String> additionalArguments) {
+        this(config, taskName, taskLocation, additionalArguments, Collections.<String, String>emptyMap());
+    }
+
+    public NodeTaskExecutor(NodeExecutorConfig config, String taskName, String taskLocation, List<String> additionalArguments, Map<String, String> proxy) {
         this.logger = LoggerFactory.getLogger(getClass());
         this.config = config;
         this.taskName = taskName;
         this.taskLocation = taskLocation;
         this.argumentsParser = new ArgumentsParser(additionalArguments);
+        this.proxy = proxy;
     }
 
     private static String getTaskNameFromLocation(String taskLocation) {
@@ -55,7 +61,14 @@ abstract class NodeTaskExecutor {
         logger.info("Running " + taskToString(taskName, arguments) + " in " + config.getWorkingDirectory());
 
         try {
-            final int result = new NodeExecutor(config, prepend(absoluteTaskLocation, arguments), environment).executeAndRedirectOutput(logger);
+            Map<String, String> internalEnvironment = new HashMap<>();
+            if (environment != null && !environment.isEmpty()) {
+                internalEnvironment.putAll(environment);
+            }
+            if (!proxy.isEmpty()) {
+                internalEnvironment.putAll(proxy);
+            }
+            final int result = new NodeExecutor(config, prepend(absoluteTaskLocation, arguments), internalEnvironment ).executeAndRedirectOutput(logger);
             if (result != 0) {
                 throw new TaskRunnerException(taskToString(taskName, arguments) + " failed. (error code " + result + ")");
             }
