@@ -23,6 +23,10 @@ public class YarnInstaller {
 
     private String yarnVersion, yarnDownloadRoot, userName, password;
 
+    private int numberOfRetries;
+
+    private int intervalBetweenRetries;
+
     private boolean isYarnBerry;
 
     private final Logger logger;
@@ -65,6 +69,16 @@ public class YarnInstaller {
         return this;
     }
 
+    public YarnInstaller setNumberOfRetries(int numberOfRetries) {
+        this.numberOfRetries = numberOfRetries;
+        return this;
+    }
+
+    public YarnInstaller setIntervalBetweenRetries(int intervalBetweenRetries) {
+        this.intervalBetweenRetries = intervalBetweenRetries;
+        return this;
+    }
+
     public void install() throws InstallationException {
         // use static lock object for a synchronized block
         synchronized (LOCK) {
@@ -75,7 +89,24 @@ public class YarnInstaller {
                 if (!yarnVersion.startsWith("v")) {
                     throw new InstallationException("Yarn version has to start with prefix 'v'.");
                 }
-                installYarn();
+                int attemptNumber = 0;
+                boolean status = false;
+                while (!status && numberOfRetries > attemptNumber++) {
+                    try {
+                        this.logger.info("Install yarn attempt #{}", attemptNumber);
+                        installYarn();
+                    } catch (Exception e) {
+                        if (numberOfRetries <= attemptNumber) {
+                            throw e;
+                        }
+                        this.logger.error("Install yarn attempt #{} failed", attemptNumber, e);
+                        try {
+                            Thread.sleep(intervalBetweenRetries);
+                        } catch (InterruptedException ex) {
+                            throw new RuntimeException(ex);
+                        }
+                    }
+                }
             }
         }
     }

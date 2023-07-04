@@ -63,6 +63,12 @@ public final class InstallNodeAndNpmMojo extends AbstractFrontendMojo {
     @Parameter(property = "skip.installnodenpm", defaultValue = "${skip.installnodenpm}")
     private boolean skip;
 
+    @Parameter(property = "numberOfRetries", defaultValue = "1")
+    private int numberOfRetries;
+
+    @Parameter(property = "intervalBetweenRetriesMs", defaultValue = "10000")
+    private int intervalBetweenRetriesMs;
+
     @Component(role = SettingsDecrypter.class)
     private SettingsDecrypter decrypter;
 
@@ -82,12 +88,16 @@ public final class InstallNodeAndNpmMojo extends AbstractFrontendMojo {
                 .setNodeVersion(nodeVersion)
                 .setNodeDownloadRoot(nodeDownloadRoot)
                 .setNpmVersion(npmVersion)
+                .setNumberOfRetries(numberOfRetries)
+                .setIntervalBetweenRetries(intervalBetweenRetriesMs)
                 .setUserName(server.getUsername())
                 .setPassword(server.getPassword())
                 .install();
             factory.getNPMInstaller(proxyConfig)
                 .setNodeVersion(nodeVersion)
                 .setNpmVersion(npmVersion)
+                .setNumberOfRetries(numberOfRetries)
+                .setIntervalBetweenRetries(intervalBetweenRetriesMs)
                 .setNpmDownloadRoot(npmDownloadRoot)
                 .setUserName(server.getUsername())
                 .setPassword(server.getPassword())
@@ -97,10 +107,14 @@ public final class InstallNodeAndNpmMojo extends AbstractFrontendMojo {
                 .setNodeVersion(nodeVersion)
                 .setNodeDownloadRoot(nodeDownloadRoot)
                 .setNpmVersion(npmVersion)
+                .setNumberOfRetries(numberOfRetries)
+                .setIntervalBetweenRetries(intervalBetweenRetriesMs)
                 .install();
             factory.getNPMInstaller(proxyConfig)
                 .setNodeVersion(this.nodeVersion)
                 .setNpmVersion(this.npmVersion)
+                .setNumberOfRetries(numberOfRetries)
+                .setIntervalBetweenRetries(intervalBetweenRetriesMs)
                 .setNpmDownloadRoot(npmDownloadRoot)
                 .install();
         }
