@@ -7,6 +7,7 @@
 					<goal>install-node-and-npm</goal>
 					<goal>install-node-and-pnpm</goal>
 					<goal>install-node-and-yarn</goal>
+                    <goal>install-bun</goal>
 				</goals>
 			</pluginExecutionFilter>
 			<action>
@@ -25,6 +26,7 @@
                     <goal>gulp</goal>
                     <goal>grunt</goal>
                     <goal>bower</goal>
+                    <goal>bun</goal>
                     <goal>jspm</goal>
                     <goal>ember</goal>
                     <goal>webpack</goal>
