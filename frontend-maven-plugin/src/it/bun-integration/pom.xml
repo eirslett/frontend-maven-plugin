@@ -38,7 +38,7 @@
                         </goals>
                         <!-- Optional configuration which provides for running any npm command -->
                         <configuration>
-                            <arguments>install</arguments>
+                            <!--<arguments>install</arguments>-->
                         </configuration>
                     </execution>
 
@@ -65,26 +65,24 @@
 
                             <execution>
                                 <id>install bun runtime</id>
+                                <phase>test</phase>
                                 <goals>
                                     <goal>install-bun</goal>
                                 </goals>
                                 <configuration>
                                     <skipTests>true</skipTests>
-                                    <testFailureIgnore>true</testFailureIgnore>
-                                    <skip.installbun>true</skip.installbun>
                                 </configuration>
                             </execution>
 
                             <execution>
                                 <id>bun install</id>
+                                <phase>test</phase>
                                 <goals>
                                     <goal>bun</goal>
                                 </goals>
                                 <!-- Optional configuration which provides for running any npm command -->
                                 <configuration>
                                     <skipTests>true</skipTests>
-                                    <testFailureIgnore>true</testFailureIgnore>
-                                    <skip.bun>true</skip.bun>
                                 </configuration>
                             </execution>
 
