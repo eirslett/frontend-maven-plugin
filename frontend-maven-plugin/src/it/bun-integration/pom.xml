@@ -46,50 +46,5 @@
             </plugin>
         </plugins>
     </build>
-    <profiles>
-        <profile>
-            <id>it-Windows</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>com.github.eirslett</groupId>
-                        <artifactId>frontend-maven-plugin</artifactId>
-                        <!-- NB! Set <version> to the latest released version of frontend-maven-plugin, like in README.md -->
-                        <version>@project.version@</version>
 
-                        <configuration>
-                            <installDirectory>target</installDirectory>
-                        </configuration>
-
-                        <executions>
-
-                            <execution>
-                                <id>install bun runtime</id>
-                                <phase>test</phase>
-                                <goals>
-                                    <goal>install-bun</goal>
-                                </goals>
-                                <configuration>
-                                    <skipTests>true</skipTests>
-                                </configuration>
-                            </execution>
-
-                            <execution>
-                                <id>bun install</id>
-                                <phase>test</phase>
-                                <goals>
-                                    <goal>bun</goal>
-                                </goals>
-                                <!-- Optional configuration which provides for running any npm command -->
-                                <configuration>
-                                    <skipTests>true</skipTests>
-                                </configuration>
-                            </execution>
-
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
 </project>
