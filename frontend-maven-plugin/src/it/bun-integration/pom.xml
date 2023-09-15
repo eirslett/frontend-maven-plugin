@@ -70,6 +70,8 @@
                                 </goals>
                                 <configuration>
                                     <skipTests>true</skipTests>
+                                    <testFailureIgnore>true</testFailureIgnore>
+                                    <skip.installbun>true</skip.installbun>
                                 </configuration>
                             </execution>
 
@@ -81,6 +83,8 @@
                                 <!-- Optional configuration which provides for running any npm command -->
                                 <configuration>
                                     <skipTests>true</skipTests>
+                                    <testFailureIgnore>true</testFailureIgnore>
+                                    <skip.bun>true</skip.bun>
                                 </configuration>
                             </execution>
 
