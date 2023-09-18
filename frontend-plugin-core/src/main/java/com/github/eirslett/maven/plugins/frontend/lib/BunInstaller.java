@@ -56,7 +56,6 @@ public class BunInstaller {
         // use static lock object for a synchronized block
         synchronized (LOCK) {
             if (!bunIsAlreadyInstalled()) {
-                this.logger.info("Installing bun version {}", this.bunVersion);
                 if (!this.bunVersion.startsWith("v")) {
                     this.logger.warn("Bun version does not start with naming convention 'v'.");
                 }
@@ -77,7 +76,7 @@ public class BunInstaller {
                 final String version =
                         new BunExecutor(executorConfig, Arrays.asList("--version"), null).executeAndGetResult(logger);
 
-                if (version.equals(this.bunVersion)) {
+                if (version.equals(this.bunVersion.replaceFirst("^v", ""))) {
                     this.logger.info("Bun {} is already installed.", version);
                     return true;
                 } else {
@@ -97,8 +96,7 @@ public class BunInstaller {
     private void installBunDefault() throws InstallationException {
         try {
 
-            logger.info("Installing Yarn version {}", bunVersion);
-
+            logger.info("Installing Bun version {}", bunVersion);
 
             String downloadUrl = createDownloadUrl();
 
@@ -111,14 +109,14 @@ public class BunInstaller {
 
             File installDirectory = getInstallDirectory();
 
-            // We need to delete the existing yarn directory first so we clean out any old files, and
+            // We need to delete the existing bun directory first so we clean out any old files, and
             // so we can rename the package directory below.
             try {
                 if (installDirectory.isDirectory()) {
                     FileUtils.deleteDirectory(installDirectory);
                 }
             } catch (IOException e) {
-                logger.warn("Failed to delete existing Yarn installation.");
+                logger.warn("Failed to delete existing Bun installation.");
             }
 
             try {
