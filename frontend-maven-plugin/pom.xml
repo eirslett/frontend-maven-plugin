@@ -15,10 +15,6 @@
     <maven>3.6.0</maven>
   </prerequisites>
 
-  <properties>
-    <integrationTestProfiles>it-Linux</integrationTestProfiles>
-  </properties>
-
   <description>
         This Maven plugin lets you install Node/NPM locally
         for your project, install dependencies with NPM,
@@ -134,7 +130,6 @@
 
             <configuration>
               <debug>true</debug>
-              <profiles>${integrationTestProfiles}</profiles>
               <projectsDirectory>src/it</projectsDirectory>
               <cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
               <settingsFile>src/it/settings.xml</settingsFile>
