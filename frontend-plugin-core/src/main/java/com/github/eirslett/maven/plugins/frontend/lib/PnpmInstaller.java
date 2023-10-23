@@ -1,15 +1,14 @@
 package com.github.eirslett.maven.plugins.frontend.lib;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.EOFException;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.util.Arrays;
-import java.util.HashMap;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.HashMap;
 
 public class PnpmInstaller {
 
@@ -69,7 +68,12 @@ public class PnpmInstaller {
             if (!pnpmIsAlreadyInstalled()) {
                 installPnpm();
             }
-            copyPnpmScripts();
+
+            if (this.config.getPlatform().isWindows()) {
+                linkExecutableWindows();
+            } else {
+                linkExecutable();
+            }
         }
     }
 
@@ -169,42 +173,72 @@ public class PnpmInstaller {
         }
     }
 
-    private void copyPnpmScripts() throws InstallationException{
-        File installDirectory = getNodeInstallDirectory();
+    private void linkExecutable() throws InstallationException{
+        File nodeInstallDirectory = getNodeInstallDirectory();
+        File pnpmExecutable = new File(nodeInstallDirectory, "pnpm");
 
-        File nodeModulesDirectory = new File(installDirectory, "node_modules");
-        File pnpmDirectory = new File(nodeModulesDirectory, "pnpm");
-        // create a copy of the pnpm scripts next to the node executable
-        for (String script : Arrays.asList("pnpm", "pnpm.cmd")) {
-            File scriptFile = new File(pnpmDirectory, "bin" + File.separator + script);
-            if (scriptFile.exists()) {
-                File copy = new File(installDirectory, script);
-                if (!copy.exists()) {
-                    try
-                    {
-                        FileUtils.copyFile(scriptFile, copy);
-                    }
-                    catch (IOException e)
-                    {
-                        throw new InstallationException("Could not copy pnpm", e);
-                    }
-                    copy.setExecutable(true);
-                }
-            }
+        if (pnpmExecutable.exists()) {
+            this.logger.info("Existing pnpm executable found, skipping linking.");
+            return;
         }
-        // On non-windows platforms, if no predefined executables exist, symlink the .cjs executable
-        File pnpmExecutable = new File(installDirectory, "pnpm");
-        if (!pnpmExecutable.exists() && !this.config.getPlatform().isWindows()) {
 
-            File pnpmJsExecutable = new File(pnpmDirectory, "bin" + File.separator + "pnpm.cjs");
-            if (pnpmJsExecutable.exists()) {
-                this.logger.info("No pnpm executable found, creating symlink to {}", pnpmJsExecutable.toPath());
-                try {
-                    Files.createSymbolicLink(pnpmExecutable.toPath(), pnpmJsExecutable.toPath());
-                } catch (IOException e) {
-                    throw new InstallationException("Could not copy pnpm", e);
-                }
-            }
+        NodeExecutorConfig executorConfig = new InstallNodeExecutorConfig(this.config);
+        File pnpmJsExecutable = executorConfig.getPnpmCjsPath();
+
+        if (!pnpmJsExecutable.exists()) {
+            throw new InstallationException("Could not link to pnpm executable, no pnpm installation found.");
+        }
+
+        this.logger.info("No pnpm executable found, creating symbolic link to {}.", pnpmJsExecutable.toPath());
+
+        try {
+            Files.createSymbolicLink(pnpmExecutable.toPath(), pnpmJsExecutable.toPath());
+        } catch (IOException e) {
+            throw new InstallationException("Could not create symbolic link for pnpm executable.", e);
+        }
+    }
+
+    private void linkExecutableWindows() throws InstallationException{
+        File nodeInstallDirectory = getNodeInstallDirectory();
+        File pnpmExecutable = new File(nodeInstallDirectory, "pnpm.cmd");
+
+        if (pnpmExecutable.exists()) {
+            this.logger.info("Existing pnpm executable found, skipping linking.");
+            return;
+        }
+
+        NodeExecutorConfig executorConfig = new InstallNodeExecutorConfig(this.config);
+        File pnpmJsExecutable = executorConfig.getPnpmCjsPath();
+
+        if (!pnpmJsExecutable.exists()) {
+            throw new InstallationException("Could not link to pnpm executable, no pnpm installation found.");
+        }
+
+        this.logger.info("No pnpm executable found, creating proxy script to {}.", pnpmJsExecutable.toPath());
+
+        Path nodePath = executorConfig.getNodePath().toPath();
+        Path relativeNodePath = nodeInstallDirectory.toPath().relativize(nodePath);
+        Path relativePnpmPath = nodeInstallDirectory.toPath().relativize(pnpmJsExecutable.toPath());
+
+        // Create a script that will proxy any commands passed into it to the pnpm executable.
+        String scriptContents = new StringBuilder()
+                .append(":: Created by frontend-maven-plugin, please don't edit manually.\r\n")
+                .append("@ECHO OFF\r\n")
+                .append("\r\n")
+                .append("SETLOCAL\r\n")
+                .append("\r\n")
+                .append(String.format("SET \"NODE_EXE=%%~dp0\\%s\"\r\n", relativeNodePath))
+                .append(String.format("SET \"PNPM_CLI_JS=%%~dp0\\%s\"\r\n", relativePnpmPath))
+                .append("\r\n")
+                .append("\"%NODE_EXE%\" \"%PNPM_CLI_JS%\" %*")
+                .toString();
+
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter(pnpmExecutable));
+            writer.write(scriptContents);
+            writer.close();
+        } catch (IOException e) {
+            throw new InstallationException("Could not create proxy script for pnpm executable.", e);
         }
     }
 
