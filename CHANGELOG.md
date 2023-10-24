@@ -4,6 +4,30 @@ Last public release: [![Maven Central](https://maven-badges.herokuapp.com/maven-
 
 ## Changelog
 
+### 1.14.1
+
+* Expose `pnpm` executable on Windows ([#1116](https://github.com/eirslett/frontend-maven-plugin/pull/1116))
+
+### 1.14.0
+
+* Use provided target host credentials also when downloading via proxy ([#725](https://github.com/eirslett/frontend-maven-plugin/pull/725))
+
+### 1.13.4
+
+* Add proxy environment variables for npm postinstalls ([#683](https://github.com/eirslett/frontend-maven-plugin/pull/683))
+
+### 1.13.3
+
+* Run CI against Java 8 ([187554f](https://github.com/eirslett/frontend-maven-plugin/commit/187554f87cf9169df8a1f5b73ac841ca6ffde9d5))
+
+### 1.13.2
+
+* Update various Maven dependencies ([16a131a](https://github.com/eirslett/frontend-maven-plugin/commit/16a131aa269c0e38ecb12dc0aa1f0021d60c34c4))
+
+### 1.13.1
+
+* Update various Maven dependencies ([#1092](https://github.com/eirslett/frontend-maven-plugin/pull/1092))
+
 ### 1.12.1
 
 * update Dependency: Jackson (2.13.0), Mockito (4.1.0), JUnit (5.8.1), Hamcrest (2.2; now a direct dependency)
