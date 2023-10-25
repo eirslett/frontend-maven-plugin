@@ -4,6 +4,10 @@ Last public release: [![Maven Central](https://maven-badges.herokuapp.com/maven-
 
 ## Changelog
 
+### 1.14.2
+
+* Prevent corrupt downloaded files by waiting for the download to complete before writing the file to disk.
+
 ### 1.14.1
 
 * Expose `pnpm` executable on Windows ([#1116](https://github.com/eirslett/frontend-maven-plugin/pull/1116))
