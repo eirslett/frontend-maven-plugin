@@ -1,14 +1,12 @@
 package com.github.eirslett.maven.plugins.frontend.lib;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.channels.Channels;
-import java.nio.channels.ReadableByteChannel;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.http.HttpHost;
@@ -71,11 +69,10 @@ final class DefaultFileDownloader implements FileDownloader {
                 if(statusCode != 200){
                     throw new DownloadException("Got error code "+ statusCode +" from the server.");
                 }
+                
+                byte[] data = IOUtils.toByteArray(response.getEntity().getContent());
                 new File(FilenameUtils.getFullPathNoEndSeparator(destination)).mkdirs();
-                ReadableByteChannel rbc = Channels.newChannel(response.getEntity().getContent());
-                FileOutputStream fos = new FileOutputStream(destination);
-                fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
-                fos.close();
+                FileUtils.writeByteArrayToFile(new File(destination), data);
             }
         } catch (IOException | URISyntaxException e) {
             throw new DownloadException("Could not download " + fixedDownloadUrl, e);
