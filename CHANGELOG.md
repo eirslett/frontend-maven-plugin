@@ -28,6 +28,10 @@ Last public release: [![Maven Central](https://maven-badges.herokuapp.com/maven-
 
 * Update various Maven dependencies ([#1092](https://github.com/eirslett/frontend-maven-plugin/pull/1092))
 
+### 1.13.0
+
+Just a lot of various small bug fixes and tweaks.
+
 ### 1.12.1
 
 * update Dependency: Jackson (2.13.0), Mockito (4.1.0), JUnit (5.8.1), Hamcrest (2.2; now a direct dependency)
