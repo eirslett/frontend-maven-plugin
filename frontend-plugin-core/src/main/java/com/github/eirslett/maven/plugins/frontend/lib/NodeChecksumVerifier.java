@@ -37,6 +37,7 @@ class NodeChecksumVerifier {
             DigestInputStream dis = new DigestInputStream(bis, sha256);
 
             while (dis.read() != -1) {
+                // read to end
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -55,7 +56,9 @@ class NodeChecksumVerifier {
                 .filter(line -> line[1].replaceAll("-v", "-").contains(file.getName()))
                 .map(line -> line[0])
                 .findFirst()
-                .get();
+                .orElseThrow(() -> new RuntimeException(String.format("Failed to find checksum for filename %s\n", file.getName()) +
+                        "This is likely an issue with the frontend-maven-plugin itself. " +
+                        "Please report an issue at https://github.com/eirslett/frontend-maven-plugin"));
 
         try {
             return Hex.decodeHex(checksumHex);
