@@ -2,6 +2,8 @@ package com.github.eirslett.maven.plugins.frontend.lib;
 
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -11,13 +13,13 @@ import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
-import java.util.function.Supplier;
 
 class NodeChecksumVerifier {
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     private final String sha256txt;
 
-    public NodeChecksumVerifier(Supplier<String> sha256Supplier) {
-        sha256txt = sha256Supplier.get();
+    NodeChecksumVerifier(String sha256Txt) {
+        this.sha256txt = sha256Txt;
     }
 
     boolean isChecksumValid(File archive) {
@@ -27,7 +29,7 @@ class NodeChecksumVerifier {
         return Arrays.equals(requiredChecksum, actualChecksum);
     }
 
-    private static byte[] calculateChecksumOf(File file) {
+    private byte[] calculateChecksumOf(File file) {
         MessageDigest sha256 = newSha256Digest();
 
         try (FileInputStream fis = new FileInputStream(file)) {
@@ -43,10 +45,15 @@ class NodeChecksumVerifier {
         return sha256.digest();
     }
 
-    private static byte[] readRequiredChecksumOf(File file, String sha256txt) {
+    private byte[] readRequiredChecksumOf(File file, String sha256txt) {
+        logger.debug("Searching for required checksum in file.");
+        logger.debug("Filename: {}", file.getName());
+        logger.debug("Checksum file:\n{}", sha256txt);
+
         String checksumHex = Arrays.stream(sha256txt.split("\\R"))
-                .filter(line -> line.contains(file.getName()))
-                .map(line -> line.split(" {2}")[0])
+                .map(line -> line.split(" {2}"))
+                .filter(line -> line[1].replaceAll("-v", "-").contains(file.getName()))
+                .map(line -> line[0])
                 .findFirst()
                 .get();
 

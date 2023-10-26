@@ -4,11 +4,17 @@ import java.io.EOFException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -139,6 +145,16 @@ public class NodeInstaller {
             File archive = this.config.getCacheResolver().resolve(cacheDescriptor);
 
             downloadFileIfMissing(downloadUrl, archive, this.userName, this.password);
+
+            this.logger.info("Verifying checksum of Node.js archive...");
+            NodeChecksumVerifier nodeChecksumVerifier = new NodeChecksumVerifier(downloadChecksumsTxt());
+            if (!nodeChecksumVerifier.isChecksumValid(archive)) {
+                this.logger.info("Checksum invalid.");
+                archive.delete();
+                FileUtils.deleteDirectory(tmpDirectory);
+                throw new InstallationException("SHA256 checksum for downloaded archive is invalid. Please retry the build.");
+            }
+            this.logger.info("Checksum valid.");
 
             try {
                 extractFile(archive, tmpDirectory);
@@ -336,5 +352,17 @@ public class NodeInstaller {
         throws DownloadException {
         this.logger.info("Downloading {} to {}", downloadUrl, destination);
         this.fileDownloader.download(downloadUrl, destination.getPath(), userName, password);
+    }
+
+    private String downloadChecksumsTxt() throws InstallationException {
+        String checksumFilename = "/SHASUMS256.txt";
+        String downloadUrl = this.nodeDownloadRoot + this.nodeVersion + checksumFilename;
+
+        try (CloseableHttpClient client = HttpClientBuilder.create().build()) {
+            CloseableHttpResponse response = client.execute(new HttpGet(downloadUrl));
+            return IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            throw new InstallationException(String.format("Failed to download checksum file from %s", downloadUrl), e);
+        }
     }
 }

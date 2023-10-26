@@ -15,9 +15,9 @@ public class NodeChecksumVerifierTest {
     @Test
     void isChecksumValid_withValidChecksum_returnsTrue() throws IOException, URISyntaxException {
         String shasumsTxt = IOUtils.toString(getClass().getClassLoader().getResourceAsStream("checksum/SHASUMS256.txt"), StandardCharsets.UTF_8);
-        File archiveToCheck = new File(getClass().getClassLoader().getResource("checksum/good/node-v18.18.2-headers.tar.xz").toURI());
+        File archiveToCheck = new File(getClass().getClassLoader().getResource("checksum/good/node-18.18.2-headers.tar.xz").toURI());
 
-        NodeChecksumVerifier verifier = new NodeChecksumVerifier(() -> shasumsTxt);
+        NodeChecksumVerifier verifier = new NodeChecksumVerifier(shasumsTxt);
         boolean isValid = verifier.isChecksumValid(archiveToCheck);
 
         assertThat(isValid, is(true));
@@ -26,9 +26,9 @@ public class NodeChecksumVerifierTest {
     @Test
     void isChecksumValid_withInvalidChecksum_returnsFalse() throws IOException, URISyntaxException {
         String shasumsTxt = IOUtils.toString(getClass().getClassLoader().getResourceAsStream("checksum/SHASUMS256.txt"), StandardCharsets.UTF_8);
-        File archiveToCheck = new File(getClass().getClassLoader().getResource("checksum/bad/node-v18.18.2-headers.tar.xz").toURI());
+        File archiveToCheck = new File(getClass().getClassLoader().getResource("checksum/bad/node-18.18.2-headers.tar.xz").toURI());
 
-        NodeChecksumVerifier verifier = new NodeChecksumVerifier(() -> shasumsTxt);
+        NodeChecksumVerifier verifier = new NodeChecksumVerifier(shasumsTxt);
         boolean isValid = verifier.isChecksumValid(archiveToCheck);
 
         assertThat(isValid, is(false));
