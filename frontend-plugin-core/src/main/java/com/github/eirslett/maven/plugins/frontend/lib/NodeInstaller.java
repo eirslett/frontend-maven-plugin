@@ -165,6 +165,32 @@ public class NodeInstaller {
             } else {
                 File destinationDirectory = getInstallDirectory();
 
+                // We need to delete the previous node installation first, as it might contain packages
+                // from a previous installation, e.g. if npm is provided
+                this.logger.info("Deleting previous node installation in directory {}", destinationDirectory);
+                try {
+                    File[] filelist = destinationDirectory.listFiles();
+                    if (filelist == null) {
+                        filelist = new File[0];
+                    }
+                    for (File child : filelist) {
+                        if (child.isDirectory()) {
+                            // skip temp directory...
+                            if (!child.getAbsoluteFile().equals(tmpDirectory.getAbsoluteFile())) {
+                                this.logger.debug("Deleting directory {}", child);
+                                FileUtils.deleteDirectory(child);
+                            }
+                        } else {
+                            this.logger.debug("Deleting file {}", child);
+                            if (!child.delete()) {
+                                this.logger.warn("Couldn't delete {}", child);
+                            }
+                        }
+                    }
+                } catch (IOException e) {
+                    this.logger.warn("Failed to delete previous node installation in directory {}", destinationDirectory, e);
+                }
+
                 File destination = new File(destinationDirectory, "node");
                 this.logger.info("Copying node binary from {} to {}", nodeBinary, destination);
                 if (destination.exists() && !destination.delete()) {
@@ -174,7 +200,7 @@ public class NodeInstaller {
                     Files.move(nodeBinary.toPath(), destination.toPath(), StandardCopyOption.REPLACE_EXISTING);
                 } catch (IOException e) {
                     throw new InstallationException("Could not install Node: Was not allowed to rename "
-                        + nodeBinary + " to " + destination);
+                        + nodeBinary + " to " + destination, e);
                 }
 
                 if (!destination.setExecutable(true, false)) {
@@ -183,14 +209,16 @@ public class NodeInstaller {
                 }
 
                 if (npmProvided()) {
+                    this.logger.info("Extracting NPM");
                     File tmpNodeModulesDir = new File(tmpDirectory,
                         longNodeFilename + File.separator + "lib" + File.separator + "node_modules");
                     File nodeModulesDirectory = new File(destinationDirectory, "node_modules");
-                    File npmDirectory = new File(nodeModulesDirectory, "npm");
+                    // Copy the provided npm from the new node installation
                     FileUtils.copyDirectory(tmpNodeModulesDir, nodeModulesDirectory);
-                    this.logger.info("Extracting NPM");
-                    // create a copy of the npm scripts next to the node executable
-                    for (String script : Arrays.asList("npm", "npm.cmd")) {
+                    // Make sure the npm scripts are executable
+                    // the scripts will be copied next to the node executable by NPMInstaller.copyNpmScripts
+                    File npmDirectory = new File(nodeModulesDirectory, "npm");
+                    for (String script : Arrays.asList("npm", "npm.cmd", "npx", "npx.cmd")) {
                         File scriptFile = new File(npmDirectory, "bin" + File.separator + script);
                         if (scriptFile.exists()) {
                             scriptFile.setExecutable(true);
