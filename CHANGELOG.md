@@ -4,6 +4,10 @@ Last public release: [![Maven Central](https://maven-badges.herokuapp.com/maven-
 
 ## Changelog
 
+### 1.14.3
+
+* if upgrading, first delete the full "node" dir ([#994](https://github.com/eirslett/frontend-maven-plugin/issues/994))
+
 ### 1.14.2
 
 * Prevent corrupt downloaded files by waiting for the download to complete before writing the file to disk.
