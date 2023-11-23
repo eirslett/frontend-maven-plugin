@@ -4,6 +4,7 @@ import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -11,6 +12,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.AccessDeniedException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -73,22 +77,22 @@ final class DefaultArchiveExtractor implements ArchiveExtractor {
                             "Unexpected interruption of while waiting for extraction process", e);
                 }
             } else if ("zip".equals(FileUtils.getExtension(archiveFile.getAbsolutePath()))) {
-                ZipFile zipFile = new ZipFile(archiveFile);
-                try {
+                Path destinationPath = Paths.get(destinationDirectory).normalize();
+                try (ZipFile zipFile = new ZipFile(archiveFile)) {
                     Enumeration<? extends ZipEntry> entries = zipFile.entries();
                     while (entries.hasMoreElements()) {
                         ZipEntry entry = entries.nextElement();
-                        final File destPath = new File(destinationDirectory, entry.getName());
-                        if (!destPath.toPath().normalize().startsWith(destinationDirectory)) {
+                        final Path destPath = destinationPath.resolve(entry.getName()).normalize();
+                        if (!destPath.startsWith(destinationPath)) {
                             throw new RuntimeException("Bad zip entry");
                         }
-                        prepDestination(destPath, entry.isDirectory());
+                        prepDestination(destPath.toFile(), entry.isDirectory());
                         if (!entry.isDirectory()) {
                             InputStream in = null;
                             OutputStream out = null;
                             try {
                                 in = zipFile.getInputStream(entry);
-                                out = new FileOutputStream(destPath);
+                                out = new BufferedOutputStream(Files.newOutputStream(destPath));
                                 IOUtils.copy(in, out);
                             } finally {
                                 IOUtils.closeQuietly(in);
@@ -96,8 +100,6 @@ final class DefaultArchiveExtractor implements ArchiveExtractor {
                             }
                         }
                     }
-                } finally {
-                    zipFile.close();
                 }
             } else {
                 // TarArchiveInputStream can be constructed with a normal FileInputStream if
