@@ -27,7 +27,7 @@ public final class YarnMojo extends AbstractFrontendMojo {
     private String arguments;
 
     @Parameter(property = "frontend.yarn.yarnInheritsProxyConfigFromMaven", required = false,
-        defaultValue = "true")
+        defaultValue = "false")
     private boolean yarnInheritsProxyConfigFromMaven;
 
     /**
