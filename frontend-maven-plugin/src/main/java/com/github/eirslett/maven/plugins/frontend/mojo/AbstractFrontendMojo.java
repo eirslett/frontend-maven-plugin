@@ -1,7 +1,7 @@
 package com.github.eirslett.maven.plugins.frontend.mojo;
 
 import java.io.File;
-import java.util.Map;
+import java.util.HashMap;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecution;
@@ -51,7 +51,7 @@ public abstract class AbstractFrontendMojo extends AbstractMojo {
      * Additional environment variables to pass to the build.
      */
     @Parameter
-    protected Map<String, String> environmentVariables;
+    protected HashMap<String, String> environmentVariables;
 
     @Parameter(defaultValue = "${project}", readonly = true)
     private MavenProject project;
