@@ -4,6 +4,10 @@ Last public release: [![Maven Central](https://maven-badges.herokuapp.com/maven-
 
 ## Changelog
 
+### 1.14.3
+
+* Prevent `Bad zip entry` exceptions when installing Node to a relative directory ([#1124](https://github.com/eirslett/frontend-maven-plugin/issues/1124))
+
 ### 1.14.2
 
 * Prevent corrupt downloaded files by waiting for the download to complete before writing the file to disk.
