@@ -4,8 +4,9 @@ Last public release: [![Maven Central](https://maven-badges.herokuapp.com/maven-
 
 ## Changelog
 
-### 1.14.3
+### 1.15.0
 
+* Bun support
 * Prevent `Bad zip entry` exceptions when installing Node to a relative directory ([#1124](https://github.com/eirslett/frontend-maven-plugin/issues/1124))
 
 ### 1.14.2
