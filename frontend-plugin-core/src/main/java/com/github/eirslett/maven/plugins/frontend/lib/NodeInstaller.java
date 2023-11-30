@@ -20,6 +20,9 @@ public class NodeInstaller {
 
     private String npmVersion, nodeVersion, nodeDownloadRoot, userName, password;
 
+    private int numberOfRetries;
+    private int intervalBetweenRetries;
+
     private final Logger logger;
 
     private final InstallConfig config;
@@ -60,6 +63,16 @@ public class NodeInstaller {
         return this;
     }
 
+    public NodeInstaller setNumberOfRetries(int numberOfRetries) {
+        this.numberOfRetries = numberOfRetries;
+        return this;
+    }
+
+    public NodeInstaller setIntervalBetweenRetries(int intervalBetweenRetries) {
+        this.intervalBetweenRetries = intervalBetweenRetries;
+        return this;
+    }
+
     private boolean npmProvided() throws InstallationException {
         if (this.npmVersion != null) {
             if ("provided".equals(this.npmVersion)) {
@@ -85,14 +98,31 @@ public class NodeInstaller {
                 if (!this.nodeVersion.startsWith("v")) {
                     this.logger.warn("Node version does not start with naming convention 'v'.");
                 }
-                if (this.config.getPlatform().isWindows()) {
-                    if (npmProvided()) {
-                        installNodeWithNpmForWindows();
-                    } else {
-                        installNodeForWindows();
+                int attemptNumber = 0;
+                boolean status = false;
+                while (!status && numberOfRetries > attemptNumber++) {
+                    try {
+                        this.logger.info("Install node attempt #{}", attemptNumber);
+                        if (this.config.getPlatform().isWindows()) {
+                            if (npmProvided()) {
+                                installNodeWithNpmForWindows();
+                            } else {
+                                installNodeForWindows();
+                            }
+                        } else {
+                            installNodeDefault();
+                        }
+                    } catch (Exception e) {
+                        if (numberOfRetries <= attemptNumber) {
+                            throw e;
+                        }
+                        this.logger.error("Install node attempt #{} failed", attemptNumber, e);
+                        try {
+                            Thread.sleep(intervalBetweenRetries);
+                        } catch (InterruptedException ex) {
+                            throw new RuntimeException(ex);
+                        }
                     }
-                } else {
-                    installNodeDefault();
                 }
             }
         }

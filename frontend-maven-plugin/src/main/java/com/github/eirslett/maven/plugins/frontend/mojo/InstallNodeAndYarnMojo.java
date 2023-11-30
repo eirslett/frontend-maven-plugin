@@ -61,6 +61,12 @@ public final class InstallNodeAndYarnMojo extends AbstractFrontendMojo {
     @Parameter(property = "skip.installyarn", alias = "skip.installyarn", defaultValue = "${skip.installyarn}")
     private boolean skip;
 
+    @Parameter(property = "numberOfRetries", defaultValue = "1")
+    private int numberOfRetries;
+
+    @Parameter(property = "intervalBetweenRetriesMs", defaultValue = "10000")
+    private int intervalBetweenRetriesMs;
+
     @Component(role = SettingsDecrypter.class)
     private SettingsDecrypter decrypter;
 
@@ -95,6 +101,7 @@ public final class InstallNodeAndYarnMojo extends AbstractFrontendMojo {
                 .setUserName(server.getUsername()).install();
             factory.getYarnInstaller(proxyConfig).setYarnDownloadRoot(this.yarnDownloadRoot)
                 .setYarnVersion(this.yarnVersion).setUserName(server.getUsername())
+                .setNumberOfRetries(numberOfRetries).setIntervalBetweenRetries(intervalBetweenRetriesMs)
                 .setPassword(server.getPassword()).setIsYarnBerry(isYarnrcYamlFilePresent()).install();
         } else {
             factory.getNodeInstaller(proxyConfig).setNodeDownloadRoot(this.nodeDownloadRoot)

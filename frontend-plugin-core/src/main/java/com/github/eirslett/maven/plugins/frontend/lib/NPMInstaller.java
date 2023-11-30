@@ -20,6 +20,10 @@ public class NPMInstaller {
 
     private String nodeVersion, npmVersion, npmDownloadRoot, userName, password;
 
+    private int numberOfRetries;
+
+    private int intervalBetweenRetries;
+
     private final Logger logger;
 
     private final InstallConfig config;
@@ -60,6 +64,16 @@ public class NPMInstaller {
         return this;
     }
 
+    public NPMInstaller setNumberOfRetries(int numberOfRetries) {
+        this.numberOfRetries = numberOfRetries;
+        return this;
+    }
+
+    public NPMInstaller setIntervalBetweenRetries(int intervalBetweenRetriesMs) {
+        this.intervalBetweenRetries = intervalBetweenRetriesMs;
+        return this;
+    }
+
     private boolean npmProvided() throws InstallationException {
         if ("provided".equals(this.npmVersion)) {
             if (Integer.parseInt(this.nodeVersion.replace("v", "").split("[.]")[0]) < 4) {
@@ -79,7 +93,24 @@ public class NPMInstaller {
                 this.npmDownloadRoot = DEFAULT_NPM_DOWNLOAD_ROOT;
             }
             if (!npmProvided() && !npmIsAlreadyInstalled()) {
-                installNpm();
+                int attemptNumber = 0;
+                boolean status = false;
+                while (!status && numberOfRetries > attemptNumber++) {
+                    try {
+                        this.logger.info("Install npm attempt #{}", attemptNumber);
+                        installNpm();
+                    } catch (Exception e) {
+                        if (numberOfRetries <= attemptNumber) {
+                            throw e;
+                        }
+                        this.logger.error("Install npm attempt #{} failed", attemptNumber, e);
+                        try {
+                            Thread.sleep(intervalBetweenRetries);
+                        } catch (InterruptedException ex) {
+                            throw new RuntimeException(ex);
+                        }
+                    }
+                }
             }
             copyNpmScripts();
         }
