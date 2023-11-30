@@ -21,6 +21,9 @@ public final class FrontendPluginFactory {
         this.cacheResolver = cacheResolver;
     }
 
+    public BunInstaller getBunInstaller(ProxyConfig proxy) {
+        return new BunInstaller(getInstallConfig(), new DefaultArchiveExtractor(), new DefaultFileDownloader(proxy));
+    }
     public NodeInstaller getNodeInstaller(ProxyConfig proxy) {
         return new NodeInstaller(getInstallConfig(), new DefaultArchiveExtractor(), new DefaultFileDownloader(proxy));
     }
@@ -39,6 +42,10 @@ public final class FrontendPluginFactory {
 
     public BowerRunner getBowerRunner(ProxyConfig proxy) {
         return new DefaultBowerRunner(getExecutorConfig(), proxy);
+    }
+
+    public BunRunner getBunRunner(ProxyConfig proxy, String npmRegistryURL) {
+        return new DefaultBunRunner(new InstallBunExecutorConfig(getInstallConfig()), proxy, npmRegistryURL);
     }
 
     public JspmRunner getJspmRunner() {

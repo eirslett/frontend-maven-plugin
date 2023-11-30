@@ -547,6 +547,7 @@ Tools and property to enable skipping
 * npm `-Dskip.npm`
 * yarn `-Dskip.yarn`
 * bower `-Dskip.bower`
+* bun `-Dskip.bun`
 * grunt `-Dskip.grunt`
 * gulp `-Dskip.gulp`
 * jspm `-Dskip.jspm`
