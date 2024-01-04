@@ -95,16 +95,16 @@ present).
             <!-- optional: default phase is "generate-resources" -->
             <phase>generate-resources</phase>
         </execution>
-    </executions>
-    <configuration>
-        <nodeVersion>v4.6.0</nodeVersion>
+        <configuration>
+            <nodeVersion>v4.6.0</nodeVersion>
 
-        <!-- optional: with node version greater than 4.0.0 will use npm provided by node distribution -->
-        <npmVersion>2.15.9</npmVersion>
+            <!-- optional: with node version greater than 4.0.0 will use npm provided by node distribution -->
+            <npmVersion>2.15.9</npmVersion>
         
-        <!-- optional: where to download node and npm from. Defaults to https://nodejs.org/dist/ -->
-        <downloadRoot>http://myproxy.example.org/nodejs/</downloadRoot>
-    </configuration>
+            <!-- optional: where to download node and npm from. Defaults to https://nodejs.org/dist/ -->
+            <downloadRoot>http://myproxy.example.org/nodejs/</downloadRoot>
+        </configuration>
+    </executions>
 </plugin>
 ```
 
@@ -158,16 +158,16 @@ https://github.com/eirslett/frontend-maven-plugin/blob/master/frontend-maven-plu
         </goals>
         <!-- optional: default phase is "generate-resources" -->
         <phase>generate-resources</phase>
-    </execution>
-    <configuration>
-        <nodeVersion>v6.9.1</nodeVersion>
-        <yarnVersion>v0.16.1</yarnVersion>
+        <configuration>
+            <nodeVersion>v6.9.1</nodeVersion>
+            <yarnVersion>v0.16.1</yarnVersion>
 
-        <!-- optional: where to download node from. Defaults to https://nodejs.org/dist/ -->
-        <nodeDownloadRoot>http://myproxy.example.org/nodejs/</nodeDownloadRoot>
-        <!-- optional: where to download yarn from. Defaults to https://github.com/yarnpkg/yarn/releases/download/ -->
-        <yarnDownloadRoot>http://myproxy.example.org/yarn/</yarnDownloadRoot>        
-    </configuration>
+            <!-- optional: where to download node from. Defaults to https://nodejs.org/dist/ -->
+            <nodeDownloadRoot>http://myproxy.example.org/nodejs/</nodeDownloadRoot>
+            <!-- optional: where to download yarn from. Defaults to https://github.com/yarnpkg/yarn/releases/download/ -->
+            <yarnDownloadRoot>http://myproxy.example.org/yarn/</yarnDownloadRoot>        
+        </configuration>
+    </execution>
 </plugin>
 ```
 
