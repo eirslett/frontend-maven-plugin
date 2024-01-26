@@ -29,6 +29,7 @@
                     <goal>bun</goal>
                     <goal>jspm</goal>
                     <goal>ember</goal>
+                    <goal>rspack</goal>
                     <goal>webpack</goal>
                 </goals>
             </pluginExecutionFilter>
