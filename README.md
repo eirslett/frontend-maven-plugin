@@ -12,6 +12,8 @@ It's supposed to work on Windows, OS X and Linux.
 If you prefer [Yarn](https://yarnpkg.com/) over [NPM](https://www.npmjs.com/) for your node package fetching, 
 this plugin can also download Node and Yarn and then run `yarn install` for your project.
 
+The new [Bun](https://bun.sh/) Javascript Toolkit is also supported.
+
 #### What is this plugin meant to do?
 - Let you keep your frontend and backend builds as separate as possible, by
 reducing the amount of interaction between them to the bare minimum; using only 1 plugin.
@@ -56,9 +58,11 @@ to see how it should be set up: https://github.com/eirslett/frontend-maven-plugi
 
  - [Installing node and npm](#installing-node-and-npm)
  - [Installing node and yarn](#installing-node-and-yarn)
+ - [Installing bun](#installing-bun)
  - Running 
     - [npm](#running-npm)
     - [yarn](#running-yarn)
+    - [bun](#running-bun)
     - [bower](#running-bower)
     - [grunt](#running-grunt)
     - [gulp](#running-gulp)
@@ -171,6 +175,26 @@ https://github.com/eirslett/frontend-maven-plugin/blob/master/frontend-maven-plu
 </plugin>
 ```
 
+### Installing Bun
+
+The new alternative is to use Bun, which combines features of a runtime and a package manager.
+
+```xml
+<plugin>
+    ...
+   <execution>
+      <id>install bun runtime</id>
+      <goals>
+         <goal>install-bun</goal>
+      </goals>
+   </execution>
+   <configuration>
+      <bunVersion>v1.1.2</bunVersion>
+      <installDirectory>target</installDirectory>
+   </configuration>
+</plugin>
+```
+
 ### Running npm
 
 All node packaged modules will be installed in the `node_modules` folder in your [working directory](#working-directory).
@@ -270,6 +294,22 @@ Also you can set a registry using a tag `npmRegistryURL`
         <arguments>install</arguments>
 	<!-- optional: where to download npm modules from. Defaults to https://registry.yarnpkg.com/ -->
 	<npmRegistryURL>http://myregistry.example.org/</npmRegistryURL>
+    </configuration>
+</execution>
+```
+
+### Running bun
+
+This works exactly like yarn, all node packaged modules will be installed in the `node_modules` folder in your [working directory](#working-directory).
+
+```xml
+<execution>
+    <id>bun install</id>
+    <goals>
+        <goal>bun</goal>
+    </goals>
+    <configuration>
+        <arguments>install</arguments>
     </configuration>
 </execution>
 ```
