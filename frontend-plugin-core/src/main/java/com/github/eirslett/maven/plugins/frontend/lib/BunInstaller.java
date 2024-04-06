@@ -58,9 +58,6 @@ public class BunInstaller {
             if (!bunIsAlreadyInstalled()) {
                 if (!this.bunVersion.startsWith("v")) {
                     this.logger.warn("Bun version does not start with naming convention 'v'.");
-                }
-                if (this.config.getPlatform().isWindows()) {
-                    throw new InstallationException("Unable to install bun on windows!");
                 } else {
                     installBunDefault();
                 }
