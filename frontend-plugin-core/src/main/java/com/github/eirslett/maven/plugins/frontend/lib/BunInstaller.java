@@ -129,8 +129,11 @@ public class BunInstaller {
             }
 
             // Search for the bun binary
+            String binaryFile = OS.guess().equals(OS.Windows) ? "bun.exe" : "bun";
+
             File bunBinary =
-                    new File(getInstallDirectory(), File.separator + createBunTargetArchitecturePath() + File.separator + "bun");
+                    new File(getInstallDirectory(), File.separator + createBunTargetArchitecturePath() + File.separator + binaryFile);
+
             if (!bunBinary.exists()) {
                 throw new FileNotFoundException(
                         "Could not find the downloaded bun binary in " + bunBinary);
@@ -177,7 +180,7 @@ public class BunInstaller {
     private String createBunTargetArchitecturePath() {
         OS os = OS.guess();
         Architecture architecture = Architecture.guess();
-        String destOs = os.equals(OS.Linux) ? "linux" : os.equals(OS.Mac) ? "darwin" : null;
+        String destOs = os.equals(OS.Linux) ? "linux" : os.equals(OS.Mac) ? "darwin" : os.equals(OS.Windows) ? "windows" : null;
         String destArc = architecture.equals(Architecture.x64) ? "x64" : architecture.equals(
                 Architecture.arm64) ? "aarch64" : null;
         return String.format("%s-%s-%s", INSTALL_PATH, destOs, destArc);
