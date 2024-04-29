@@ -14,11 +14,18 @@ final class DefaultYarnRunner extends YarnTaskExecutor implements YarnRunner {
 
     public DefaultYarnRunner(YarnExecutorConfig config, ProxyConfig proxyConfig, String npmRegistryURL) {
         super(config, TASK_NAME, config.getYarnPath().getAbsolutePath(),
-            buildArguments(proxyConfig, npmRegistryURL));
+            buildArguments(config, proxyConfig, npmRegistryURL));
     }
 
-    private static List<String> buildArguments(ProxyConfig proxyConfig, String npmRegistryURL) {
+    private static List<String> buildArguments(final YarnExecutorConfig config, ProxyConfig proxyConfig,
+            String npmRegistryURL) {
         List<String> arguments = new ArrayList<>();
+
+        if (config.isYarnBerry()) {
+            // Yarn berry does not support the additional arguments we try to set below.
+            // Setting those results in failures during yarn execution.
+            return arguments;
+        }
 
         if (npmRegistryURL != null && !npmRegistryURL.isEmpty()) {
             arguments.add("--registry=" + npmRegistryURL);

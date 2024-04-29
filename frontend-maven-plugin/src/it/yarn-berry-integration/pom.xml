@@ -38,7 +38,7 @@
                             <goal>yarn</goal>
                         </goals>
                         <configuration>
-                            <arguments>install</arguments>
+                            <arguments>install --no-immutable</arguments>
                         </configuration>
                     </execution>
 

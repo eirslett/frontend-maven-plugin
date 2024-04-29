@@ -1,5 +1,7 @@
 package com.github.eirslett.maven.plugins.frontend.mojo;
 
+import static com.github.eirslett.maven.plugins.frontend.mojo.YarnUtils.isYarnrcYamlFilePresent;
+
 import java.io.File;
 import java.util.stream.Stream;
 import org.apache.maven.execution.MavenSession;
@@ -69,38 +71,25 @@ public final class InstallNodeAndYarnMojo extends AbstractFrontendMojo {
         return this.skip;
     }
 
-    /**
-     * Checks whether a .yarnrc.yml file exists at the project root (in multi-module builds, it will be the Reactor project)
-     *
-     * @return true if the .yarnrc.yml file exists, false otherwise
-     */
-    private boolean isYarnrcYamlFilePresent() {
-        Stream<File> filesToCheck = Stream.of(
-                new File(session.getCurrentProject().getBasedir(), YARNRC_YAML_FILE_NAME),
-                new File(session.getRequest().getMultiModuleProjectDirectory(), YARNRC_YAML_FILE_NAME),
-                new File(session.getExecutionRootDirectory(), YARNRC_YAML_FILE_NAME)
-        );
-
-        return filesToCheck
-                .anyMatch(File::exists);
-    }
-
     @Override
     public void execute(FrontendPluginFactory factory) throws InstallationException {
         ProxyConfig proxyConfig = MojoUtils.getProxyConfig(this.session, this.decrypter);
         Server server = MojoUtils.decryptServer(this.serverId, this.session, this.decrypter);
+
+        boolean isYarnYamlFilePresent = isYarnrcYamlFilePresent(this.session, this.workingDirectory);
+
         if (null != server) {
             factory.getNodeInstaller(proxyConfig).setNodeDownloadRoot(this.nodeDownloadRoot)
                 .setNodeVersion(this.nodeVersion).setPassword(server.getPassword())
                 .setUserName(server.getUsername()).install();
             factory.getYarnInstaller(proxyConfig).setYarnDownloadRoot(this.yarnDownloadRoot)
                 .setYarnVersion(this.yarnVersion).setUserName(server.getUsername())
-                .setPassword(server.getPassword()).setIsYarnBerry(isYarnrcYamlFilePresent()).install();
+                .setPassword(server.getPassword()).setIsYarnBerry(isYarnYamlFilePresent).install();
         } else {
             factory.getNodeInstaller(proxyConfig).setNodeDownloadRoot(this.nodeDownloadRoot)
                 .setNodeVersion(this.nodeVersion).install();
             factory.getYarnInstaller(proxyConfig).setYarnDownloadRoot(this.yarnDownloadRoot)
-                .setYarnVersion(this.yarnVersion).setIsYarnBerry(isYarnrcYamlFilePresent()).install();
+                .setYarnVersion(this.yarnVersion).setIsYarnBerry(isYarnYamlFilePresent).install();
         }
     }
 

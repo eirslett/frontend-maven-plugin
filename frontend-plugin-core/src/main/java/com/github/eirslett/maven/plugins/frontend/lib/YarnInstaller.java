@@ -82,7 +82,7 @@ public class YarnInstaller {
 
     private boolean yarnIsAlreadyInstalled() {
         try {
-            YarnExecutorConfig executorConfig = new InstallYarnExecutorConfig(config);
+            YarnExecutorConfig executorConfig = new InstallYarnExecutorConfig(config, isYarnBerry);
             File nodeFile = executorConfig.getYarnPath();
             if (nodeFile.exists()) {
                 final String version =

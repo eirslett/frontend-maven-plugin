@@ -1,5 +1,7 @@
 package com.github.eirslett.maven.plugins.frontend.mojo;
 
+import static com.github.eirslett.maven.plugins.frontend.mojo.YarnUtils.isYarnrcYamlFilePresent;
+
 import java.io.File;
 import java.util.Collections;
 
@@ -62,7 +64,8 @@ public final class YarnMojo extends AbstractFrontendMojo {
         if (this.buildContext == null || this.buildContext.hasDelta(packageJson)
             || !this.buildContext.isIncremental()) {
             ProxyConfig proxyConfig = getProxyConfig();
-            factory.getYarnRunner(proxyConfig, getRegistryUrl()).execute(this.arguments,
+            boolean isYarnBerry = isYarnrcYamlFilePresent(this.session, this.workingDirectory);
+            factory.getYarnRunner(proxyConfig, getRegistryUrl(), isYarnBerry).execute(this.arguments,
                 this.environmentVariables);
         } else {
             getLog().info("Skipping yarn install as package.json unchanged");
