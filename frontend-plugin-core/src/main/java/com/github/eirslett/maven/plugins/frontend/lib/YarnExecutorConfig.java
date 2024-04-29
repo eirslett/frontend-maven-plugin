@@ -11,6 +11,8 @@ public interface YarnExecutorConfig {
     File getWorkingDirectory();
 
     Platform getPlatform();
+
+    boolean isYarnBerry();
 }
 
 final class InstallYarnExecutorConfig implements YarnExecutorConfig {
@@ -20,13 +22,16 @@ final class InstallYarnExecutorConfig implements YarnExecutorConfig {
 
     private static final String YARN_DEFAULT = YarnInstaller.INSTALL_PATH + "/dist/bin/yarn";
 
-    private File nodePath;
+    private final File nodePath;
 
     private final InstallConfig installConfig;
 
-    public InstallYarnExecutorConfig(InstallConfig installConfig) {
+    private final boolean isYarnBerry;
+
+    public InstallYarnExecutorConfig(InstallConfig installConfig, final boolean isYarnBerry) {
         this.installConfig = installConfig;
         nodePath = new InstallNodeExecutorConfig(installConfig).getNodePath();
+        this.isYarnBerry = isYarnBerry;
     }
 
     @Override
@@ -48,5 +53,10 @@ final class InstallYarnExecutorConfig implements YarnExecutorConfig {
     @Override
     public Platform getPlatform() {
         return installConfig.getPlatform();
+    }
+
+    @Override
+    public boolean isYarnBerry() {
+        return isYarnBerry;
     }
 }
