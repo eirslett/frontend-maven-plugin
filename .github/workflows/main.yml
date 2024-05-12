@@ -24,7 +24,7 @@ jobs:
       - name: Configure Java
         uses: actions/setup-java@v4
         with:
-          java-version: "8"
+          java-version: "11"
           distribution: temurin
       - name: "Run Maven"
         shell: bash
