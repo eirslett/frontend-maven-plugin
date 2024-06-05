@@ -21,6 +21,7 @@
             <pluginExecutionFilter>
                 <goals>
                     <goal>npm</goal>
+                    <goal>npx</goal>
                     <goal>pnpm</goal>
                     <goal>yarn</goal>
                     <goal>gulp</goal>
