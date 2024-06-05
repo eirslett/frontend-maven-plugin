@@ -4,6 +4,10 @@ Last public release: [![Maven Central](https://maven-badges.herokuapp.com/maven-
 
 ## Changelog
 
+### 1.15.1
+
+* Fix #1150: Update lifecycle-mapping-metadata.xml for npx
+
 ### 1.15.0
 
 * Bun support
@@ -78,7 +82,7 @@ Just a lot of various small bug fixes and tweaks.
 
 ### 1.7.6
 
-* Fix #670: Plugin will no longer fail to install node.exe if node.exe already exists 
+* Fix #670: Plugin will no longer fail to install node.exe if node.exe already exists
 * Fix #794: Plugin will self-repair if previous node/npm/yarn archive download was interrupted
 
 ### 1.5
@@ -106,14 +110,14 @@ failOnError-like behavior can be implemented by ignoring exit codes;
 
 ### 1.2
 
-* New goals `yarn` and `install-node-and-yarn` for Yarn support 
+* New goals `yarn` and `install-node-and-yarn` for Yarn support
 
 ### 1.1
 
 * Update requirements to Java 1.7
 * Fix #469: Check write permissions on node installation folder
 * ThreadSafe Node and NPM installation
-* Add documentation and example for environmentVariables 
+* Add documentation and example for environmentVariables
 * Add ARM's 64bit server aarch64 support
 * Add Linux on Power Systems ppc64le support
 * Authenticated download
@@ -122,7 +126,7 @@ failOnError-like behavior can be implemented by ignoring exit codes;
 
 ### 1.0
 
-* Fix #384: Add parameter `npmInheritsProxyConfigFromMaven` 
+* Fix #384: Add parameter `npmInheritsProxyConfigFromMaven`
 * Update `maven-invoker-plugin` to v2.0.0 to fix the build on Windows mith Maven 3.2.2
   Caused by this issue: https://issues.apache.org/jira/browse/MINVOKER-166
 * Fix #343: Change "npm WARN" from ERROR to WARNING in log
