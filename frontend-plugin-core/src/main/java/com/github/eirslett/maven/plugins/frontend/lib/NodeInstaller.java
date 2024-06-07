@@ -201,7 +201,18 @@ public class NodeInstaller {
                     for (String script : Arrays.asList("npm", "npm.cmd")) {
                         File scriptFile = new File(npmDirectory, "bin" + File.separator + script);
                         if (scriptFile.exists()) {
-                            scriptFile.setExecutable(true);
+                            File copy = new File(destinationDirectory, script);
+                            if (!copy.exists()) {
+                                try
+                                {
+                                    FileUtils.copyFile(scriptFile, copy);
+                                }
+                                catch (IOException e)
+                                {
+                                    throw new InstallationException("Could not copy npm", e);
+                                }
+                                copy.setExecutable(true);
+                            }
                         }
                     }
                 }
