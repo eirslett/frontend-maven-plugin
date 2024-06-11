@@ -1,6 +1,7 @@
 package com.github.eirslett.maven.plugins.frontend.mojo;
 
 import com.github.eirslett.maven.plugins.frontend.lib.FrontendPluginFactory;
+import com.github.eirslett.maven.plugins.frontend.lib.PreExecutionException;
 import com.github.eirslett.maven.plugins.frontend.lib.TaskRunnerException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -28,7 +29,7 @@ public final class KarmaRunMojo extends AbstractFrontendMojo {
     }
 
     @Override
-    public synchronized void execute(FrontendPluginFactory factory) throws TaskRunnerException {
-        factory.getKarmaRunner().execute("start " + karmaConfPath, environmentVariables);
+    public synchronized void execute(FrontendPluginFactory factory) throws TaskRunnerException, PreExecutionException {
+        factory.getKarmaRunner().execute("start " + karmaConfPath, getEnvironmentVariables());
     }
 }

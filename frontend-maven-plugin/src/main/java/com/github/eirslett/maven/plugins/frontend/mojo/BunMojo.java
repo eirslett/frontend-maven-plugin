@@ -1,6 +1,7 @@
 package com.github.eirslett.maven.plugins.frontend.mojo;
 
 import com.github.eirslett.maven.plugins.frontend.lib.FrontendPluginFactory;
+import com.github.eirslett.maven.plugins.frontend.lib.PreExecutionException;
 import com.github.eirslett.maven.plugins.frontend.lib.ProxyConfig;
 import com.github.eirslett.maven.plugins.frontend.lib.TaskRunnerException;
 import org.apache.maven.execution.MavenSession;
@@ -56,13 +57,13 @@ public final class BunMojo extends AbstractFrontendMojo {
     }
 
     @Override
-    public synchronized void execute(FrontendPluginFactory factory) throws TaskRunnerException {
+    public synchronized void execute(FrontendPluginFactory factory) throws TaskRunnerException, PreExecutionException {
         File packageJson = new File(this.workingDirectory, "package.json");
         if (this.buildContext == null || this.buildContext.hasDelta(packageJson)
                 || !this.buildContext.isIncremental()) {
             ProxyConfig proxyConfig = getProxyConfig();
             factory.getBunRunner(proxyConfig, getRegistryUrl()).execute(this.arguments,
-                    this.environmentVariables);
+              getEnvironmentVariables());
         } else {
             getLog().info("Skipping bun install as package.json unchanged");
         }

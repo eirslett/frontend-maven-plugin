@@ -1,6 +1,7 @@
 package com.github.eirslett.maven.plugins.frontend.mojo;
 
 import com.github.eirslett.maven.plugins.frontend.lib.FrontendPluginFactory;
+import com.github.eirslett.maven.plugins.frontend.lib.PreExecutionException;
 import com.github.eirslett.maven.plugins.frontend.lib.TaskRunnerException;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -59,9 +60,9 @@ public final class GulpMojo extends AbstractFrontendMojo {
     }
 
     @Override
-    public synchronized void execute(FrontendPluginFactory factory) throws TaskRunnerException {
+    public synchronized void execute(FrontendPluginFactory factory) throws TaskRunnerException, PreExecutionException {
         if (shouldExecute()) {
-            factory.getGulpRunner().execute(arguments, environmentVariables);
+            factory.getGulpRunner().execute(arguments, getEnvironmentVariables());
 
             if (outputdir != null) {
                 getLog().info("Refreshing files after gulp: " + outputdir);

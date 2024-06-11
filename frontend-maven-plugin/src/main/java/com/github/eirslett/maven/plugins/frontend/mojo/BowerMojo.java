@@ -1,6 +1,7 @@
 package com.github.eirslett.maven.plugins.frontend.mojo;
 
 import com.github.eirslett.maven.plugins.frontend.lib.FrontendPluginFactory;
+import com.github.eirslett.maven.plugins.frontend.lib.PreExecutionException;
 import com.github.eirslett.maven.plugins.frontend.lib.ProxyConfig;
 import com.github.eirslett.maven.plugins.frontend.lib.TaskRunnerException;
 import org.apache.maven.execution.MavenSession;
@@ -42,9 +43,9 @@ public final class BowerMojo extends AbstractFrontendMojo {
     }
 
     @Override
-    protected synchronized void execute(FrontendPluginFactory factory) throws TaskRunnerException {
+    protected synchronized void execute(FrontendPluginFactory factory) throws TaskRunnerException, PreExecutionException {
         ProxyConfig proxyConfig = getProxyConfig();
-        factory.getBowerRunner(proxyConfig).execute(arguments, environmentVariables);
+        factory.getBowerRunner(proxyConfig).execute(arguments, getEnvironmentVariables());
     }
 
     private ProxyConfig getProxyConfig() {

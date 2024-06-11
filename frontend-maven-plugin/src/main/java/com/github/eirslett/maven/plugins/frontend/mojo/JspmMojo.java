@@ -1,6 +1,7 @@
 package com.github.eirslett.maven.plugins.frontend.mojo;
 
 import com.github.eirslett.maven.plugins.frontend.lib.FrontendPluginFactory;
+import com.github.eirslett.maven.plugins.frontend.lib.PreExecutionException;
 import com.github.eirslett.maven.plugins.frontend.lib.TaskRunnerException;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -32,8 +33,8 @@ public class JspmMojo extends AbstractFrontendMojo {
     }
 
     @Override
-    protected synchronized void execute(FrontendPluginFactory factory) throws TaskRunnerException {
-        factory.getJspmRunner().execute(arguments, environmentVariables);
+    protected synchronized void execute(FrontendPluginFactory factory) throws TaskRunnerException, PreExecutionException {
+        factory.getJspmRunner().execute(arguments, getEnvironmentVariables());
     }
 
 }

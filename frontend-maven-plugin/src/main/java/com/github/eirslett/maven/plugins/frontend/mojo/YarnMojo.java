@@ -2,6 +2,7 @@ package com.github.eirslett.maven.plugins.frontend.mojo;
 
 import static com.github.eirslett.maven.plugins.frontend.mojo.YarnUtils.isYarnrcYamlFilePresent;
 
+import com.github.eirslett.maven.plugins.frontend.lib.PreExecutionException;
 import java.io.File;
 import java.util.Collections;
 
@@ -59,14 +60,14 @@ public final class YarnMojo extends AbstractFrontendMojo {
     }
 
     @Override
-    public synchronized void execute(FrontendPluginFactory factory) throws TaskRunnerException {
+    public synchronized void execute(FrontendPluginFactory factory) throws TaskRunnerException, PreExecutionException {
         File packageJson = new File(this.workingDirectory, "package.json");
         if (this.buildContext == null || this.buildContext.hasDelta(packageJson)
             || !this.buildContext.isIncremental()) {
             ProxyConfig proxyConfig = getProxyConfig();
             boolean isYarnBerry = isYarnrcYamlFilePresent(this.session, this.workingDirectory);
             factory.getYarnRunner(proxyConfig, getRegistryUrl(), isYarnBerry).execute(this.arguments,
-                this.environmentVariables);
+              getEnvironmentVariables());
         } else {
             getLog().info("Skipping yarn install as package.json unchanged");
         }

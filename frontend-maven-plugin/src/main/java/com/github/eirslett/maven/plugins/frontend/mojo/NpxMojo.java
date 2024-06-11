@@ -1,6 +1,7 @@
 package com.github.eirslett.maven.plugins.frontend.mojo;
 
 import com.github.eirslett.maven.plugins.frontend.lib.FrontendPluginFactory;
+import com.github.eirslett.maven.plugins.frontend.lib.PreExecutionException;
 import com.github.eirslett.maven.plugins.frontend.lib.ProxyConfig;
 import com.github.eirslett.maven.plugins.frontend.lib.TaskRunnerException;
 import org.apache.maven.execution.MavenSession;
@@ -55,11 +56,11 @@ public final class NpxMojo extends AbstractFrontendMojo {
     }
 
     @Override
-    public synchronized void execute(FrontendPluginFactory factory) throws TaskRunnerException {
+    public synchronized void execute(FrontendPluginFactory factory) throws TaskRunnerException, PreExecutionException {
         File packageJson = new File(workingDirectory, "package.json");
         if (buildContext == null || buildContext.hasDelta(packageJson) || !buildContext.isIncremental()) {
             ProxyConfig proxyConfig = getProxyConfig();
-            factory.getNpxRunner(proxyConfig, getRegistryUrl()).execute(arguments, environmentVariables);
+            factory.getNpxRunner(proxyConfig, getRegistryUrl()).execute(arguments, getEnvironmentVariables());
         } else {
             getLog().info("Skipping npm install as package.json unchanged");
         }
