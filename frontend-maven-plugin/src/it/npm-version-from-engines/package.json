@@ -1,0 +1,13 @@
+{
+  "name": "example",
+  "version": "0.0.1",
+  "engines": {
+    "npm": ">=7 <8"
+  },
+  "dependencies": {
+    "less": "~3.0.2"
+  },
+  "scripts": {
+    "prebuild": "npm install"
+  }
+}

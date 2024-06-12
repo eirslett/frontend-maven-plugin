@@ -78,7 +78,7 @@ public final class InstallNodeAndNpmMojo extends AbstractFrontendMojo {
         String npmDownloadRoot = getNpmDownloadRoot();
         Server server = MojoUtils.decryptServer(serverId, session, decrypter);
         if (null != server) {
-            factory.getNodeInstaller(proxyConfig)
+            String installedNodeVersion=factory.getNodeInstaller(proxyConfig)
                 .setNodeVersion(nodeVersion)
                 .setNodeDownloadRoot(nodeDownloadRoot)
                 .setNpmVersion(npmVersion)
@@ -86,20 +86,20 @@ public final class InstallNodeAndNpmMojo extends AbstractFrontendMojo {
                 .setPassword(server.getPassword())
                 .install();
             factory.getNPMInstaller(proxyConfig)
-                .setNodeVersion(nodeVersion)
+                .setNodeVersion(installedNodeVersion)
                 .setNpmVersion(npmVersion)
                 .setNpmDownloadRoot(npmDownloadRoot)
                 .setUserName(server.getUsername())
                 .setPassword(server.getPassword())
                 .install();
         } else {
-            factory.getNodeInstaller(proxyConfig)
+            String installedNodeVersion=factory.getNodeInstaller(proxyConfig)
                 .setNodeVersion(nodeVersion)
                 .setNodeDownloadRoot(nodeDownloadRoot)
                 .setNpmVersion(npmVersion)
                 .install();
             factory.getNPMInstaller(proxyConfig)
-                .setNodeVersion(this.nodeVersion)
+                .setNodeVersion(installedNodeVersion)
                 .setNpmVersion(this.npmVersion)
                 .setNpmDownloadRoot(npmDownloadRoot)
                 .install();

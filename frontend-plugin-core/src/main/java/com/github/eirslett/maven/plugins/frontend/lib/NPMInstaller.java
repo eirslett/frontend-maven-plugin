@@ -6,6 +6,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import com.vdurmont.semver4j.Requirement;
+import com.vdurmont.semver4j.Semver;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +31,8 @@ public class NPMInstaller {
     private final ArchiveExtractor archiveExtractor;
 
     private final FileDownloader fileDownloader;
+
+    private Requirement npmVersionRequirement;
 
     NPMInstaller(InstallConfig config, ArchiveExtractor archiveExtractor, FileDownloader fileDownloader) {
         this.logger = LoggerFactory.getLogger(getClass());
@@ -78,7 +84,53 @@ public class NPMInstaller {
             if (this.npmDownloadRoot == null || this.npmDownloadRoot.isEmpty()) {
                 this.npmDownloadRoot = DEFAULT_NPM_DOWNLOAD_ROOT;
             }
+            if ("engines".equals(this.npmVersion)) {
+                try {
+                    File packageFile = new File(this.config.getWorkingDirectory(), "package.json");
+                    HashMap<String, Object> data = new ObjectMapper().readValue(packageFile, HashMap.class);
+                    if (data.containsKey("engines")) {
+                        HashMap<String, Object> engines = (HashMap<String, Object>) data.get("engines");
+                        if (engines.containsKey("npm")) {
+                            this.npmVersionRequirement = Requirement.buildNPM((String) engines.get("npm"));
+                        } else {
+                            this.logger.info("Could not read npm from engines from package.json");
+                        }
+                    } else {
+                        this.logger.info("Could not read engines from package.json");
+                    }
+                } catch (IOException e) {
+                    throw new InstallationException("Could not read npm engine version from package.json", e);
+                }
+            }
+
             if (!npmProvided() && !npmIsAlreadyInstalled()) {
+                if (this.npmVersionRequirement != null) {
+                    // download available node versions
+                    try {
+                        String downloadUrl = this.npmDownloadRoot
+                                + "..";
+
+                        File archive = File.createTempFile("npm_versions", ".json");
+
+                        downloadFile(downloadUrl, archive, this.userName, this.password);
+
+                        HashMap<String, Object> data = new ObjectMapper().readValue(archive, HashMap.class);
+
+                        List<String> npmVersions = new LinkedList<>();
+                        if (data.containsKey("versions")) {
+                            HashMap<String, Object> versions = (HashMap<String, Object>) data.get("versions");
+                            npmVersions.addAll(versions.keySet());
+                        } else {
+                            this.logger.info("Could not read versions from NPM registry");
+                        }
+
+                        logger.debug("Available NPM versions: {}", npmVersions);
+                        this.npmVersion = npmVersions.stream().filter(version -> npmVersionRequirement.isSatisfiedBy(new Semver(version, Semver.SemverType.NPM))).findFirst().orElseThrow(() -> new InstallationException("Could not find matching node version satisfying requirement " + this.npmVersionRequirement));
+                        this.logger.info("Found matching NPM version {} satisfying requirement {}.", this.npmVersion, this.npmVersionRequirement);
+                    } catch (IOException | DownloadException e) {
+                        throw new InstallationException("Could not get available node versions.", e);
+                    }
+                }
                 installNpm();
             }
             copyNpmScripts();
@@ -93,7 +145,12 @@ public class NPMInstaller {
                 HashMap<String, Object> data = new ObjectMapper().readValue(npmPackageJson, HashMap.class);
                 if (data.containsKey(VERSION)) {
                     final String foundNpmVersion = data.get(VERSION).toString();
-                    if (foundNpmVersion.equals(this.npmVersion)) {
+                    if (npmVersionRequirement != null && npmVersionRequirement.isSatisfiedBy(new Semver(foundNpmVersion, Semver.SemverType.NPM))) {
+                        //update version with installed version
+                        this.nodeVersion = foundNpmVersion;
+                        this.logger.info("NPM {} matches required version range {} installed.", foundNpmVersion, npmVersionRequirement);
+                        return true;
+                    } else if (foundNpmVersion.equals(this.npmVersion)) {
                         this.logger.info("NPM {} is already installed.", foundNpmVersion);
                         return true;
                     } else {
