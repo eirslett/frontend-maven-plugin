@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.github.eirslett</groupId>
+    <artifactId>example</artifactId>
+    <version>0</version>
+    <packaging>pom</packaging>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.mock-server</groupId>
+            <artifactId>mockserver-client-java</artifactId>
+            <version>5.11.2</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.0</version>
+                <executions>
+                    <execution>
+                        <id>npm-registry-mock-server-compile</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.0.0</version>
+                <executions>
+                    <execution>
+                        <id>generate random port</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>reserve-network-port</goal>
+                        </goals>
+                        <configuration>
+                            <randomPort>true</randomPort>
+                            <portNames>
+                                <name>npm.registry.port</name>
+                            </portNames>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>filter .npmrc zand verify.groovy</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.basedir}</outputDirectory>
+                            <overwrite>true</overwrite>
+                            <resources>
+                                <resource>
+                                    <directory>${project.basedir}</directory>
+                                    <filtering>true</filtering>
+                                    <includes>
+                                        <include>verify.groovy</include>
+                                        <include>**/.npmrc</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.mock-server</groupId>
+                <artifactId>mockserver-maven-plugin</artifactId>
+                <version>5.11.2</version>
+                <configuration>
+                    <serverPort>${npm.registry.port}</serverPort>
+                    <logLevel>INFO</logLevel>
+                    <initializationClass>com.github.eirslett.maven.plugins.NpmRegistryMock</initializationClass>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>npm-registry-mock-server-start</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>start</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>npm-registry-mock-server-stop</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>stop</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>com.github.eirslett</groupId>
+                <artifactId>frontend-maven-plugin</artifactId>
+                <!-- NB! Set <version> to the latest released version of frontend-maven-plugin, like in README.md -->
+                <version>@project.version@</version>
+
+                <configuration>
+                    <installDirectory>target</installDirectory>
+                </configuration>
+
+                <executions>
+                    <execution>
+                        <id>npm login (empty)</id>
+                        <goals>
+                            <goal>npm-login</goal>
+                        </goals>
+                        <configuration>
+                            <npmRegistryURL>http://localhost:${npm.registry.port}</npmRegistryURL>
+                            <npmRegistryServerId>npm-registry</npmRegistryServerId>
+                            <!--ONLY FOR IT TEST-->
+                            <userHome>${project.basedir}/user.home/empty/</userHome>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>npm login (with_token)</id>
+                        <goals>
+                            <goal>npm-login</goal>
+                        </goals>
+                        <configuration>
+                            <npmRegistryURL>http://localhost:${npm.registry.port}</npmRegistryURL>
+                            <npmRegistryServerId>npm-registry</npmRegistryServerId>
+                            <!--ONLY FOR IT TEST-->
+                            <userHome>${project.basedir}/user.home/with_token/</userHome>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>npm login (without_token)</id>
+                        <goals>
+                            <goal>npm-login</goal>
+                        </goals>
+                        <configuration>
+                            <npmRegistryURL>http://localhost:${npm.registry.port}</npmRegistryURL>
+                            <npmRegistryServerId>npm-registry</npmRegistryServerId>
+                            <!--ONLY FOR IT TEST-->
+                            <userHome>${project.basedir}/user.home/without_token/</userHome>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>
