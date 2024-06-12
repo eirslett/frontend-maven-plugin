@@ -56,9 +56,11 @@ to see how it should be set up: https://github.com/eirslett/frontend-maven-plugi
 
  - [Installing node and npm](#installing-node-and-npm)
  - [Installing node and yarn](#installing-node-and-yarn)
+ - [Installing node and corepack](#installing-node-and-corepack)
  - Running 
     - [npm](#running-npm)
     - [yarn](#running-yarn)
+    - [corepack](#running-corepack)
     - [bower](#running-bower)
     - [grunt](#running-grunt)
     - [gulp](#running-gulp)
@@ -171,6 +173,45 @@ https://github.com/eirslett/frontend-maven-plugin/blob/master/frontend-maven-plu
 </plugin>
 ```
 
+### Installing node and corepack
+
+You can choose to let corepack manage the package manager version in use. Node is
+downloaded from `https://nodejs.org/dist`, and corepack currently comes from
+`https://repository.npmjs.org`, extracted and put into a `node` folder created
+in your installation directory.
+
+Node/corepack and any package managers will only be "installed" locally to your project.
+It will not be installed globally on the whole system (and it will not interfere with any
+Node/corepack installations already present).
+
+Have a look at the example `POM` to see how it should be set up with corepack:
+https://github.com/eirslett/frontend-maven-plugin/blob/master/frontend-maven-plugin/src/it/corepack-integration/pom.xml
+
+
+```xml
+<plugin>
+    ...
+    <execution>
+        <!-- optional: you don't really need execution ids, but it looks nice in your build log. -->
+        <id>install-node-and-corepack</id>
+        <goals>
+            <goal>install-node-and-corepack</goal>
+        </goals>
+        <!-- optional: default phase is "generate-resources" -->
+        <phase>generate-resources</phase>
+    </execution>
+    <configuration>
+        <nodeVersion>v20.12.2</nodeVersion>
+        <corepackVersion>v0.25.2</corepackVersion>
+
+        <!-- optional: where to download node from. Defaults to https://nodejs.org/dist/ -->
+        <nodeDownloadRoot>http://myproxy.example.org/nodejs/</nodeDownloadRoot>
+        <!-- optional: where to download corepack from. Defaults to https://registry.npmjs.org/corepack/-/ -->
+        <corepackDownloadRoot>http://myproxy.example.org/corepack/</corepackDownloadRoot>
+    </configuration>
+</plugin>
+```
+
 ### Running npm
 
 All node packaged modules will be installed in the `node_modules` folder in your [working directory](#working-directory).
@@ -270,6 +311,55 @@ Also you can set a registry using a tag `npmRegistryURL`
         <arguments>install</arguments>
 	<!-- optional: where to download npm modules from. Defaults to https://registry.yarnpkg.com/ -->
 	<npmRegistryURL>http://myregistry.example.org/</npmRegistryURL>
+    </configuration>
+</execution>
+```
+
+### Running corepack
+
+If your `packageManager` specifies `yarn`, then you'll want to have something like:
+
+
+```xml
+<execution>
+    <id>install</id>
+    <goals>
+        <goal>corepack</goal>
+    </goals>
+    <configuration>
+        <arguments>yarn install</arguments>
+    </configuration>
+</execution>
+<execution>
+    <id>build</id>
+    <goals>
+        <goal>corepack</goal>
+    </goals>
+    <configuration>
+        <arguments>yarn build</arguments>
+    </configuration>
+</execution>
+```
+
+and if you're using `pnpm` instead, you'll want something like
+
+```xml
+<execution>
+    <id>install</id>
+    <goals>
+        <goal>corepack</goal>
+    </goals>
+    <configuration>
+        <arguments>pnpm install</arguments>
+    </configuration>
+</execution>
+<execution>
+    <id>build</id>
+    <goals>
+        <goal>corepack</goal>
+    </goals>
+    <configuration>
+        <arguments>pnpm build</arguments>
     </configuration>
 </execution>
 ```
