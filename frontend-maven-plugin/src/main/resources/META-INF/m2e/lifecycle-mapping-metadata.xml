@@ -4,6 +4,7 @@
 		<pluginExecution>
 			<pluginExecutionFilter>
 				<goals>
+                    <goal>install-node-and-corepack</goal>
 					<goal>install-node-and-npm</goal>
 					<goal>install-node-and-pnpm</goal>
 					<goal>install-node-and-yarn</goal>
@@ -20,6 +21,7 @@
         <pluginExecution>
             <pluginExecutionFilter>
                 <goals>
+                    <goal>corepack</goal>
                     <goal>npm</goal>
                     <goal>npx</goal>
                     <goal>pnpm</goal>
