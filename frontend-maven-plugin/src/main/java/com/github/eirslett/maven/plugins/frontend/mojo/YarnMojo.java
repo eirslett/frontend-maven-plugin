@@ -1,5 +1,7 @@
 package com.github.eirslett.maven.plugins.frontend.mojo;
 
+import static com.github.eirslett.maven.plugins.frontend.mojo.YarnUtils.isYarnrcYamlFilePresent;
+
 import java.io.File;
 import java.util.Collections;
 
@@ -15,7 +17,7 @@ import com.github.eirslett.maven.plugins.frontend.lib.FrontendPluginFactory;
 import com.github.eirslett.maven.plugins.frontend.lib.ProxyConfig;
 import com.github.eirslett.maven.plugins.frontend.lib.TaskRunnerException;
 
-@Mojo(name = "yarn", defaultPhase = LifecyclePhase.GENERATE_RESOURCES)
+@Mojo(name = "yarn", defaultPhase = LifecyclePhase.GENERATE_RESOURCES, threadSafe = true)
 public final class YarnMojo extends AbstractFrontendMojo {
 
     private static final String NPM_REGISTRY_URL = "npmRegistryURL";
@@ -57,12 +59,13 @@ public final class YarnMojo extends AbstractFrontendMojo {
     }
 
     @Override
-    public void execute(FrontendPluginFactory factory) throws TaskRunnerException {
+    public synchronized void execute(FrontendPluginFactory factory) throws TaskRunnerException {
         File packageJson = new File(this.workingDirectory, "package.json");
         if (this.buildContext == null || this.buildContext.hasDelta(packageJson)
             || !this.buildContext.isIncremental()) {
             ProxyConfig proxyConfig = getProxyConfig();
-            factory.getYarnRunner(proxyConfig, getRegistryUrl()).execute(this.arguments,
+            boolean isYarnBerry = isYarnrcYamlFilePresent(this.session, this.workingDirectory);
+            factory.getYarnRunner(proxyConfig, getRegistryUrl(), isYarnBerry).execute(this.arguments,
                 this.environmentVariables);
         } else {
             getLog().info("Skipping yarn install as package.json unchanged");

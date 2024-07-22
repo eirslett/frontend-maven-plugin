@@ -12,7 +12,7 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
-@Mojo(name="gulp", defaultPhase = LifecyclePhase.GENERATE_RESOURCES)
+@Mojo(name="gulp", defaultPhase = LifecyclePhase.GENERATE_RESOURCES, threadSafe = true)
 public final class GulpMojo extends AbstractFrontendMojo {
 
     /**
@@ -59,7 +59,7 @@ public final class GulpMojo extends AbstractFrontendMojo {
     }
 
     @Override
-    public void execute(FrontendPluginFactory factory) throws TaskRunnerException {
+    public synchronized void execute(FrontendPluginFactory factory) throws TaskRunnerException {
         if (shouldExecute()) {
             factory.getGulpRunner().execute(arguments, environmentVariables);
 

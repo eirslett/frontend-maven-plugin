@@ -1,0 +1,9 @@
+<settings>
+    <servers>
+        <server>
+            <id>ossrh</id>
+            <username>${env.OSSRH_JIRA_USERNAME}</username>
+            <password>${env.OSSRH_JIRA_PASSWORD}</password>
+        </server>
+    </servers>
+</settings>

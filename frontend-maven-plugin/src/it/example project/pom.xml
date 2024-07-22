@@ -25,22 +25,30 @@
             </goals>
             <configuration>
               <!-- See https://nodejs.org/en/download/ for latest node and npm (lts) versions -->
-              <nodeVersion>v8.11.1</nodeVersion>
-              <npmVersion>5.6.0</npmVersion>
+              <nodeVersion>v16.17.1</nodeVersion>
+              <npmVersion>8.15.0</npmVersion>
             </configuration>
           </execution>
 
           <execution>
-            <id>npm install</id>
+            <id>npm ci</id>
             <goals>
               <goal>npm</goal>
             </goals>
             <!-- Optional configuration which provides for running any npm command -->
             <configuration>
-              <arguments>install</arguments>
+              <arguments>ci</arguments>
             </configuration>
           </execution>
-
+          <execution>
+            <id>javascript tests</id>
+            <goals>
+              <goal>npm</goal>
+            </goals>
+            <configuration>
+              <arguments>run test</arguments>
+            </configuration>
+          </execution>
           <execution>
             <id>npm run build</id>
             <goals>
@@ -50,60 +58,6 @@
               <arguments>run build</arguments>
             </configuration>
           </execution>
-
-          <execution>
-            <id>bower install</id>
-            <goals>
-              <goal>bower</goal>
-            </goals>
-            <configuration>
-              <arguments>install</arguments>
-            </configuration>
-          </execution>
-
-          <execution>
-            <id>jspm install</id>
-            <goals>
-              <goal>jspm</goal>
-            </goals>
-            <configuration>
-              <arguments>--version</arguments>
-            </configuration>
-          </execution>
-
-          <execution>
-            <id>grunt build</id>
-            <goals>
-              <goal>grunt</goal>
-            </goals>
-            <configuration>
-              <arguments>--no-color</arguments>
-            </configuration>
-          </execution>
-
-          <execution>
-            <id>gulp build</id>
-            <phase>generate-resources</phase>
-            <goals>
-              <goal>gulp</goal>
-            </goals>
-            <configuration>
-              <environmentVariables>
-                <NODE_ENV>production</NODE_ENV>
-              </environmentVariables>
-            </configuration>
-          </execution>
-
-          <execution>
-            <id>javascript tests</id>
-            <goals>
-              <goal>karma</goal>
-            </goals>
-            <configuration>
-              <karmaConfPath>src/test/javascript/karma.conf.ci.js</karmaConfPath>
-            </configuration>
-          </execution>
-
         </executions>
       </plugin>
     </plugins>
