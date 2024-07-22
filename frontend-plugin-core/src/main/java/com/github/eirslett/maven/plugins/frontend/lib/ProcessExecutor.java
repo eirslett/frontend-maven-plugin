@@ -31,6 +31,8 @@ final class ProcessExecutionException extends Exception {
 }
 
 final class ProcessExecutor {
+    private final static String PATH_ENV_VAR = "PATH";
+
     private final Map<String, String> environment;
     private CommandLine commandLine;
     private final Executor executor;
@@ -59,9 +61,7 @@ final class ProcessExecutor {
 
     public int executeAndRedirectOutput(final Logger logger) throws ProcessExecutionException {
         OutputStream stdout = new LoggerOutputStream(logger, 0);
-        OutputStream stderr = new LoggerOutputStream(logger, 1);
-
-        return execute(logger, stdout, stderr);
+        return execute(logger, stdout, stdout);
     }
 
     private int execute(final Logger logger, final OutputStream stdout, final OutputStream stderr)
@@ -96,33 +96,38 @@ final class ProcessExecutor {
         return commmandLine;
     }
 
-    private Map<String, String> createEnvironment(List<String> paths, Platform platform, Map<String, String> additionalEnvironment) {
+    private Map<String, String> createEnvironment(final List<String> paths, final Platform platform, final Map<String, String> additionalEnvironment) {
         final Map<String, String> environment = new HashMap<>(System.getenv());
-        String pathVarName = "PATH";
-        String pathVarValue = environment.get(pathVarName);
-        if (platform.isWindows()) {
-            for (Map.Entry<String, String> entry : environment.entrySet()) {
-                if ("PATH".equalsIgnoreCase(entry.getKey())) {
-                    pathVarName = entry.getKey();
-                    pathVarValue = entry.getValue();
-                }
-            }
-        }
-
-        StringBuilder pathBuilder = new StringBuilder();
-        if (pathVarValue != null) {
-            pathBuilder.append(pathVarValue).append(File.pathSeparator);
-        }
-        for (String path : paths) {
-            pathBuilder.insert(0, File.pathSeparator).insert(0, path);
-        }
-        environment.put(pathVarName, pathBuilder.toString());
 
         if (additionalEnvironment != null) {
             environment.putAll(additionalEnvironment);
         }
 
+        if (platform.isWindows()) {
+            for (final Map.Entry<String, String> entry : environment.entrySet()) {
+                final String pathName = entry.getKey();
+                if (PATH_ENV_VAR.equalsIgnoreCase(pathName)) {
+                    final String pathValue = entry.getValue();
+                    environment.put(pathName, extendPathVariable(pathValue, paths));
+                }
+            }
+        } else {
+            final String pathValue = environment.get(PATH_ENV_VAR);
+            environment.put(PATH_ENV_VAR, extendPathVariable(pathValue, paths));
+        }
+
         return environment;
+    }
+
+    private String extendPathVariable(final String existingValue, final List<String> paths) {
+        final StringBuilder pathBuilder = new StringBuilder();
+        for (final String path : paths) {
+            pathBuilder.append(path).append(File.pathSeparator);
+        }
+        if (existingValue != null) {
+            pathBuilder.append(existingValue).append(File.pathSeparator);
+        }
+        return pathBuilder.toString();
     }
 
     private Executor createExecutor(File workingDirectory, long timeoutInSeconds) {
@@ -152,15 +157,7 @@ final class ProcessExecutor {
 
         @Override
         protected void processLine(final String line, final int logLevel) {
-            if (logLevel == 0) {
-                logger.info(line);
-            } else {
-                if (line.startsWith("npm WARN ")) {
-                    logger.warn(line);
-                } else {
-                    logger.error(line);
-                }
-            }
+            logger.info(line);
         }
     }
 }

@@ -3,7 +3,6 @@ package com.github.eirslett.maven.plugins.frontend.mojo;
 import com.github.eirslett.maven.plugins.frontend.lib.FrontendPluginFactory;
 import com.github.eirslett.maven.plugins.frontend.lib.InstallationException;
 import com.github.eirslett.maven.plugins.frontend.lib.NPMInstaller;
-import com.github.eirslett.maven.plugins.frontend.lib.NodeInstaller;
 import com.github.eirslett.maven.plugins.frontend.lib.ProxyConfig;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugins.annotations.Component;
@@ -19,7 +18,7 @@ public final class InstallNodeAndNpmMojo extends AbstractFrontendMojo {
     /**
      * Where to download Node.js binary from. Defaults to https://nodejs.org/dist/
      */
-    @Parameter(property = "nodeDownloadRoot", required = false, defaultValue = NodeInstaller.DEFAULT_NODEJS_DOWNLOAD_ROOT)
+    @Parameter(property = "nodeDownloadRoot", required = false)
     private String nodeDownloadRoot;
 
     /**
@@ -108,7 +107,7 @@ public final class InstallNodeAndNpmMojo extends AbstractFrontendMojo {
     }
 
     private String getNodeDownloadRoot() {
-        if (downloadRoot != null && !"".equals(downloadRoot) && NodeInstaller.DEFAULT_NODEJS_DOWNLOAD_ROOT.equals(nodeDownloadRoot)) {
+        if (downloadRoot != null && !"".equals(downloadRoot) && nodeDownloadRoot == null) {
             return downloadRoot;
         }
         return nodeDownloadRoot;

@@ -1,12 +1,12 @@
 package com.github.eirslett.maven.plugins.frontend.lib;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
-
 import org.apache.commons.io.FileUtils;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,6 +81,7 @@ public class NPMInstaller {
             if (!npmProvided() && !npmIsAlreadyInstalled()) {
                 installNpm();
             }
+            copyNpmScripts();
         }
     }
 
@@ -139,26 +140,32 @@ public class NPMInstaller {
                 this.logger.warn("Failed to delete existing NPM installation.");
             }
 
-            extractFile(archive, nodeModulesDirectory);
+            File packageDirectory = new File(nodeModulesDirectory, "package");
+            try {
+                extractFile(archive, nodeModulesDirectory);
+            } catch (ArchiveExtractionException e) {
+                if (e.getCause() instanceof EOFException) {
+                    // https://github.com/eirslett/frontend-maven-plugin/issues/794
+                    // The downloading was probably interrupted and archive file is incomplete:
+                    // delete it to retry from scratch
+                    this.logger.error("The archive file {} is corrupted and will be deleted. "
+                            + "Please try the build again.", archive.getPath());
+                    archive.delete();
+                    if (packageDirectory.exists()) {
+                        FileUtils.deleteDirectory(packageDirectory);
+                    }
+                }
+
+                throw e;
+            }
 
             // handles difference between old and new download root (nodejs.org/dist/npm and
             // registry.npmjs.org)
             // see https://github.com/eirslett/frontend-maven-plugin/issues/65#issuecomment-52024254
-            File packageDirectory = new File(nodeModulesDirectory, "package");
             if (packageDirectory.exists() && !npmDirectory.exists()) {
                 if (!packageDirectory.renameTo(npmDirectory)) {
                     this.logger.warn("Cannot rename NPM directory, making a copy.");
                     FileUtils.copyDirectory(packageDirectory, npmDirectory);
-                }
-            }
-
-            // create a copy of the npm scripts next to the node executable
-            for (String script : Arrays.asList("npm", "npm.cmd")) {
-                File scriptFile = new File(npmDirectory, "bin" + File.separator + script);
-                if (scriptFile.exists()) {
-                    File copy = new File(installDirectory, script);
-                    FileUtils.copyFile(scriptFile, copy);
-                    copy.setExecutable(true);
                 }
             }
 
@@ -169,6 +176,31 @@ public class NPMInstaller {
             throw new InstallationException("Could not extract the npm archive", e);
         } catch (IOException e) {
             throw new InstallationException("Could not copy npm", e);
+        }
+    }
+
+    private void copyNpmScripts() throws InstallationException{
+        File installDirectory = getNodeInstallDirectory();
+
+        File nodeModulesDirectory = new File(installDirectory, "node_modules");
+        File npmDirectory = new File(nodeModulesDirectory, "npm");
+        // create a copy of the npm scripts next to the node executable
+        for (String script : Arrays.asList("npm", "npm.cmd", "npx", "npx.cmd")) {
+            File scriptFile = new File(npmDirectory, "bin" + File.separator + script);
+            if (scriptFile.exists()) {
+                File copy = new File(installDirectory, script);
+                if (!copy.exists()) {
+                    try
+                    {
+                        FileUtils.copyFile(scriptFile, copy);
+                    }
+                    catch (IOException e)
+                    {
+                        throw new InstallationException("Could not copy npm", e);
+                    }
+                    copy.setExecutable(true);
+                }
+            }
         }
     }
 
