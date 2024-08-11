@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.github.eirslett</groupId>
+    <artifactId>example</artifactId>
+    <version>0</version>
+    <packaging>pom</packaging>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.github.eirslett</groupId>
+                <artifactId>frontend-maven-plugin</artifactId>
+                <!-- NB! Set <version> to the latest released version of frontend-maven-plugin, like in README.md -->
+                <version>@project.version@</version>
+
+                <configuration>
+                    <installDirectory>target</installDirectory>
+                </configuration>
+
+                <executions>
+
+                    <execution>
+                        <id>install node and corepack</id>
+                        <goals>
+                            <goal>install-node-and-corepack</goal>
+                        </goals>
+                        <configuration>
+                            <nodeVersion>v20.12.2</nodeVersion>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>yarn install</id>
+                        <goals>
+                            <goal>corepack</goal>
+                        </goals>
+                        <configuration>
+                            <arguments>yarn install --no-immutable</arguments>
+                        </configuration>
+                    </execution>
+
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>
