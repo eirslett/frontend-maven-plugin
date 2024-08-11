@@ -82,6 +82,11 @@ public class CorepackInstaller {
             final File corepackPackageJson = new File(
                 this.config.getInstallDirectory() + Utils.normalize("/node/node_modules/corepack/package.json"));
             if (corepackPackageJson.exists()) {
+                if ("provided".equals(this.corepackVersion)) {
+                    // Since we don't know which version it should be, we must assume that we have
+                    // correctly setup the packaged version
+                    return true;
+                }
                 HashMap<String, Object> data = new ObjectMapper().readValue(corepackPackageJson, HashMap.class);
                 if (data.containsKey(VERSION)) {
                     final String foundCorepackVersion = data.get(VERSION).toString();

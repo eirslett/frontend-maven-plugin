@@ -176,16 +176,19 @@ https://github.com/eirslett/frontend-maven-plugin/blob/master/frontend-maven-plu
 ### Installing node and corepack
 
 You can choose to let corepack manage the package manager version in use. Node is
-downloaded from `https://nodejs.org/dist`, and corepack currently comes from
-`https://repository.npmjs.org`, extracted and put into a `node` folder created
-in your installation directory.
+downloaded from `https://nodejs.org/dist`, and corepack either comes provided with
+Node, or will currently be downloaded from `https://repository.npmjs.org`, extracted
+and put into a `node` folder created in your installation directory.
 
 Node/corepack and any package managers will only be "installed" locally to your project.
 It will not be installed globally on the whole system (and it will not interfere with any
 Node/corepack installations already present).
 
 Have a look at the example `POM` to see how it should be set up with corepack:
+https://github.com/eirslett/frontend-maven-plugin/blob/master/frontend-maven-plugin/src/it/corepack-provided-integration/pom.xml
+or
 https://github.com/eirslett/frontend-maven-plugin/blob/master/frontend-maven-plugin/src/it/corepack-integration/pom.xml
+if you need to override the version of corepack in use.
 
 
 ```xml
@@ -202,6 +205,9 @@ https://github.com/eirslett/frontend-maven-plugin/blob/master/frontend-maven-plu
     </execution>
     <configuration>
         <nodeVersion>v20.12.2</nodeVersion>
+
+        <!-- Optional - only needed if Node <16.9, or if you need to use a version different
+             from the one packaged with Node -->
         <corepackVersion>v0.25.2</corepackVersion>
 
         <!-- optional: where to download node from. Defaults to https://nodejs.org/dist/ -->

@@ -3,6 +3,7 @@ package com.github.eirslett.maven.plugins.frontend.mojo;
 import com.github.eirslett.maven.plugins.frontend.lib.CorepackInstaller;
 import com.github.eirslett.maven.plugins.frontend.lib.FrontendPluginFactory;
 import com.github.eirslett.maven.plugins.frontend.lib.InstallationException;
+import com.github.eirslett.maven.plugins.frontend.lib.NodeInstaller;
 import com.github.eirslett.maven.plugins.frontend.lib.ProxyConfig;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugins.annotations.Component;
@@ -36,8 +37,10 @@ public final class InstallNodeAndCorepackMojo extends AbstractFrontendMojo {
     /**
      * The version of corepack to install. Note that the version string can optionally be prefixed with
      * 'v' (i.e., both 'v1.2.3' and '1.2.3' are valid).
+     *
+     * If not provided, then the corepack version bundled with Node will be used.
      */
-    @Parameter(property = "corepackVersion", required = true)
+    @Parameter(property = "corepackVersion", required = false, defaultValue = "provided")
     private String corepackVersion;
 
     /**
@@ -68,30 +71,30 @@ public final class InstallNodeAndCorepackMojo extends AbstractFrontendMojo {
         ProxyConfig proxyConfig = MojoUtils.getProxyConfig(session, decrypter);
         String resolvedNodeDownloadRoot = getNodeDownloadRoot();
         String resolvedCorepackDownloadRoot = getCorepackDownloadRoot();
+
+        // Setup the installers
+        NodeInstaller nodeInstaller = factory.getNodeInstaller(proxyConfig);
+        nodeInstaller.setNodeVersion(nodeVersion)
+                .setNodeDownloadRoot(resolvedNodeDownloadRoot);
+        if ("provided".equals(corepackVersion)) {
+            // This causes the node installer to copy over the whole
+            // node_modules directory including the corepack module
+            nodeInstaller.setNpmVersion("provided");
+        }
+        CorepackInstaller corepackInstaller = factory.getCorepackInstaller(proxyConfig);
+        corepackInstaller.setCorepackVersion(corepackVersion)
+                .setCorepackDownloadRoot(resolvedCorepackDownloadRoot);
+
+        // If pplicable, configure authentication details
         Server server = MojoUtils.decryptServer(serverId, session, decrypter);
         if (null != server) {
-            factory.getNodeInstaller(proxyConfig)
-                .setNodeVersion(nodeVersion)
-                .setNodeDownloadRoot(resolvedNodeDownloadRoot)
-                .setUserName(server.getUsername())
-                .setPassword(server.getPassword())
-                .install();
-            factory.getCorepackInstaller(proxyConfig)
-                .setCorepackVersion(corepackVersion)
-                .setCorepackDownloadRoot(resolvedCorepackDownloadRoot)
-                .setUserName(server.getUsername())
-                .setPassword(server.getPassword())
-                .install();
-        } else {
-            factory.getNodeInstaller(proxyConfig)
-                .setNodeVersion(nodeVersion)
-                .setNodeDownloadRoot(resolvedNodeDownloadRoot)
-                .install();
-            factory.getCorepackInstaller(proxyConfig)
-                .setCorepackVersion(this.corepackVersion)
-                .setCorepackDownloadRoot(resolvedCorepackDownloadRoot)
-                .install();
+            nodeInstaller.setUserName(server.getUsername()).setPassword(server.getPassword());
+            corepackInstaller.setUserName(server.getUsername()).setPassword(server.getPassword());
         }
+
+        // Perform the installation
+        nodeInstaller.install();
+        corepackInstaller.install();
     }
 
     private String getNodeDownloadRoot() {
