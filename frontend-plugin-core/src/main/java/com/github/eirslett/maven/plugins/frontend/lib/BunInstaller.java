@@ -111,9 +111,10 @@ public class BunInstaller {
 
             // We need to delete the existing bun directory first so we clean out any old files, and
             // so we can rename the package directory below.
+            File bunExtractDirectory = new File(installDirectory, createBunTargetArchitecturePath());
             try {
-                if (installDirectory.isDirectory()) {
-                    FileUtils.deleteDirectory(installDirectory);
+                if (bunExtractDirectory.isDirectory()) {
+                    FileUtils.deleteDirectory(bunExtractDirectory);
                 }
             } catch (IOException e) {
                 logger.warn("Failed to delete existing Bun installation.");
