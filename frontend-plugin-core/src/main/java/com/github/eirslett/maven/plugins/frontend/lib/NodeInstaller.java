@@ -198,7 +198,7 @@ public class NodeInstaller {
                     FileUtils.copyDirectory(tmpNodeModulesDir, nodeModulesDirectory);
                     this.logger.info("Extracting NPM");
                     // create a copy of the npm scripts next to the node executable
-                    for (String script : Arrays.asList("npm", "npm.cmd")) {
+                    for (String script : Arrays.asList("npm", "npm.cmd", "npx", "npx.cmd")) {
                         File scriptFile = new File(npmDirectory, "bin" + File.separator + script);
                         if (scriptFile.exists()) {
                             File copy = new File(destinationDirectory, script);
