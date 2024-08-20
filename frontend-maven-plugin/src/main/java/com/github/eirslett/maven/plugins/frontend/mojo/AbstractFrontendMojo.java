@@ -1,8 +1,13 @@
 package com.github.eirslett.maven.plugins.frontend.mojo;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
+import java.util.Properties;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecution;
 import org.apache.maven.plugin.MojoFailureException;
@@ -14,6 +19,7 @@ import org.eclipse.aether.RepositorySystemSession;
 import com.github.eirslett.maven.plugins.frontend.lib.FrontendException;
 import com.github.eirslett.maven.plugins.frontend.lib.FrontendPluginFactory;
 import com.github.eirslett.maven.plugins.frontend.lib.TaskRunnerException;
+import com.github.eirslett.maven.plugins.frontend.lib.PreExecutionException;
 
 public abstract class AbstractFrontendMojo extends AbstractMojo {
 
@@ -48,7 +54,17 @@ public abstract class AbstractFrontendMojo extends AbstractMojo {
     protected File installDirectory;
 
     /**
-     * Additional environment variables to pass to the build.
+     * File containing environment variables to be passed to the build. Environment variables passed via the
+     * {@link AbstractFrontendMojo#environmentVariables} will override the ones present inside the file.
+     *
+     * @since 1.16
+     */
+    @Parameter(property = "environmentFile", required = false)
+    protected File environmentFile;
+
+    /**
+     * Additional environment variables to pass to the build. If used alongside {@link AbstractFrontendMojo#environmentFile} then
+     * environment variables here will override the ones present inside the file.
      */
     @Parameter
     protected Map<String, String> environmentVariables;
@@ -107,4 +123,40 @@ public abstract class AbstractFrontendMojo extends AbstractMojo {
         }
     }
 
+    /**
+     *  Computes the environment variables based on the configuration provided. It will first evaluate the
+     *  {@link AbstractFrontendMojo#environmentFile} configuration and then the {@link AbstractFrontendMojo#environmentVariables}. In case
+     *  the latter one contains environment variables also present in the file, they will be overwritten.
+     *  In case the {@link AbstractFrontendMojo#environmentFile} configuration is done but the file cannot be found, an error is printed but
+     *  the build will still continue!
+     *
+     *  @return the aggregated environment variables, may be empty
+     *  @throws PreExecutionException when working with the environment file an exception occurs
+     */
+    protected Map<String, String> getEnvironmentVariables() throws PreExecutionException {
+        Map<String, String> variables = new HashMap<>();
+
+        if (environmentFile != null) {
+            try (FileInputStream is = new FileInputStream(environmentFile)) {
+                Properties prop = new Properties();
+                prop.load(is);
+
+                for (Object key : prop.keySet()) {
+                    variables.put((String) key, prop.getProperty((String) key));
+                }
+            } catch (FileNotFoundException err) {
+              getLog().error("File containing environment variables (configuration 'environmentFile') at '"
+                + environmentFile.getAbsolutePath() + "' could not be found, skipping it.");
+            } catch (IOException err) {
+              throw new PreExecutionException("Trying to read file containing environment variables (configuration 'environmentFile') at '"
+                + environmentFile.getAbsolutePath() + "' failed.", err);
+            }
+        }
+
+        if (environmentVariables != null) {
+            variables.putAll(environmentVariables);
+        }
+
+        return variables;
+    }
 }
