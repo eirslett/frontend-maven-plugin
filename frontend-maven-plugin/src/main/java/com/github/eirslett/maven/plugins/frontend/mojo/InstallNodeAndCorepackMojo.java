@@ -5,6 +5,9 @@ import com.github.eirslett.maven.plugins.frontend.lib.FrontendPluginFactory;
 import com.github.eirslett.maven.plugins.frontend.lib.InstallationException;
 import com.github.eirslett.maven.plugins.frontend.lib.NodeInstaller;
 import com.github.eirslett.maven.plugins.frontend.lib.ProxyConfig;
+
+import java.util.Map;
+
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -88,8 +91,15 @@ public final class InstallNodeAndCorepackMojo extends AbstractFrontendMojo {
         // If pplicable, configure authentication details
         Server server = MojoUtils.decryptServer(serverId, session, decrypter);
         if (null != server) {
-            nodeInstaller.setUserName(server.getUsername()).setPassword(server.getPassword());
-            corepackInstaller.setUserName(server.getUsername()).setPassword(server.getPassword());
+            Map<String, String> httpHeaders = getHttpHeaders(server);
+			nodeInstaller
+            	.setUserName(server.getUsername())
+            	.setPassword(server.getPassword())
+            	.setHttpHeaders(httpHeaders);
+            corepackInstaller
+            	.setUserName(server.getUsername())
+            	.setPassword(server.getPassword())
+            	.setHttpHeaders(httpHeaders);
         }
 
         // Perform the installation
