@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.FileUtils;
@@ -39,7 +40,7 @@ final class DownloadException extends Exception {
 }
 
 interface FileDownloader {
-    void download(String downloadUrl, String destination, String userName, String password) throws DownloadException;
+    void download(String downloadUrl, String destination, String userName, String password, Map<String, String> header) throws DownloadException;
 }
 
 final class DefaultFileDownloader implements FileDownloader {
@@ -52,7 +53,7 @@ final class DefaultFileDownloader implements FileDownloader {
     }
 
     @Override
-    public void download(String downloadUrl, String destination, String userName, String password) throws DownloadException {
+    public void download(String downloadUrl, String destination, String userName, String password, Map<String, String> httpHeaders) throws DownloadException {
         // force tls to 1.2 since github removed weak cryptographic standards
         // https://blog.github.com/2018-02-02-weak-cryptographic-standards-removal-notice/
         System.setProperty("https.protocols", "TLSv1.2");
@@ -64,7 +65,7 @@ final class DefaultFileDownloader implements FileDownloader {
                 FileUtils.copyFile(new File(downloadURI), new File(destination));
             }
             else {
-                CloseableHttpResponse response = execute(fixedDownloadUrl, userName, password);
+                CloseableHttpResponse response = execute(fixedDownloadUrl, userName, password, httpHeaders);
                 int statusCode = response.getStatusLine().getStatusCode();
                 if(statusCode != 200){
                     throw new DownloadException("Got error code "+ statusCode +" from the server.");
@@ -79,7 +80,7 @@ final class DefaultFileDownloader implements FileDownloader {
         }
     }
 
-    private CloseableHttpResponse execute(String requestUrl, String userName, String password) throws IOException {
+    private CloseableHttpResponse execute(String requestUrl, String userName, String password, Map<String, String> httpHeaders) throws IOException {
         final HttpGet request = new HttpGet(requestUrl);
         final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
 
@@ -99,6 +100,13 @@ final class DefaultFileDownloader implements FileDownloader {
             }
         } else {
             LOGGER.info("No proxy was configured, downloading directly");
+        }
+        
+        if (httpHeaders != null) {
+        	for (Map.Entry<String, String> header : httpHeaders.entrySet()) {
+        		LOGGER.info("Using HTTP-Header (" + header.getKey() + ") from settings.xml");
+        		request.addHeader(header.getKey(), header.getValue());
+        	}
         }
 
         if (StringUtils.isNotEmpty(userName) && StringUtils.isNotEmpty(password)) {

@@ -50,7 +50,7 @@ public final class InstallBunMojo extends AbstractFrontendMojo {
         Server server = MojoUtils.decryptServer(this.serverId, this.session, this.decrypter);
         if (null != server) {
             factory.getBunInstaller(proxyConfig).setBunVersion(this.bunVersion).setUserName(server.getUsername())
-                    .setPassword(server.getPassword()).install();
+                    .setPassword(server.getPassword()).setHttpHeaders(getHttpHeaders(server)).install();
         } else {
             factory.getBunInstaller(proxyConfig).setBunVersion(this.bunVersion).install();
         }

@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
+import java.util.Map;
 
 public class BunInstaller {
 
@@ -22,6 +23,8 @@ public class BunInstaller {
 
     private String bunVersion, userName, password;
 
+    private Map<String, String> httpHeaders;
+    
     private final Logger logger;
 
     private final InstallConfig config;
@@ -52,6 +55,11 @@ public class BunInstaller {
         return this;
     }
 
+    public BunInstaller setHttpHeaders(Map<String, String> httpHeaders) {
+    	this.httpHeaders = httpHeaders;
+    	return this;
+    }
+    
     public void install() throws InstallationException {
         // use static lock object for a synchronized block
         synchronized (LOCK) {
@@ -105,7 +113,7 @@ public class BunInstaller {
 
             File archive = this.config.getCacheResolver().resolve(cacheDescriptor);
 
-            downloadFileIfMissing(downloadUrl, archive, this.userName, this.password);
+            downloadFileIfMissing(downloadUrl, archive, this.userName, this.password, this.httpHeaders);
 
             File installDirectory = getInstallDirectory();
 
@@ -201,16 +209,16 @@ public class BunInstaller {
         this.archiveExtractor.extract(archive.getPath(), destinationDirectory.getPath());
     }
 
-    private void downloadFileIfMissing(String downloadUrl, File destination, String userName, String password)
+    private void downloadFileIfMissing(String downloadUrl, File destination, String userName, String password, Map<String, String> httpHeaders)
             throws DownloadException {
         if (!destination.exists()) {
-            downloadFile(downloadUrl, destination, userName, password);
+            downloadFile(downloadUrl, destination, userName, password, httpHeaders);
         }
     }
 
-    private void downloadFile(String downloadUrl, File destination, String userName, String password)
+    private void downloadFile(String downloadUrl, File destination, String userName, String password, Map<String, String> httpHeaders)
             throws DownloadException {
         this.logger.info("Downloading {} to {}", downloadUrl, destination);
-        this.fileDownloader.download(downloadUrl, destination.getPath(), userName, password);
+        this.fileDownloader.download(downloadUrl, destination.getPath(), userName, password, httpHeaders);
     }
 }
