@@ -78,7 +78,7 @@ public final class InstallNodeAndYarnMojo extends AbstractFrontendMojo {
         boolean isYarnYamlFilePresent = isYarnrcYamlFilePresent(this.session, this.workingDirectory);
 
         if (null != server) {
-        	Map<String, String> httpHeaders = getHttpHeaders(server);
+            Map<String, String> httpHeaders = getHttpHeaders(server);
             factory.getNodeInstaller(proxyConfig).setNodeDownloadRoot(this.nodeDownloadRoot)
                 .setNodeVersion(this.nodeVersion).setUserName(server.getUsername())
                 .setPassword(server.getPassword()).setHttpHeaders(httpHeaders).install();

@@ -87,7 +87,7 @@ public final class InstallNodeAndPnpmMojo extends AbstractFrontendMojo {
         String resolvedPnpmDownloadRoot = getPnpmDownloadRoot();
         Server server = MojoUtils.decryptServer(serverId, session, decrypter);
         if (null != server) {
-        	Map<String, String> httpHeaders = getHttpHeaders(server);
+            Map<String, String> httpHeaders = getHttpHeaders(server);
             factory.getNodeInstaller(proxyConfig)
                 .setNodeVersion(nodeVersion)
                 .setNodeDownloadRoot(resolvedNodeDownloadRoot)

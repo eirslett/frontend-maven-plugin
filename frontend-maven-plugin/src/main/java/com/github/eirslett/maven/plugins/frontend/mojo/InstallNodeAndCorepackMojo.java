@@ -92,14 +92,14 @@ public final class InstallNodeAndCorepackMojo extends AbstractFrontendMojo {
         Server server = MojoUtils.decryptServer(serverId, session, decrypter);
         if (null != server) {
             Map<String, String> httpHeaders = getHttpHeaders(server);
-			nodeInstaller
-            	.setUserName(server.getUsername())
-            	.setPassword(server.getPassword())
-            	.setHttpHeaders(httpHeaders);
+            nodeInstaller
+                .setUserName(server.getUsername())
+                .setPassword(server.getPassword())
+                .setHttpHeaders(httpHeaders);
             corepackInstaller
-            	.setUserName(server.getUsername())
-            	.setPassword(server.getPassword())
-            	.setHttpHeaders(httpHeaders);
+                .setUserName(server.getUsername())
+                .setPassword(server.getPassword())
+                .setHttpHeaders(httpHeaders);
         }
 
         // Perform the installation

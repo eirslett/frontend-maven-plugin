@@ -56,8 +56,8 @@ public class BunInstaller {
     }
 
     public BunInstaller setHttpHeaders(Map<String, String> httpHeaders) {
-    	this.httpHeaders = httpHeaders;
-    	return this;
+        this.httpHeaders = httpHeaders;
+        return this;
     }
     
     public void install() throws InstallationException {
