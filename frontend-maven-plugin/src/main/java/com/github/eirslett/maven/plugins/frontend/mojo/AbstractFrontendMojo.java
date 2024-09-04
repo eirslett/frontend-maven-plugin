@@ -12,7 +12,7 @@ import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.settings.Server;
-import org.apache.maven.shared.utils.xml.Xpp3Dom;
+import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.eclipse.aether.RepositorySystemSession;
 
 import com.github.eirslett.maven.plugins.frontend.lib.FrontendException;
@@ -116,6 +116,9 @@ public abstract class AbstractFrontendMojo extends AbstractMojo {
      * 
      * @param server 
      *           the &lt;server&gt; entry from the settings.xml
+     *           
+     * @return the mapping from the name of each configured HTTP header to its value,
+     *         an empty map if there is no such configuration
      */
     protected Map<String, String> getHttpHeaders(Server server) {
         if (server == null || !(server.getConfiguration() instanceof Xpp3Dom)) {
