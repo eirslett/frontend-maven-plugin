@@ -63,8 +63,8 @@ public class CorepackInstaller {
     }
 
     public CorepackInstaller setHttpHeaders(Map<String, String> httpHeaders) {
-    	this.httpHeaders = httpHeaders;
-    	return this;
+        this.httpHeaders = httpHeaders;
+        return this;
     }
 
     public void install() throws InstallationException {

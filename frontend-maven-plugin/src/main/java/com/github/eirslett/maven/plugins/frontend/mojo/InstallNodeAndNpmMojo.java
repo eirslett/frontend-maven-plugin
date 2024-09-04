@@ -82,7 +82,7 @@ public final class InstallNodeAndNpmMojo extends AbstractFrontendMojo {
         Server server = MojoUtils.decryptServer(serverId, session, decrypter);
         if (null != server) {
             Map<String, String> httpHeaders = getHttpHeaders(server);
-			factory.getNodeInstaller(proxyConfig)
+            factory.getNodeInstaller(proxyConfig)
                 .setNodeVersion(nodeVersion)
                 .setNodeDownloadRoot(nodeDownloadRoot)
                 .setNpmVersion(npmVersion)

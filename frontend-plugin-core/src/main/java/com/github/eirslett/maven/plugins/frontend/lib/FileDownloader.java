@@ -103,10 +103,10 @@ final class DefaultFileDownloader implements FileDownloader {
         }
         
         if (httpHeaders != null) {
-        	for (Map.Entry<String, String> header : httpHeaders.entrySet()) {
-        		LOGGER.info("Using HTTP-Header (" + header.getKey() + ") from settings.xml");
-        		request.addHeader(header.getKey(), header.getValue());
-        	}
+            for (Map.Entry<String, String> header : httpHeaders.entrySet()) {
+                LOGGER.info("Using HTTP-Header (" + header.getKey() + ") from settings.xml");
+                request.addHeader(header.getKey(), header.getValue());
+            }
         }
 
         if (StringUtils.isNotEmpty(userName) && StringUtils.isNotEmpty(password)) {

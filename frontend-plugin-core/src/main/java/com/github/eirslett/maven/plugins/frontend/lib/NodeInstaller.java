@@ -64,8 +64,8 @@ public class NodeInstaller {
     }
     
     public NodeInstaller setHttpHeaders(Map<String, String> httpHeaders) {
-    	this.httpHeaders = httpHeaders;
-    	return this;
+        this.httpHeaders = httpHeaders;
+        return this;
     }
 
     private boolean npmProvided() throws InstallationException {
@@ -334,14 +334,14 @@ public class NodeInstaller {
     }
 
     private void downloadFileIfMissing(String downloadUrl, File destination, String userName, String password, 
-    		Map<String, String> httpHeaders) throws DownloadException {
+            Map<String, String> httpHeaders) throws DownloadException {
         if (!destination.exists()) {
             downloadFile(downloadUrl, destination, userName, password, httpHeaders);
         }
     }
 
     private void downloadFile(String downloadUrl, File destination, String userName, String password, 
-    		Map<String, String> httpHeaders) throws DownloadException {
+            Map<String, String> httpHeaders) throws DownloadException {
         this.logger.info("Downloading {} to {}", downloadUrl, destination);
         this.fileDownloader.download(downloadUrl, destination.getPath(), userName, password, httpHeaders);
     }

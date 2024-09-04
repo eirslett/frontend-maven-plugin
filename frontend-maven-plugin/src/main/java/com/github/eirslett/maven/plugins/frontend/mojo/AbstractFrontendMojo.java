@@ -118,22 +118,22 @@ public abstract class AbstractFrontendMojo extends AbstractMojo {
      *           the &lt;server&gt; entry from the settings.xml
      */
     protected Map<String, String> getHttpHeaders(Server server) {
-    	if (server == null || !(server.getConfiguration() instanceof Xpp3Dom)) {
-    		return Collections.emptyMap();
-    	}
-    	
-    	Xpp3Dom configuration = (Xpp3Dom) server.getConfiguration();
-    	
-    	Map<String, String> result = new HashMap<>();
+        if (server == null || !(server.getConfiguration() instanceof Xpp3Dom)) {
+            return Collections.emptyMap();
+        }
+        
+        Xpp3Dom configuration = (Xpp3Dom) server.getConfiguration();
+        
+        Map<String, String> result = new HashMap<>();
 
         Xpp3Dom httpHeaders = configuration.getChild("httpHeaders");
         if (httpHeaders != null) {
-        	for (Xpp3Dom property : httpHeaders.getChildren("property")) {
+            for (Xpp3Dom property : httpHeaders.getChildren("property")) {
                 Xpp3Dom name = property.getChild("name");
-				Xpp3Dom value = property.getChild("value");
-				if (name != null && value != null) {
-					result.put(name.getValue(), value.getValue());
-				}
+                Xpp3Dom value = property.getChild("value");
+                if (name != null && value != null) {
+                    result.put(name.getValue(), value.getValue());
+                }
             }
         }
         return result;
