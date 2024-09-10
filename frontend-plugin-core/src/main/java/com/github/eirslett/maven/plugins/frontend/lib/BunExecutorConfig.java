@@ -15,6 +15,9 @@ public interface BunExecutorConfig {
 
 final class InstallBunExecutorConfig implements BunExecutorConfig {
 
+    public static final String BUN_WINDOWS = BunInstaller.INSTALL_PATH.replaceAll("/", "\\\\") + "\\bun.exe";
+    public static final String BUN_DEFAULT = BunInstaller.INSTALL_PATH + "/bun";
+
     private File nodePath;
 
     private final InstallConfig installConfig;
@@ -31,7 +34,8 @@ final class InstallBunExecutorConfig implements BunExecutorConfig {
 
     @Override
     public File getBunPath() {
-        return new File(installConfig.getInstallDirectory() + BunInstaller.INSTALL_PATH);
+        String bunExecutable = getPlatform().isWindows() ? BUN_WINDOWS : BUN_DEFAULT;
+        return new File(installConfig.getInstallDirectory() + bunExecutable);
     }
 
     @Override
