@@ -33,6 +33,11 @@ final class InstallNodeExecutorConfig implements NodeExecutorConfig {
 
   @Override
   public File getNodePath() {
+    String nodePath = System.getProperty("nodeExecutablePath");
+    if (nodePath != null) {
+      return new File(nodePath);
+    }
+
     String nodeExecutable = getPlatform().isWindows() ? NODE_WINDOWS : NODE_DEFAULT;
     return new File(installConfig.getInstallDirectory() + nodeExecutable);
   }
