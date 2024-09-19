@@ -3,7 +3,18 @@ package com.github.eirslett.maven.plugins.frontend.mojo;
 import static com.github.eirslett.maven.plugins.frontend.mojo.YarnUtils.isYarnrcYamlFilePresent;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.stream.Collectors;
 
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugins.annotations.Component;
@@ -41,6 +52,14 @@ public final class YarnMojo extends AbstractFrontendMojo {
     @Parameter(property = "session", defaultValue = "${session}", readonly = true)
     private MavenSession session;
 
+    /**
+     * The directory containing front end files that will be processed.
+     * If this is set then files in the directory will be checked for
+     * modifications before running yarn.
+     */
+    @Parameter(property = "srcdir", defaultValue = "src")
+    private File srcdir;
+
     @Component
     private BuildContext buildContext;
 
@@ -60,16 +79,84 @@ public final class YarnMojo extends AbstractFrontendMojo {
 
     @Override
     public synchronized void execute(FrontendPluginFactory factory) throws TaskRunnerException {
-        File packageJson = new File(this.workingDirectory, "package.json");
-        if (this.buildContext == null || this.buildContext.hasDelta(packageJson)
-            || !this.buildContext.isIncremental()) {
-            ProxyConfig proxyConfig = getProxyConfig();
-            boolean isYarnBerry = isYarnrcYamlFilePresent(this.session, this.workingDirectory);
-            factory.getYarnRunner(proxyConfig, getRegistryUrl(), isYarnBerry).execute(this.arguments,
-                this.environmentVariables);
+        if (this.shouldExecute()) {
+            File packageJson = new File(this.workingDirectory, "package.json");
+            if (this.buildContext == null || this.buildContext.hasDelta(packageJson)
+                    || !this.buildContext.isIncremental()) {
+                ProxyConfig proxyConfig = getProxyConfig();
+                boolean isYarnBerry = isYarnrcYamlFilePresent(this.session, this.workingDirectory);
+                factory.getYarnRunner(proxyConfig, getRegistryUrl(), isYarnBerry).execute(this.arguments,
+                        this.environmentVariables);
+            } else {
+                getLog().info("Skipping yarn install as package.json unchanged");
+            }
         } else {
-            getLog().info("Skipping yarn install as package.json unchanged");
+            getLog().info("Skipping yarn execution as no modified files in" + srcdir);
         }
+    }
+
+    private boolean shouldExecute() {
+        if (this.arguments.equals("build")) {
+            try {
+                ArrayList<File> triggerfiles = new ArrayList<>();
+
+                Files.walkFileTree(workingDirectory.toPath(), new SimpleFileVisitor<Path>() {
+                    @Override
+                    public FileVisitResult preVisitDirectory(Path file, BasicFileAttributes attrs)
+                    {
+                        if (file.endsWith("target")) {
+                            return FileVisitResult.SKIP_SUBTREE;
+                        } else {
+                            return FileVisitResult.CONTINUE;
+                        }
+                    }
+
+                    @Override
+                    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
+                        String filename = file.getFileName().toString();
+                        if (filename.endsWith(".js")) {
+                            triggerfiles.add(file.toFile());
+                        }
+
+                        return FileVisitResult.CONTINUE;
+                    }
+                });
+
+                String completeDigest = triggerfiles.parallelStream().map(file -> {
+                    try {
+                        MessageDigest digest = MessageDigest.getInstance("SHA-256");
+
+                        try (FileInputStream fis = new FileInputStream(file)) {
+                            byte[] byteArray = new byte[1024];
+                            while (fis.read(byteArray) != -1) {
+                                digest.update(byteArray);
+                            }
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+
+                        byte[] bytes = digest.digest();
+                        StringBuilder sb = new StringBuilder();
+                        for (byte b : bytes) {
+                            sb.append(String.format("%02x", b));
+                        }
+
+                        return file + " : " + sb;
+                    } catch (NoSuchAlgorithmException e) {
+                        throw new RuntimeException(e);
+                    }
+                }).sorted().collect(Collectors.joining("\n"));
+
+                // TODO save to target and compare
+                //  if the file in target will not exist than we know clean was performed
+
+                return true;
+            } catch (IOException e) {
+                getLog().error("Failed to determine if an incremental build is needed: " + e);
+            }
+        }
+
+        return true;
     }
 
     private ProxyConfig getProxyConfig() {
