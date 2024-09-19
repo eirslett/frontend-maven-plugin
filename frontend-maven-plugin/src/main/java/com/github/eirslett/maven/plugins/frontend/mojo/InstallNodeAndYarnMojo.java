@@ -2,8 +2,7 @@ package com.github.eirslett.maven.plugins.frontend.mojo;
 
 import static com.github.eirslett.maven.plugins.frontend.mojo.YarnUtils.isYarnrcYamlFilePresent;
 
-import java.io.File;
-import java.util.stream.Stream;
+import java.util.Map;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -79,12 +78,14 @@ public final class InstallNodeAndYarnMojo extends AbstractFrontendMojo {
         boolean isYarnYamlFilePresent = isYarnrcYamlFilePresent(this.session, this.workingDirectory);
 
         if (null != server) {
+            Map<String, String> httpHeaders = getHttpHeaders(server);
             factory.getNodeInstaller(proxyConfig).setNodeDownloadRoot(this.nodeDownloadRoot)
-                .setNodeVersion(this.nodeVersion).setPassword(server.getPassword())
-                .setUserName(server.getUsername()).install();
+                .setNodeVersion(this.nodeVersion).setUserName(server.getUsername())
+                .setPassword(server.getPassword()).setHttpHeaders(httpHeaders).install();
             factory.getYarnInstaller(proxyConfig).setYarnDownloadRoot(this.yarnDownloadRoot)
                 .setYarnVersion(this.yarnVersion).setUserName(server.getUsername())
-                .setPassword(server.getPassword()).setIsYarnBerry(isYarnYamlFilePresent).install();
+                .setPassword(server.getPassword()).setHttpHeaders(httpHeaders)
+                .setIsYarnBerry(isYarnYamlFilePresent).install();
         } else {
             factory.getNodeInstaller(proxyConfig).setNodeDownloadRoot(this.nodeDownloadRoot)
                 .setNodeVersion(this.nodeVersion).install();

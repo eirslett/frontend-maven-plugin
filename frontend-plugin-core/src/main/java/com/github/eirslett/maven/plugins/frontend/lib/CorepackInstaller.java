@@ -11,18 +11,18 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
-public class PnpmInstaller {
+public class CorepackInstaller {
 
     private static final String VERSION = "version";
 
-    public static final String DEFAULT_PNPM_DOWNLOAD_ROOT = "https://registry.npmjs.org/pnpm/-/";
+    public static final String DEFAULT_COREPACK_DOWNLOAD_ROOT = "https://registry.npmjs.org/corepack/-/";
 
     private static final Object LOCK = new Object();
 
-    private String pnpmVersion, pnpmDownloadRoot, userName, password;
-    
-    private Map<String, String> httpHeaders;
+    private String corepackVersion, corepackDownloadRoot, userName, password;
 
+    private Map<String, String> httpHeaders;
+    
     private final Logger logger;
 
     private final InstallConfig config;
@@ -31,38 +31,38 @@ public class PnpmInstaller {
 
     private final FileDownloader fileDownloader;
 
-    PnpmInstaller(InstallConfig config, ArchiveExtractor archiveExtractor, FileDownloader fileDownloader) {
+    CorepackInstaller(InstallConfig config, ArchiveExtractor archiveExtractor, FileDownloader fileDownloader) {
         this.logger = LoggerFactory.getLogger(getClass());
         this.config = config;
         this.archiveExtractor = archiveExtractor;
         this.fileDownloader = fileDownloader;
     }
 
-    public PnpmInstaller setNodeVersion(String nodeVersion) {
+    public CorepackInstaller setNodeVersion(String nodeVersion) {
         return this;
     }
 
-    public PnpmInstaller setPnpmVersion(String pnpmVersion) {
-        this.pnpmVersion = pnpmVersion;
+    public CorepackInstaller setCorepackVersion(String corepackVersion) {
+        this.corepackVersion = corepackVersion;
         return this;
     }
 
-    public PnpmInstaller setPnpmDownloadRoot(String pnpmDownloadRoot) {
-        this.pnpmDownloadRoot = pnpmDownloadRoot;
+    public CorepackInstaller setCorepackDownloadRoot(String corepackDownloadRoot) {
+        this.corepackDownloadRoot = corepackDownloadRoot;
         return this;
     }
 
-    public PnpmInstaller setUserName(String userName) {
+    public CorepackInstaller setUserName(String userName) {
         this.userName = userName;
         return this;
     }
 
-    public PnpmInstaller setPassword(String password) {
+    public CorepackInstaller setPassword(String password) {
         this.password = password;
         return this;
     }
 
-    public PnpmInstaller setHttpHeaders(Map<String, String> httpHeaders) {
+    public CorepackInstaller setHttpHeaders(Map<String, String> httpHeaders) {
         this.httpHeaders = httpHeaders;
         return this;
     }
@@ -70,11 +70,11 @@ public class PnpmInstaller {
     public void install() throws InstallationException {
         // use static lock object for a synchronized block
         synchronized (LOCK) {
-            if (this.pnpmDownloadRoot == null || this.pnpmDownloadRoot.isEmpty()) {
-                this.pnpmDownloadRoot = DEFAULT_PNPM_DOWNLOAD_ROOT;
+            if (this.corepackDownloadRoot == null || this.corepackDownloadRoot.isEmpty()) {
+                this.corepackDownloadRoot = DEFAULT_COREPACK_DOWNLOAD_ROOT;
             }
-            if (!pnpmIsAlreadyInstalled()) {
-                installPnpm();
+            if (!corepackIsAlreadyInstalled()) {
+                installCorepack();
             }
 
             if (this.config.getPlatform().isWindows()) {
@@ -85,24 +85,29 @@ public class PnpmInstaller {
         }
     }
 
-    private boolean pnpmIsAlreadyInstalled() {
+    private boolean corepackIsAlreadyInstalled() {
         try {
-            final File pnpmPackageJson = new File(
-                this.config.getInstallDirectory() + Utils.normalize("/node/node_modules/pnpm/package.json"));
-            if (pnpmPackageJson.exists()) {
-                HashMap<String, Object> data = new ObjectMapper().readValue(pnpmPackageJson, HashMap.class);
+            final File corepackPackageJson = new File(
+                this.config.getInstallDirectory() + Utils.normalize("/node/node_modules/corepack/package.json"));
+            if (corepackPackageJson.exists()) {
+                if ("provided".equals(this.corepackVersion)) {
+                    // Since we don't know which version it should be, we must assume that we have
+                    // correctly setup the packaged version
+                    return true;
+                }
+                HashMap<String, Object> data = new ObjectMapper().readValue(corepackPackageJson, HashMap.class);
                 if (data.containsKey(VERSION)) {
-                    final String foundPnpmVersion = data.get(VERSION).toString();
-                    if (foundPnpmVersion.equals(this.pnpmVersion.replaceFirst("^v", ""))) {
-                        this.logger.info("PNPM {} is already installed.", foundPnpmVersion);
+                    final String foundCorepackVersion = data.get(VERSION).toString();
+                    if (foundCorepackVersion.equals(this.corepackVersion.replaceFirst("^v", ""))) {
+                        this.logger.info("corepack {} is already installed.", foundCorepackVersion);
                         return true;
                     } else {
-                        this.logger.info("PNPM {} was installed, but we need version {}", foundPnpmVersion,
-                            this.pnpmVersion);
+                        this.logger.info("corepack {} was installed, but we need version {}", foundCorepackVersion,
+                            this.corepackVersion);
                         return false;
                     }
                 } else {
-                    this.logger.info("Could not read PNPM version from package.json");
+                    this.logger.info("Could not read corepack version from package.json");
                     return false;
                 }
             } else {
@@ -113,32 +118,32 @@ public class PnpmInstaller {
         }
     }
 
-    private void installPnpm() throws InstallationException {
+    private void installCorepack() throws InstallationException {
         try {
-            this.logger.info("Installing pnpm version {}", this.pnpmVersion);
-            String pnpmVersionClean = this.pnpmVersion.replaceFirst("^v(?=[0-9]+)", "");
-            final String downloadUrl = this.pnpmDownloadRoot + "pnpm-" + pnpmVersionClean + ".tgz";
+            this.logger.info("Installing corepack version {}", this.corepackVersion);
+            String corepackVersionClean = this.corepackVersion.replaceFirst("^v(?=[0-9]+)", "");
+            final String downloadUrl = this.corepackDownloadRoot + "corepack-" + corepackVersionClean + ".tgz";
 
-            CacheDescriptor cacheDescriptor = new CacheDescriptor("pnpm", pnpmVersionClean, "tar.gz");
+            CacheDescriptor cacheDescriptor = new CacheDescriptor("corepack", corepackVersionClean, "tar.gz");
 
             File archive = this.config.getCacheResolver().resolve(cacheDescriptor);
 
-            downloadFileIfMissing(downloadUrl, archive, this.userName, this.password, httpHeaders);
+            downloadFileIfMissing(downloadUrl, archive, this.userName, this.password, this.httpHeaders);
 
             File installDirectory = getNodeInstallDirectory();
             File nodeModulesDirectory = new File(installDirectory, "node_modules");
 
-            // We need to delete the existing pnpm directory first so we clean out any old files, and
+            // We need to delete the existing corepack directory first so we clean out any old files, and
             // so we can rename the package directory below.
-            File oldNpmDirectory = new File(installDirectory, "pnpm");
-            File pnpmDirectory = new File(nodeModulesDirectory, "pnpm");
+            File oldDirectory = new File(installDirectory, "corepack");
+            File corepackDirectory = new File(nodeModulesDirectory, "corepack");
             try {
-                if (oldNpmDirectory.isDirectory()) {
-                    FileUtils.deleteDirectory(oldNpmDirectory);
+                if (oldDirectory.isDirectory()) {
+                    FileUtils.deleteDirectory(oldDirectory);
                 }
-                FileUtils.deleteDirectory(pnpmDirectory);
+                FileUtils.deleteDirectory(corepackDirectory);
             } catch (IOException e) {
-                this.logger.warn("Failed to delete existing PNPM installation.");
+                this.logger.warn("Failed to delete existing corepack installation.");
             }
 
             File packageDirectory = new File(nodeModulesDirectory, "package");
@@ -163,72 +168,72 @@ public class PnpmInstaller {
             // handles difference between old and new download root (nodejs.org/dist/npm and
             // registry.npmjs.org)
             // see https://github.com/eirslett/frontend-maven-plugin/issues/65#issuecomment-52024254
-            if (packageDirectory.exists() && !pnpmDirectory.exists()) {
-                if (!packageDirectory.renameTo(pnpmDirectory)) {
-                    this.logger.warn("Cannot rename PNPM directory, making a copy.");
-                    FileUtils.copyDirectory(packageDirectory, pnpmDirectory);
+            if (packageDirectory.exists() && !corepackDirectory.exists()) {
+                if (!packageDirectory.renameTo(corepackDirectory)) {
+                    this.logger.warn("Cannot rename corepack directory, making a copy.");
+                    FileUtils.copyDirectory(packageDirectory, corepackDirectory);
                 }
             }
 
-            this.logger.info("Installed pnpm locally.");
+            this.logger.info("Installed corepack locally.");
 
         } catch (DownloadException e) {
-            throw new InstallationException("Could not download pnpm", e);
+            throw new InstallationException("Could not download corepack", e);
         } catch (ArchiveExtractionException e) {
-            throw new InstallationException("Could not extract the pnpm archive", e);
+            throw new InstallationException("Could not extract the corepack archive", e);
         } catch (IOException e) {
-            throw new InstallationException("Could not copy pnpm", e);
+            throw new InstallationException("Could not copy corepack", e);
         }
     }
 
     private void linkExecutable() throws InstallationException{
         File nodeInstallDirectory = getNodeInstallDirectory();
-        File pnpmExecutable = new File(nodeInstallDirectory, "pnpm");
+        File corepackExecutable = new File(nodeInstallDirectory, "corepack");
 
-        if (pnpmExecutable.exists()) {
-            this.logger.info("Existing pnpm executable found, skipping linking.");
+        if (corepackExecutable.exists()) {
+            this.logger.info("Existing corepack executable found, skipping linking.");
             return;
         }
 
         NodeExecutorConfig executorConfig = new InstallNodeExecutorConfig(this.config);
-        File pnpmJsExecutable = executorConfig.getPnpmCjsPath();
+        File corepackJsExecutable = executorConfig.getCorepackPath();
 
-        if (!pnpmJsExecutable.exists()) {
-            throw new InstallationException("Could not link to pnpm executable, no pnpm installation found.");
+        if (!corepackJsExecutable.exists()) {
+            throw new InstallationException("Could not link to corepack executable, no corepack installation found.");
         }
 
-        this.logger.info("No pnpm executable found, creating symbolic link to {}.", pnpmJsExecutable.toPath());
+        this.logger.info("No corepack executable found, creating symbolic link to {}.", corepackJsExecutable.toPath());
 
         try {
-            Files.createSymbolicLink(pnpmExecutable.toPath(), pnpmJsExecutable.toPath());
+            Files.createSymbolicLink(corepackExecutable.toPath(), corepackJsExecutable.toPath());
         } catch (IOException e) {
-            throw new InstallationException("Could not create symbolic link for pnpm executable.", e);
+            throw new InstallationException("Could not create symbolic link for corepack executable.", e);
         }
     }
 
     private void linkExecutableWindows() throws InstallationException{
         File nodeInstallDirectory = getNodeInstallDirectory();
-        File pnpmExecutable = new File(nodeInstallDirectory, "pnpm.cmd");
+        File corepackExecutable = new File(nodeInstallDirectory, "corepack.cmd");
 
-        if (pnpmExecutable.exists()) {
-            this.logger.info("Existing pnpm executable found, skipping linking.");
+        if (corepackExecutable.exists()) {
+            this.logger.info("Existing corepack executable found, skipping linking.");
             return;
         }
 
         NodeExecutorConfig executorConfig = new InstallNodeExecutorConfig(this.config);
-        File pnpmJsExecutable = executorConfig.getPnpmCjsPath();
+        File corepackJsExecutable = executorConfig.getCorepackPath();
 
-        if (!pnpmJsExecutable.exists()) {
-            throw new InstallationException("Could not link to pnpm executable, no pnpm installation found.");
+        if (!corepackJsExecutable.exists()) {
+            throw new InstallationException("Could not link to corepack executable, no corepack installation found.");
         }
 
-        this.logger.info("No pnpm executable found, creating proxy script to {}.", pnpmJsExecutable.toPath());
+        this.logger.info("No corepack executable found, creating proxy script to {}.", corepackJsExecutable.toPath());
 
         Path nodePath = executorConfig.getNodePath().toPath();
         Path relativeNodePath = nodeInstallDirectory.toPath().relativize(nodePath);
-        Path relativePnpmPath = nodeInstallDirectory.toPath().relativize(pnpmJsExecutable.toPath());
+        Path relativeCorepackPath = nodeInstallDirectory.toPath().relativize(corepackJsExecutable.toPath());
 
-        // Create a script that will proxy any commands passed into it to the pnpm executable.
+        // Create a script that will proxy any commands passed into it to the corepack executable.
         String scriptContents = new StringBuilder()
                 .append(":: Created by frontend-maven-plugin, please don't edit manually.\r\n")
                 .append("@ECHO OFF\r\n")
@@ -236,17 +241,17 @@ public class PnpmInstaller {
                 .append("SETLOCAL\r\n")
                 .append("\r\n")
                 .append(String.format("SET \"NODE_EXE=%%~dp0\\%s\"\r\n", relativeNodePath))
-                .append(String.format("SET \"PNPM_CLI_JS=%%~dp0\\%s\"\r\n", relativePnpmPath))
+                .append(String.format("SET \"COREPACK_CLI_JS=%%~dp0\\%s\"\r\n", relativeCorepackPath))
                 .append("\r\n")
-                .append("\"%NODE_EXE%\" \"%PNPM_CLI_JS%\" %*")
+                .append("\"%NODE_EXE%\" \"%COREPACK_CLI_JS%\" %*")
                 .toString();
 
         try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter(pnpmExecutable));
+            BufferedWriter writer = new BufferedWriter(new FileWriter(corepackExecutable));
             writer.write(scriptContents);
             writer.close();
         } catch (IOException e) {
-            throw new InstallationException("Could not create proxy script for pnpm executable.", e);
+            throw new InstallationException("Could not create proxy script for corepack executable.", e);
         }
     }
 
