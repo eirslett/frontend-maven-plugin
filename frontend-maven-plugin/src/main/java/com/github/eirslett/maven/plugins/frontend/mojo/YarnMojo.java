@@ -292,7 +292,9 @@ public final class YarnMojo extends AbstractFrontendMojo {
     }
 
     private static String createDigest(ArrayList<File> digestFiles) {
-        return createFileDigest(digestFiles) + createToolsDigest();
+        return createFileDigest(digestFiles)
+                + createToolsDigest()
+                + createEnvironmentDigest();
     }
 
     private static String createFileDigest(ArrayList<File> digestFiles) {
@@ -330,12 +332,12 @@ public final class YarnMojo extends AbstractFrontendMojo {
 
         return Arrays.stream(commands)
                 .parallel()
-                .map(YarnMojo::getCommandDigest)
+                .map(YarnMojo::createCommandDigest)
                 .sorted()
                 .collect(Collectors.joining());
     }
 
-    private static String getCommandDigest(String... command) {
+    private static String createCommandDigest(String... command) {
         StringBuilder sb = new StringBuilder();
         sb.append("# ");
         for (int i = 0; i < command.length; i++) {
@@ -362,9 +364,36 @@ public final class YarnMojo extends AbstractFrontendMojo {
             int exitCode = process.waitFor();
             sb.append("# ").append("exit code: ").append(exitCode).append("\n");
         } catch (InterruptedException e) {
-            sb.append("# ").append("!interrupted: ").append(e).append("\n");
+            sb.append("# ").append("!interrupted: ").append(e.toString().replace("\n", " ")).append("\n");
         } catch (IOException e) {
-            sb.append("# ").append("!io: ").append(e).append("\n");
+            sb.append("# ").append("!io: ").append(e.toString().replace("\n", " ")).append("\n");
+        }
+
+        return sb.toString();
+    }
+
+    private static String createEnvironmentDigest() {
+        String[] variables = {
+                "NODE_ENV",
+                "BABEL_ENV",
+                "OS",
+                "OS_VERSION",
+                "OS_ARCH",
+                "OS_NAME",
+                "OS_FAMILY"
+        };
+
+        StringBuilder sb = new StringBuilder();
+
+        for (String variable : variables) {
+            String value = System.getenv(variable);
+            if (value != null) {
+                value = value.replace("\n", " ");
+            } else {
+                value = "null";
+            }
+
+            sb.append("# ").append(variable).append(" = ").append(value).append("\n");
         }
 
         return sb.toString();
