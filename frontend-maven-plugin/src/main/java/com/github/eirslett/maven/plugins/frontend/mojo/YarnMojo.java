@@ -10,6 +10,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -290,8 +291,12 @@ public final class YarnMojo extends AbstractFrontendMojo {
         }
     }
 
-    private static String createDigest(ArrayList<File> triggerfiles) {
-        return triggerfiles.parallelStream().map(file -> {
+    private static String createDigest(ArrayList<File> digestFiles) {
+        return createFileDigest(digestFiles) + createToolsDigest();
+    }
+
+    private static String createFileDigest(ArrayList<File> digestFiles) {
+        return digestFiles.parallelStream().map(file -> {
             try {
                 MessageDigest digest = MessageDigest.getInstance("SHA-256");
 
@@ -304,9 +309,8 @@ public final class YarnMojo extends AbstractFrontendMojo {
                     throw new RuntimeException(e);
                 }
 
-                byte[] bytes = digest.digest();
                 StringBuilder sb = new StringBuilder();
-                for (byte b : bytes) {
+                for (byte b : digest.digest()) {
                     sb.append(String.format("%02x", b));
                 }
 
@@ -315,6 +319,55 @@ public final class YarnMojo extends AbstractFrontendMojo {
                 throw new RuntimeException(e);
             }
         }).sorted().collect(Collectors.joining(""));
+    }
+
+    private static String createToolsDigest() {
+        String[][] commands = {
+                {"node", "--version"},
+                {"yarn", "--version"},
+                {"npm", "--version"}
+        };
+
+        return Arrays.stream(commands)
+                .parallel()
+                .map(YarnMojo::getCommandDigest)
+                .sorted()
+                .collect(Collectors.joining());
+    }
+
+    private static String getCommandDigest(String... command) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("# ");
+        for (int i = 0; i < command.length; i++) {
+            sb.append(command[i]);
+            if (i < command.length - 1) {
+                sb.append(" ");
+            }
+        }
+        sb.append("\n");
+
+        try {
+            ProcessBuilder processBuilder = new ProcessBuilder(command);
+            processBuilder.redirectErrorStream(true); // Redirect error stream to standard output
+
+            Process process = processBuilder.start();
+
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    sb.append("# ").append(line).append("\n");
+                }
+            }
+
+            int exitCode = process.waitFor();
+            sb.append("# ").append("exit code: ").append(exitCode).append("\n");
+        } catch (InterruptedException e) {
+            sb.append("# ").append("!interrupted: ").append(e).append("\n");
+        } catch (IOException e) {
+            sb.append("# ").append("!io: ").append(e).append("\n");
+        }
+
+        return sb.toString();
     }
 
     private void saveDigestCandidate(String currDigest) throws IOException {
@@ -337,8 +390,8 @@ public final class YarnMojo extends AbstractFrontendMojo {
     }
 
     private void reportDigestDifferences(String prevDigest, String currDigest) {
-        Map<String, String> prevDigestContents = getDigestContentMap(prevDigest);
-        Map<String, String> currDigestContents = getDigestContentMap(currDigest);
+        Map<String, String> prevDigestContents = getDigestFilesMap(prevDigest);
+        Map<String, String> currDigestContents = getDigestFilesMap(currDigest);
 
         for (Map.Entry<String, String> entry : prevDigestContents.entrySet()) {
             String prevFile = entry.getKey();
@@ -360,9 +413,11 @@ public final class YarnMojo extends AbstractFrontendMojo {
         }
     }
 
-    private Map<String, String> getDigestContentMap(String digest) {
-        return Arrays.stream(digest.split("\n")).map(line -> line.split(" : "))
-                .collect(Collectors.toMap(parts -> parts[0], parts -> parts[1]));
+    private Map<String, String> getDigestFilesMap(String digest) {
+        return Arrays.stream(digest.split("\n"))
+                .filter(line -> !line.startsWith("#"))
+                .map(line -> line.split(" : "))
+                    .collect(Collectors.toMap(parts -> parts[0], parts -> parts[1]));
     }
 
     private File getDigestCandidateFile() {
