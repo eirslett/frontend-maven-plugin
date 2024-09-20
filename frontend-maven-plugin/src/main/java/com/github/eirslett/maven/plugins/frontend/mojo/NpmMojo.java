@@ -18,12 +18,15 @@ import java.util.Collections;
 public final class NpmMojo extends AbstractFrontendMojo {
 
     private static final String NPM_REGISTRY_URL = "npmRegistryURL";
-    
+
     /**
      * npm arguments. Default is "install".
      */
     @Parameter(defaultValue = "install", property = "frontend.npm.arguments", required = false)
     private String arguments;
+
+    @Parameter(defaultValue = "", property = "frontend.npm.incremental", required = false)
+    private String incremental;
 
     @Parameter(property = "frontend.npm.npmInheritsProxyConfigFromMaven", required = false, defaultValue = "true")
     private boolean npmInheritsProxyConfigFromMaven;
@@ -33,7 +36,7 @@ public final class NpmMojo extends AbstractFrontendMojo {
      */
     @Parameter(property = NPM_REGISTRY_URL, required = false, defaultValue = "")
     private String npmRegistryURL;
-    
+
     @Parameter(property = "session", defaultValue = "${session}", readonly = true)
     private MavenSession session;
 
@@ -56,12 +59,20 @@ public final class NpmMojo extends AbstractFrontendMojo {
 
     @Override
     public synchronized void execute(FrontendPluginFactory factory) throws TaskRunnerException {
-        File packageJson = new File(workingDirectory, "package.json");
-        if (buildContext == null || buildContext.hasDelta(packageJson) || !buildContext.isIncremental()) {
-            ProxyConfig proxyConfig = getProxyConfig();
-            factory.getNpmRunner(proxyConfig, getRegistryUrl()).execute(arguments, environmentVariables);
+        IncrementalMojoHelper incrementalHelper = new IncrementalMojoHelper(incremental, workingDirectory, getLog());
+
+        if (incrementalHelper.shouldExecute()) {
+            File packageJson = new File(workingDirectory, "package.json");
+            if (buildContext == null || buildContext.hasDelta(packageJson) || !buildContext.isIncremental()) {
+                ProxyConfig proxyConfig = getProxyConfig();
+                factory.getNpmRunner(proxyConfig, getRegistryUrl()).execute(arguments, environmentVariables);
+
+                incrementalHelper.acceptIncrementalBuildDigest();
+            } else {
+                getLog().info("Skipping npm install as package.json unchanged");
+            }
         } else {
-            getLog().info("Skipping npm install as package.json unchanged");
+            getLog().info("Skipping npm execution as no modified files in" + workingDirectory);
         }
     }
 
