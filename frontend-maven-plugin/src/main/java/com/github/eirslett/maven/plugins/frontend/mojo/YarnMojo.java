@@ -20,7 +20,9 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.maven.execution.MavenSession;
@@ -147,31 +149,145 @@ public final class YarnMojo extends AbstractFrontendMojo {
     }
 
     private ArrayList<File> getDigestFiles() throws IOException {
-        ArrayList<File> files = new ArrayList<>();
+        IncrementalVisitor visitor = new IncrementalVisitor();
 
-        Files.walkFileTree(workingDirectory.toPath(), new SimpleFileVisitor<Path>() {
-            @Override
-            public FileVisitResult preVisitDirectory(Path file, BasicFileAttributes attrs)
-            {
-                if (file.endsWith("target")) {
-                    return FileVisitResult.SKIP_SUBTREE;
-                } else {
-                    return FileVisitResult.CONTINUE;
-                }
-            }
+        Files.walkFileTree(workingDirectory.toPath(), visitor);
 
-            @Override
-            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
-                String filename = file.getFileName().toString();
-                if (filename.endsWith(".js")) {
-                    files.add(file.toFile());
-                }
+        return visitor.getFiles();
+    }
 
+    static class IncrementalVisitor extends SimpleFileVisitor<Path> {
+        static final Set<String> IGNORED_DIRS = new HashSet<>(Arrays.asList(
+                "node_modules",
+                "target"
+        ));
+
+        static final Set<String> DIGEST_EXTENSIONS = new HashSet<>(Arrays.asList(
+                // JS
+                "js",
+                "jsx",
+                "cjs",
+                "mjs",
+                "ts",
+                "tsx",
+                // CSS
+                "css",
+                "scss",
+                "sass",
+                "less",
+                "styl",
+                "stylus",
+                // templates
+                "ejs",
+                "hbs",
+                "handlebars",
+                "pug",
+                "soy",
+                "html",
+                // config
+                "json",
+                "xml",
+                "yaml",
+                "csv",
+                "lock",
+                // Images
+                "apng",
+                "png",
+                "jpg",
+                "jpeg",
+                "gif",
+                "webp",
+                "svg",
+                "ico",
+                "bmp",
+                "tiff",
+                "tif",
+                "avif",
+                "eps",
+                // Fonts
+                "ttf",
+                "otf",
+                "woff",
+                "woff2",
+                "eot",
+                "sfnt",
+                // Audio and Video
+                "mp3",
+                "mp4",
+                "webm",
+                "wav",
+                "flac",
+                "aac",
+                "ogg",
+                "oga",
+                "opus",
+                "m4a",
+                "m4v",
+                "mov",
+                "avi",
+                "wmv",
+                "flv",
+                "mkv",
+                "flac"
+        ));
+
+        // Files that are to be included in the digest but are not of the above extensions
+        static final Set<String> DIGEST_FILES = new HashSet<>(Arrays.asList(
+            ".parcelrc",
+            ".babelrc",
+            ".eslintrc",
+            ".eslintignore",
+            ".prettierrc",
+            ".prettierignore",
+            ".stylelintrc",
+            ".stylelintignore",
+            ".browserslistrc",
+            ".nvmrc"
+        ));
+
+        private final ArrayList<File> files = new ArrayList<>();
+
+        @Override
+        public FileVisitResult preVisitDirectory(Path file, BasicFileAttributes attrs)
+        {
+            if (IGNORED_DIRS.contains(file.getFileName().toString())) {
+                return FileVisitResult.SKIP_SUBTREE;
+            } else {
                 return FileVisitResult.CONTINUE;
             }
-        });
+        }
 
-        return files;
+        @Override
+        public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
+            String fileName = file.getFileName().toString();
+
+            if (DIGEST_FILES.contains(fileName)) {
+                files.add(file.toFile());
+            } else {
+                String extension = getFileExtension(fileName);
+
+                if (extension != null) {
+                    if (DIGEST_EXTENSIONS.contains(extension)) {
+                        files.add(file.toFile());
+                    }
+                }
+            }
+
+            return FileVisitResult.CONTINUE;
+        }
+
+        public ArrayList<File> getFiles() {
+            return files;
+        }
+
+        static private String getFileExtension(String fileName) {
+            int dotIndex = fileName.lastIndexOf('.');
+            if (dotIndex > 0 && dotIndex < fileName.length() - 1) {
+                return fileName.substring(dotIndex + 1);
+            } else {
+                return null;
+            }
+        }
     }
 
     private static String createDigest(ArrayList<File> triggerfiles) {
