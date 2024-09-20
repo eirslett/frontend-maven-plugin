@@ -86,7 +86,7 @@ public final class YarnMojo extends AbstractFrontendMojo {
 
     @Override
     public synchronized void execute(FrontendPluginFactory factory) throws TaskRunnerException {
-        if (this.shouldExecute()) {
+        if (shouldExecute()) {
             File packageJson = new File(this.workingDirectory, "package.json");
             if (this.buildContext == null || this.buildContext.hasDelta(packageJson)
                     || !this.buildContext.isIncremental()) {
@@ -118,10 +118,10 @@ public final class YarnMojo extends AbstractFrontendMojo {
     }
 
     private boolean shouldExecute() {
-        if (this.arguments.equals("build")) {
+        if (arguments.equals("build")) {
             try {
-                ArrayList<File> triggerfiles = getDigestFiles();
-                String currDigest = createDigest(triggerfiles);
+                ArrayList<File> digestFiles = getDigestFiles();
+                String currDigest = createDigest(digestFiles);
 
                 try {
                     String prevDigest = readPreviousDigest();
