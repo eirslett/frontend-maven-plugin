@@ -34,7 +34,7 @@ public class IncrementalMojoHelper {
         this.workingDirectory = workingDirectory;
         this.log = log;
 
-        this.isActive = activationFlag.equals("true");
+        this.isActive = activationFlag != null && activationFlag.equals("true");
     }
 
     public boolean shouldExecute() {
@@ -62,7 +62,7 @@ public class IncrementalMojoHelper {
 
             saveDigestCandidate(currDigest);
         } catch (IOException e) {
-            getLog().error("Failed to determine if an incremental build is needed: " + e);
+            getLog().error("Failure while determining if an incremental build is needed: " + e);
         }
 
         return true;
@@ -232,12 +232,12 @@ public class IncrementalMojoHelper {
     }
 
     private static String createDigest(ArrayList<File> digestFiles) {
-        return createFileDigest(digestFiles)
+        return createFilesDigest(digestFiles)
                 + createToolsDigest()
                 + createEnvironmentDigest();
     }
 
-    private static String createFileDigest(ArrayList<File> digestFiles) {
+    private static String createFilesDigest(ArrayList<File> digestFiles) {
         return digestFiles.parallelStream().map(file -> {
             try {
                 MessageDigest digest = MessageDigest.getInstance("SHA-256");
