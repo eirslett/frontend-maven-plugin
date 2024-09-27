@@ -7,6 +7,7 @@ import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
@@ -60,8 +61,10 @@ final class ProcessExecutor {
     }
 
     public int executeAndRedirectOutput(final Logger logger) throws ProcessExecutionException {
-        OutputStream stdout = new LoggerOutputStream(logger, 0);
-        return execute(logger, stdout, stdout);
+        OutputStream stdout = new LoggerOutputStream(logger::info);
+        OutputStream stderr = new LoggerOutputStream(logger::error);
+
+        return execute(logger, stdout, stderr);
     }
 
     private int execute(final Logger logger, final OutputStream stdout, final OutputStream stderr)
@@ -143,10 +146,10 @@ final class ProcessExecutor {
     }
 
     private static class LoggerOutputStream extends LogOutputStream {
-        private final Logger logger;
+        private final Consumer<String> logger;
 
-        LoggerOutputStream(Logger logger, int logLevel) {
-            super(logLevel);
+        LoggerOutputStream(Consumer<String> logger) {
+            super(0);
             this.logger = logger;
         }
 
@@ -157,7 +160,7 @@ final class ProcessExecutor {
 
         @Override
         protected void processLine(final String line, final int logLevel) {
-            logger.info(line);
+            logger.accept(line);
         }
     }
 }
