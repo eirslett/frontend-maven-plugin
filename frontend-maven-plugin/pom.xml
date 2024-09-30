@@ -130,6 +130,12 @@
                   <goal>run</goal>
                   <goal>verify</goal>
                 </goals>
+                <configuration>
+                  <environmentVariables>
+                    <MISE_CONFIG_DIR>TESTDIR</MISE_CONFIG_DIR>
+                    <MISE_ENV>TESTPROFILE</MISE_ENV>
+                  </environmentVariables>
+                </configuration>
               </execution>
             </executions>
           </plugin>
