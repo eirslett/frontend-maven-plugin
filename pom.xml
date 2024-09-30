@@ -10,8 +10,6 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <gpg.skip>true</gpg.skip>
         <java.version>1.8</java.version>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
 
     <name>Frontend Plugins</name>
@@ -32,9 +30,9 @@
     </licenses>
 
     <scm>
-        <url>https://github.com/atlassian/frontend-maven-plugin</url>
-        <connection>scm:git:https://github.com/atlassian/frontend-maven-plugin.git</connection>
-        <developerConnection>scm:git:git@github.com:atlassian/frontend-maven-plugin.git</developerConnection>
+        <url>https://github.com/atlassian-forks/frontend-maven-plugin</url>
+        <connection>scm:git:https://github.com/atlassian-forks/frontend-maven-plugin.git</connection>
+        <developerConnection>scm:git:git@github.com:atlassian-forks/frontend-maven-plugin.git</developerConnection>
     </scm>
 
     <developers>
@@ -50,6 +48,21 @@
         <module>frontend-maven-plugin</module>
     </modules>
 
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.github.eirslett</groupId>
+                <artifactId>frontend-plugin-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.eirslett</groupId>
+                <artifactId>frontend-maven-plugin</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <build>
         <plugins>
             <plugin>
@@ -64,34 +77,6 @@
                     <goals>deploy</goals>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-deploy-plugin</artifactId>
-                <version>3.1.1</version>
-                <configuration>
-                    <skip>true</skip>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.sonatype.plugins</groupId>
-                <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>1.6.13</version>
-                <executions>
-                    <execution>
-                        <id>default-deploy</id>
-                        <phase>deploy</phase>
-                        <!-- By default, this is the phase deploy goal will bind to -->
-                        <goals>
-                            <goal>deploy</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                    <serverId>ossrh</serverId>
-                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
-                </configuration>
-            </plugin>
         </plugins>
         <pluginManagement>
             <plugins>
@@ -100,36 +85,33 @@
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>3.11.0</version>
                     <configuration>
-                        <source>1.8</source>
-                        <target>1.8</target>
+                        <source>${java.version}</source>
+                        <target>${java.version}</target>
                     </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-source-plugin</artifactId>
-                    <version>3.3.0</version>
+                    <artifactId>maven-resources-plugin</artifactId>
                     <executions>
                         <execution>
-                            <id>attach-sources</id>
+                            <id>copy-license</id>
+                            <phase>process-sources</phase>
                             <goals>
-                                <goal>jar-no-fork</goal>
+                                <goal>copy-resources</goal>
                             </goals>
-                        </execution>
-                    </executions>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>3.5.0</version>
-                    <configuration>
-                        <source>${maven.compiler.source}</source>
-                    </configuration>
-                    <executions>
-                        <execution>
-                            <id>attach-javadocs</id>
-                            <goals>
-                                <goal>jar</goal>
-                            </goals>
+                            <configuration>
+                                <outputDirectory>${project.build.outputDirectory}/META-INF</outputDirectory>
+                                <overwrite>true</overwrite>
+                                <resources>
+                                    <resource>
+                                        <directory>${user.dir}</directory>
+                                        <includes>
+                                            <include>LICENSE</include>
+                                        </includes>
+                                        <filtering>true</filtering>
+                                    </resource>
+                                </resources>
+                            </configuration>
                         </execution>
                     </executions>
                 </plugin>
@@ -139,12 +121,12 @@
 
     <distributionManagement>
         <repository>
-            <id>atlassian-3rdparty</id>
-            <url>https://maven.atlassian.com/3rdparty</url>
+            <id>maven-atlassian-com</id>
+            <url>https://packages.atlassian.com/maven/3rdparty</url>
         </repository>
         <snapshotRepository>
-            <id>atlassian-3rdparty-snapshot</id>
-            <url>https://maven.atlassian.com/3rdparty-snapshot</url>
+            <id>maven-atlassian-com</id>
+            <url>https://packages.atlassian.com/maven/3rdparty-snapshot</url>
         </snapshotRepository>
     </distributionManagement>
 
