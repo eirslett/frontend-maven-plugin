@@ -6,7 +6,7 @@
 
 This plugin downloads/installs Node and NPM locally for your project, runs `npm install`, and then any combination of 
 [Bower](http://bower.io/), [Grunt](http://gruntjs.com/), [Gulp](http://gulpjs.com/), [Jspm](http://jspm.io), 
-[Karma](http://karma-runner.github.io/), or [Webpack](http://webpack.github.io/).
+[Karma](http://karma-runner.github.io/), [Webpack](http://webpack.github.io/), or [Rspack](http://www.rspack.dev/).
 It's supposed to work on Windows, OS X and Linux.
 
 If you prefer [Yarn](https://yarnpkg.com/) over [NPM](https://www.npmjs.com/) for your node package fetching, 
@@ -66,6 +66,7 @@ to see how it should be set up: https://github.com/eirslett/frontend-maven-plugi
     - [gulp](#running-gulp)
     - [jspm](#running-jspm)
     - [karma](#running-karma)
+    - [rspack](#running-rspack)
     - [webpack](#running-webpack)
  - Configuration
     - [Working Directory](#working-directory)
@@ -498,6 +499,26 @@ code coverage reports.
 or [through gulp](https://github.com/karma-runner/gulp-karma) instead, as part of the `grunt` or `gulp` execution. That 
 will help to separate your frontend and backend builds even more.
 
+### Running Rspack
+
+```xml
+<execution>
+    <id>rspack build</id>
+    <goals>
+        <goal>rspack</goal>
+    </goals>
+
+    <!-- optional: the default phase is "generate-resources" -->
+    <phase>generate-resources</phase>
+
+    <configuration>
+        <!-- optional: if not specified, it will run rspack's default
+        build (and you can remove this whole <configuration> section.) -->
+        <arguments>-p</arguments>
+    </configuration>
+</execution>
+```
+
 ### Running Webpack
 
 ```xml
@@ -648,6 +669,7 @@ Tools and property to enable skipping
 * gulp `-Dskip.gulp`
 * jspm `-Dskip.jspm`
 * karma `-Dskip.karma`
+* rspack `-Dskip.rsppack`
 * webpack `-Dskip.webpack`
 
 ## Eclipse M2E support

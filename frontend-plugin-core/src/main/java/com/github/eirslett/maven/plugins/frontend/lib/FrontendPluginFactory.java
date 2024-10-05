@@ -96,6 +96,10 @@ public final class FrontendPluginFactory {
         return new DefaultWebpackRunner(getExecutorConfig());
     }
 
+    public RspackRunner getRspackRunner(){
+        return new DefaultRspackRunner(getExecutorConfig());
+    }
+
     private NodeExecutorConfig getExecutorConfig() {
         return new InstallNodeExecutorConfig(getInstallConfig());
     }
