@@ -107,4 +107,8 @@ public final class FrontendPluginFactory {
     private static final CacheResolver getDefaultCacheResolver(File root) {
         return new DirectoryCacheResolver(new File(root, DEFAULT_CACHE_PATH));
     }
+
+    public NodeRunner getNodeRunner() {
+        return new NodeRunner(getExecutorConfig());
+    }
 }

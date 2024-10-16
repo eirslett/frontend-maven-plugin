@@ -67,6 +67,7 @@ to see how it should be set up: https://github.com/eirslett/frontend-maven-plugi
     - [jspm](#running-jspm)
     - [karma](#running-karma)
     - [webpack](#running-webpack)
+    - [node](#running-node)
  - Configuration
     - [Working Directory](#working-directory)
     - [Installation Directory](#installation-directory)
@@ -518,6 +519,25 @@ will help to separate your frontend and backend builds even more.
 </execution>
 ```
 
+### Running node
+You may need to run `node` with arbitrary arguments. Check this Mojo :
+```xml
+<execution>
+    <id>compile-xsl</id>
+    <goals>
+        <goal>node</goal>
+    </goals>
+    
+    <!-- optional: the default phase is "compile" -->
+    <phase>compile</phase>
+
+    <!-- required: arguments to launch node with -->
+    <configuration>
+        <arguments>node_modules/xslt3/xslt3.js -xsl:src/main/xsl/md-to-xml.xsl -export:target/webapp/md-to-xml.sef.json</arguments>
+    </configuration>
+</execution>
+```
+
 ### Optional Configuration 
 
 #### Working directory
@@ -649,6 +669,7 @@ Tools and property to enable skipping
 * jspm `-Dskip.jspm`
 * karma `-Dskip.karma`
 * webpack `-Dskip.webpack`
+* node `-Dskip.node`
 
 ## Eclipse M2E support
 
