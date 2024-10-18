@@ -1,6 +1,9 @@
 package com.github.eirslett.maven.plugins.frontend.mojo;
 
+import com.github.eirslett.maven.plugins.frontend.lib.ArchiveExtractionException;
+import com.github.eirslett.maven.plugins.frontend.lib.DownloadException;
 import com.github.eirslett.maven.plugins.frontend.lib.FrontendPluginFactory;
+import com.github.eirslett.maven.plugins.frontend.lib.InstallationException;
 import com.github.eirslett.maven.plugins.frontend.lib.NPMInstaller;
 import com.github.eirslett.maven.plugins.frontend.lib.NodeVersionDetector;
 import com.github.eirslett.maven.plugins.frontend.lib.NodeVersionHelper;
@@ -14,7 +17,11 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.settings.Server;
 import org.apache.maven.settings.crypto.SettingsDecrypter;
 
+import static com.github.eirslett.maven.plugins.frontend.lib.NPMInstaller.ATLASSIAN_NPM_DOWNLOAD_ROOT;
+import static com.github.eirslett.maven.plugins.frontend.lib.NodeInstaller.ATLASSIAN_NODE_DOWNLOAD_ROOT;
 import static com.github.eirslett.maven.plugins.frontend.lib.NodeVersionHelper.getDownloadableVersion;
+import static com.github.eirslett.maven.plugins.frontend.lib.Utils.isBlank;
+import static com.github.eirslett.maven.plugins.frontend.mojo.AtlassianUtil.isAtlassianProject;
 import static java.util.Objects.isNull;
 
 @Mojo(name="install-node-and-npm", defaultPhase = LifecyclePhase.GENERATE_RESOURCES, threadSafe = true)
@@ -29,7 +36,7 @@ public final class InstallNodeAndNpmMojo extends AbstractFrontendMojo {
     /**
      * Where to download NPM binary from. Defaults to https://registry.npmjs.org/npm/-/
      */
-    @Parameter(property = "npmDownloadRoot", required = false, defaultValue = NPMInstaller.DEFAULT_NPM_DOWNLOAD_ROOT)
+    @Parameter(property = "npmDownloadRoot", required = false)
     private String npmDownloadRoot;
 
     /**
@@ -84,11 +91,6 @@ public final class InstallNodeAndNpmMojo extends AbstractFrontendMojo {
 
     @Override
     public void execute(FrontendPluginFactory factory) throws Exception {
-        ProxyConfig proxyConfig = MojoUtils.getProxyConfig(session, decrypter);
-        String nodeDownloadRoot = getNodeDownloadRoot();
-        String npmDownloadRoot = getNpmDownloadRoot();
-        Server server = MojoUtils.decryptServer(serverId, session, decrypter);
-
         String nodeVersion = NodeVersionDetector.getNodeVersion(workingDirectory, this.nodeVersion, this.nodeVersionFile);
 
         if (isNull(nodeVersion)) {
@@ -100,6 +102,41 @@ public final class InstallNodeAndNpmMojo extends AbstractFrontendMojo {
         }
 
         String validNodeVersion = getDownloadableVersion(nodeVersion);
+
+        final String nodeDownloadRoot = getNodeDownloadRoot();
+        final String npmDownloadRoot = getNpmDownloadRoot();
+
+        if (isAtlassianProject(project) &&
+                isBlank(serverId) &&
+                (isBlank(nodeDownloadRoot) || isBlank(npmDownloadRoot))
+            ) { // If they're overridden the settings, they be the boss
+            getLog().info("Atlassian project detected, going to use the internal mirrors (requires VPN)");
+
+            serverId = "maven-atlassian-com";
+            try {
+                install(factory, validNodeVersion,
+                        isBlank(nodeDownloadRoot) ? ATLASSIAN_NODE_DOWNLOAD_ROOT : nodeDownloadRoot,
+                        isBlank(npmDownloadRoot) ? ATLASSIAN_NPM_DOWNLOAD_ROOT : npmDownloadRoot);
+                return;
+            } catch (InstallationException exception) {
+                // Ignore as many filesystem exceptions unrelated to the mirror easily
+                if (!(exception.getCause() instanceof DownloadException ||
+                        exception.getCause() instanceof ArchiveExtractionException)) {
+                    throw exception;
+                }
+                getLog().warn("Oh no couldn't use the internal mirrors! Falling back to upstream mirrors");
+                getLog().debug("Using internal mirrors failed because: ", exception);
+            } finally {
+                serverId = null;
+            }
+        }
+
+        install(factory, validNodeVersion, nodeDownloadRoot, npmDownloadRoot);
+    }
+
+    private void install(FrontendPluginFactory factory, String validNodeVersion, String nodeDownloadRoot, String npmDownloadRoot) throws InstallationException {
+        ProxyConfig proxyConfig = MojoUtils.getProxyConfig(session, decrypter);
+        Server server = MojoUtils.decryptServer(serverId, session, decrypter);
 
         if (null != server) {
             factory.getNodeInstaller(proxyConfig)

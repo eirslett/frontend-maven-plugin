@@ -14,6 +14,8 @@ import org.slf4j.LoggerFactory;
 
 public class NodeInstaller {
 
+    public static final String ATLASSIAN_NODE_DOWNLOAD_ROOT = "https://packages.atlassian.com/artifactory/nodejs-dist/";
+
     public static final String INSTALL_PATH = "/node";
 
     private static final Object LOCK = new Object();
