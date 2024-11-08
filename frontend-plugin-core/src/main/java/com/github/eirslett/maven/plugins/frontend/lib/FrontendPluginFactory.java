@@ -32,6 +32,10 @@ public final class FrontendPluginFactory {
         return new NPMInstaller(getInstallConfig(), new DefaultArchiveExtractor(), new DefaultFileDownloader(proxy));
     }
 
+    public CorepackInstaller getCorepackInstaller(ProxyConfig proxy) {
+        return new CorepackInstaller(getInstallConfig(), new DefaultArchiveExtractor(), new DefaultFileDownloader(proxy));
+    }
+
     public PnpmInstaller getPnpmInstaller(ProxyConfig proxy) {
         return new PnpmInstaller(getInstallConfig(), new DefaultArchiveExtractor(), new DefaultFileDownloader(proxy));
     }
@@ -54,6 +58,10 @@ public final class FrontendPluginFactory {
 
     public NpmRunner getNpmRunner(ProxyConfig proxy, String npmRegistryURL) {
         return new DefaultNpmRunner(getExecutorConfig(), proxy, npmRegistryURL);
+    }
+
+    public CorepackRunner getCorepackRunner() {
+        return new DefaultCorepackRunner(getExecutorConfig());
     }
 
     public PnpmRunner getPnpmRunner(ProxyConfig proxyConfig, String npmRegistryUrl) {

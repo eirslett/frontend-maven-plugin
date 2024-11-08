@@ -8,6 +8,9 @@ import com.github.eirslett.maven.plugins.frontend.lib.NPMInstaller;
 import com.github.eirslett.maven.plugins.frontend.lib.NodeVersionDetector;
 import com.github.eirslett.maven.plugins.frontend.lib.NodeVersionHelper;
 import com.github.eirslett.maven.plugins.frontend.lib.ProxyConfig;
+
+import java.util.Map;
+
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.lifecycle.LifecycleExecutionException;
 import org.apache.maven.plugins.annotations.Component;
@@ -139,12 +142,14 @@ public final class InstallNodeAndNpmMojo extends AbstractFrontendMojo {
         Server server = MojoUtils.decryptServer(serverId, session, decrypter);
 
         if (null != server) {
+            Map<String, String> httpHeaders = getHttpHeaders(server);
             factory.getNodeInstaller(proxyConfig)
                 .setNodeVersion(validNodeVersion)
                 .setNodeDownloadRoot(nodeDownloadRoot)
                 .setNpmVersion(npmVersion)
                 .setUserName(server.getUsername())
                 .setPassword(server.getPassword())
+                .setHttpHeaders(httpHeaders)
                 .install();
             factory.getNPMInstaller(proxyConfig)
                 .setNodeVersion(validNodeVersion)
@@ -152,6 +157,7 @@ public final class InstallNodeAndNpmMojo extends AbstractFrontendMojo {
                 .setNpmDownloadRoot(npmDownloadRoot)
                 .setUserName(server.getUsername())
                 .setPassword(server.getPassword())
+                .setHttpHeaders(httpHeaders)
                 .install();
         } else {
             factory.getNodeInstaller(proxyConfig)

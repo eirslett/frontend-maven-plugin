@@ -7,6 +7,7 @@ public interface NodeExecutorConfig {
   File getNpmPath();
   File getPnpmPath();
   File getPnpmCjsPath();
+  File getCorepackPath();
 
   File getNpxPath();
   File getInstallDirectory();
@@ -21,6 +22,7 @@ final class InstallNodeExecutorConfig implements NodeExecutorConfig {
   private static final String NPM = NodeInstaller.INSTALL_PATH + "/node_modules/npm/bin/npm-cli.js";
   private static final String PNPM = NodeInstaller.INSTALL_PATH + "/node_modules/pnpm/bin/pnpm.js";
   private static final String PNPM_CJS = NodeInstaller.INSTALL_PATH + "/node_modules/pnpm/bin/pnpm.cjs";
+  private static final String COREPACK = NodeInstaller.INSTALL_PATH + "/node_modules/corepack/dist/corepack.js";
   private static final String NPX = NodeInstaller.INSTALL_PATH + "/node_modules/npm/bin/npx-cli.js";
 
   private final InstallConfig installConfig;
@@ -49,6 +51,11 @@ final class InstallNodeExecutorConfig implements NodeExecutorConfig {
   @Override
   public File getPnpmCjsPath() {
     return new File(installConfig.getInstallDirectory() + Utils.normalize(PNPM_CJS));
+  }
+
+  @Override
+  public File getCorepackPath() {
+    return new File(installConfig.getInstallDirectory() + Utils.normalize(COREPACK));
   }
 
   @Override

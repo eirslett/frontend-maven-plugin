@@ -15,6 +15,8 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.settings.Server;
 import org.apache.maven.settings.crypto.SettingsDecrypter;
 
+import java.util.Map;
+
 import static com.github.eirslett.maven.plugins.frontend.lib.NodeInstaller.ATLASSIAN_NODE_DOWNLOAD_ROOT;
 import static com.github.eirslett.maven.plugins.frontend.lib.NodeVersionDetector.getNodeVersion;
 import static com.github.eirslett.maven.plugins.frontend.lib.NodeVersionHelper.getDownloadableVersion;
@@ -141,12 +143,14 @@ public final class InstallNodeAndYarnMojo extends AbstractFrontendMojo {
         Server server = MojoUtils.decryptServer(this.serverId, this.session, this.decrypter);
 
         if (null != server) {
+            Map<String, String> httpHeaders = getHttpHeaders(server);
             factory.getNodeInstaller(proxyConfig).setNodeDownloadRoot(this.nodeDownloadRoot)
-                .setNodeVersion(validNodeVersion).setPassword(server.getPassword())
-                .setUserName(server.getUsername()).install();
+                .setNodeVersion(validNodeVersion).setUserName(server.getUsername())
+                .setPassword(server.getPassword()).setHttpHeaders(httpHeaders).install();
             factory.getYarnInstaller(proxyConfig).setYarnDownloadRoot(this.yarnDownloadRoot)
                 .setYarnVersion(this.yarnVersion).setUserName(server.getUsername())
-                .setPassword(server.getPassword()).setIsYarnBerry(isYarnYamlFilePresent).install();
+                .setPassword(server.getPassword()).setHttpHeaders(httpHeaders)
+                .setIsYarnBerry(isYarnYamlFilePresent).install();
         } else {
             factory.getNodeInstaller(proxyConfig).setNodeDownloadRoot(this.nodeDownloadRoot)
                 .setNodeVersion(validNodeVersion).install();
