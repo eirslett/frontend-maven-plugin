@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
@@ -25,6 +26,8 @@ public class YarnInstaller {
     private static final String YARN_ROOT_DIRECTORY = "dist";
 
     private String yarnVersion, yarnDownloadRoot, userName, password;
+    
+    private Map<String, String> httpHeaders;
 
     private boolean isYarnBerry;
 
@@ -65,6 +68,11 @@ public class YarnInstaller {
 
     public YarnInstaller setPassword(String password) {
         this.password = password;
+        return this;
+    }
+
+    public YarnInstaller setHttpHeaders(Map<String, String> httpHeaders) {
+        this.httpHeaders = httpHeaders;
         return this;
     }
 
@@ -124,7 +132,7 @@ public class YarnInstaller {
 
             File archive = config.getCacheResolver().resolve(cacheDescriptor);
 
-            downloadFileIfMissing(downloadUrl, archive, userName, password);
+            downloadFileIfMissing(downloadUrl, archive, userName, password, httpHeaders);
 
             File installDirectory = getInstallDirectory();
 
@@ -196,16 +204,16 @@ public class YarnInstaller {
         }
     }
 
-    private void downloadFileIfMissing(String downloadUrl, File destination, String userName, String password)
+    private void downloadFileIfMissing(String downloadUrl, File destination, String userName, String password, Map<String, String> httpHeaders)
         throws DownloadException {
         if (!destination.exists()) {
-            downloadFile(downloadUrl, destination, userName, password);
+            downloadFile(downloadUrl, destination, userName, password, httpHeaders);
         }
     }
 
-    private void downloadFile(String downloadUrl, File destination, String userName, String password)
+    private void downloadFile(String downloadUrl, File destination, String userName, String password, Map<String, String> httpHeaders)
         throws DownloadException {
         logger.info("Downloading {} to {}", downloadUrl, destination);
-        fileDownloader.download(downloadUrl, destination.getPath(), userName, password);
+        fileDownloader.download(downloadUrl, destination.getPath(), userName, password, httpHeaders);
     }
 }

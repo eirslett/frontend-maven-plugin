@@ -22,23 +22,22 @@
                 <executions>
 
                     <execution>
-                        <id>install bun runtime</id>
+                        <id>install node and corepack</id>
                         <goals>
-                            <goal>install-bun</goal>
+                            <goal>install-node-and-corepack</goal>
                         </goals>
                         <configuration>
-                            <bunVersion>v1.1.27</bunVersion>
+                            <nodeVersion>v20.12.2</nodeVersion>
                         </configuration>
                     </execution>
 
                     <execution>
-                        <id>bun install</id>
+                        <id>yarn install</id>
                         <goals>
-                            <goal>bun</goal>
+                            <goal>corepack</goal>
                         </goals>
-                        <!-- Optional configuration which provides for running any npm command -->
                         <configuration>
-                            <arguments>install</arguments>
+                            <arguments>yarn install --no-immutable</arguments>
                         </configuration>
                     </execution>
 
@@ -46,5 +45,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>

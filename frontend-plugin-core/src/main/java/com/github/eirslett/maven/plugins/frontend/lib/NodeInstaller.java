@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
+import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
@@ -21,6 +22,8 @@ public class NodeInstaller {
     private static final Object LOCK = new Object();
 
     private String npmVersion, nodeVersion, nodeDownloadRoot, userName, password;
+    
+    private Map<String, String> httpHeaders;
 
     private final Logger logger;
 
@@ -59,6 +62,11 @@ public class NodeInstaller {
 
     public NodeInstaller setPassword(String password) {
         this.password = password;
+        return this;
+    }
+    
+    public NodeInstaller setHttpHeaders(Map<String, String> httpHeaders) {
+        this.httpHeaders = httpHeaders;
         return this;
     }
 
@@ -140,7 +148,7 @@ public class NodeInstaller {
 
             File archive = this.config.getCacheResolver().resolve(cacheDescriptor);
 
-            downloadFileIfMissing(downloadUrl, archive, this.userName, this.password);
+            downloadFileIfMissing(downloadUrl, archive, this.userName, this.password, this.httpHeaders);
 
             try {
                 extractFile(archive, tmpDirectory);
@@ -192,10 +200,21 @@ public class NodeInstaller {
                     FileUtils.copyDirectory(tmpNodeModulesDir, nodeModulesDirectory);
                     this.logger.info("Extracting NPM");
                     // create a copy of the npm scripts next to the node executable
-                    for (String script : Arrays.asList("npm", "npm.cmd")) {
+                    for (String script : Arrays.asList("npm", "npm.cmd", "npx", "npx.cmd")) {
                         File scriptFile = new File(npmDirectory, "bin" + File.separator + script);
                         if (scriptFile.exists()) {
-                            scriptFile.setExecutable(true);
+                            File copy = new File(destinationDirectory, script);
+                            if (!copy.exists()) {
+                                try
+                                {
+                                    FileUtils.copyFile(scriptFile, copy);
+                                }
+                                catch (IOException e)
+                                {
+                                    throw new InstallationException("Could not copy npm", e);
+                                }
+                                copy.setExecutable(true);
+                            }
                         }
                     }
                 }
@@ -228,7 +247,7 @@ public class NodeInstaller {
 
             File archive = this.config.getCacheResolver().resolve(cacheDescriptor);
 
-            downloadFileIfMissing(downloadUrl, archive, this.userName, this.password);
+            downloadFileIfMissing(downloadUrl, archive, this.userName, this.password, this.httpHeaders);
 
             extractFile(archive, tmpDirectory);
 
@@ -284,7 +303,7 @@ public class NodeInstaller {
 
             File binary = this.config.getCacheResolver().resolve(cacheDescriptor);
 
-            downloadFileIfMissing(downloadUrl, binary, this.userName, this.password);
+            downloadFileIfMissing(downloadUrl, binary, this.userName, this.password, this.httpHeaders);
 
             this.logger.info("Copying node binary from {} to {}", binary, destination);
             FileUtils.copyFile(binary, destination);
@@ -327,16 +346,16 @@ public class NodeInstaller {
         this.archiveExtractor.extract(archive.getPath(), destinationDirectory.getPath());
     }
 
-    private void downloadFileIfMissing(String downloadUrl, File destination, String userName, String password)
-        throws DownloadException {
+    private void downloadFileIfMissing(String downloadUrl, File destination, String userName, String password, 
+            Map<String, String> httpHeaders) throws DownloadException {
         if (!destination.exists()) {
-            downloadFile(downloadUrl, destination, userName, password);
+            downloadFile(downloadUrl, destination, userName, password, httpHeaders);
         }
     }
 
-    private void downloadFile(String downloadUrl, File destination, String userName, String password)
-        throws DownloadException {
+    private void downloadFile(String downloadUrl, File destination, String userName, String password, 
+            Map<String, String> httpHeaders) throws DownloadException {
         this.logger.info("Downloading {} to {}", downloadUrl, destination);
-        this.fileDownloader.download(downloadUrl, destination.getPath(), userName, password);
+        this.fileDownloader.download(downloadUrl, destination.getPath(), userName, password, httpHeaders);
     }
 }
