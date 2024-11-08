@@ -1,10 +1,11 @@
 package com.github.eirslett.maven.plugins.frontend.mojo;
 
+import com.github.eirslett.maven.plugins.frontend.lib.ArchiveExtractionException;
+import com.github.eirslett.maven.plugins.frontend.lib.DownloadException;
 import com.github.eirslett.maven.plugins.frontend.lib.FrontendPluginFactory;
-import com.github.eirslett.maven.plugins.frontend.lib.NodeVersionDetector;
+import com.github.eirslett.maven.plugins.frontend.lib.InstallationException;
 import com.github.eirslett.maven.plugins.frontend.lib.NodeVersionHelper;
 import com.github.eirslett.maven.plugins.frontend.lib.ProxyConfig;
-import com.github.eirslett.maven.plugins.frontend.lib.YarnInstaller;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.lifecycle.LifecycleExecutionException;
 import org.apache.maven.plugins.annotations.Component;
@@ -14,7 +15,12 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.settings.Server;
 import org.apache.maven.settings.crypto.SettingsDecrypter;
 
+import static com.github.eirslett.maven.plugins.frontend.lib.NodeInstaller.ATLASSIAN_NODE_DOWNLOAD_ROOT;
+import static com.github.eirslett.maven.plugins.frontend.lib.NodeVersionDetector.getNodeVersion;
 import static com.github.eirslett.maven.plugins.frontend.lib.NodeVersionHelper.getDownloadableVersion;
+import static com.github.eirslett.maven.plugins.frontend.lib.Utils.isBlank;
+import static com.github.eirslett.maven.plugins.frontend.lib.YarnInstaller.ATLASSIAN_YARN_DOWNLOAD_ROOT;
+import static com.github.eirslett.maven.plugins.frontend.mojo.AtlassianUtil.isAtlassianProject;
 import static com.github.eirslett.maven.plugins.frontend.mojo.YarnUtils.isYarnrcYamlFilePresent;
 import static java.util.Objects.isNull;
 
@@ -32,8 +38,7 @@ public final class InstallNodeAndYarnMojo extends AbstractFrontendMojo {
     /**
      * Where to download Yarn binary from. Defaults to https://github.com/yarnpkg/yarn/releases/download/...
      */
-    @Parameter(property = "yarnDownloadRoot", required = false,
-        defaultValue = YarnInstaller.DEFAULT_YARN_DOWNLOAD_ROOT)
+    @Parameter(property = "yarnDownloadRoot", required = false)
     private String yarnDownloadRoot;
 
     /**
@@ -80,10 +85,7 @@ public final class InstallNodeAndYarnMojo extends AbstractFrontendMojo {
 
     @Override
     public void execute(FrontendPluginFactory factory) throws Exception {
-        ProxyConfig proxyConfig = MojoUtils.getProxyConfig(this.session, this.decrypter);
-        Server server = MojoUtils.decryptServer(this.serverId, this.session, this.decrypter);
-
-        String nodeVersion = NodeVersionDetector.getNodeVersion(workingDirectory, this.nodeVersion, this.nodeVersionFile);
+        String nodeVersion = getNodeVersion(workingDirectory, this.nodeVersion, this.nodeVersionFile);
 
         if (isNull(nodeVersion)) {
             throw new LifecycleExecutionException("Node version could not be detected from a file and was not set");
@@ -96,6 +98,47 @@ public final class InstallNodeAndYarnMojo extends AbstractFrontendMojo {
         String validNodeVersion = getDownloadableVersion(nodeVersion);
 
         boolean isYarnYamlFilePresent = isYarnrcYamlFilePresent(this.session, this.workingDirectory);
+
+        if (isAtlassianProject(project) &&
+                isBlank(serverId) &&
+                (isBlank(nodeDownloadRoot) || isBlank(yarnDownloadRoot))
+        ) { // If they're overridden the settings, they be the boss
+            getLog().info("Atlassian project detected, going to use the internal mirrors (requires VPN)");
+
+            serverId = "maven-atlassian-com";
+            final String userSetYarnDownloadRoot = yarnDownloadRoot;
+            if (isBlank(yarnDownloadRoot)) {
+                yarnDownloadRoot = ATLASSIAN_YARN_DOWNLOAD_ROOT;
+            }
+            final String userSetNodeDownloadRoot = nodeDownloadRoot;
+            if (isBlank(nodeDownloadRoot)) {
+                nodeDownloadRoot = ATLASSIAN_NODE_DOWNLOAD_ROOT;
+            }
+
+            try {
+                install(factory, validNodeVersion, isYarnYamlFilePresent);
+                return;
+            } catch (InstallationException exception) {
+                // Ignore as many filesystem exceptions unrelated to the mirror easily
+                if (!(exception.getCause() instanceof DownloadException ||
+                        exception.getCause() instanceof ArchiveExtractionException)) {
+                    throw exception;
+                }
+                getLog().warn("Oh no couldn't use the internal mirrors! Falling back to upstream mirrors");
+                getLog().debug("Using internal mirrors failed because: ", exception);
+            } finally {
+                nodeDownloadRoot = userSetNodeDownloadRoot;
+                yarnDownloadRoot = userSetYarnDownloadRoot;
+                serverId = null;
+            }
+        }
+
+        install(factory, validNodeVersion, isYarnYamlFilePresent);
+    }
+
+    private void install(FrontendPluginFactory factory, String validNodeVersion, boolean isYarnYamlFilePresent) throws InstallationException {
+        ProxyConfig proxyConfig = MojoUtils.getProxyConfig(this.session, this.decrypter);
+        Server server = MojoUtils.decryptServer(this.serverId, this.session, this.decrypter);
 
         if (null != server) {
             factory.getNodeInstaller(proxyConfig).setNodeDownloadRoot(this.nodeDownloadRoot)

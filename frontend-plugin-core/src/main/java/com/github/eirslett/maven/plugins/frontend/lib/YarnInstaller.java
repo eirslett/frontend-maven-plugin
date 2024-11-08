@@ -14,6 +14,9 @@ public class YarnInstaller {
 
     public static final String INSTALL_PATH = "/node/yarn";
 
+    public static final String ATLASSIAN_YARN_DOWNLOAD_ROOT =
+        "https://packages.atlassian.com/artifactory/yarn-dist/";
+
     public static final String DEFAULT_YARN_DOWNLOAD_ROOT =
         "https://github.com/yarnpkg/yarn/releases/download/";
 

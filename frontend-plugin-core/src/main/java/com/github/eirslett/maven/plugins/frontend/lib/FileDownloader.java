@@ -29,15 +29,6 @@ import org.slf4j.LoggerFactory;
 
 import com.github.eirslett.maven.plugins.frontend.lib.ProxyConfig.Proxy;
 
-final class DownloadException extends Exception {
-    public DownloadException(String message){
-        super(message);
-    }
-    DownloadException(String message, Throwable cause) {
-        super(message, cause);
-    }
-}
-
 interface FileDownloader {
     void download(String downloadUrl, String destination, String userName, String password) throws DownloadException;
 }
@@ -69,7 +60,7 @@ final class DefaultFileDownloader implements FileDownloader {
                 if(statusCode != 200){
                     throw new DownloadException("Got error code "+ statusCode +" from the server.");
                 }
-                
+
                 byte[] data = IOUtils.toByteArray(response.getEntity().getContent());
                 new File(FilenameUtils.getFullPathNoEndSeparator(destination)).mkdirs();
                 FileUtils.writeByteArrayToFile(new File(destination), data);
