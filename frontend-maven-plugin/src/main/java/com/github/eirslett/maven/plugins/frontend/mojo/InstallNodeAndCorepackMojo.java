@@ -4,17 +4,23 @@ import com.github.eirslett.maven.plugins.frontend.lib.CorepackInstaller;
 import com.github.eirslett.maven.plugins.frontend.lib.FrontendPluginFactory;
 import com.github.eirslett.maven.plugins.frontend.lib.InstallationException;
 import com.github.eirslett.maven.plugins.frontend.lib.NodeInstaller;
+import com.github.eirslett.maven.plugins.frontend.lib.NodeVersionDetector;
+import com.github.eirslett.maven.plugins.frontend.lib.NodeVersionHelper;
 import com.github.eirslett.maven.plugins.frontend.lib.ProxyConfig;
 
 import java.util.Map;
 
 import org.apache.maven.execution.MavenSession;
+import org.apache.maven.lifecycle.LifecycleExecutionException;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.settings.crypto.SettingsDecrypter;
 import org.apache.maven.settings.Server;
+
+import static com.github.eirslett.maven.plugins.frontend.lib.NodeVersionHelper.getDownloadableVersion;
+import static java.util.Objects.isNull;
 
 @Mojo(name="install-node-and-corepack", defaultPhase = LifecyclePhase.GENERATE_RESOURCES, threadSafe = true)
 public final class InstallNodeAndCorepackMojo extends AbstractFrontendMojo {
@@ -34,8 +40,14 @@ public final class InstallNodeAndCorepackMojo extends AbstractFrontendMojo {
     /**
      * The version of Node.js to install. IMPORTANT! Most Node.js version names start with 'v', for example 'v0.10.18'
      */
-    @Parameter(property="nodeVersion", required = true)
+    @Parameter(property="nodeVersion", required = false)
     private String nodeVersion;
+
+    /**
+     * The path to the file that contains the Node version to use
+     */
+    @Parameter(property = "nodeVersionFile", defaultValue = "", required = false)
+    private String nodeVersionFile;
 
     /**
      * The version of corepack to install. Note that the version string can optionally be prefixed with
@@ -70,14 +82,26 @@ public final class InstallNodeAndCorepackMojo extends AbstractFrontendMojo {
     }
 
     @Override
-    public void execute(FrontendPluginFactory factory) throws InstallationException {
+    public void execute(FrontendPluginFactory factory) throws Exception {
+        String nodeVersion = NodeVersionDetector.getNodeVersion(workingDirectory, this.nodeVersion, this.nodeVersionFile);
+
+        if (isNull(nodeVersion)) {
+            throw new LifecycleExecutionException("Node version could not be detected from a file and was not set");
+        }
+
+        if (!NodeVersionHelper.validateVersion(nodeVersion)) {
+            throw new LifecycleExecutionException("Node version (" + nodeVersion + ") is not valid. If you think it actually is, raise an issue");
+        }
+
+        String validNodeVersion = getDownloadableVersion(nodeVersion);
+
         ProxyConfig proxyConfig = MojoUtils.getProxyConfig(session, decrypter);
         String resolvedNodeDownloadRoot = getNodeDownloadRoot();
         String resolvedCorepackDownloadRoot = getCorepackDownloadRoot();
 
         // Setup the installers
         NodeInstaller nodeInstaller = factory.getNodeInstaller(proxyConfig);
-        nodeInstaller.setNodeVersion(nodeVersion)
+        nodeInstaller.setNodeVersion(validNodeVersion)
                 .setNodeDownloadRoot(resolvedNodeDownloadRoot);
         if ("provided".equals(corepackVersion)) {
             // This causes the node installer to copy over the whole
