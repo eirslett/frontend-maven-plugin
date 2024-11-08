@@ -1,25 +1,31 @@
 package com.github.eirslett.maven.plugins.frontend.mojo;
 
+import com.github.eirslett.maven.plugins.frontend.lib.ArchiveExtractionException;
 import com.github.eirslett.maven.plugins.frontend.lib.CorepackInstaller;
+import com.github.eirslett.maven.plugins.frontend.lib.DownloadException;
 import com.github.eirslett.maven.plugins.frontend.lib.FrontendPluginFactory;
 import com.github.eirslett.maven.plugins.frontend.lib.InstallationException;
 import com.github.eirslett.maven.plugins.frontend.lib.NodeInstaller;
 import com.github.eirslett.maven.plugins.frontend.lib.NodeVersionDetector;
 import com.github.eirslett.maven.plugins.frontend.lib.NodeVersionHelper;
 import com.github.eirslett.maven.plugins.frontend.lib.ProxyConfig;
-
-import java.util.Map;
-
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.lifecycle.LifecycleExecutionException;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.apache.maven.settings.crypto.SettingsDecrypter;
 import org.apache.maven.settings.Server;
+import org.apache.maven.settings.crypto.SettingsDecrypter;
 
+import java.util.Map;
+
+import static com.github.eirslett.maven.plugins.frontend.lib.CorepackInstaller.ATLASSIAN_COREPACK_DOWNLOAD_ROOT;
+import static com.github.eirslett.maven.plugins.frontend.lib.CorepackInstaller.DEFAULT_COREPACK_DOWNLOAD_ROOT;
+import static com.github.eirslett.maven.plugins.frontend.lib.NodeInstaller.ATLASSIAN_NODE_DOWNLOAD_ROOT;
 import static com.github.eirslett.maven.plugins.frontend.lib.NodeVersionHelper.getDownloadableVersion;
+import static com.github.eirslett.maven.plugins.frontend.lib.Utils.isBlank;
+import static com.github.eirslett.maven.plugins.frontend.mojo.AtlassianUtil.isAtlassianProject;
 import static java.util.Objects.isNull;
 
 @Mojo(name="install-node-and-corepack", defaultPhase = LifecyclePhase.GENERATE_RESOURCES, threadSafe = true)
@@ -34,7 +40,7 @@ public final class InstallNodeAndCorepackMojo extends AbstractFrontendMojo {
     /**
      * Where to download corepack binary from. Defaults to https://registry.npmjs.org/corepack/-/
      */
-    @Parameter(property = "corepackDownloadRoot", required = false, defaultValue = CorepackInstaller.DEFAULT_COREPACK_DOWNLOAD_ROOT)
+    @Parameter(property = "corepackDownloadRoot", required = false)
     private String corepackDownloadRoot;
 
     /**
@@ -95,9 +101,41 @@ public final class InstallNodeAndCorepackMojo extends AbstractFrontendMojo {
 
         String validNodeVersion = getDownloadableVersion(nodeVersion);
 
-        ProxyConfig proxyConfig = MojoUtils.getProxyConfig(session, decrypter);
+        if (isAtlassianProject(project) && isBlank(serverId) &&
+                (isBlank(nodeDownloadRoot) || isBlank(corepackDownloadRoot))
+        ) { // If they're overridden the settings, they be the boss
+            getLog().info("Atlassian project detected, going to use the internal mirrors (requires VPN)");
+
+            serverId = "maven-atlassian-com";
+            try {
+                install(factory, validNodeVersion,
+                        isBlank(nodeDownloadRoot) ? ATLASSIAN_NODE_DOWNLOAD_ROOT : nodeDownloadRoot,
+                        isBlank(corepackDownloadRoot) ? ATLASSIAN_COREPACK_DOWNLOAD_ROOT : corepackDownloadRoot);
+                return;
+            } catch (InstallationException exception) {
+                // Ignore as many filesystem exceptions unrelated to the mirror easily
+                if (!(exception.getCause() instanceof DownloadException ||
+                        exception.getCause() instanceof ArchiveExtractionException)) {
+                    throw exception;
+                }
+                getLog().warn("Oh no couldn't use the internal mirrors! Falling back to upstream mirrors");
+                getLog().debug("Using internal mirrors failed because: ", exception);
+            } finally {
+                serverId = null;
+            }
+        }
+
         String resolvedNodeDownloadRoot = getNodeDownloadRoot();
         String resolvedCorepackDownloadRoot = getCorepackDownloadRoot();
+        if (isBlank(resolvedCorepackDownloadRoot)) {
+            resolvedCorepackDownloadRoot = DEFAULT_COREPACK_DOWNLOAD_ROOT;
+        }
+
+        install(factory, validNodeVersion, resolvedNodeDownloadRoot, resolvedCorepackDownloadRoot);
+    }
+
+    private void install(FrontendPluginFactory factory, String validNodeVersion, String resolvedNodeDownloadRoot, String resolvedCorepackDownloadRoot) throws InstallationException {
+        ProxyConfig proxyConfig = MojoUtils.getProxyConfig(session, decrypter);
 
         // Setup the installers
         NodeInstaller nodeInstaller = factory.getNodeInstaller(proxyConfig);

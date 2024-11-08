@@ -15,6 +15,8 @@ public class CorepackInstaller {
 
     private static final String VERSION = "version";
 
+    public static final String ATLASSIAN_COREPACK_DOWNLOAD_ROOT = "https://packages.atlassian.com/artifactory/api/npm/npm-remote/corepack/-/";
+
     public static final String DEFAULT_COREPACK_DOWNLOAD_ROOT = "https://registry.npmjs.org/corepack/-/";
 
     private static final Object LOCK = new Object();
@@ -22,7 +24,7 @@ public class CorepackInstaller {
     private String corepackVersion, corepackDownloadRoot, userName, password;
 
     private Map<String, String> httpHeaders;
-    
+
     private final Logger logger;
 
     private final InstallConfig config;
