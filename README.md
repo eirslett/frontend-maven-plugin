@@ -54,26 +54,40 @@ Include the plugin as a dependency in your Maven project. Change `LATEST_VERSION
 Have a look at the [example project](frontend-maven-plugin/src/it/example%20project),
 to see how it should be set up: https://github.com/eirslett/frontend-maven-plugin/blob/master/frontend-maven-plugin/src/it/example%20project/pom.xml
 
- - [Installing node and npm](#installing-node-and-npm)
- - [Installing node and yarn](#installing-node-and-yarn)
- - [Installing node and corepack](#installing-node-and-corepack)
- - Running 
-    - [npm](#running-npm)
-    - [yarn](#running-yarn)
-    - [corepack](#running-corepack)
-    - [bower](#running-bower)
-    - [grunt](#running-grunt)
-    - [gulp](#running-gulp)
-    - [jspm](#running-jspm)
-    - [karma](#running-karma)
-    - [webpack](#running-webpack)
- - Configuration
-    - [Working Directory](#working-directory)
-    - [Installation Directory](#installation-directory)
-    - [Proxy Settings](#proxy-settings)
-    - [Environment variables](#environment-variables)
-    - [Ignoring Failure](#ignoring-failure)
-    - [Skipping Execution](#skipping-execution)
+- [frontend-maven-plugin](#frontend-maven-plugin)
+      - [What is this plugin meant to do?](#what-is-this-plugin-meant-to-do)
+      - [What is this plugin not meant to do?](#what-is-this-plugin-not-meant-to-do)
+  - [Requirements](#requirements)
+  - [Installation](#installation)
+  - [Usage](#usage)
+    - [Installing node and npm](#installing-node-and-npm)
+    - [Installing node and yarn](#installing-node-and-yarn)
+    - [Installing node and corepack](#installing-node-and-corepack)
+    - [Installing bun](#installing-bun)
+    - [Running npm](#running-npm)
+      - [npx](#npx)
+    - [Running yarn](#running-yarn)
+      - [Yarn with Private Registry](#yarn-with-private-registry)
+    - [Running corepack](#running-corepack)
+    - [Running bower](#running-bower)
+    - [Running Grunt](#running-grunt)
+    - [Running gulp](#running-gulp)
+    - [Running jspm](#running-jspm)
+    - [Running Karma](#running-karma)
+    - [Running Webpack](#running-webpack)
+    - [Running bun](#running-bun)
+    - [Optional Configuration](#optional-configuration)
+      - [Working directory](#working-directory)
+      - [Installation Directory](#installation-directory)
+      - [Proxy settings](#proxy-settings)
+      - [Environment variables](#environment-variables)
+      - [Ignoring Failure](#ignoring-failure)
+      - [Skipping Execution](#skipping-execution)
+  - [Eclipse M2E support](#eclipse-m2e-support)
+  - [Helper scripts](#helper-scripts)
+  - [To build this project:](#to-build-this-project)
+  - [Issues, Contributing](#issues-contributing)
+  - [License](#license)
     
 **Recommendation:** _Try to run all your tasks via npm scripts instead of running bower, grunt, gulp etc. directly._
 
@@ -214,6 +228,34 @@ if you need to override the version of corepack in use.
         <nodeDownloadRoot>http://myproxy.example.org/nodejs/</nodeDownloadRoot>
         <!-- optional: where to download corepack from. Defaults to https://registry.npmjs.org/corepack/-/ -->
         <corepackDownloadRoot>http://myproxy.example.org/corepack/</corepackDownloadRoot>
+    </configuration>
+</plugin>
+```
+
+### Installing bun
+
+The version Bun is downloaded from https://github.com/oven-sh/bun/releases/download/, extracted and put into a `bun` folder created 
+in your [installation directory](#installation-directory) . Bun will only be "installed" locally to your project. 
+It will not be installed globally on the whole system (and it will not interfere with any Bun installations already 
+present). 
+
+```xml
+<plugin>
+    ...
+    <executions>
+        <execution>
+            <!-- optional: you don't really need execution ids, but it looks nice in your build log. -->
+            <id>install bun</id>
+            <goals>
+                <goal>install-bun</goal>
+            </goals>
+            <!-- optional: default phase is "generate-resources" -->
+            <phase>generate-resources</phase>
+        </execution>
+    </executions>
+    <configuration>
+        <!-- The version of Bun to install. IMPORTANT! Most Bun version names start with 'v', for example -->
+        <bunVersion>v1.1.34</bunVersion>
     </configuration>
 </plugin>
 ```
@@ -514,6 +556,28 @@ will help to separate your frontend and backend builds even more.
         <!-- optional: if not specified, it will run webpack's default
         build (and you can remove this whole <configuration> section.) -->
         <arguments>-p</arguments>
+    </configuration>
+</execution>
+```
+
+### Running bun
+
+```xml
+<execution>
+    <id>bun install</id>
+    <goals>
+        <goal>bun</goal>
+    </goals>
+
+    <!-- optional: default phase is "generate-resources" -->
+    <phase>generate-resources</phase>
+
+    <configuration>
+        <!-- optional: The default argument is actually
+        "install", so unless you need to run some other bun command,
+        you can remove this whole <configuration> section.
+        -->
+        <arguments>install</arguments>
     </configuration>
 </execution>
 ```
