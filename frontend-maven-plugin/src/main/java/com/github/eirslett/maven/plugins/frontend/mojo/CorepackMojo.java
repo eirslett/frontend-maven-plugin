@@ -1,7 +1,6 @@
 package com.github.eirslett.maven.plugins.frontend.mojo;
 
-import java.io.File;
-
+import com.github.eirslett.maven.plugins.frontend.lib.FrontendPluginFactory;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -10,8 +9,11 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.settings.crypto.SettingsDecrypter;
 import org.sonatype.plexus.build.incremental.BuildContext;
 
-import com.github.eirslett.maven.plugins.frontend.lib.FrontendPluginFactory;
-import com.github.eirslett.maven.plugins.frontend.lib.TaskRunnerException;
+import java.io.File;
+
+import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsReporter.Goal.COREPACK;
+import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsReporter.incrementExecutionCount;
+import static com.github.eirslett.maven.plugins.frontend.mojo.MojoUtils.incrementalBuildEnabled;
 
 @Mojo(name="corepack",  defaultPhase = LifecyclePhase.GENERATE_RESOURCES, threadSafe = true)
 public final class CorepackMojo extends AbstractFrontendMojo {
@@ -43,12 +45,20 @@ public final class CorepackMojo extends AbstractFrontendMojo {
     }
 
     @Override
-    public synchronized void execute(FrontendPluginFactory factory) throws TaskRunnerException {
+    public synchronized void execute(FrontendPluginFactory factory) throws Exception {
         File packageJson = new File(workingDirectory, "package.json");
-        if (buildContext == null || buildContext.hasDelta(packageJson) || !buildContext.isIncremental()) {
+
+        boolean incrementalEnabled = incrementalBuildEnabled(buildContext);
+        boolean willBeIncremental = incrementalEnabled && buildContext.hasDelta(packageJson);
+
+        incrementExecutionCount(project.getArtifactId(), arguments, COREPACK, getFrontendMavenPluginVersion(), incrementalEnabled, willBeIncremental, () -> {
+
+        if (!willBeIncremental) {
             factory.getCorepackRunner().execute(arguments, environmentVariables);
         } else {
             getLog().info("Skipping corepack install as package.json unchanged");
         }
+
+        });
     }
 }

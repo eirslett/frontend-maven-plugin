@@ -1,10 +1,7 @@
 package com.github.eirslett.maven.plugins.frontend.mojo;
 
-import static com.github.eirslett.maven.plugins.frontend.mojo.YarnUtils.isYarnrcYamlFilePresent;
-
-import java.io.File;
-import java.util.Collections;
-
+import com.github.eirslett.maven.plugins.frontend.lib.FrontendPluginFactory;
+import com.github.eirslett.maven.plugins.frontend.lib.ProxyConfig;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -13,9 +10,13 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.settings.crypto.SettingsDecrypter;
 import org.sonatype.plexus.build.incremental.BuildContext;
 
-import com.github.eirslett.maven.plugins.frontend.lib.FrontendPluginFactory;
-import com.github.eirslett.maven.plugins.frontend.lib.ProxyConfig;
-import com.github.eirslett.maven.plugins.frontend.lib.TaskRunnerException;
+import java.io.File;
+import java.util.Collections;
+
+import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsReporter.Goal.YARN;
+import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsReporter.incrementExecutionCount;
+import static com.github.eirslett.maven.plugins.frontend.mojo.MojoUtils.incrementalBuildEnabled;
+import static com.github.eirslett.maven.plugins.frontend.mojo.YarnUtils.isYarnrcYamlFilePresent;
 
 @Mojo(name = "yarn", defaultPhase = LifecyclePhase.GENERATE_RESOURCES, threadSafe = true)
 public final class YarnMojo extends AbstractFrontendMojo {
@@ -59,10 +60,15 @@ public final class YarnMojo extends AbstractFrontendMojo {
     }
 
     @Override
-    public synchronized void execute(FrontendPluginFactory factory) throws TaskRunnerException {
+    public synchronized void execute(FrontendPluginFactory factory) throws Exception {
         File packageJson = new File(this.workingDirectory, "package.json");
-        if (this.buildContext == null || this.buildContext.hasDelta(packageJson)
-            || !this.buildContext.isIncremental()) {
+
+        boolean incrementalEnabled = incrementalBuildEnabled(buildContext);
+        boolean willBeIncremental = incrementalEnabled && buildContext.hasDelta(packageJson);
+
+        incrementExecutionCount(project.getArtifactId(), arguments, YARN, getFrontendMavenPluginVersion(), incrementalEnabled, willBeIncremental, () -> {
+
+        if (!willBeIncremental) {
             ProxyConfig proxyConfig = getProxyConfig();
             boolean isYarnBerry = isYarnrcYamlFilePresent(this.session, this.workingDirectory);
             factory.getYarnRunner(proxyConfig, getRegistryUrl(), isYarnBerry).execute(this.arguments,
@@ -70,6 +76,8 @@ public final class YarnMojo extends AbstractFrontendMojo {
         } else {
             getLog().info("Skipping yarn install as package.json unchanged");
         }
+
+        });
     }
 
     private ProxyConfig getProxyConfig() {

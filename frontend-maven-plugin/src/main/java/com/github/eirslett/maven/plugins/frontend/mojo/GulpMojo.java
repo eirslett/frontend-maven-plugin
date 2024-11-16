@@ -1,7 +1,6 @@
 package com.github.eirslett.maven.plugins.frontend.mojo;
 
 import com.github.eirslett.maven.plugins.frontend.lib.FrontendPluginFactory;
-import com.github.eirslett.maven.plugins.frontend.lib.TaskRunnerException;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -11,6 +10,10 @@ import org.sonatype.plexus.build.incremental.BuildContext;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
+
+import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsReporter.Goal.GULP;
+import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsReporter.incrementExecutionCount;
+import static com.github.eirslett.maven.plugins.frontend.mojo.MojoUtils.incrementalBuildEnabled;
 
 @Mojo(name="gulp", defaultPhase = LifecyclePhase.GENERATE_RESOURCES, threadSafe = true)
 public final class GulpMojo extends AbstractFrontendMojo {
@@ -59,8 +62,13 @@ public final class GulpMojo extends AbstractFrontendMojo {
     }
 
     @Override
-    public synchronized void execute(FrontendPluginFactory factory) throws TaskRunnerException {
-        if (shouldExecute()) {
+    public synchronized void execute(FrontendPluginFactory factory) throws Exception {
+        boolean incrementalEnabled = incrementalBuildEnabled(buildContext);
+        boolean shouldExecute = shouldExecute();
+
+        incrementExecutionCount(project.getArtifactId(), arguments, GULP, getFrontendMavenPluginVersion(), incrementalEnabled, !shouldExecute, () -> {
+
+        if (shouldExecute) {
             factory.getGulpRunner().execute(arguments, environmentVariables);
 
             if (outputdir != null) {
@@ -70,6 +78,8 @@ public final class GulpMojo extends AbstractFrontendMojo {
         } else {
             getLog().info("Skipping gulp as no modified files in " + srcdir);
         }
+
+        });
     }
 
     private boolean shouldExecute() {

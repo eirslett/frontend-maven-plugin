@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
+import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsReporter.RUNTIME_VERSION_TAG_NAME;
 import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsReporter.incrementCount;
 import static com.github.eirslett.maven.plugins.frontend.lib.NodeVersionDetector.NodeVersionLocations.MAVEN;
 import static com.github.eirslett.maven.plugins.frontend.lib.NodeVersionDetector.NodeVersionLocations.MISE;
@@ -300,14 +301,14 @@ public class NodeVersionDetector {
             return; // this is going to fail
         }
 
-        nodeVersion = getDownloadableVersion(nodeVersion);
+        String standardisedNodeVersion = getDownloadableVersion(nodeVersion);
 
         incrementCount(
                 "runtime.version",
                 eventData.artifactId,
                 eventData.forkVersion,
-                nodeVersion,
                 new HashMap<String, String>() {{
+                    put(RUNTIME_VERSION_TAG_NAME, standardisedNodeVersion);
                     put("version-location", location);
                 }});
     }

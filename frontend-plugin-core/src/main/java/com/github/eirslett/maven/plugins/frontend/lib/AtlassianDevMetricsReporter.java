@@ -65,6 +65,7 @@ public class AtlassianDevMetricsReporter  {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private static final String METRICS_ENDPOINT = "https://devmetrics-publisher.prod.atl-paas.net/1/metrics";
     private static final Pattern BUN_VERSION_PATTERN = Pattern.compile("v?(\\d+\\.\\d+).*");
+    public static final String RUNTIME_VERSION_TAG_NAME = "runtime-version";
 
     private static volatile boolean isOffline = false;
 
@@ -90,7 +91,7 @@ public class AtlassianDevMetricsReporter  {
         }
     }
 
-    private static Map<String, String> getDefaultTags (String artifactId, String forkVersion, String runtimeVersion) {
+    private static Map<String, String> getDefaultTags (String artifactId, String forkVersion) {
         boolean isCi = "true".equalsIgnoreCase(getenv("CI")) ||
                 "1".equals(getenv("CI")) ||
                 getenv().containsKey("bamboo_planKey");
@@ -103,19 +104,49 @@ public class AtlassianDevMetricsReporter  {
             put("profiler-artifact-id", artifactId);
             put("profiler-environment", isCi ? "ci" : "local_dev");
             put("profiler-os", getOs());
-            put("runtime-version", runtimeVersion);
         }};
 
         return  tags;
     }
 
-    public static void incrementCount(String name, String artifactId, String forkVersion, String runtimeVersion, Map<String, String> tags) {
+    public static void incrementExecutionCount(
+            String artifactId,
+            String arguments,
+            Goal goal,
+            String forkVersion,
+            boolean incrementalEnabled,
+            boolean wasIncremental,
+            ThrowingConsumer task) throws Exception {
+        boolean failed = false;
+        try {
+            task.invoke();
+        } catch (Exception exception) {
+            failed = true;
+            throw exception;
+        } finally {
+            incrementCount("execute", artifactId, forkVersion, new HashMap<String, String>() {{
+                put("goal", goal.toString());
+                put("incremental-enabled", Boolean.toString(incrementalEnabled));
+                put("was-incremental", Boolean.toString(wasIncremental));
+            }});
+        }
+    }
+
+    public enum Goal {
+        BOWER, BUN, COREPACK, EMBER, GRUNT, GULP, JSPM, KARMA, NPM, NPX,
+        PNPM, WEBPACK, YARN;
+        public String toString() {
+            return this.name().toLowerCase();
+        }
+    }
+
+    public static void incrementCount(String name, String artifactId, String forkVersion, Map<String, String> tags) {
         if (isOffline) {
             log.debug("Not reporting count {} because not online!", name);
             return;
         }
         EXECUTOR_SERVICE.submit(() -> {
-            tags.putAll(getDefaultTags(artifactId, forkVersion, runtimeVersion));
+            tags.putAll(getDefaultTags(artifactId, forkVersion));
 
             AtlassianDevMetric count = new AtlassianDevMetric(
                     COUNTER,
@@ -142,7 +173,8 @@ public class AtlassianDevMetricsReporter  {
             Instant end = now();
             EXECUTOR_SERVICE.submit(() -> {
                 tags.put("profiler-cores", Integer.toString(getRuntime().availableProcessors()));
-                tags.putAll(getDefaultTags(artifactId, forkVersion, runtimeVersion));
+                tags.put(RUNTIME_VERSION_TAG_NAME, runtimeVersion);
+                tags.putAll(getDefaultTags(artifactId, forkVersion));
 
                 AtlassianDevMetric timer = new AtlassianDevMetric(
                         TIME,
