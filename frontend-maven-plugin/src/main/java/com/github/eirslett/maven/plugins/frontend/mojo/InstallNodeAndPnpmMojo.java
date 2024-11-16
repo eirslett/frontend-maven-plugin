@@ -1,6 +1,7 @@
 package com.github.eirslett.maven.plugins.frontend.mojo;
 
 import com.github.eirslett.maven.plugins.frontend.lib.ArchiveExtractionException;
+import com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsInstallationWork;
 import com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsReporter.Timer;
 import com.github.eirslett.maven.plugins.frontend.lib.DownloadException;
 import com.github.eirslett.maven.plugins.frontend.lib.FrontendPluginFactory;
@@ -21,6 +22,7 @@ import org.apache.maven.settings.crypto.SettingsDecrypter;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsInstallationWork.UNKNOWN;
 import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsReporter.formatNodeVersionForMetric;
 import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsReporter.getHostForMetric;
 import static com.github.eirslett.maven.plugins.frontend.lib.NPMInstaller.ATLASSIAN_NPM_DOWNLOAD_ROOT;
@@ -92,6 +94,9 @@ public final class InstallNodeAndPnpmMojo extends AbstractFrontendMojo {
 
     @Component(role = SettingsDecrypter.class)
     private SettingsDecrypter decrypter;
+
+    private AtlassianDevMetricsInstallationWork packageManagerWork = UNKNOWN;
+    private AtlassianDevMetricsInstallationWork runtimeWork = UNKNOWN;
 
     @Override
     protected boolean skipExecution() {
@@ -170,6 +175,8 @@ public final class InstallNodeAndPnpmMojo extends AbstractFrontendMojo {
                     formatNodeVersionForMetric(validNodeVersion),
                     new HashMap<String, String>() {{
                         put("installation", "pnpm");
+                        put("installation-work-runtime", runtimeWork.toString());
+                        put("installation-work-package-manager", packageManagerWork.toString());
                         put("runtime-host", getHostForMetric(resolvedPnpmDownloadRoot, NODEJS_ORG, finalTriedToUsePac, finalPacAttemptFailed));
                         put("package-manager-host", getHostForMetric(resolvedPnpmDownloadRoot, DEFAULT_PNPM_DOWNLOAD_ROOT, finalTriedToUsePac, finalPacAttemptFailed));
                         put("failed", Boolean.toString(finalFailed));
@@ -185,6 +192,7 @@ public final class InstallNodeAndPnpmMojo extends AbstractFrontendMojo {
 
         if (null != server) {
             Map<String, String> httpHeaders = getHttpHeaders(server);
+            runtimeWork =
             factory.getNodeInstaller(proxyConfig)
                 .setNodeVersion(validNodeVersion)
                 .setNodeDownloadRoot(resolvedNodeDownloadRoot)
@@ -192,6 +200,7 @@ public final class InstallNodeAndPnpmMojo extends AbstractFrontendMojo {
                 .setPassword(server.getPassword())
                 .setHttpHeaders(httpHeaders)
                 .install();
+            packageManagerWork =
             factory.getPnpmInstaller(proxyConfig)
                 .setPnpmVersion(pnpmVersion)
                 .setPnpmDownloadRoot(resolvedPnpmDownloadRoot)
@@ -200,10 +209,12 @@ public final class InstallNodeAndPnpmMojo extends AbstractFrontendMojo {
                 .setHttpHeaders(httpHeaders)
                 .install();
         } else {
+            runtimeWork =
             factory.getNodeInstaller(proxyConfig)
                 .setNodeVersion(validNodeVersion)
                 .setNodeDownloadRoot(resolvedNodeDownloadRoot)
                 .install();
+            packageManagerWork =
             factory.getPnpmInstaller(proxyConfig)
                 .setPnpmVersion(this.pnpmVersion)
                 .setPnpmDownloadRoot(resolvedPnpmDownloadRoot)

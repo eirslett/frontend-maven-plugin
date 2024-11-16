@@ -54,19 +54,22 @@ public class NodeVersionDetector {
             }
 
             if (genericNodeVersionFile.endsWith(".toml") && genericNodeVersionFile.contains("mise")) {
-                reportFoundVersion(MISE, providedNodeVersion, eventData);
-                return readMiseConfigTomlFile(genericNodeVersionFileFile, genericNodeVersionFileFile.toPath());
+                String trimmedVersion = readMiseConfigTomlFile(genericNodeVersionFileFile, genericNodeVersionFileFile.toPath());
+                reportFoundVersion(MISE, trimmedVersion, eventData);
+                return trimmedVersion;
             } else if (genericNodeVersionFile.endsWith(TOOL_VERSIONS_FILENAME)) {
-                reportFoundVersion(TOOL_VERSIONS, providedNodeVersion, eventData);
-                return readToolVersionsFile(genericNodeVersionFileFile, genericNodeVersionFileFile.toPath());
+                String trimmedVersion = readToolVersionsFile(genericNodeVersionFileFile, genericNodeVersionFileFile.toPath());
+                reportFoundVersion(TOOL_VERSIONS, trimmedVersion, eventData);
+                return trimmedVersion;
             } else {
                 String versionLocation = genericNodeVersionFile.contains(NVMRC)
                         ? NVMRC
                         : genericNodeVersionFile.contains(NODE_VERSION)
                             ? NODE_VERSION
                             : UNKNOWN;
-                reportFoundVersion(versionLocation, providedNodeVersion, eventData);
-                return readNvmrcFile(genericNodeVersionFileFile, genericNodeVersionFileFile.toPath());
+                String trimmedVersion = readNvmrcFile(genericNodeVersionFileFile, genericNodeVersionFileFile.toPath());
+                reportFoundVersion(versionLocation, trimmedVersion, eventData);
+                return trimmedVersion;
             }
         }
 
@@ -75,7 +78,7 @@ public class NodeVersionDetector {
         } catch (Throwable throwable) {
             logger.debug("Going to use the configuration node version, failed to find a file with the version because",
                     throwable);
-            reportFoundVersion(MAVEN, providedNodeVersion, eventData);
+            // don't report here, can lead to double-ups
             return providedNodeVersion;
         }
     }
@@ -297,7 +300,7 @@ public class NodeVersionDetector {
     }
 
     private static void reportFoundVersion(String location, String nodeVersion, EventData eventData) {
-        if (!validateVersion(nodeVersion)) {
+        if (isNull(nodeVersion) || !validateVersion(nodeVersion)) {
             return; // this is going to fail
         }
 

@@ -53,11 +53,11 @@ public class AtlassianDevMetricsReporter  {
     private static final HttpClient HTTP_CLIENT = HttpClients.custom()
             .setDefaultRequestConfig(RequestConfig.custom()
                     // timeout when requesting a connection from the connection manager
-                    .setConnectionRequestTimeout(checkedCast(SECONDS.toMillis(10)))
+                    .setConnectionRequestTimeout((int) SECONDS.toMillis(10))
                     // timeout until a connection is established
-                    .setConnectTimeout(checkedCast(SECONDS.toMillis(5)))
+                    .setConnectTimeout((int) SECONDS.toMillis(5))
                     // timeout for data / packets to be arrived
-                    .setSocketTimeout(checkedCast(SECONDS.toMillis(5)))
+                    .setSocketTimeout((int) SECONDS.toMillis(5))
                     .build())
             .setMaxConnPerRoute(10)
             .build();

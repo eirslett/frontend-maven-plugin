@@ -1,6 +1,7 @@
 package com.github.eirslett.maven.plugins.frontend.mojo;
 
 import com.github.eirslett.maven.plugins.frontend.lib.ArchiveExtractionException;
+import com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsInstallationWork;
 import com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsReporter.Timer;
 import com.github.eirslett.maven.plugins.frontend.lib.CorepackInstaller;
 import com.github.eirslett.maven.plugins.frontend.lib.DownloadException;
@@ -22,6 +23,7 @@ import org.apache.maven.settings.crypto.SettingsDecrypter;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsInstallationWork.UNKNOWN;
 import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsReporter.formatNodeVersionForMetric;
 import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsReporter.getHostForMetric;
 import static com.github.eirslett.maven.plugins.frontend.lib.CorepackInstaller.ATLASSIAN_COREPACK_DOWNLOAD_ROOT;
@@ -86,6 +88,9 @@ public final class InstallNodeAndCorepackMojo extends AbstractFrontendMojo {
 
     @Component(role = SettingsDecrypter.class)
     private SettingsDecrypter decrypter;
+
+    private AtlassianDevMetricsInstallationWork packageManagerWork = UNKNOWN;
+    private AtlassianDevMetricsInstallationWork runtimeWork = UNKNOWN;
 
     @Override
     protected boolean skipExecution() {
@@ -161,6 +166,8 @@ public final class InstallNodeAndCorepackMojo extends AbstractFrontendMojo {
                     formatNodeVersionForMetric(validNodeVersion),
                     new HashMap<String, String>() {{
                         put("installation", "corepack");
+                        put("installation-work-runtime", runtimeWork.toString());
+                        put("installation-work-package-manager", packageManagerWork.toString());
                         put("runtime-host", getHostForMetric(nodeDownloadRoot, NODEJS_ORG, finalTriedToUsePac, finalPacAttemptFailed));
                         put("package-manager-host", getHostForMetric(corepackDownloadRoot, DEFAULT_COREPACK_DOWNLOAD_ROOT, finalTriedToUsePac, finalPacAttemptFailed));
                         put("failed", Boolean.toString(finalFailed));
@@ -201,8 +208,8 @@ public final class InstallNodeAndCorepackMojo extends AbstractFrontendMojo {
         }
 
         // Perform the installation
-        nodeInstaller.install();
-        corepackInstaller.install();
+        runtimeWork = nodeInstaller.install();
+        packageManagerWork = corepackInstaller.install();
     }
 
     private String getNodeDownloadRoot() {

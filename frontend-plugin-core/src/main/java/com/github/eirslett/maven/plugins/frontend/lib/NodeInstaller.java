@@ -1,5 +1,9 @@
 package com.github.eirslett.maven.plugins.frontend.lib;
 
+import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -9,9 +13,9 @@ import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.Map;
 
-import org.apache.commons.io.FileUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsInstallationWork.CACHED;
+import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsInstallationWork.DOWNLOADED;
+import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsInstallationWork.INSTALLED;
 
 public class NodeInstaller {
 
@@ -86,7 +90,8 @@ public class NodeInstaller {
         return false;
     }
 
-    public void install() throws InstallationException {
+    public AtlassianDevMetricsInstallationWork install() throws InstallationException {
+        AtlassianDevMetricsInstallationWork work = INSTALLED;
         // use static lock object for a synchronized block
         synchronized (LOCK) {
             if (this.nodeDownloadRoot == null || this.nodeDownloadRoot.isEmpty()) {
@@ -99,15 +104,18 @@ public class NodeInstaller {
                 }
                 if (this.config.getPlatform().isWindows()) {
                     if (npmProvided()) {
-                        installNodeWithNpmForWindows();
+                        work = installNodeWithNpmForWindows();
                     } else {
-                        installNodeForWindows();
+                        work = installNodeForWindows();
                     }
                 } else {
-                    installNodeDefault();
+                    work = installNodeDefault();
                 }
+            } else {
+                work = INSTALLED;
             }
         }
+        return work;
     }
 
     private boolean nodeIsAlreadyInstalled() {
@@ -135,7 +143,7 @@ public class NodeInstaller {
         }
     }
 
-    private void installNodeDefault() throws InstallationException {
+    private AtlassianDevMetricsInstallationWork installNodeDefault() throws InstallationException {
         try {
             final String longNodeFilename =
                 this.config.getPlatform().getLongNodeFilename(this.nodeVersion, false);
@@ -150,6 +158,7 @@ public class NodeInstaller {
 
             File archive = this.config.getCacheResolver().resolve(cacheDescriptor);
 
+            AtlassianDevMetricsInstallationWork work =
             downloadFileIfMissing(downloadUrl, archive, this.userName, this.password, this.httpHeaders);
 
             try {
@@ -224,6 +233,7 @@ public class NodeInstaller {
                 deleteTempDirectory(tmpDirectory);
 
                 this.logger.info("Installed node locally.");
+                return work;
             }
         } catch (IOException e) {
             throw new InstallationException("Could not install Node", e);
@@ -234,7 +244,7 @@ public class NodeInstaller {
         }
     }
 
-    private void installNodeWithNpmForWindows() throws InstallationException {
+    private AtlassianDevMetricsInstallationWork installNodeWithNpmForWindows() throws InstallationException {
         try {
             final String longNodeFilename =
                 this.config.getPlatform().getLongNodeFilename(this.nodeVersion, true);
@@ -249,6 +259,7 @@ public class NodeInstaller {
 
             File archive = this.config.getCacheResolver().resolve(cacheDescriptor);
 
+            AtlassianDevMetricsInstallationWork work =
             downloadFileIfMissing(downloadUrl, archive, this.userName, this.password, this.httpHeaders);
 
             extractFile(archive, tmpDirectory);
@@ -279,6 +290,7 @@ public class NodeInstaller {
                 deleteTempDirectory(tmpDirectory);
 
                 this.logger.info("Installed node locally.");
+                return work;
             }
         } catch (IOException e) {
             throw new InstallationException("Could not install Node", e);
@@ -290,7 +302,7 @@ public class NodeInstaller {
 
     }
 
-    private void installNodeForWindows() throws InstallationException {
+    private AtlassianDevMetricsInstallationWork installNodeForWindows() throws InstallationException {
         final String downloadUrl = this.nodeDownloadRoot
             + this.config.getPlatform().getNodeDownloadFilename(this.nodeVersion, false);
         try {
@@ -305,12 +317,14 @@ public class NodeInstaller {
 
             File binary = this.config.getCacheResolver().resolve(cacheDescriptor);
 
+            AtlassianDevMetricsInstallationWork work =
             downloadFileIfMissing(downloadUrl, binary, this.userName, this.password, this.httpHeaders);
 
             this.logger.info("Copying node binary from {} to {}", binary, destination);
             FileUtils.copyFile(binary, destination);
 
             this.logger.info("Installed node locally.");
+            return work;
         } catch (DownloadException e) {
             throw new InstallationException("Could not download Node.js from: " + downloadUrl, e);
         } catch (IOException e) {
@@ -348,11 +362,13 @@ public class NodeInstaller {
         this.archiveExtractor.extract(archive.getPath(), destinationDirectory.getPath());
     }
 
-    private void downloadFileIfMissing(String downloadUrl, File destination, String userName, String password,
+    private AtlassianDevMetricsInstallationWork downloadFileIfMissing(String downloadUrl, File destination, String userName, String password,
             Map<String, String> httpHeaders) throws DownloadException {
         if (!destination.exists()) {
             downloadFile(downloadUrl, destination, userName, password, httpHeaders);
+            return DOWNLOADED;
         }
+        return CACHED;
     }
 
     private void downloadFile(String downloadUrl, File destination, String userName, String password,

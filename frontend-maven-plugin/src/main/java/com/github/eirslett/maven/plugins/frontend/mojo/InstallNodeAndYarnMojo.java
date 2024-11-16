@@ -1,6 +1,7 @@
 package com.github.eirslett.maven.plugins.frontend.mojo;
 
 import com.github.eirslett.maven.plugins.frontend.lib.ArchiveExtractionException;
+import com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsInstallationWork;
 import com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsReporter.Timer;
 import com.github.eirslett.maven.plugins.frontend.lib.DownloadException;
 import com.github.eirslett.maven.plugins.frontend.lib.FrontendPluginFactory;
@@ -19,6 +20,7 @@ import org.apache.maven.settings.crypto.SettingsDecrypter;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsInstallationWork.UNKNOWN;
 import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsReporter.formatNodeVersionForMetric;
 import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsReporter.getHostForMetric;
 import static com.github.eirslett.maven.plugins.frontend.lib.NodeInstaller.ATLASSIAN_NODE_DOWNLOAD_ROOT;
@@ -90,6 +92,9 @@ public final class InstallNodeAndYarnMojo extends AbstractFrontendMojo {
     protected boolean skipExecution() {
         return this.skip;
     }
+
+    private AtlassianDevMetricsInstallationWork packageManagerWork = UNKNOWN;
+    private AtlassianDevMetricsInstallationWork runtimeWork = UNKNOWN;
 
     @Override
     public void execute(FrontendPluginFactory factory) throws Exception {
@@ -166,6 +171,8 @@ public final class InstallNodeAndYarnMojo extends AbstractFrontendMojo {
                     formatNodeVersionForMetric(validNodeVersion),
                     new HashMap<String, String>() {{
                         put("installation", "yarn");
+                        put("installation-work-runtime", runtimeWork.toString());
+                        put("installation-work-package-manager", packageManagerWork.toString());
                         put("runtime-host", getHostForMetric(nodeDownloadRoot, NODEJS_ORG, finalTriedToUsePac, finalPacAttemptFailed));
                         put("package-manager-host", getHostForMetric(isYarnYamlFilePresent ? "" : yarnDownloadRoot, isYarnYamlFilePresent ? "" : DEFAULT_YARN_DOWNLOAD_ROOT, finalTriedToUsePac, finalPacAttemptFailed));
                         put("failed", Boolean.toString(finalFailed));
@@ -181,16 +188,20 @@ public final class InstallNodeAndYarnMojo extends AbstractFrontendMojo {
 
         if (null != server) {
             Map<String, String> httpHeaders = getHttpHeaders(server);
+            runtimeWork =
             factory.getNodeInstaller(proxyConfig).setNodeDownloadRoot(this.nodeDownloadRoot)
                 .setNodeVersion(validNodeVersion).setUserName(server.getUsername())
                 .setPassword(server.getPassword()).setHttpHeaders(httpHeaders).install();
+            packageManagerWork =
             factory.getYarnInstaller(proxyConfig).setYarnDownloadRoot(this.yarnDownloadRoot)
                 .setYarnVersion(this.yarnVersion).setUserName(server.getUsername())
                 .setPassword(server.getPassword()).setHttpHeaders(httpHeaders)
                 .setIsYarnBerry(isYarnYamlFilePresent).install();
         } else {
+            runtimeWork =
             factory.getNodeInstaller(proxyConfig).setNodeDownloadRoot(this.nodeDownloadRoot)
                 .setNodeVersion(validNodeVersion).install();
+            packageManagerWork =
             factory.getYarnInstaller(proxyConfig).setYarnDownloadRoot(this.yarnDownloadRoot)
                 .setYarnVersion(this.yarnVersion).setIsYarnBerry(isYarnYamlFilePresent).install();
         }
