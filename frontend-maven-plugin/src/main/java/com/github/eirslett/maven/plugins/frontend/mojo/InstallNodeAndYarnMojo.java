@@ -98,7 +98,7 @@ public final class InstallNodeAndYarnMojo extends AbstractFrontendMojo {
         boolean failed = false;
         Timer timer = new Timer();
 
-        String nodeVersion = getNodeVersion(workingDirectory, this.nodeVersion, this.nodeVersionFile);
+        String nodeVersion = getNodeVersion(workingDirectory, this.nodeVersion, this.nodeVersionFile, project.getArtifactId(), getFrontendMavenPluginVersion());
 
         if (isNull(nodeVersion)) {
             throw new LifecycleExecutionException("Node version could not be detected from a file and was not set");
@@ -167,7 +167,7 @@ public final class InstallNodeAndYarnMojo extends AbstractFrontendMojo {
                     new HashMap<String, String>() {{
                         put("installation", "yarn");
                         put("runtime-host", getHostForMetric(nodeDownloadRoot, NODEJS_ORG, finalTriedToUsePac, finalPacAttemptFailed));
-                        put("package-manager-host", getHostForMetric(yarnDownloadRoot, DEFAULT_YARN_DOWNLOAD_ROOT, finalTriedToUsePac, finalPacAttemptFailed));
+                        put("package-manager-host", getHostForMetric(isYarnYamlFilePresent ? "" : yarnDownloadRoot, isYarnYamlFilePresent ? "" : DEFAULT_YARN_DOWNLOAD_ROOT, finalTriedToUsePac, finalPacAttemptFailed));
                         put("failed", Boolean.toString(finalFailed));
                         put("pac-attempted-failed", Boolean.toString(finalPacAttemptFailed));
                         put("tried-to-use-pac", Boolean.toString(finalTriedToUsePac));

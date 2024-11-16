@@ -21,6 +21,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricOperatingSystem.getOs;
+import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricType.COUNTER;
 import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricType.TIME;
 import static com.github.eirslett.maven.plugins.frontend.lib.Utils.isBlank;
 import static com.google.common.primitives.Ints.checkedCast;
@@ -96,6 +97,7 @@ public class AtlassianDevMetricsReporter  {
 
         // Don't let the cardinality get too wild
         Map<String, String> tags = new HashMap<String, String>() {{
+            put("dm_devmode", Boolean.toString(getBoolean("atlassian.dev.mode") || getBoolean("jira.dev.mode") || getBoolean("confluence.devmode")));
             put("dm_java_version", getProperty("java.specification.version"));
             put("fork-version", forkVersion);
             put("profiler-artifact-id", artifactId);
@@ -105,6 +107,24 @@ public class AtlassianDevMetricsReporter  {
         }};
 
         return  tags;
+    }
+
+    public static void incrementCount(String name, String artifactId, String forkVersion, String runtimeVersion, Map<String, String> tags) {
+        if (isOffline) {
+            log.debug("Not reporting count {} because not online!", name);
+            return;
+        }
+        EXECUTOR_SERVICE.submit(() -> {
+            tags.putAll(getDefaultTags(artifactId, forkVersion, runtimeVersion));
+
+            AtlassianDevMetric count = new AtlassianDevMetric(
+                    COUNTER,
+                    METRIC_NAME_PREFIX + name,
+                    String.valueOf(1),
+                    tags);
+
+            sendMetricOverHttp(count);
+        });
     }
 
     public static class Timer {
@@ -121,7 +141,6 @@ public class AtlassianDevMetricsReporter  {
             }
             Instant end = now();
             EXECUTOR_SERVICE.submit(() -> {
-                tags.put("dm_devmode", Boolean.toString(getBoolean("atlassian.dev.mode") || getBoolean("jira.dev.mode") || getBoolean("confluence.devmode")));
                 tags.put("profiler-cores", Integer.toString(getRuntime().availableProcessors()));
                 tags.putAll(getDefaultTags(artifactId, forkVersion, runtimeVersion));
 

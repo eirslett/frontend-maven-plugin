@@ -2,7 +2,6 @@ package com.github.eirslett.maven.plugins.frontend.lib;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import org.slf4j.Logger;
 
 import java.io.File;
 import java.net.URISyntaxException;
@@ -23,11 +22,8 @@ import static java.util.Collections.singletonList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.slf4j.LoggerFactory.getLogger;
 
 public class NodeVersionDetectorTest {
-
-    Logger log = getLogger(NodeVersionDetectorTest.class);
 
     @Test
     public void testNvmrcFileParsing_shouldWorkWithACommentWithWhiteSpaceOnTheSameLineAsTheVersion() {
@@ -68,7 +64,7 @@ public class NodeVersionDetectorTest {
         assertTrue(Files.exists(miseConfigFilePath)); // required for a valid test
 
         assertThrows(Exception.class,
-                () -> readMiseConfigTomlFile(miseConfigFilePath.toFile(), miseConfigFilePath, log));
+                () -> readMiseConfigTomlFile(miseConfigFilePath.toFile(), miseConfigFilePath));
     }
 
     @Test
@@ -78,7 +74,7 @@ public class NodeVersionDetectorTest {
         Path miseConfigFilePath = Paths.get(miseConfigFileUrl.toURI());
         assertTrue(Files.exists(miseConfigFilePath)); // required for a valid test
 
-        assertEquals("20.0.0", readMiseConfigTomlFile(miseConfigFilePath.toFile(), miseConfigFilePath, log));
+        assertEquals("20.0.0", readMiseConfigTomlFile(miseConfigFilePath.toFile(), miseConfigFilePath));
     }
 
     @Test
@@ -103,7 +99,7 @@ public class NodeVersionDetectorTest {
                     Files.write(tempMiseConfigFile, singletonList(miseConfigFileContents), defaultCharset(), WRITE);
 
                     // when
-                    String readVersion = recursivelyFindVersion(tempUnrelatedDir);
+                    String readVersion = recursivelyFindVersion(tempUnrelatedDir, new NodeVersionDetector.EventData("", ""));
 
                     // then
                     assertEquals(expectedVersion, readVersion, "versions didn't match");
