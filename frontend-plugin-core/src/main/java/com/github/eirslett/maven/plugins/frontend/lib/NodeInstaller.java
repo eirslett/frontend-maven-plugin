@@ -15,6 +15,8 @@ import org.slf4j.LoggerFactory;
 
 public class NodeInstaller {
 
+    public static final String NODEJS_ORG = "nodejs.org";
+
     public static final String ATLASSIAN_NODE_DOWNLOAD_ROOT = "https://packages.atlassian.com/artifactory/nodejs-dist/";
 
     public static final String INSTALL_PATH = "/node";
@@ -22,7 +24,7 @@ public class NodeInstaller {
     private static final Object LOCK = new Object();
 
     private String npmVersion, nodeVersion, nodeDownloadRoot, userName, password;
-    
+
     private Map<String, String> httpHeaders;
 
     private final Logger logger;
@@ -64,7 +66,7 @@ public class NodeInstaller {
         this.password = password;
         return this;
     }
-    
+
     public NodeInstaller setHttpHeaders(Map<String, String> httpHeaders) {
         this.httpHeaders = httpHeaders;
         return this;
@@ -346,14 +348,14 @@ public class NodeInstaller {
         this.archiveExtractor.extract(archive.getPath(), destinationDirectory.getPath());
     }
 
-    private void downloadFileIfMissing(String downloadUrl, File destination, String userName, String password, 
+    private void downloadFileIfMissing(String downloadUrl, File destination, String userName, String password,
             Map<String, String> httpHeaders) throws DownloadException {
         if (!destination.exists()) {
             downloadFile(downloadUrl, destination, userName, password, httpHeaders);
         }
     }
 
-    private void downloadFile(String downloadUrl, File destination, String userName, String password, 
+    private void downloadFile(String downloadUrl, File destination, String userName, String password,
             Map<String, String> httpHeaders) throws DownloadException {
         this.logger.info("Downloading {} to {}", downloadUrl, destination);
         this.fileDownloader.download(downloadUrl, destination.getPath(), userName, password, httpHeaders);

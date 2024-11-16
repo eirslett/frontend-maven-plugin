@@ -1,6 +1,7 @@
 package com.github.eirslett.maven.plugins.frontend.mojo;
 
 import com.github.eirslett.maven.plugins.frontend.lib.ArchiveExtractionException;
+import com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsReporter.Timer;
 import com.github.eirslett.maven.plugins.frontend.lib.DownloadException;
 import com.github.eirslett.maven.plugins.frontend.lib.FrontendPluginFactory;
 import com.github.eirslett.maven.plugins.frontend.lib.InstallationException;
@@ -8,9 +9,6 @@ import com.github.eirslett.maven.plugins.frontend.lib.NodeVersionDetector;
 import com.github.eirslett.maven.plugins.frontend.lib.NodeVersionHelper;
 import com.github.eirslett.maven.plugins.frontend.lib.PnpmInstaller;
 import com.github.eirslett.maven.plugins.frontend.lib.ProxyConfig;
-
-import java.util.Map;
-
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.lifecycle.LifecycleExecutionException;
 import org.apache.maven.plugins.annotations.Component;
@@ -20,9 +18,16 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.settings.Server;
 import org.apache.maven.settings.crypto.SettingsDecrypter;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsReporter.formatNodeVersionForMetric;
+import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsReporter.getHostForMetric;
 import static com.github.eirslett.maven.plugins.frontend.lib.NPMInstaller.ATLASSIAN_NPM_DOWNLOAD_ROOT;
 import static com.github.eirslett.maven.plugins.frontend.lib.NodeInstaller.ATLASSIAN_NODE_DOWNLOAD_ROOT;
+import static com.github.eirslett.maven.plugins.frontend.lib.NodeInstaller.NODEJS_ORG;
 import static com.github.eirslett.maven.plugins.frontend.lib.NodeVersionHelper.getDownloadableVersion;
+import static com.github.eirslett.maven.plugins.frontend.lib.PnpmInstaller.DEFAULT_PNPM_DOWNLOAD_ROOT;
 import static com.github.eirslett.maven.plugins.frontend.lib.Utils.isBlank;
 import static com.github.eirslett.maven.plugins.frontend.mojo.AtlassianUtil.isAtlassianProject;
 import static java.util.Objects.isNull;
@@ -95,6 +100,11 @@ public final class InstallNodeAndPnpmMojo extends AbstractFrontendMojo {
 
     @Override
     public void execute(FrontendPluginFactory factory) throws Exception {
+        boolean pacAttemptFailed = false;
+        boolean triedToUsePac = false;
+        boolean failed = false;
+        Timer timer = new Timer();
+
         String nodeVersion = NodeVersionDetector.getNodeVersion(workingDirectory, this.nodeVersion, this.nodeVersionFile);
 
         if (isNull(nodeVersion)) {
@@ -115,32 +125,58 @@ public final class InstallNodeAndPnpmMojo extends AbstractFrontendMojo {
         String resolvedNodeDownloadRoot = getNodeDownloadRoot();
         String resolvedPnpmDownloadRoot = getPnpmDownloadRoot();
 
-        if (isAtlassianProject(project) &&
-                isBlank(serverId) &&
-                (isBlank(resolvedNodeDownloadRoot) || isBlank(resolvedPnpmDownloadRoot))
-        ) { // If they're overridden the settings, they be the boss
-            getLog().info("Atlassian project detected, going to use the internal mirrors (requires VPN)");
+        try {
+            if (isAtlassianProject(project) &&
+                    isBlank(serverId) &&
+                    (isBlank(resolvedNodeDownloadRoot) || isBlank(resolvedPnpmDownloadRoot))
+            ) { // If they're overridden the settings, they be the boss
+                triedToUsePac = true;
 
-            serverId = "maven-atlassian-com";
-            try {
-                install(factory, validNodeVersion,
-                        isBlank(resolvedNodeDownloadRoot) ? ATLASSIAN_NODE_DOWNLOAD_ROOT : resolvedNodeDownloadRoot,
-                        isBlank(resolvedPnpmDownloadRoot) ? ATLASSIAN_NPM_DOWNLOAD_ROOT : resolvedPnpmDownloadRoot);
-                return;
-            } catch (InstallationException exception) {
-                // Ignore as many filesystem exceptions unrelated to the mirror easily
-                if (!(exception.getCause() instanceof DownloadException ||
-                        exception.getCause() instanceof ArchiveExtractionException)) {
-                    throw exception;
+                getLog().info("Atlassian project detected, going to use the internal mirrors (requires VPN)");
+
+                serverId = "maven-atlassian-com";
+                try {
+                    install(factory, validNodeVersion,
+                            isBlank(resolvedNodeDownloadRoot) ? ATLASSIAN_NODE_DOWNLOAD_ROOT : resolvedNodeDownloadRoot,
+                            isBlank(resolvedPnpmDownloadRoot) ? ATLASSIAN_NPM_DOWNLOAD_ROOT : resolvedPnpmDownloadRoot);
+                    return;
+                } catch (InstallationException exception) {
+                    // Ignore as many filesystem exceptions unrelated to the mirror easily
+                    if (!(exception.getCause() instanceof DownloadException ||
+                            exception.getCause() instanceof ArchiveExtractionException)) {
+                        throw exception;
+                    }
+                    pacAttemptFailed = true;
+                    getLog().warn("Oh no couldn't use the internal mirrors! Falling back to upstream mirrors");
+                    getLog().debug("Using internal mirrors failed because: ", exception);
+                } finally {
+                    serverId = null;
                 }
-                getLog().warn("Oh no couldn't use the internal mirrors! Falling back to upstream mirrors");
-                getLog().debug("Using internal mirrors failed because: ", exception);
-            } finally {
-                serverId = null;
             }
-        }
 
-        install(factory, validNodeVersion, resolvedNodeDownloadRoot, resolvedPnpmDownloadRoot);
+            install(factory, validNodeVersion, resolvedNodeDownloadRoot, resolvedPnpmDownloadRoot);
+        } catch (Exception exception) {
+            failed = true;
+            throw exception;
+        } finally {
+            // Please the compiler being effectively final
+            boolean finalFailed = failed;
+            boolean finalPacAttemptFailed = pacAttemptFailed;
+            boolean finalTriedToUsePac = triedToUsePac;
+            timer.stop(
+                    "runtime.download",
+                    project.getArtifactId(),
+                    getFrontendMavenPluginVersion(),
+                    formatNodeVersionForMetric(validNodeVersion),
+                    new HashMap<String, String>() {{
+                        put("installation", "pnpm");
+                        put("runtime-host", getHostForMetric(resolvedPnpmDownloadRoot, NODEJS_ORG, finalTriedToUsePac, finalPacAttemptFailed));
+                        put("package-manager-host", getHostForMetric(resolvedPnpmDownloadRoot, DEFAULT_PNPM_DOWNLOAD_ROOT, finalTriedToUsePac, finalPacAttemptFailed));
+                        put("failed", Boolean.toString(finalFailed));
+                        put("pac-attempted-failed", Boolean.toString(finalPacAttemptFailed));
+                        put("tried-to-use-pac", Boolean.toString(finalTriedToUsePac));
+                    }});
+        }
     }
 
     private void install(FrontendPluginFactory factory, String validNodeVersion, String resolvedNodeDownloadRoot, String resolvedPnpmDownloadRoot) throws InstallationException {
