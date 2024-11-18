@@ -72,6 +72,7 @@ public class AtlassianDevMetricsReporter  {
     private static final String METRICS_ENDPOINT = "https://devmetrics-publisher.prod.atl-paas.net/1/metrics";
     private static final Pattern BUN_VERSION_PATTERN = Pattern.compile("v?(\\d+\\.\\d+).*");
     public static final String RUNTIME_VERSION_TAG_NAME = "runtime-version";
+    public static final String METRIC_BY_ARTIFACT_SUFFIX = ".by.artifact";
 
     private static volatile boolean isOffline = false;
 
@@ -159,8 +160,14 @@ public class AtlassianDevMetricsReporter  {
                     METRIC_NAME_PREFIX + name,
                     String.valueOf(1),
                     tags);
+            AtlassianDevMetric countByArtifact = new AtlassianDevMetric(
+                    COUNTER,
+                    METRIC_NAME_PREFIX + name + METRIC_BY_ARTIFACT_SUFFIX,
+                    String.valueOf(1),
+                    tags);
 
             sendMetricOverHttp(count);
+            sendMetricOverHttp(countByArtifact);
         });
     }
 
@@ -187,8 +194,14 @@ public class AtlassianDevMetricsReporter  {
                         METRIC_NAME_PREFIX + name,
                         String.valueOf(Duration.between(start, end).toMillis()),
                         tags);
+                AtlassianDevMetric timerByArtifact = new AtlassianDevMetric(
+                        TIME,
+                        METRIC_NAME_PREFIX + name + METRIC_BY_ARTIFACT_SUFFIX,
+                        String.valueOf(Duration.between(start, end).toMillis()),
+                        tags);
 
                 sendMetricOverHttp(timer);
+                sendMetricOverHttp(timerByArtifact);
             });
         }
     }
