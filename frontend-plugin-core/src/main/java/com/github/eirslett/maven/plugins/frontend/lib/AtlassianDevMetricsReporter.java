@@ -104,12 +104,12 @@ public class AtlassianDevMetricsReporter  {
 
         // Don't let the cardinality get too wild
         Map<String, String> tags = new HashMap<String, String>() {{
+            put("dm_environment", isCi ? "ci" : "local_dev");
             put("dm_devmode", Boolean.toString(getBoolean("atlassian.dev.mode") || getBoolean("jira.dev.mode") || getBoolean("confluence.devmode")));
             put("dm_java_version", getProperty("java.specification.version"));
+            put("dm_profiler-os", getOs());
             put("fork-version", forkVersion);
             put("profiler-artifact-id", artifactId);
-            put("profiler-environment", isCi ? "ci" : "local_dev");
-            put("profiler-os", getOs());
         }};
 
         return  tags;
