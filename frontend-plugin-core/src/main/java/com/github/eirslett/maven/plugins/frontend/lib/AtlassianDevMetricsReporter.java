@@ -133,6 +133,7 @@ public class AtlassianDevMetricsReporter  {
         } finally {
             incrementCount("execute", artifactId, forkVersion, new HashMap<String, String>() {{
                 put("goal", goal.toString());
+                put("script", getScriptFromArguments(arguments));
                 put("incremental-enabled", Boolean.toString(incrementalEnabled));
                 put("was-incremental", Boolean.toString(wasIncremental));
             }});
@@ -244,5 +245,29 @@ public class AtlassianDevMetricsReporter  {
         }
 
         return unknown;
+    }
+
+    /**
+     * Give us a general idea of what's going on without blowing up cardinality. It won't be
+     * perfect
+     */
+    static String getScriptFromArguments(String arguments) {
+        if (arguments.contains("test") || arguments.contains("check") || arguments.contains("visreg") || arguments.contains("jest") || arguments.contains("storybook")) {
+            return "test";
+        }
+
+        if (arguments.contains("lint") || arguments.contains("prettier")  || arguments.contains("checkstyle") || arguments.contains("format")) {
+            return "lint";
+        }
+
+        if (arguments.contains("webpack") || arguments.contains("gulp") || arguments.contains("build") || arguments.contains("dist") || arguments.contains("tsc")) {
+            return "build";
+        }
+
+        if (arguments.contains("install") || arguments.startsWith("ci ") || "ci".equals(arguments)) {
+            return "install";
+        }
+
+        return "other";
     }
 }
