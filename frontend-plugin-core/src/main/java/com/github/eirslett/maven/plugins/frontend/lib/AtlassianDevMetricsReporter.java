@@ -61,7 +61,13 @@ public class AtlassianDevMetricsReporter  {
                     .build())
             .setMaxConnPerRoute(10)
             .build();
-    private static final String METRIC_NAME_PREFIX = "dev.metrics.frontend.maven.plugin.fork.";
+
+    /**
+     * The service will automatically append {@code devmetrics.} to the front of this so
+     * a full metric name would be something like
+     * {@code devmetrics.frontend.maven.plugin.fork.runtime.download}
+     */
+    private static final String METRIC_NAME_PREFIX = "frontend.maven.plugin.fork.";
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private static final String METRICS_ENDPOINT = "https://devmetrics-publisher.prod.atl-paas.net/1/metrics";
     private static final Pattern BUN_VERSION_PATTERN = Pattern.compile("v?(\\d+\\.\\d+).*");
