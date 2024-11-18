@@ -1,6 +1,7 @@
 package com.github.eirslett.maven.plugins.frontend.lib;
 
 import com.github.eirslett.maven.plugins.frontend.lib.NodeVersionHelper.NodeVersionComparator;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static com.github.eirslett.maven.plugins.frontend.lib.NodeVersionHelper.UNUSUAL_VALID_VERSIONS;
@@ -42,6 +43,7 @@ public class NodeVersionHelperTest {
         assertTrue(validateVersion("12"));
     }
 
+    @Disabled("We need to figure out a better way than blocking on an HTTP request near the start")
     @Test
     public void testGetDownloadableVersion_shouldGiveUsTheLatestDownloadableVersion_forAGivenLooselyDefinedMajorVersion() {
         // Using Node 12 since there shouldn't be anymore releases

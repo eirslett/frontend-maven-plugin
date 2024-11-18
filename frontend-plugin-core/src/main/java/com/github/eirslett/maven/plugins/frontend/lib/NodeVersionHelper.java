@@ -228,8 +228,8 @@ public class NodeVersionHelper {
 
         version = version.replaceFirst("v", ""); // we're about to add it back
 
-        return findMatchingReleasedVersion(version)
-                .orElse("v" + version);
+//        return findMatchingReleasedVersion(version)
+        return "v" + version;
     }
 
     public static Optional<String> findMatchingReleasedVersion(String requestedVersionLowercaseWithoutLeadingV) {
