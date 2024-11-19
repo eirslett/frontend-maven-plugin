@@ -23,6 +23,9 @@ import java.util.regex.Pattern;
 import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricOperatingSystem.getOs;
 import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricType.COUNTER;
 import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricType.TIME;
+import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsIncremental.BUILT;
+import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsIncremental.NOT_ENABLED;
+import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsIncremental.REBUILDING_SKIPPED;
 import static com.github.eirslett.maven.plugins.frontend.lib.Utils.isBlank;
 import static com.google.common.primitives.Ints.checkedCast;
 import static java.lang.Boolean.getBoolean;
@@ -131,11 +134,17 @@ public class AtlassianDevMetricsReporter  {
             failed = true;
             throw exception;
         } finally {
+            AtlassianDevMetricsIncremental incremental =
+                    incrementalEnabled ?
+                            wasIncremental ?
+                                    REBUILDING_SKIPPED
+                                    : BUILT
+                            : NOT_ENABLED;
+
             incrementCount("execute", artifactId, forkVersion, new HashMap<String, String>() {{
                 put("goal", goal.toString());
                 put("script", getScriptFromArguments(arguments));
-                put("incremental-enabled", Boolean.toString(incrementalEnabled));
-                put("was-incremental", Boolean.toString(wasIncremental));
+                put("incremental", incremental.toString());
             }});
         }
     }
