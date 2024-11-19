@@ -14,6 +14,10 @@ import org.sonatype.plexus.build.incremental.BuildContext;
 import java.io.File;
 import java.util.Collections;
 
+import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsReporter.Goal.BUN;
+import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsReporter.incrementExecutionCount;
+import static com.github.eirslett.maven.plugins.frontend.mojo.MojoUtils.incrementalBuildEnabled;
+
 @Mojo(name = "bun", defaultPhase = LifecyclePhase.GENERATE_RESOURCES, threadSafe = true)
 public final class BunMojo extends AbstractFrontendMojo {
 
@@ -56,16 +60,23 @@ public final class BunMojo extends AbstractFrontendMojo {
     }
 
     @Override
-    public synchronized void execute(FrontendPluginFactory factory) throws TaskRunnerException {
+    public synchronized void execute(FrontendPluginFactory factory) throws Exception {
         File packageJson = new File(this.workingDirectory, "package.json");
-        if (this.buildContext == null || this.buildContext.hasDelta(packageJson)
-                || !this.buildContext.isIncremental()) {
+
+        boolean incrementalEnabled = incrementalBuildEnabled(buildContext);
+        boolean willBeIncremental = incrementalEnabled && buildContext.hasDelta(packageJson);
+
+        incrementExecutionCount(project.getArtifactId(), arguments, BUN, getFrontendMavenPluginVersion(), incrementalEnabled, willBeIncremental, () -> {
+
+        if (!willBeIncremental) {
             ProxyConfig proxyConfig = getProxyConfig();
             factory.getBunRunner(proxyConfig, getRegistryUrl()).execute(this.arguments,
                     this.environmentVariables);
         } else {
             getLog().info("Skipping bun install as package.json unchanged");
         }
+
+        });
     }
 
     private ProxyConfig getProxyConfig() {

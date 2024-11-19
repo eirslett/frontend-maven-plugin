@@ -8,9 +8,20 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
+import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsReporter.RUNTIME_VERSION_TAG_NAME;
+import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsReporter.incrementCount;
+import static com.github.eirslett.maven.plugins.frontend.lib.NodeVersionDetector.NodeVersionLocations.MAVEN;
+import static com.github.eirslett.maven.plugins.frontend.lib.NodeVersionDetector.NodeVersionLocations.MISE;
+import static com.github.eirslett.maven.plugins.frontend.lib.NodeVersionDetector.NodeVersionLocations.NODE_VERSION;
+import static com.github.eirslett.maven.plugins.frontend.lib.NodeVersionDetector.NodeVersionLocations.NVMRC;
+import static com.github.eirslett.maven.plugins.frontend.lib.NodeVersionDetector.NodeVersionLocations.TOOL_VERSIONS;
+import static com.github.eirslett.maven.plugins.frontend.lib.NodeVersionDetector.NodeVersionLocations.UNKNOWN;
+import static com.github.eirslett.maven.plugins.frontend.lib.NodeVersionHelper.getDownloadableVersion;
+import static com.github.eirslett.maven.plugins.frontend.lib.NodeVersionHelper.validateVersion;
 import static java.lang.String.format;
 import static java.util.Objects.isNull;
 import static java.util.Optional.empty;
@@ -18,13 +29,21 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 public class NodeVersionDetector {
 
+    private static final Logger logger = getLogger(NodeVersionDetector.class);
     private static final String TOOL_VERSIONS_FILENAME = ".tool-versions";
 
-    public static String getNodeVersion(File workingDir, String providedNodeVersion, String genericNodeVersionFile) throws Exception {
-        Logger logger = getLogger(NodeVersionDetector.class);
+    public static String getNodeVersion(
+            File workingDir,
+            String providedNodeVersion,
+            String genericNodeVersionFile,
+            String artifactId,
+            String forkVersion
+    ) throws Exception {
+        final EventData eventData = new EventData(artifactId, forkVersion);
 
         if (!isNull(providedNodeVersion) && !providedNodeVersion.trim().isEmpty()) {
-            logger.debug("Looks like a node version was set so using that: " + providedNodeVersion);
+            logger.debug("Looks like a node version was set so using that: {}", providedNodeVersion);
+            reportFoundVersion(MAVEN, providedNodeVersion, eventData);
             return providedNodeVersion;
         }
 
@@ -35,19 +54,31 @@ public class NodeVersionDetector {
             }
 
             if (genericNodeVersionFile.endsWith(".toml") && genericNodeVersionFile.contains("mise")) {
-                return readMiseConfigTomlFile(genericNodeVersionFileFile, genericNodeVersionFileFile.toPath(), logger);
+                String trimmedVersion = readMiseConfigTomlFile(genericNodeVersionFileFile, genericNodeVersionFileFile.toPath());
+                reportFoundVersion(MISE, trimmedVersion, eventData);
+                return trimmedVersion;
             } else if (genericNodeVersionFile.endsWith(TOOL_VERSIONS_FILENAME)) {
-                return readToolVersionsFile(genericNodeVersionFileFile, genericNodeVersionFileFile.toPath(), logger);
+                String trimmedVersion = readToolVersionsFile(genericNodeVersionFileFile, genericNodeVersionFileFile.toPath());
+                reportFoundVersion(TOOL_VERSIONS, trimmedVersion, eventData);
+                return trimmedVersion;
             } else {
-                return readNvmrcFile(genericNodeVersionFileFile, genericNodeVersionFileFile.toPath(), logger);
+                String versionLocation = genericNodeVersionFile.contains(NVMRC)
+                        ? NVMRC
+                        : genericNodeVersionFile.contains(NODE_VERSION)
+                            ? NODE_VERSION
+                            : UNKNOWN;
+                String trimmedVersion = readNvmrcFile(genericNodeVersionFileFile, genericNodeVersionFileFile.toPath());
+                reportFoundVersion(versionLocation, trimmedVersion, eventData);
+                return trimmedVersion;
             }
         }
 
         try {
-            return recursivelyFindVersion(workingDir);
+            return recursivelyFindVersion(workingDir, eventData);
         } catch (Throwable throwable) {
             logger.debug("Going to use the configuration node version, failed to find a file with the version because",
                     throwable);
+            // don't report here, can lead to double-ups
             return providedNodeVersion;
         }
     }
@@ -95,9 +126,7 @@ public class NodeVersionDetector {
      * Ordering this hierarchy of reading the files isn't just the most idiomatic, it's also probably the best
      * for performance.
      */
-    public static String recursivelyFindVersion(File directory) throws Exception {
-        Logger logger = getLogger(NodeVersionDetector.class);
-
+    public static String recursivelyFindVersion(File directory, EventData eventData) throws Exception {
         if (!directory.canRead()) {
             throw new Exception("Tried to find a Node version file but giving up because it's not possible to read " +
                     directory.getPath());
@@ -108,22 +137,31 @@ public class NodeVersionDetector {
         Path nodeVersionFilePath = Paths.get(directoryPath, ".node-version");
         File nodeVersionFile = nodeVersionFilePath.toFile();
         if (nodeVersionFile.exists()) {
-            String trimmedLine = readNvmrcFile(nodeVersionFile, nodeVersionFilePath, logger);
-            if (trimmedLine != null) return trimmedLine;
+            String trimmedLine = readNvmrcFile(nodeVersionFile, nodeVersionFilePath);
+            if (trimmedLine != null) {
+                reportFoundVersion(NODE_VERSION, trimmedLine, eventData);
+                return trimmedLine;
+            }
         }
 
         Path nvmrcFilePath = Paths.get(directoryPath, ".nvmrc");
         File nvmrcFile = nvmrcFilePath.toFile();
         if (nvmrcFile.exists()) {
-            String trimmedLine = readNvmrcFile(nvmrcFile, nvmrcFilePath, logger);
-            if (trimmedLine != null) return trimmedLine;
+            String trimmedLine = readNvmrcFile(nvmrcFile, nvmrcFilePath);
+            if (trimmedLine != null) {
+                reportFoundVersion(NVMRC, trimmedLine, eventData);
+                return trimmedLine;
+            }
         }
 
         Path toolVersionsFilePath = Paths.get(directoryPath, TOOL_VERSIONS_FILENAME);
         File toolVersionsFile = toolVersionsFilePath.toFile();
         if (toolVersionsFile.exists()) {
-            String trimmedLine = readToolVersionsFile(toolVersionsFile, toolVersionsFilePath, logger);
-            if (trimmedLine != null) return trimmedLine;
+            String trimmedLine = readToolVersionsFile(toolVersionsFile, toolVersionsFilePath);
+            if (trimmedLine != null) {
+                reportFoundVersion(TOOL_VERSIONS, trimmedLine, eventData);
+                return trimmedLine;
+            }
         }
 
         for (String miseConfigFilename: listMiseConfigFilenames()) {
@@ -135,8 +173,11 @@ public class NodeVersionDetector {
 
             File miseConfigFile = miseConfigFilePath.toFile();
             if (miseConfigFile.exists()) {
-                String trimmedVersion = readMiseConfigTomlFile(miseConfigFile, miseConfigFilePath, logger);
-                if (trimmedVersion != null) return trimmedVersion;
+                String trimmedVersion = readMiseConfigTomlFile(miseConfigFile, miseConfigFilePath);
+                if (trimmedVersion != null) {
+                    reportFoundVersion(MISE, trimmedVersion, eventData);
+                    return trimmedVersion;
+                }
             }
         }
 
@@ -145,10 +186,10 @@ public class NodeVersionDetector {
             throw new Exception("Reach root-level without finding a suitable file");
         }
 
-        return recursivelyFindVersion(parent);
+        return recursivelyFindVersion(parent, eventData);
     }
 
-    private static String readNvmrcFile(File nvmrcFile, Path nvmrcFilePath, Logger logger) throws Exception {
+    private static String readNvmrcFile(File nvmrcFile, Path nvmrcFilePath) throws Exception {
         assertNodeVersionFileIsReadable(nvmrcFile);
 
         List<String> lines = Files.readAllLines(nvmrcFilePath);
@@ -197,7 +238,7 @@ public class NodeVersionDetector {
      * at least as loose.
      */
     @VisibleForTesting
-    static String readMiseConfigTomlFile(File miseTomlFile, Path miseTomlFilePath, Logger logger) throws Exception {
+    static String readMiseConfigTomlFile(File miseTomlFile, Path miseTomlFilePath) throws Exception {
         assertNodeVersionFileIsReadable(miseTomlFile);
 
         List<String> lines = Files.readAllLines(miseTomlFilePath);
@@ -229,7 +270,7 @@ public class NodeVersionDetector {
         return null;
     }
 
-    private static String readToolVersionsFile(File toolVersionsFile, Path toolVersionsFilePath, Logger logger) throws Exception {
+    private static String readToolVersionsFile(File toolVersionsFile, Path toolVersionsFilePath) throws Exception {
         assertNodeVersionFileIsReadable(toolVersionsFile);
 
         List<String> lines = Files.readAllLines(toolVersionsFilePath);
@@ -256,5 +297,43 @@ public class NodeVersionDetector {
         if (!file.canRead()) {
             throw new Exception("Tried to read the node version from the file, but giving up because it's not possible to read" + file.getPath());
         }
+    }
+
+    private static void reportFoundVersion(String location, String nodeVersion, EventData eventData) {
+        if (isNull(nodeVersion) || !validateVersion(nodeVersion)) {
+            return; // this is going to fail
+        }
+
+        String standardisedNodeVersion = getDownloadableVersion(nodeVersion);
+
+        incrementCount(
+                "runtime.version",
+                eventData.artifactId,
+                eventData.forkVersion,
+                new HashMap<String, String>() {{
+                    put(RUNTIME_VERSION_TAG_NAME, standardisedNodeVersion);
+                    put("version-location", location);
+                }});
+    }
+
+    @VisibleForTesting
+    static class EventData {
+        private final String artifactId, forkVersion;
+
+        EventData(
+                String artifactId,
+                String forkVersion) {
+            this.artifactId = artifactId;
+            this.forkVersion = forkVersion;
+        }
+    }
+
+    public interface NodeVersionLocations {
+        String NVMRC = "nvmrc";
+        String NODE_VERSION = "node-version";
+        String MAVEN = "maven";
+        String MISE = "mise";
+        String TOOL_VERSIONS = "tool-versions";
+        String UNKNOWN = "unknown";
     }
 }

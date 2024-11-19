@@ -1,6 +1,8 @@
 package com.github.eirslett.maven.plugins.frontend.mojo;
 
 import com.github.eirslett.maven.plugins.frontend.lib.ArchiveExtractionException;
+import com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsInstallationWork;
+import com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsReporter.Timer;
 import com.github.eirslett.maven.plugins.frontend.lib.DownloadException;
 import com.github.eirslett.maven.plugins.frontend.lib.FrontendPluginFactory;
 import com.github.eirslett.maven.plugins.frontend.lib.InstallationException;
@@ -15,13 +17,19 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.settings.Server;
 import org.apache.maven.settings.crypto.SettingsDecrypter;
 
+import java.util.HashMap;
 import java.util.Map;
 
+import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsInstallationWork.UNKNOWN;
+import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsReporter.formatNodeVersionForMetric;
+import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsReporter.getHostForMetric;
 import static com.github.eirslett.maven.plugins.frontend.lib.NodeInstaller.ATLASSIAN_NODE_DOWNLOAD_ROOT;
+import static com.github.eirslett.maven.plugins.frontend.lib.NodeInstaller.NODEJS_ORG;
 import static com.github.eirslett.maven.plugins.frontend.lib.NodeVersionDetector.getNodeVersion;
 import static com.github.eirslett.maven.plugins.frontend.lib.NodeVersionHelper.getDownloadableVersion;
 import static com.github.eirslett.maven.plugins.frontend.lib.Utils.isBlank;
 import static com.github.eirslett.maven.plugins.frontend.lib.YarnInstaller.ATLASSIAN_YARN_DOWNLOAD_ROOT;
+import static com.github.eirslett.maven.plugins.frontend.lib.YarnInstaller.DEFAULT_YARN_DOWNLOAD_ROOT;
 import static com.github.eirslett.maven.plugins.frontend.mojo.AtlassianUtil.isAtlassianProject;
 import static com.github.eirslett.maven.plugins.frontend.mojo.YarnUtils.isYarnrcYamlFilePresent;
 import static java.util.Objects.isNull;
@@ -85,9 +93,17 @@ public final class InstallNodeAndYarnMojo extends AbstractFrontendMojo {
         return this.skip;
     }
 
+    private AtlassianDevMetricsInstallationWork packageManagerWork = UNKNOWN;
+    private AtlassianDevMetricsInstallationWork runtimeWork = UNKNOWN;
+
     @Override
     public void execute(FrontendPluginFactory factory) throws Exception {
-        String nodeVersion = getNodeVersion(workingDirectory, this.nodeVersion, this.nodeVersionFile);
+        boolean pacAttemptFailed = false;
+        boolean triedToUsePac = false;
+        boolean failed = false;
+        Timer timer = new Timer();
+
+        String nodeVersion = getNodeVersion(workingDirectory, this.nodeVersion, this.nodeVersionFile, project.getArtifactId(), getFrontendMavenPluginVersion());
 
         if (isNull(nodeVersion)) {
             throw new LifecycleExecutionException("Node version could not be detected from a file and was not set");
@@ -101,41 +117,69 @@ public final class InstallNodeAndYarnMojo extends AbstractFrontendMojo {
 
         boolean isYarnYamlFilePresent = isYarnrcYamlFilePresent(this.session, this.workingDirectory);
 
-        if (isAtlassianProject(project) &&
+        try {
+            if (isAtlassianProject(project) &&
                 isBlank(serverId) &&
                 (isBlank(nodeDownloadRoot) || isBlank(yarnDownloadRoot))
-        ) { // If they're overridden the settings, they be the boss
-            getLog().info("Atlassian project detected, going to use the internal mirrors (requires VPN)");
+            ) { // If they're overridden the settings, they be the boss
+                    triedToUsePac = true;
 
-            serverId = "maven-atlassian-com";
-            final String userSetYarnDownloadRoot = yarnDownloadRoot;
-            if (isBlank(yarnDownloadRoot)) {
-                yarnDownloadRoot = ATLASSIAN_YARN_DOWNLOAD_ROOT;
-            }
-            final String userSetNodeDownloadRoot = nodeDownloadRoot;
-            if (isBlank(nodeDownloadRoot)) {
-                nodeDownloadRoot = ATLASSIAN_NODE_DOWNLOAD_ROOT;
-            }
+                    getLog().info("Atlassian project detected, going to use the internal mirrors (requires VPN)");
 
-            try {
-                install(factory, validNodeVersion, isYarnYamlFilePresent);
-                return;
-            } catch (InstallationException exception) {
-                // Ignore as many filesystem exceptions unrelated to the mirror easily
-                if (!(exception.getCause() instanceof DownloadException ||
-                        exception.getCause() instanceof ArchiveExtractionException)) {
-                    throw exception;
+                serverId = "maven-atlassian-com";
+                final String userSetYarnDownloadRoot = yarnDownloadRoot;
+                if (isBlank(yarnDownloadRoot)) {
+                    yarnDownloadRoot = ATLASSIAN_YARN_DOWNLOAD_ROOT;
                 }
-                getLog().warn("Oh no couldn't use the internal mirrors! Falling back to upstream mirrors");
-                getLog().debug("Using internal mirrors failed because: ", exception);
-            } finally {
-                nodeDownloadRoot = userSetNodeDownloadRoot;
-                yarnDownloadRoot = userSetYarnDownloadRoot;
-                serverId = null;
-            }
-        }
+                final String userSetNodeDownloadRoot = nodeDownloadRoot;
+                if (isBlank(nodeDownloadRoot)) {
+                    nodeDownloadRoot = ATLASSIAN_NODE_DOWNLOAD_ROOT;
+                }
 
-        install(factory, validNodeVersion, isYarnYamlFilePresent);
+                try {
+                    install(factory, validNodeVersion, isYarnYamlFilePresent);
+                    return;
+                } catch (InstallationException exception) {
+                    // Ignore as many filesystem exceptions unrelated to the mirror easily
+                    if (!(exception.getCause() instanceof DownloadException ||
+                            exception.getCause() instanceof ArchiveExtractionException)) {
+                        throw exception;
+                    }
+                    pacAttemptFailed = true;
+                    getLog().warn("Oh no couldn't use the internal mirrors! Falling back to upstream mirrors");
+                    getLog().debug("Using internal mirrors failed because: ", exception);
+                } finally {
+                    nodeDownloadRoot = userSetNodeDownloadRoot;
+                    yarnDownloadRoot = userSetYarnDownloadRoot;
+                    serverId = null;
+                }
+            }
+
+            install(factory, validNodeVersion, isYarnYamlFilePresent);
+        } catch (Exception exception) {
+            failed = true;
+            throw exception;
+        } finally {
+            // Please the compiler being effectively final
+            boolean finalFailed = failed;
+            boolean finalPacAttemptFailed = pacAttemptFailed;
+            boolean finalTriedToUsePac = triedToUsePac;
+            timer.stop(
+                    "runtime.download",
+                    project.getArtifactId(),
+                    getFrontendMavenPluginVersion(),
+                    formatNodeVersionForMetric(validNodeVersion),
+                    new HashMap<String, String>() {{
+                        put("installation", "yarn");
+                        put("installation-work-runtime", runtimeWork.toString());
+                        put("installation-work-package-manager", packageManagerWork.toString());
+                        put("runtime-host", getHostForMetric(nodeDownloadRoot, NODEJS_ORG, finalTriedToUsePac, finalPacAttemptFailed));
+                        put("package-manager-host", getHostForMetric(isYarnYamlFilePresent ? "" : yarnDownloadRoot, isYarnYamlFilePresent ? "" : DEFAULT_YARN_DOWNLOAD_ROOT, finalTriedToUsePac, finalPacAttemptFailed));
+                        put("failed", Boolean.toString(finalFailed));
+                        put("pac-attempted-failed", Boolean.toString(finalPacAttemptFailed));
+                        put("tried-to-use-pac", Boolean.toString(finalTriedToUsePac));
+                    }});
+        }
     }
 
     private void install(FrontendPluginFactory factory, String validNodeVersion, boolean isYarnYamlFilePresent) throws InstallationException {
@@ -144,16 +188,20 @@ public final class InstallNodeAndYarnMojo extends AbstractFrontendMojo {
 
         if (null != server) {
             Map<String, String> httpHeaders = getHttpHeaders(server);
+            runtimeWork =
             factory.getNodeInstaller(proxyConfig).setNodeDownloadRoot(this.nodeDownloadRoot)
                 .setNodeVersion(validNodeVersion).setUserName(server.getUsername())
                 .setPassword(server.getPassword()).setHttpHeaders(httpHeaders).install();
+            packageManagerWork =
             factory.getYarnInstaller(proxyConfig).setYarnDownloadRoot(this.yarnDownloadRoot)
                 .setYarnVersion(this.yarnVersion).setUserName(server.getUsername())
                 .setPassword(server.getPassword()).setHttpHeaders(httpHeaders)
                 .setIsYarnBerry(isYarnYamlFilePresent).install();
         } else {
+            runtimeWork =
             factory.getNodeInstaller(proxyConfig).setNodeDownloadRoot(this.nodeDownloadRoot)
                 .setNodeVersion(validNodeVersion).install();
+            packageManagerWork =
             factory.getYarnInstaller(proxyConfig).setYarnDownloadRoot(this.yarnDownloadRoot)
                 .setYarnVersion(this.yarnVersion).setIsYarnBerry(isYarnYamlFilePresent).install();
         }

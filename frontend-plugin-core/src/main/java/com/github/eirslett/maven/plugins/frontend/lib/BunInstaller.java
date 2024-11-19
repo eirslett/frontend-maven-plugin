@@ -13,6 +13,10 @@ import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.Map;
 
+import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsInstallationWork.CACHED;
+import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsInstallationWork.DOWNLOADED;
+import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsInstallationWork.INSTALLED;
+
 public class BunInstaller {
 
     public static final String INSTALL_PATH = "/bun";
@@ -24,7 +28,7 @@ public class BunInstaller {
     private String bunVersion, userName, password;
 
     private Map<String, String> httpHeaders;
-    
+
     private final Logger logger;
 
     private final InstallConfig config;
@@ -59,17 +63,18 @@ public class BunInstaller {
         this.httpHeaders = httpHeaders;
         return this;
     }
-    
-    public void install() throws InstallationException {
+
+    public AtlassianDevMetricsInstallationWork install() throws InstallationException {
         // use static lock object for a synchronized block
         synchronized (LOCK) {
             if (!bunIsAlreadyInstalled()) {
                 if (!this.bunVersion.startsWith("v")) {
                     this.logger.warn("Bun version does not start with naming convention 'v'.");
                 }
-                installBunDefault();
+                return installBunDefault();
             }
         }
+        return INSTALLED;
     }
 
     private boolean bunIsAlreadyInstalled() {
@@ -97,7 +102,7 @@ public class BunInstaller {
         }
     }
 
-    private void installBunDefault() throws InstallationException {
+    private AtlassianDevMetricsInstallationWork installBunDefault() throws InstallationException {
         try {
 
             logger.info("Installing Bun version {}", bunVersion);
@@ -109,6 +114,7 @@ public class BunInstaller {
 
             File archive = this.config.getCacheResolver().resolve(cacheDescriptor);
 
+            AtlassianDevMetricsInstallationWork work =
             downloadFileIfMissing(downloadUrl, archive, this.userName, this.password, this.httpHeaders);
 
             File installDirectory = getInstallDirectory();
@@ -168,6 +174,7 @@ public class BunInstaller {
                 FileUtils.deleteDirectory(bunExtractDirectory);
 
                 this.logger.info("Installed bun locally.");
+                return work;
             }
         } catch (IOException e) {
             throw new InstallationException("Could not install bun", e);
@@ -210,11 +217,13 @@ public class BunInstaller {
         this.archiveExtractor.extract(archive.getPath(), destinationDirectory.getPath());
     }
 
-    private void downloadFileIfMissing(String downloadUrl, File destination, String userName, String password, Map<String, String> httpHeaders)
+    private AtlassianDevMetricsInstallationWork downloadFileIfMissing(String downloadUrl, File destination, String userName, String password, Map<String, String> httpHeaders)
             throws DownloadException {
         if (!destination.exists()) {
             downloadFile(downloadUrl, destination, userName, password, httpHeaders);
+            return DOWNLOADED;
         }
+        return CACHED;
     }
 
     private void downloadFile(String downloadUrl, File destination, String userName, String password, Map<String, String> httpHeaders)

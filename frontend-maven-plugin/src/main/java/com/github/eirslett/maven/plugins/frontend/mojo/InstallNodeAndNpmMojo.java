@@ -1,6 +1,8 @@
 package com.github.eirslett.maven.plugins.frontend.mojo;
 
 import com.github.eirslett.maven.plugins.frontend.lib.ArchiveExtractionException;
+import com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsInstallationWork;
+import com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsReporter.Timer;
 import com.github.eirslett.maven.plugins.frontend.lib.DownloadException;
 import com.github.eirslett.maven.plugins.frontend.lib.FrontendPluginFactory;
 import com.github.eirslett.maven.plugins.frontend.lib.InstallationException;
@@ -9,6 +11,7 @@ import com.github.eirslett.maven.plugins.frontend.lib.NodeVersionDetector;
 import com.github.eirslett.maven.plugins.frontend.lib.NodeVersionHelper;
 import com.github.eirslett.maven.plugins.frontend.lib.ProxyConfig;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.maven.execution.MavenSession;
@@ -20,8 +23,13 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.settings.Server;
 import org.apache.maven.settings.crypto.SettingsDecrypter;
 
+import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsInstallationWork.UNKNOWN;
+import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsReporter.formatNodeVersionForMetric;
+import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsReporter.getHostForMetric;
 import static com.github.eirslett.maven.plugins.frontend.lib.NPMInstaller.ATLASSIAN_NPM_DOWNLOAD_ROOT;
+import static com.github.eirslett.maven.plugins.frontend.lib.NPMInstaller.DEFAULT_NPM_DOWNLOAD_ROOT;
 import static com.github.eirslett.maven.plugins.frontend.lib.NodeInstaller.ATLASSIAN_NODE_DOWNLOAD_ROOT;
+import static com.github.eirslett.maven.plugins.frontend.lib.NodeInstaller.NODEJS_ORG;
 import static com.github.eirslett.maven.plugins.frontend.lib.NodeVersionHelper.getDownloadableVersion;
 import static com.github.eirslett.maven.plugins.frontend.lib.Utils.isBlank;
 import static com.github.eirslett.maven.plugins.frontend.mojo.AtlassianUtil.isAtlassianProject;
@@ -87,6 +95,9 @@ public final class InstallNodeAndNpmMojo extends AbstractFrontendMojo {
     @Component(role = SettingsDecrypter.class)
     private SettingsDecrypter decrypter;
 
+    private AtlassianDevMetricsInstallationWork packageManagerWork = UNKNOWN;
+    private AtlassianDevMetricsInstallationWork runtimeWork = UNKNOWN;
+
     @Override
     protected boolean skipExecution() {
         return this.skip;
@@ -94,7 +105,12 @@ public final class InstallNodeAndNpmMojo extends AbstractFrontendMojo {
 
     @Override
     public void execute(FrontendPluginFactory factory) throws Exception {
-        String nodeVersion = NodeVersionDetector.getNodeVersion(workingDirectory, this.nodeVersion, this.nodeVersionFile);
+        boolean pacAttemptFailed = false;
+        boolean triedToUsePac = false;
+        boolean failed = false;
+        Timer timer = new Timer();
+
+        String nodeVersion = NodeVersionDetector.getNodeVersion(workingDirectory, this.nodeVersion, this.nodeVersionFile, project.getArtifactId(), getFrontendMavenPluginVersion());
 
         if (isNull(nodeVersion)) {
             throw new LifecycleExecutionException("Node version could not be detected from a file and was not set");
@@ -109,32 +125,60 @@ public final class InstallNodeAndNpmMojo extends AbstractFrontendMojo {
         final String nodeDownloadRoot = getNodeDownloadRoot();
         final String npmDownloadRoot = getNpmDownloadRoot();
 
-        if (isAtlassianProject(project) &&
-                isBlank(serverId) &&
-                (isBlank(nodeDownloadRoot) || isBlank(npmDownloadRoot))
+        try {
+            if (isAtlassianProject(project) &&
+                    isBlank(serverId) &&
+                    (isBlank(nodeDownloadRoot) || isBlank(npmDownloadRoot))
             ) { // If they're overridden the settings, they be the boss
-            getLog().info("Atlassian project detected, going to use the internal mirrors (requires VPN)");
+                triedToUsePac = true;
 
-            serverId = "maven-atlassian-com";
-            try {
-                install(factory, validNodeVersion,
-                        isBlank(nodeDownloadRoot) ? ATLASSIAN_NODE_DOWNLOAD_ROOT : nodeDownloadRoot,
-                        isBlank(npmDownloadRoot) ? ATLASSIAN_NPM_DOWNLOAD_ROOT : npmDownloadRoot);
-                return;
-            } catch (InstallationException exception) {
-                // Ignore as many filesystem exceptions unrelated to the mirror easily
-                if (!(exception.getCause() instanceof DownloadException ||
-                        exception.getCause() instanceof ArchiveExtractionException)) {
-                    throw exception;
+                getLog().info("Atlassian project detected, going to use the internal mirrors (requires VPN)");
+
+                serverId = "maven-atlassian-com";
+                try {
+                    install(factory, validNodeVersion,
+                            isBlank(nodeDownloadRoot) ? ATLASSIAN_NODE_DOWNLOAD_ROOT : nodeDownloadRoot,
+                            isBlank(npmDownloadRoot) ? ATLASSIAN_NPM_DOWNLOAD_ROOT : npmDownloadRoot);
+                    return;
+                } catch (InstallationException exception) {
+                    // Ignore as many filesystem exceptions unrelated to the mirror easily
+                    if (!(exception.getCause() instanceof DownloadException ||
+                            exception.getCause() instanceof ArchiveExtractionException)) {
+                        throw exception;
+                    }
+                    pacAttemptFailed = true;
+                    getLog().warn("Oh no couldn't use the internal mirrors! Falling back to upstream mirrors");
+                    getLog().debug("Using internal mirrors failed because: ", exception);
+                } finally {
+                    serverId = null;
                 }
-                getLog().warn("Oh no couldn't use the internal mirrors! Falling back to upstream mirrors");
-                getLog().debug("Using internal mirrors failed because: ", exception);
-            } finally {
-                serverId = null;
             }
-        }
 
-        install(factory, validNodeVersion, nodeDownloadRoot, npmDownloadRoot);
+            install(factory, validNodeVersion, nodeDownloadRoot, npmDownloadRoot);
+        } catch (Exception exception) {
+            failed = true;
+            throw exception;
+        } finally {
+            // Please the compiler being effectively final
+            boolean finalFailed = failed;
+            boolean finalPacAttemptFailed = pacAttemptFailed;
+            boolean finalTriedToUsePac = triedToUsePac;
+            timer.stop(
+                    "runtime.download",
+                    project.getArtifactId(),
+                    getFrontendMavenPluginVersion(),
+                    formatNodeVersionForMetric(validNodeVersion),
+                    new HashMap<String, String>() {{
+                        put("installation", "npm");
+                        put("installation-work-runtime", runtimeWork.toString());
+                        put("installation-work-package-manager", packageManagerWork.toString());
+                        put("runtime-host", getHostForMetric(nodeDownloadRoot, NODEJS_ORG, finalTriedToUsePac, finalPacAttemptFailed));
+                        put("package-manager-host", getHostForMetric(npmDownloadRoot, DEFAULT_NPM_DOWNLOAD_ROOT, finalTriedToUsePac, finalPacAttemptFailed));
+                        put("failed", Boolean.toString(finalFailed));
+                        put("pac-attempted-failed", Boolean.toString(finalPacAttemptFailed));
+                        put("tried-to-use-pac", Boolean.toString(finalTriedToUsePac));
+                    }});
+        }
     }
 
     private void install(FrontendPluginFactory factory, String validNodeVersion, String nodeDownloadRoot, String npmDownloadRoot) throws InstallationException {
@@ -143,6 +187,7 @@ public final class InstallNodeAndNpmMojo extends AbstractFrontendMojo {
 
         if (null != server) {
             Map<String, String> httpHeaders = getHttpHeaders(server);
+            runtimeWork =
             factory.getNodeInstaller(proxyConfig)
                 .setNodeVersion(validNodeVersion)
                 .setNodeDownloadRoot(nodeDownloadRoot)
@@ -151,6 +196,7 @@ public final class InstallNodeAndNpmMojo extends AbstractFrontendMojo {
                 .setPassword(server.getPassword())
                 .setHttpHeaders(httpHeaders)
                 .install();
+            packageManagerWork =
             factory.getNPMInstaller(proxyConfig)
                 .setNodeVersion(validNodeVersion)
                 .setNpmVersion(npmVersion)
@@ -160,11 +206,13 @@ public final class InstallNodeAndNpmMojo extends AbstractFrontendMojo {
                 .setHttpHeaders(httpHeaders)
                 .install();
         } else {
+            runtimeWork =
             factory.getNodeInstaller(proxyConfig)
                 .setNodeVersion(validNodeVersion)
                 .setNodeDownloadRoot(nodeDownloadRoot)
                 .setNpmVersion(npmVersion)
                 .install();
+            packageManagerWork =
             factory.getNPMInstaller(proxyConfig)
                 .setNodeVersion(validNodeVersion)
                 .setNpmVersion(this.npmVersion)

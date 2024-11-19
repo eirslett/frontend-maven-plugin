@@ -1,5 +1,6 @@
 package com.github.eirslett.maven.plugins.frontend.mojo;
 
+import com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsReporter;
 import com.github.eirslett.maven.plugins.frontend.lib.FrontendPluginFactory;
 import com.github.eirslett.maven.plugins.frontend.lib.ProxyConfig;
 import com.github.eirslett.maven.plugins.frontend.lib.TaskRunnerException;
@@ -13,6 +14,10 @@ import org.sonatype.plexus.build.incremental.BuildContext;
 
 import java.io.File;
 import java.util.Collections;
+
+import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsReporter.Goal.PNPM;
+import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsReporter.incrementExecutionCount;
+import static com.github.eirslett.maven.plugins.frontend.mojo.MojoUtils.incrementalBuildEnabled;
 
 @Mojo(name="pnpm",  defaultPhase = LifecyclePhase.GENERATE_RESOURCES, threadSafe = true)
 public final class PnpmMojo extends AbstractFrontendMojo {
@@ -55,14 +60,22 @@ public final class PnpmMojo extends AbstractFrontendMojo {
     }
 
     @Override
-    public synchronized void execute(FrontendPluginFactory factory) throws TaskRunnerException {
+    public synchronized void execute(FrontendPluginFactory factory) throws Exception {
         File packageJson = new File(workingDirectory, "package.json");
-        if (buildContext == null || buildContext.hasDelta(packageJson) || !buildContext.isIncremental()) {
+
+        boolean incrementalEnabled = incrementalBuildEnabled(buildContext);
+        boolean willBeIncremental = incrementalEnabled && buildContext.hasDelta(packageJson);
+
+        incrementExecutionCount(project.getArtifactId(), arguments, PNPM, getFrontendMavenPluginVersion(), incrementalEnabled, willBeIncremental, () -> {
+
+        if (!willBeIncremental) {
             ProxyConfig proxyConfig = getProxyConfig();
             factory.getPnpmRunner(proxyConfig, getRegistryUrl()).execute(arguments, environmentVariables);
         } else {
             getLog().info("Skipping pnpm install as package.json unchanged");
         }
+
+        });
     }
 
     private ProxyConfig getProxyConfig() {

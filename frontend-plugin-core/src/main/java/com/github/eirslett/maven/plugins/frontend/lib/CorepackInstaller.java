@@ -11,6 +11,10 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsInstallationWork.CACHED;
+import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsInstallationWork.DOWNLOADED;
+import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsInstallationWork.INSTALLED;
+
 public class CorepackInstaller {
 
     private static final String VERSION = "version";
@@ -69,14 +73,15 @@ public class CorepackInstaller {
         return this;
     }
 
-    public void install() throws InstallationException {
+    public AtlassianDevMetricsInstallationWork install() throws InstallationException {
+        AtlassianDevMetricsInstallationWork work = INSTALLED;
         // use static lock object for a synchronized block
         synchronized (LOCK) {
             if (this.corepackDownloadRoot == null || this.corepackDownloadRoot.isEmpty()) {
                 this.corepackDownloadRoot = DEFAULT_COREPACK_DOWNLOAD_ROOT;
             }
             if (!corepackIsAlreadyInstalled()) {
-                installCorepack();
+                work = installCorepack();
             }
 
             if (this.config.getPlatform().isWindows()) {
@@ -85,6 +90,7 @@ public class CorepackInstaller {
                 linkExecutable();
             }
         }
+        return work;
     }
 
     private boolean corepackIsAlreadyInstalled() {
@@ -120,7 +126,7 @@ public class CorepackInstaller {
         }
     }
 
-    private void installCorepack() throws InstallationException {
+    private AtlassianDevMetricsInstallationWork installCorepack() throws InstallationException {
         try {
             this.logger.info("Installing corepack version {}", this.corepackVersion);
             String corepackVersionClean = this.corepackVersion.replaceFirst("^v(?=[0-9]+)", "");
@@ -130,6 +136,7 @@ public class CorepackInstaller {
 
             File archive = this.config.getCacheResolver().resolve(cacheDescriptor);
 
+            AtlassianDevMetricsInstallationWork work =
             downloadFileIfMissing(downloadUrl, archive, this.userName, this.password, this.httpHeaders);
 
             File installDirectory = getNodeInstallDirectory();
@@ -178,7 +185,7 @@ public class CorepackInstaller {
             }
 
             this.logger.info("Installed corepack locally.");
-
+            return work;
         } catch (DownloadException e) {
             throw new InstallationException("Could not download corepack", e);
         } catch (ArchiveExtractionException e) {
@@ -271,11 +278,13 @@ public class CorepackInstaller {
         this.archiveExtractor.extract(archive.getPath(), destinationDirectory.getPath());
     }
 
-    private void downloadFileIfMissing(String downloadUrl, File destination, String userName, String password, Map<String, String> httpHeaders)
+    private AtlassianDevMetricsInstallationWork downloadFileIfMissing(String downloadUrl, File destination, String userName, String password, Map<String, String> httpHeaders)
         throws DownloadException {
         if (!destination.exists()) {
             downloadFile(downloadUrl, destination, userName, password, httpHeaders);
+            return DOWNLOADED;
         }
+        return CACHED;
     }
 
     private void downloadFile(String downloadUrl, File destination, String userName, String password, Map<String, String> httpHeaders)

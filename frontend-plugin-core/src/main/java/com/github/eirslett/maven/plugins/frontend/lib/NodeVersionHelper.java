@@ -7,6 +7,7 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.slf4j.Logger;
 
 import java.util.Comparator;
 import java.util.List;
@@ -20,10 +21,14 @@ import java.util.stream.Stream;
 import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 import static java.util.Optional.empty;
 import static java.util.stream.Collectors.toSet;
+import static org.slf4j.LoggerFactory.getLogger;
 
 public class NodeVersionHelper {
+
+    private static final Logger log = getLogger(NodeVersionHelper.class);
 
     private NodeVersionHelper() {
         throw new UnsupportedOperationException("helper classes should not be instantiated");
@@ -223,8 +228,8 @@ public class NodeVersionHelper {
 
         version = version.replaceFirst("v", ""); // we're about to add it back
 
-        return findMatchingReleasedVersion(version)
-                .orElse("v" + version);
+//        return findMatchingReleasedVersion(version)
+        return "v" + version;
     }
 
     public static Optional<String> findMatchingReleasedVersion(String requestedVersionLowercaseWithoutLeadingV) {
@@ -250,8 +255,11 @@ public class NodeVersionHelper {
                                 .readValue(response.getEntity().getContent(), new TypeReference<List<NodeVersion>>() {})));
                     }
                 } catch (Exception e) {
-                    throw new RuntimeException("Failed to fetch the list of released node versions to take a " +
-                            "loosely-defined version and turn it into something downloadable", e);
+                    log.error("Failed to fetch the list of released node versions " +
+                            "to turn loosely-defined versions and into something " +
+                            "specific & downloadable");
+                    log.debug("Failed to download list of node versions", e);
+                    nodeVersions.set(Optional.of(emptyList()));
                 }
             }
         }
