@@ -1,4 +1,4 @@
-package com.github.eirslett.maven.plugins.frontend.mojo;
+package com.github.eirslett.maven.plugins.frontend.lib;
 
 import org.slf4j.Logger;
 

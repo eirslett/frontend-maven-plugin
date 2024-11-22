@@ -5,6 +5,7 @@ import static com.github.eirslett.maven.plugins.frontend.mojo.YarnUtils.isYarnrc
 import java.io.File;
 import java.util.Collections;
 
+import com.github.eirslett.maven.plugins.frontend.lib.IncrementalMojoHelper;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
