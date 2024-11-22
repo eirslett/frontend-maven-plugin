@@ -2,6 +2,7 @@ package com.github.eirslett.maven.plugins.frontend.mojo;
 
 import org.apache.maven.plugin.logging.Log;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -16,14 +17,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.zip.CRC32;
 
 public class IncrementalMojoHelper {
     private final File workingDirectory;
@@ -239,25 +239,20 @@ public class IncrementalMojoHelper {
 
     private static String createFilesDigest(ArrayList<File> digestFiles) {
         return digestFiles.parallelStream().map(file -> {
-            try {
-                MessageDigest digest = MessageDigest.getInstance("SHA-256");
-
-                try (FileInputStream fis = new FileInputStream(file)) {
-                    byte[] byteArray = new byte[1024];
-                    while (fis.read(byteArray) != -1) {
-                        digest.update(byteArray);
+            CRC32 crc32 = new CRC32();
+            try (FileInputStream fis = new FileInputStream(file)) {
+                try (BufferedInputStream inputStream = new BufferedInputStream(fis)) {
+                    byte[] buffer = new byte[8192];
+                    int bytesRead;
+                    while ((bytesRead = inputStream.read(buffer)) != -1) {
+                        crc32.update(buffer, 0, bytesRead);
                     }
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
                 }
 
                 StringBuilder sb = new StringBuilder();
-                for (byte b : digest.digest()) {
-                    sb.append(String.format("%02x", b));
-                }
-
-                return file + " : " + sb + "\n";
-            } catch (NoSuchAlgorithmException e) {
+                sb.append(file).append(":").append(crc32.getValue()).append('\n');
+                return sb;
+            } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }).sorted().collect(Collectors.joining(""));
