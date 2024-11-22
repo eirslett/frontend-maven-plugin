@@ -97,7 +97,8 @@ public class IncrementalMojoHelper {
 
     static class IncrementalVisitor extends SimpleFileVisitor<Path> {
         static final Set<String> IGNORED_DIRS = new HashSet<>(Arrays.asList(
-                "node_modules",
+                "build",
+                "dist",
                 "target"
         ));
 
@@ -123,10 +124,15 @@ public class IncrementalMojoHelper {
                 "pug",
                 "soy",
                 "html",
+                "vm",
+                "vmd",
+                "vtl",
+                "ftl",
                 // config
                 "json",
                 "xml",
                 "yaml",
+                "yml",
                 "csv",
                 "lock",
                 // Images
@@ -181,7 +187,7 @@ public class IncrementalMojoHelper {
                 ".stylelintrc",
                 ".stylelintignore",
                 ".browserslistrc",
-                ".nvmrc"
+                ".npmrc"
         ));
 
         private final ArrayList<File> files = new ArrayList<>();
