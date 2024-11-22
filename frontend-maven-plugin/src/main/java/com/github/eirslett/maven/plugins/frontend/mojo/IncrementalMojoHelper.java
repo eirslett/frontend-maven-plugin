@@ -1,6 +1,6 @@
 package com.github.eirslett.maven.plugins.frontend.mojo;
 
-import org.apache.maven.plugin.logging.Log;
+import org.slf4j.Logger;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -25,14 +25,15 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.zip.CRC32;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 public class IncrementalMojoHelper {
+    private static Logger log = getLogger(IncrementalMojoHelper.class);
     private final File workingDirectory;
-    private final Log log;
     private final boolean isActive;
 
-    public IncrementalMojoHelper(String activationFlag, File workingDirectory, Log log) {
+    public IncrementalMojoHelper(String activationFlag, File workingDirectory) {
         this.workingDirectory = workingDirectory;
-        this.log = log;
 
         this.isActive = activationFlag != null && activationFlag.equals("true");
     }
@@ -50,7 +51,7 @@ public class IncrementalMojoHelper {
                 String prevDigest = readPreviousDigest();
 
                 if (currDigest.equals(prevDigest)) {
-                    getLog().info("Atlassian Fork FTW - No changes detected! - Skipping execution");
+                    log.info("Atlassian Fork FTW - No changes detected! - Skipping execution");
                     // For now, we'll just assume all the target files are still there ;)
                     return false; // TADAM! Build is not needed
                 }
@@ -62,7 +63,8 @@ public class IncrementalMojoHelper {
 
             saveDigestCandidate(currDigest);
         } catch (IOException e) {
-            getLog().error("Failure while determining if an incremental build is needed: " + e);
+            log.error("Failure while determining if an incremental build is needed. See debug logs");
+            log.debug("Failure while determining if an incremental build was...", e);
         }
 
         return true;
@@ -73,20 +75,16 @@ public class IncrementalMojoHelper {
             return;
         }
 
-        getLog().debug("Accepting yarn incremental build digest...");
+        log.debug("Accepting yarn incremental build digest...");
         if (getDigestFile().exists()) {
             if (!getDigestFile().delete()) {
-                getLog().warn("Failed to delete the previous incremental build digest");
+                log.warn("Failed to delete the previous incremental build digest");
             }
         }
 
         if (!getDigestCandidateFile().renameTo(getDigestFile())) {
-            getLog().warn("Failed to accept the incremental build digest");
+            log.warn("Failed to accept the incremental build digest");
         }
-    }
-
-    private Log getLog() {
-        return log;
     }
 
     private ArrayList<File> getDigestFiles() throws IOException {
@@ -362,9 +360,9 @@ public class IncrementalMojoHelper {
             String prevHash = entry.getValue();
             String currHash = currDigestContents.get(prevFile);
             if (currHash == null) {
-                getLog().debug("File removed: " + prevFile);
+                log.debug("File removed: {}", prevFile);
             } else if (!prevHash.equals(currHash)) {
-                getLog().debug("File changed: " + prevFile);
+                log.debug("File changed: {}", prevFile);
             }
         }
 
@@ -372,7 +370,7 @@ public class IncrementalMojoHelper {
             String currFile = entry.getKey();
             String prevHash = prevDigestContents.get(currFile);
             if (prevHash == null) {
-                getLog().debug("File added: " + currFile);
+                log.debug("File added: {}", currFile);
             }
         }
     }
