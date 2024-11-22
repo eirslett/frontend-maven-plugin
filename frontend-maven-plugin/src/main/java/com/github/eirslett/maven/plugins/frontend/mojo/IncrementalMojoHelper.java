@@ -50,7 +50,7 @@ public class IncrementalMojoHelper {
                 String prevDigest = readPreviousDigest();
 
                 if (currDigest.equals(prevDigest)) {
-                    getLog().info("Atlassian Fork FTW - No changes detected! - Skipping yarn build");
+                    getLog().info("Atlassian Fork FTW - No changes detected! - Skipping execution");
                     // For now, we'll just assume all the target files are still there ;)
                     return false; // TADAM! Build is not needed
                 }
@@ -73,7 +73,7 @@ public class IncrementalMojoHelper {
             return;
         }
 
-        getLog().info("Accepting yarn incremental build digest...");
+        getLog().debug("Accepting yarn incremental build digest...");
         if (getDigestFile().exists()) {
             if (!getDigestFile().delete()) {
                 getLog().warn("Failed to delete the previous incremental build digest");
@@ -362,9 +362,9 @@ public class IncrementalMojoHelper {
             String prevHash = entry.getValue();
             String currHash = currDigestContents.get(prevFile);
             if (currHash == null) {
-                getLog().info("File removed: " + prevFile);
+                getLog().debug("File removed: " + prevFile);
             } else if (!prevHash.equals(currHash)) {
-                getLog().info("File changed: " + prevFile);
+                getLog().debug("File changed: " + prevFile);
             }
         }
 
@@ -372,7 +372,7 @@ public class IncrementalMojoHelper {
             String currFile = entry.getKey();
             String prevHash = prevDigestContents.get(currFile);
             if (prevHash == null) {
-                getLog().info("File added: " + currFile);
+                getLog().debug("File added: " + currFile);
             }
         }
     }
