@@ -18,6 +18,7 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -42,14 +43,14 @@ public class IncrementalMojoHelper {
         this.isActive = activationFlag != null && activationFlag.equals("true");
     }
 
-    public boolean shouldExecute() {
+    public boolean shouldExecute(Map<String, String> envVars) {
         if (!isActive) {
             return true;
         }
 
         try {
             ArrayList<File> digestFiles = getDigestFiles();
-            String currDigest = createDigest(digestFiles);
+            String currDigest = createDigest(digestFiles, envVars);
 
             try {
                 String prevDigest = readPreviousDigest();
@@ -239,10 +240,10 @@ public class IncrementalMojoHelper {
         }
     }
 
-    private static String createDigest(ArrayList<File> digestFiles) {
+    private static String createDigest(ArrayList<File> digestFiles, Map<String, String> envVars) {
         return createFilesDigest(digestFiles)
                 + createToolsDigest()
-                + createEnvironmentDigest();
+                + createEnvironmentDigest(envVars);
     }
 
     private static String createFilesDigest(ArrayList<File> digestFiles) {
@@ -316,8 +317,10 @@ public class IncrementalMojoHelper {
         return sb.toString();
     }
 
-    private static String createEnvironmentDigest() {
-        List<String> envVars = asList(
+    private static String createEnvironmentDigest(Map<String, String> userDefinedEnvVars) {
+        final  Map<String, String> effectiveEnvVars = new HashMap<>();
+
+        List<String> defaultEnvVars = asList(
                 "NODE_ENV",
                 "BABEL_ENV",
                 "OS",
@@ -326,11 +329,30 @@ public class IncrementalMojoHelper {
                 "OS_NAME",
                 "OS_FAMILY"
         );
+        defaultEnvVars.forEach(envVarKey -> {
+            String envVarValue = System.getenv(envVarKey);
+            effectiveEnvVars.put(envVarKey, nullStringIsEmpty(envVarValue));
+        });
 
-        return envVars.stream()
-                .map(key -> format("# %s = %s", key, System.getenv(key)))
+        // These would override our defaults
+        effectiveEnvVars.putAll(userDefinedEnvVars);
+
+        return effectiveEnvVars.entrySet().stream()
+                .map(envVar -> format("#%s=%s",
+                        envVar.getKey(),
+                        nullStringIsEmpty(envVar.getValue())))
                 .map(entry -> entry.replaceAll("\n", " "))
                 .collect(joining("\n"));
+    }
+
+    /**
+     * Most stuff treats empty and unset as the same
+     */
+    private static String nullStringIsEmpty(String string) {
+        if (isNull(string)) {
+            return "";
+        }
+        return string;
     }
 
     private void saveDigestCandidate(String currDigest) throws IOException {

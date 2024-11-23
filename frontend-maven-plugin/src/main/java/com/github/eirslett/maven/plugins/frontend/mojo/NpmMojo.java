@@ -62,7 +62,7 @@ public final class NpmMojo extends AbstractFrontendMojo {
     public synchronized void execute(FrontendPluginFactory factory) throws TaskRunnerException {
         IncrementalMojoHelper incrementalHelper = new IncrementalMojoHelper(incremental, workingDirectory);
 
-        if (incrementalHelper.shouldExecute()) {
+        if (incrementalHelper.shouldExecute(environmentVariables)) {
             File packageJson = new File(workingDirectory, "package.json");
             if (buildContext == null || buildContext.hasDelta(packageJson) || !buildContext.isIncremental()) {
                 ProxyConfig proxyConfig = getProxyConfig();

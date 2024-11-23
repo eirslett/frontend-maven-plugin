@@ -74,7 +74,7 @@ public final class YarnMojo extends AbstractFrontendMojo {
     public synchronized void execute(FrontendPluginFactory factory) throws TaskRunnerException {
         IncrementalMojoHelper incrementalHelper = new IncrementalMojoHelper(incremental, workingDirectory);
 
-        if (incrementalHelper.shouldExecute()) {
+        if (incrementalHelper.shouldExecute(environmentVariables)) {
             File packageJson = new File(this.workingDirectory, "package.json");
             if (this.buildContext == null || this.buildContext.hasDelta(packageJson)
                     || !this.buildContext.isIncremental()) {
