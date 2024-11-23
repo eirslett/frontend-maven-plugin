@@ -1,12 +1,11 @@
 package com.github.eirslett.maven.plugins.frontend.lib;
 
+import org.apache.commons.codec.digest.MurmurHash3;
 import org.slf4j.Logger;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -23,12 +22,13 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.zip.CRC32;
 
+import static java.lang.String.format;
+import static java.util.stream.Collectors.joining;
 import static org.slf4j.LoggerFactory.getLogger;
 
 public class IncrementalMojoHelper {
-    private static Logger log = getLogger(IncrementalMojoHelper.class);
+    private static final Logger log = getLogger(IncrementalMojoHelper.class);
     private final File workingDirectory;
     private final boolean isActive;
 
@@ -62,9 +62,9 @@ public class IncrementalMojoHelper {
             } // Let any other IOException's get handled below
 
             saveDigestCandidate(currDigest);
-        } catch (IOException e) {
+        } catch (Exception exception) {
             log.error("Failure while determining if an incremental build is needed. See debug logs");
-            log.debug("Failure while determining if an incremental build was...", e);
+            log.debug("Failure while determining if an incremental build was...", exception);
         }
 
         return true;
@@ -242,24 +242,25 @@ public class IncrementalMojoHelper {
     }
 
     private static String createFilesDigest(ArrayList<File> digestFiles) {
-        return digestFiles.parallelStream().map(file -> {
-            CRC32 crc32 = new CRC32();
-            try (FileInputStream fis = new FileInputStream(file)) {
-                try (BufferedInputStream inputStream = new BufferedInputStream(fis)) {
-                    byte[] buffer = new byte[8192];
-                    int bytesRead;
-                    while ((bytesRead = inputStream.read(buffer)) != -1) {
-                        crc32.update(buffer, 0, bytesRead);
+        // Why not use parallelStream()? Well testing on JSM DC's
+        // node_modules folders which are the worst case in DC shows 2s vs 3s
+        // but for Stash and Jira SW it's faster to be single threaded. We might
+        // as well take the single threaded-ness since this could be running in a
+        // Maven reactor leading to too much parallelism fighting itself.
+        return digestFiles.stream()
+                .map(file -> {
+                    try {
+                        byte[] fileBytes = Files.readAllBytes(file.toPath());
+                        // Requirements for hash function: 1 - single byte change is
+                        // highly likely to result in a different hash, 2 - fast, baby fast!
+                        long[] hash = MurmurHash3.hash128x64(fileBytes);
+                        return file + ":" + fileBytes.length + ":" +  Arrays.toString(hash);
+                    } catch (IOException exception) {
+                        throw new RuntimeException(format("Failed to read file: %s", file), exception);
                     }
-                }
-
-                StringBuilder sb = new StringBuilder();
-                sb.append(file).append(":").append(crc32.getValue()).append('\n');
-                return sb;
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }).sorted().collect(Collectors.joining(""));
+                })
+                .sorted()
+                .collect(joining("\n"));
     }
 
     private static String createToolsDigest() {
@@ -273,7 +274,7 @@ public class IncrementalMojoHelper {
                 .parallel()
                 .map(IncrementalMojoHelper::createCommandDigest)
                 .sorted()
-                .collect(Collectors.joining());
+                .collect(joining());
     }
 
     private static String createCommandDigest(String... command) {
