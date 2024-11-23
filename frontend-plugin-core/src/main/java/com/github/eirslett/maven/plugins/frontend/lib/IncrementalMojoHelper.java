@@ -19,11 +19,15 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
+import static java.util.Arrays.asList;
+import static java.util.Arrays.stream;
+import static java.util.Objects.isNull;
 import static java.util.stream.Collectors.joining;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -96,13 +100,13 @@ public class IncrementalMojoHelper {
     }
 
     static class IncrementalVisitor extends SimpleFileVisitor<Path> {
-        static final Set<String> IGNORED_DIRS = new HashSet<>(Arrays.asList(
+        static final Set<String> IGNORED_DIRS = new HashSet<>(asList(
                 "build",
                 "dist",
                 "target"
         ));
 
-        static final Set<String> DIGEST_EXTENSIONS = new HashSet<>(Arrays.asList(
+        static final Set<String> DIGEST_EXTENSIONS = new HashSet<>(asList(
                 // JS
                 "js",
                 "jsx",
@@ -177,7 +181,7 @@ public class IncrementalMojoHelper {
         ));
 
         // Files that are to be included in the digest but are not of the above extensions
-        static final Set<String> DIGEST_FILES = new HashSet<>(Arrays.asList(
+        static final Set<String> DIGEST_FILES = new HashSet<>(asList(
                 ".parcelrc",
                 ".babelrc",
                 ".eslintrc",
@@ -270,7 +274,7 @@ public class IncrementalMojoHelper {
                 {"npm", "--version"}
         };
 
-        return Arrays.stream(commands)
+        return stream(commands)
                 .parallel()
                 .map(IncrementalMojoHelper::createCommandDigest)
                 .sorted()
@@ -313,7 +317,7 @@ public class IncrementalMojoHelper {
     }
 
     private static String createEnvironmentDigest() {
-        String[] variables = {
+        List<String> envVars = asList(
                 "NODE_ENV",
                 "BABEL_ENV",
                 "OS",
@@ -321,22 +325,12 @@ public class IncrementalMojoHelper {
                 "OS_ARCH",
                 "OS_NAME",
                 "OS_FAMILY"
-        };
+        );
 
-        StringBuilder sb = new StringBuilder();
-
-        for (String variable : variables) {
-            String value = System.getenv(variable);
-            if (value != null) {
-                value = value.replace("\n", " ");
-            } else {
-                value = "null";
-            }
-
-            sb.append("# ").append(variable).append(" = ").append(value).append("\n");
-        }
-
-        return sb.toString();
+        return envVars.stream()
+                .map(key -> format("# %s = %s", key, System.getenv(key)))
+                .map(entry -> entry.replaceAll("\n", " "))
+                .collect(joining("\n"));
     }
 
     private void saveDigestCandidate(String currDigest) throws IOException {
@@ -383,7 +377,7 @@ public class IncrementalMojoHelper {
     }
 
     private Map<String, String> getDigestFilesMap(String digest) {
-        return Arrays.stream(digest.split("\n"))
+        return stream(digest.split("\n"))
                 .filter(line -> !line.startsWith("#"))
                 .map(line -> line.split(" : "))
                 .collect(Collectors.toMap(parts -> parts[0], parts -> parts[1]));
