@@ -1,11 +1,11 @@
 package com.github.eirslett.maven.plugins.frontend.mojo;
 
-import static com.github.eirslett.maven.plugins.frontend.mojo.YarnUtils.isYarnrcYamlFilePresent;
-
-import java.io.File;
-import java.util.Collections;
-
+import com.github.eirslett.maven.plugins.frontend.lib.FrontendPluginFactory;
+import com.github.eirslett.maven.plugins.frontend.lib.IncrementalBuildExecutionDigest.ExecutionCoordinates;
 import com.github.eirslett.maven.plugins.frontend.lib.IncrementalMojoHelper;
+import com.github.eirslett.maven.plugins.frontend.lib.ProxyConfig;
+import com.github.eirslett.maven.plugins.frontend.lib.TaskRunnerException;
+import com.github.eirslett.maven.plugins.frontend.lib.YarnRunner;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -14,9 +14,11 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.settings.crypto.SettingsDecrypter;
 import org.sonatype.plexus.build.incremental.BuildContext;
 
-import com.github.eirslett.maven.plugins.frontend.lib.FrontendPluginFactory;
-import com.github.eirslett.maven.plugins.frontend.lib.ProxyConfig;
-import com.github.eirslett.maven.plugins.frontend.lib.TaskRunnerException;
+import java.io.File;
+import java.util.Collections;
+import java.util.List;
+
+import static com.github.eirslett.maven.plugins.frontend.mojo.YarnUtils.isYarnrcYamlFilePresent;
 
 @Mojo(name = "yarn", defaultPhase = LifecyclePhase.GENERATE_RESOURCES, threadSafe = true)
 public final class YarnMojo extends AbstractFrontendMojo {
@@ -29,7 +31,7 @@ public final class YarnMojo extends AbstractFrontendMojo {
     @Parameter(defaultValue = "", property = "frontend.yarn.arguments", required = false)
     private String arguments;
 
-    @Parameter(defaultValue = "", property = "frontend.yarn.incremental", required = false)
+    @Parameter(defaultValue = "", property = " frontend.yarn.incremental", required = false)
     private String incremental;
 
     @Parameter(property = "frontend.yarn.yarnInheritsProxyConfigFromMaven", required = false,
@@ -53,6 +55,13 @@ public final class YarnMojo extends AbstractFrontendMojo {
     @Parameter(property = "srcdir", defaultValue = "src")
     private File srcdir;
 
+    /**
+     * Files that should be checked for changes, in addition to the srcdir files.
+     * Defaults to webpack.config.js in the {@link #workingDirectory}.
+     */
+    @Parameter(property = "triggerfiles")
+    private List<File> triggerfiles;
+
     @Component
     private BuildContext buildContext;
 
@@ -74,13 +83,16 @@ public final class YarnMojo extends AbstractFrontendMojo {
     public synchronized void execute(FrontendPluginFactory factory) throws TaskRunnerException {
         IncrementalMojoHelper incrementalHelper = new IncrementalMojoHelper(incremental, workingDirectory);
 
-        if (incrementalHelper.shouldExecute(environmentVariables)) {
+        ProxyConfig proxyConfig = getProxyConfig();
+        boolean isYarnBerry = isYarnrcYamlFilePresent(this.session, this.workingDirectory);
+        YarnRunner runner = factory.getYarnRunner(proxyConfig, getRegistryUrl(), isYarnBerry);
+
+        ExecutionCoordinates coordinates = new ExecutionCoordinates(execution.getGoal(), execution.getExecutionId(), execution.getLifecyclePhase());
+        if (incrementalHelper.shouldExecute(arguments, coordinates, runner.getRuntime(), environmentVariables)) {
             File packageJson = new File(this.workingDirectory, "package.json");
             if (this.buildContext == null || this.buildContext.hasDelta(packageJson)
                     || !this.buildContext.isIncremental()) {
-                ProxyConfig proxyConfig = getProxyConfig();
-                boolean isYarnBerry = isYarnrcYamlFilePresent(this.session, this.workingDirectory);
-                factory.getYarnRunner(proxyConfig, getRegistryUrl(), isYarnBerry).execute(this.arguments,
+                runner.execute(this.arguments,
                         this.environmentVariables);
 
                 incrementalHelper.acceptIncrementalBuildDigest();

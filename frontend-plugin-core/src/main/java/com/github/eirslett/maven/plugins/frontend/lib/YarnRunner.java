@@ -1,9 +1,13 @@
 package com.github.eirslett.maven.plugins.frontend.lib;
 
+import com.github.eirslett.maven.plugins.frontend.lib.IncrementalBuildExecutionDigest.Execution.Runtime;
+import com.github.eirslett.maven.plugins.frontend.lib.ProxyConfig.Proxy;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import com.github.eirslett.maven.plugins.frontend.lib.ProxyConfig.Proxy;
+import static java.util.Collections.emptyMap;
+import static java.util.Collections.singletonList;
 
 public interface YarnRunner extends NodeTaskRunner {
 }
@@ -50,5 +54,16 @@ final class DefaultYarnRunner extends YarnTaskExecutor implements YarnRunner {
         }
 
         return arguments;
+    }
+
+    @Override
+    public Runtime getRuntime() throws TaskRunnerException {
+        try {
+            String version = new YarnExecutor(config, singletonList("node --version"), emptyMap())
+                    .executeAndGetResult(logger);
+            return new Runtime("node", version);
+        } catch (ProcessExecutionException e) {
+            throw new TaskRunnerException("Failed to get Node version", e);
+        }
     }
 }

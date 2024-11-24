@@ -3,6 +3,8 @@ package com.github.eirslett.maven.plugins.frontend.lib;
 import static com.github.eirslett.maven.plugins.frontend.lib.Utils.implode;
 import static com.github.eirslett.maven.plugins.frontend.lib.Utils.normalize;
 import static com.github.eirslett.maven.plugins.frontend.lib.Utils.prepend;
+import static java.util.Collections.emptyMap;
+import static java.util.Collections.singletonList;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -11,10 +13,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.github.eirslett.maven.plugins.frontend.lib.IncrementalBuildExecutionDigest.Execution.Runtime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-abstract class NodeTaskExecutor {
+abstract class NodeTaskExecutor implements NodeTaskRunner {
     private static final String DS = "//";
     private static final String AT = "@";
 
@@ -136,5 +139,15 @@ abstract class NodeTaskExecutor {
 
     public void setTaskLocation(String taskLocation) {
         this.taskLocation = taskLocation;
+    }
+
+    public Runtime getRuntime() throws TaskRunnerException {
+        try {
+            String version = new NodeExecutor(config, prepend(getAbsoluteTaskLocation(), singletonList("--version")), emptyMap())
+                    .executeAndGetResult(logger);
+            return new Runtime("node", version);
+        } catch (ProcessExecutionException e) {
+            throw new TaskRunnerException("Failed to get Node version", e);
+        }
     }
 }

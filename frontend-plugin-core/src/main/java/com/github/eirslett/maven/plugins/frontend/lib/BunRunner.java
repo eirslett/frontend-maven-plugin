@@ -1,9 +1,13 @@
 package com.github.eirslett.maven.plugins.frontend.lib;
 
+import com.github.eirslett.maven.plugins.frontend.lib.IncrementalBuildExecutionDigest.Execution.Runtime;
 import com.github.eirslett.maven.plugins.frontend.lib.ProxyConfig.Proxy;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static java.util.Collections.emptyMap;
+import static java.util.Collections.singletonList;
 
 public interface BunRunner extends NodeTaskRunner {
 }
@@ -43,5 +47,14 @@ final class DefaultBunRunner extends BunTaskExecutor implements BunRunner {
         }
 
         return arguments;
+    }
+    public Runtime getRuntime() throws TaskRunnerException {
+        try {
+            String version = new BunExecutor(config, singletonList("--version"), emptyMap())
+                    .executeAndGetResult(logger);
+            return new IncrementalBuildExecutionDigest.Execution.Runtime("bun", version);
+        } catch (ProcessExecutionException e) {
+            throw new TaskRunnerException("Failed to get Bun version", e);
+        }
     }
 }

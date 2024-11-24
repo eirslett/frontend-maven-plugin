@@ -1,7 +1,9 @@
 package com.github.eirslett.maven.plugins.frontend.mojo;
 
 import com.github.eirslett.maven.plugins.frontend.lib.FrontendPluginFactory;
+import com.github.eirslett.maven.plugins.frontend.lib.IncrementalBuildExecutionDigest.ExecutionCoordinates;
 import com.github.eirslett.maven.plugins.frontend.lib.IncrementalMojoHelper;
+import com.github.eirslett.maven.plugins.frontend.lib.NpmRunner;
 import com.github.eirslett.maven.plugins.frontend.lib.ProxyConfig;
 import com.github.eirslett.maven.plugins.frontend.lib.TaskRunnerException;
 import org.apache.maven.execution.MavenSession;
@@ -62,11 +64,14 @@ public final class NpmMojo extends AbstractFrontendMojo {
     public synchronized void execute(FrontendPluginFactory factory) throws TaskRunnerException {
         IncrementalMojoHelper incrementalHelper = new IncrementalMojoHelper(incremental, workingDirectory);
 
-        if (incrementalHelper.shouldExecute(environmentVariables)) {
+        ProxyConfig proxyConfig = getProxyConfig();
+        NpmRunner runner = factory.getNpmRunner(proxyConfig, getRegistryUrl());
+
+        ExecutionCoordinates coordinates = new ExecutionCoordinates(execution.getGoal(), execution.getExecutionId(), execution.getLifecyclePhase());
+        if (incrementalHelper.shouldExecute(arguments, coordinates, runner.getRuntime(), environmentVariables)) {
             File packageJson = new File(workingDirectory, "package.json");
             if (buildContext == null || buildContext.hasDelta(packageJson) || !buildContext.isIncremental()) {
-                ProxyConfig proxyConfig = getProxyConfig();
-                factory.getNpmRunner(proxyConfig, getRegistryUrl()).execute(arguments, environmentVariables);
+                runner.execute(arguments, environmentVariables);
 
                 incrementalHelper.acceptIncrementalBuildDigest();
             } else {
