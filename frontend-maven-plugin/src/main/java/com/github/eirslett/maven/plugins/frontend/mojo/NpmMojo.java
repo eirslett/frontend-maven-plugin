@@ -93,7 +93,7 @@ public final class NpmMojo extends AbstractFrontendMojo {
 
         incrementExecutionCount(project.getArtifactId(), arguments, NPM, getFrontendMavenPluginVersion(), incrementalEnabled, isIncremental, () -> {
             if (isIncremental) {
-                getLog().info("Skipping npm execution as no modified files in" + workingDirectory);
+                getLog().info("Skipping npm execution as no modified files in " + workingDirectory);
             } else {
                 runner.execute(arguments, environmentVariables);
 

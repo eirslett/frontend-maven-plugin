@@ -96,7 +96,7 @@ public final class YarnMojo extends AbstractFrontendMojo {
 
         incrementExecutionCount(project.getArtifactId(), arguments, YARN, getFrontendMavenPluginVersion(), incrementalEnabled, isIncremental, () -> {
             if (isIncremental) {
-                getLog().info("Skipping yarn execution as no modified files in" + workingDirectory);
+                getLog().info("Skipping yarn execution as no modified files in " + workingDirectory);
             } else {
                 runner.execute(this.arguments, this.environmentVariables);
 
