@@ -260,6 +260,12 @@ public class IncrementalMojoHelper {
             return FileVisitResult.CONTINUE;
         }
 
+        @Override
+        public FileVisitResult visitFileFailed(Path path, IOException e) throws IOException {
+            log.debug("Failed to visit {}", path, e);
+            return super.visitFileFailed(path, e);
+        }
+
         private static String getFileExtension(String fileName) {
             int dotIndex = fileName.lastIndexOf('.');
             if (dotIndex > 0 // skip over dot-files like .babelrc
