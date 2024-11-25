@@ -227,8 +227,18 @@ public class IncrementalMojoHelper {
 
         @Override
         public FileVisitResult preVisitDirectory(Path file, BasicFileAttributes attrs) {
-            if (IGNORED_DIRS.contains(file.getFileName().toString())) {
+            String filename = file.getFileName().toString();
+            if (IGNORED_DIRS.contains(filename)) {
                 return FileVisitResult.SKIP_SUBTREE;
+            }
+
+            if ("node_modules".equals(filename)) {
+                // looking around inside can take a loooong time, we don't
+                // have to sacrifice much "correctness" and can lose the
+                // occasional rebuild when things are modified back to how
+                // they were. This assumes that mtime bubbles.
+                String lastModifiedTime = Long.toString(file.toAbsolutePath().toFile().lastModified());
+                files.add(new Execution.File(file.toString(), 0, lastModifiedTime));
             }
 
             return FileVisitResult.CONTINUE;
