@@ -36,7 +36,7 @@ public final class YarnMojo extends AbstractFrontendMojo {
      * Enable or disable incremental builds, on by default
      */
     @Parameter(defaultValue = "true", property = "frontend.incremental", alias = "incrementalbuild.enabled", required = false)
-    private String incremental;
+    private String frontendIncremental;
 
     @Parameter(property = "frontend.yarn.yarnInheritsProxyConfigFromMaven", required = false,
         defaultValue = "true")
@@ -88,7 +88,7 @@ public final class YarnMojo extends AbstractFrontendMojo {
         boolean isYarnBerry = isYarnrcYamlFilePresent(this.session, this.workingDirectory);
         YarnRunner runner = factory.getYarnRunner(getProxyConfig(), getRegistryUrl(), isYarnBerry);
 
-        IncrementalMojoHelper incrementalHelper = new IncrementalMojoHelper(incremental, getTargetDir(), workingDirectory, triggerFiles, excludedFilenames);
+        IncrementalMojoHelper incrementalHelper = new IncrementalMojoHelper(frontendIncremental, getTargetDir(), workingDirectory, triggerFiles, excludedFilenames);
         ExecutionCoordinates coordinates = new ExecutionCoordinates(execution.getGoal(), execution.getExecutionId(), execution.getLifecyclePhase());
 
         boolean incrementalEnabled = incrementalHelper.incrementalEnabled();

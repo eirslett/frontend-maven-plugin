@@ -27,6 +27,7 @@
                             <goal>install-node-and-npm</goal>
                         </goals>
                         <configuration>
+                            <frontendIncremental>false</frontendIncremental>
                             <nodeVersion>v16.17.1</nodeVersion>
                         </configuration>
                     </execution>
@@ -38,6 +39,7 @@
                         </goals>
                         <!-- Optional configuration which provides for running any npm command -->
                         <configuration>
+                            <frontendIncremental>false</frontendIncremental>
                             <arguments>ci</arguments>
                         </configuration>
                     </execution>
