@@ -141,8 +141,10 @@ public class AtlassianDevMetricsReporter  {
                                     : BUILT
                             : NOT_ENABLED;
 
+            boolean finalFailed = failed;
             incrementCount("execute", artifactId, forkVersion, new HashMap<String, String>() {{
                 put("goal", goal.toString());
+                put("failed", Boolean.toString(finalFailed));
                 put("script", getScriptFromArguments(arguments));
                 put("incremental", incremental.toString());
             }});
