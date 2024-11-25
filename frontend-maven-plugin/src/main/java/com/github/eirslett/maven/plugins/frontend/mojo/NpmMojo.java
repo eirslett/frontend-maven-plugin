@@ -61,7 +61,7 @@ public final class NpmMojo extends AbstractFrontendMojo {
      * to the defaults in {@link IncrementalMojoHelper}. Whole directories will be
      * excluded.
      */
-    @Parameter(property = "excludedFilenames", alias = "excluded.filenames", required = false)
+    @Parameter(property = "excludedFilenames", alias = "excluded.filenames", defaultValue = "target,build,dist", required = false)
     private Set<String> excludedFilenames;
 
     @Component
