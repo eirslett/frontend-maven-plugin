@@ -28,7 +28,6 @@ import static com.github.eirslett.maven.plugins.frontend.lib.IncrementalBuildExe
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static java.util.Objects.isNull;
-import static java.util.stream.Collectors.toSet;
 import static org.slf4j.LoggerFactory.getLogger;
 
 public class IncrementalMojoHelper {
@@ -71,11 +70,10 @@ public class IncrementalMojoHelper {
 
             boolean digestVersionsMatch = Objects.equals(digest.digestVersion, CURRENT_DIGEST_VERSION);
 
-            Set<File> filesToDigest = getDigestFiles();
             Execution thisExecution = new Execution(
                     arguments,
                     getAllEnvVars(suppliedEnvVars),
-                    createFilesDigest(filesToDigest),
+                    createFilesDigest(),
                     runtime.get());
 
             boolean canSkipExecution = false;
@@ -119,22 +117,20 @@ public class IncrementalMojoHelper {
         }
     }
 
-    private Set<File> getDigestFiles() throws IOException {
-        IncrementalVisitor visitor = new IncrementalVisitor();
-
-        Files.walkFileTree(workingDirectory.toPath(), visitor);
-
-        return visitor.getFiles();
-    }
-
     static class IncrementalVisitor extends SimpleFileVisitor<Path> {
-        static final Set<String> IGNORED_DIRS = new HashSet<>(asList(
+        private final Set<Execution.File> files;
+
+        public IncrementalVisitor(Set<Execution.File> files) {
+            this.files = files;
+        }
+
+        private static final Set<String> IGNORED_DIRS = new HashSet<>(asList(
                 "build",
                 "dist",
                 "target"
         ));
 
-        static final Set<String> DIGEST_EXTENSIONS = new HashSet<>(asList(
+        private static final Set<String> DIGEST_EXTENSIONS = new HashSet<>(asList(
                 // JS
                 "js",
                 "jsx",
@@ -209,7 +205,7 @@ public class IncrementalMojoHelper {
         ));
 
         // Files that are to be included in the digest but are not of the above extensions
-        static final Set<String> DIGEST_FILES = new HashSet<>(asList(
+        private static final Set<String> DIGEST_FILES = new HashSet<>(asList(
                 ".parcelrc",
                 ".babelrc",
                 ".eslintrc",
@@ -222,8 +218,6 @@ public class IncrementalMojoHelper {
                 ".npmrc"
         ));
 
-        private final Set<File> files = new HashSet<>();
-
         @Override
         public FileVisitResult preVisitDirectory(Path file, BasicFileAttributes attrs) {
             if (IGNORED_DIRS.contains(file.getFileName().toString())) {
@@ -233,30 +227,40 @@ public class IncrementalMojoHelper {
             return FileVisitResult.CONTINUE;
         }
 
+        /**
+         * PERF NOTES:
+         * <ul>
+         *     <li>Yes, we're mixing the walking with the work,  but due to the
+         *     underlying library calls, we're 300ms better off in JSM DC</li>
+         *     <li>Yes, this removes parallelism, but even in JSM DC (worst case),
+         *     it's negligible, while for Stash and Jira DC it's faster to be single
+         *     threaded. Combined with these all usually being run in Maven
+         *     reactors, this is more likely to pay off by allowing for better
+         *     overall parallelism</li>
+         * </ul>
+         */
         @Override
         public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
             String fileName = file.getFileName().toString();
 
-            if (DIGEST_FILES.contains(fileName)) {
-                files.add(file.toFile());
-            } else {
-                String extension = getFileExtension(fileName);
-
-                if (extension != null) {
-                    if (DIGEST_EXTENSIONS.contains(extension)) {
-                        files.add(file.toFile());
-                    }
+            if (DIGEST_FILES.contains(fileName) ||
+                    DIGEST_EXTENSIONS.contains(getFileExtension(fileName))) {
+                try {
+                    byte[] fileBytes = Files.readAllBytes(file);
+                    // Requirements for hash function: 1 - single byte change is
+                    // highly likely to result in a different hash, 2 - fast, baby fast!
+                    long[] hash = MurmurHash3.hash128x64(fileBytes);
+                    String hashString = Arrays.toString(hash);
+                    files.add(new Execution.File(file.toString(), fileBytes.length, hashString));
+                } catch (IOException exception) {
+                    throw new RuntimeException(format("Failed to read file: %s", file), exception);
                 }
             }
 
             return FileVisitResult.CONTINUE;
         }
 
-        public Set<File> getFiles() {
-            return files;
-        }
-
-        static private String getFileExtension(String fileName) {
+        private static String getFileExtension(String fileName) {
             int dotIndex = fileName.lastIndexOf('.');
             if (dotIndex > 0 // skip over dot-files like .babelrc
                     // check if the '.' is the last character == no extension
@@ -268,26 +272,13 @@ public class IncrementalMojoHelper {
         }
     }
 
-    private static Set<Execution.File> createFilesDigest(Set<File> digestFiles) {
-        // Why not use parallelStream()? Well testing on JSM DC's
-        // node_modules folders which are the worst case in DC shows 2s vs 3s
-        // but for Stash and Jira SW it's faster to be single threaded. We might
-        // as well take the single threaded-ness since this could be running in a
-        // Maven reactor leading to too much parallelism fighting itself.
-        return digestFiles.stream()
-                .map(file -> {
-                    try {
-                        byte[] fileBytes = Files.readAllBytes(file.toPath());
-                        // Requirements for hash function: 1 - single byte change is
-                        // highly likely to result in a different hash, 2 - fast, baby fast!
-                        long[] hash = MurmurHash3.hash128x64(fileBytes);
-                        String hashString = Arrays.toString(hash);
-                        return new Execution.File(file.getAbsolutePath(), fileBytes.length, hashString);
-                    } catch (IOException exception) {
-                        throw new RuntimeException(format("Failed to read file: %s", file), exception);
-                    }
-                })
-                .collect(toSet());
+    private Set<Execution.File> createFilesDigest() throws IOException {
+        final Set<Execution.File> files = new HashSet<>();
+
+        IncrementalVisitor visitor = new IncrementalVisitor(files);
+        Files.walkFileTree(workingDirectory.toPath(), visitor);
+
+        return files;
     }
 
     private static Map<String, String> getAllEnvVars(Map<String, String> userDefinedEnvVars) {
