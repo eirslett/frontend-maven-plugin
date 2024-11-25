@@ -37,7 +37,6 @@
             </goals>
             <!-- Optional configuration which provides for running any npm command -->
             <configuration>
-              <frontendIncremental>false</frontendIncremental>
               <arguments>ci</arguments>
             </configuration>
           </execution>
@@ -47,7 +46,6 @@
               <goal>npm</goal>
             </goals>
             <configuration>
-              <frontendIncremental>false</frontendIncremental>
               <arguments>run test</arguments>
             </configuration>
           </execution>
@@ -57,7 +55,6 @@
               <goal>npm</goal>
             </goals>
             <configuration>
-              <frontendIncremental>false</frontendIncremental>
               <arguments>run build</arguments>
             </configuration>
           </execution>

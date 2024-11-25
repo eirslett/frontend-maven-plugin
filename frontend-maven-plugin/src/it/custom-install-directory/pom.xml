@@ -27,7 +27,6 @@
                             <goal>install-node-and-npm</goal>
                         </goals>
                         <configuration>
-                            <frontendIncremental>false</frontendIncremental>
                             <nodeVersion>v16.17.1</nodeVersion>
                             <npmVersion>8.15.0</npmVersion>
                         </configuration>
@@ -40,7 +39,6 @@
                         </goals>
                         <!-- Optional configuration which provides for running any npm command -->
                         <configuration>
-                            <frontendIncremental>false</frontendIncremental>
                             <arguments>install</arguments>
                         </configuration>
                     </execution>
