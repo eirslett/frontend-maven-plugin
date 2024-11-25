@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.atlassian.project</groupId>
-    <artifactId>example</artifactId>
+    <artifactId>incremental-build-diff-ids</artifactId>
     <version>0</version>
     <packaging>pom</packaging>
 
@@ -13,7 +13,7 @@
                 <groupId>com.github.eirslett</groupId>
                 <artifactId>frontend-maven-plugin</artifactId>
                 <!-- NB! Set <version> to the latest released version of frontend-maven-plugin, like in README.md -->
-                <version>1.15.1-atlassian-1-SNAPSHOT</version>
+                <version>@project.version@</version>
 
                 <configuration>
                     <installDirectory>target</installDirectory>

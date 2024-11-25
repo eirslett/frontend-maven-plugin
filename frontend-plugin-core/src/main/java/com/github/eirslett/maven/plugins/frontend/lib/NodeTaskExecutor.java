@@ -145,7 +145,7 @@ abstract class NodeTaskExecutor implements NodeTaskRunner {
 
     public Optional<Runtime> getRuntime() {
         try {
-            String version = new NodeExecutor(config, prepend(getAbsoluteTaskLocation(), singletonList(" --version")), emptyMap())
+            String version = new NodeExecutor(config, singletonList("--version"), emptyMap())
                     .executeAndGetResult(logger);
             return Optional.of(new Runtime("node", version));
         } catch (Exception exception) {
