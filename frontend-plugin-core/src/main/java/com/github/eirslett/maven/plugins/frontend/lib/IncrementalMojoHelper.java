@@ -15,6 +15,7 @@ import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -28,7 +29,9 @@ import static com.fasterxml.jackson.databind.SerializationFeature.INDENT_OUTPUT;
 import static com.github.eirslett.maven.plugins.frontend.lib.IncrementalBuildExecutionDigest.CURRENT_DIGEST_VERSION;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptySet;
 import static java.util.Objects.isNull;
+import static java.util.Objects.requireNonNull;
 import static org.slf4j.LoggerFactory.getLogger;
 
 public class IncrementalMojoHelper {
@@ -37,12 +40,16 @@ public class IncrementalMojoHelper {
     private final File targetDirectory;
     private final File workingDirectory;
     private final boolean isActive;
+    private final Set<File> triggerFiles;
+    private final Set<String> excludedFilenames;
 
     private IncrementalBuildExecutionDigest digest;
 
-    public IncrementalMojoHelper(String activationFlag, File targetDirectory, File workingDirectory) {
-        this.targetDirectory = targetDirectory;
-        this.workingDirectory = workingDirectory;
+    public IncrementalMojoHelper(String activationFlag, File targetDirectory, File workingDirectory, Set<File> triggerFiles, Set<String> excludedFilenames) {
+        this.targetDirectory = requireNonNull(targetDirectory, "targetDirectory");
+        this.workingDirectory = requireNonNull(workingDirectory, "workingDirectory");
+        this.triggerFiles = isNull(triggerFiles) ? emptySet() : triggerFiles;
+        this.excludedFilenames = isNull(excludedFilenames) ? emptySet() : excludedFilenames;
 
         this.isActive = "true".equals(activationFlag);
     }
@@ -118,20 +125,12 @@ public class IncrementalMojoHelper {
 
     static class IncrementalVisitor extends SimpleFileVisitor<Path> {
         private final Set<Execution.File> files;
+        private final Set<String> excludedFilenames;
 
-        public IncrementalVisitor(Set<Execution.File> files) {
+        public IncrementalVisitor(Set<Execution.File> files, Set<String> excludedFilenames) {
             this.files = files;
+            this.excludedFilenames = excludedFilenames;
         }
-
-        /**
-         * It's ever so slightly faster for this to be a {@link List} instead of a
-         * {@link HashSet}, a couple more elements would tip it over.
-         */
-        private static final List<String> IGNORED_DIRS = asList(
-                "build",
-                "dist",
-                "target"
-        );
 
         private static final Set<String> DIGEST_EXTENSIONS = new HashSet<>(asList(
                 // JS
@@ -224,7 +223,7 @@ public class IncrementalMojoHelper {
         @Override
         public FileVisitResult preVisitDirectory(Path file, BasicFileAttributes attrs) {
             String filename = file.getFileName().toString();
-            if (IGNORED_DIRS.contains(filename)) {
+            if (excludedFilenames.contains(filename)) {
                 return FileVisitResult.SKIP_SUBTREE;
             }
 
@@ -256,18 +255,13 @@ public class IncrementalMojoHelper {
         public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
             String fileName = file.getFileName().toString();
 
+            if (excludedFilenames.contains(fileName)) {
+                return FileVisitResult.CONTINUE;
+            }
+
             if (DIGEST_FILES.contains(fileName) ||
                     DIGEST_EXTENSIONS.contains(getFileExtension(fileName))) {
-                try {
-                    byte[] fileBytes = Files.readAllBytes(file);
-                    // Requirements for hash function: 1 - single byte change is
-                    // highly likely to result in a different hash, 2 - fast, baby fast!
-                    long[] hash = MurmurHash3.hash128x64(fileBytes);
-                    String hashString = Arrays.toString(hash);
-                    files.add(new Execution.File(file.toString(), fileBytes.length, hashString));
-                } catch (IOException exception) {
-                    throw new RuntimeException(format("Failed to read file: %s", file), exception);
-                }
+                addTrackedFile(files, file);
             }
 
             return FileVisitResult.CONTINUE;
@@ -294,10 +288,24 @@ public class IncrementalMojoHelper {
     private Set<Execution.File> createFilesDigest() throws IOException {
         final Set<Execution.File> files = new HashSet<>();
 
-        IncrementalVisitor visitor = new IncrementalVisitor(files);
+        IncrementalVisitor visitor = new IncrementalVisitor(files, excludedFilenames);
         Files.walkFileTree(workingDirectory.toPath(), visitor);
+        triggerFiles.forEach(file -> addTrackedFile(files, file.toPath()));
 
         return files;
+    }
+
+    private static void addTrackedFile(Collection<Execution.File> files, Path file) {
+        try {
+            byte[] fileBytes = Files.readAllBytes(file);
+            // Requirements for hash function: 1 - single byte change is
+            // highly likely to result in a different hash, 2 - fast, baby fast!
+            long[] hash = MurmurHash3.hash128x64(fileBytes);
+            String hashString = Arrays.toString(hash);
+            files.add(new Execution.File(file.toString(), fileBytes.length, hashString));
+        } catch (IOException exception) {
+            throw new RuntimeException(format("Failed to read file: %s", file), exception);
+        }
     }
 
     private static Map<String, String> getAllEnvVars(Map<String, String> userDefinedEnvVars) {

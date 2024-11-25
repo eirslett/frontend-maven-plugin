@@ -17,6 +17,7 @@ import org.sonatype.plexus.build.incremental.BuildContext;
 import java.io.File;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import static com.github.eirslett.maven.plugins.frontend.mojo.YarnUtils.isYarnrcYamlFilePresent;
 
@@ -31,7 +32,10 @@ public final class YarnMojo extends AbstractFrontendMojo {
     @Parameter(defaultValue = "", property = "frontend.yarn.arguments", required = false)
     private String arguments;
 
-    @Parameter(defaultValue = "", property = "frontend.yarn.incremental", required = false)
+    /**
+     * Enable or disable incremental builds, on by default
+     */
+    @Parameter(defaultValue = "true", property = "frontend.incremental", alias = "incrementalbuild.enabled", required = false)
     private String incremental;
 
     @Parameter(property = "frontend.yarn.yarnInheritsProxyConfigFromMaven", required = false,
@@ -48,19 +52,19 @@ public final class YarnMojo extends AbstractFrontendMojo {
     private MavenSession session;
 
     /**
-     * The directory containing front end files that will be processed.
-     * If this is set then files in the directory will be checked for
-     * modifications before running yarn.
+     * Files that should be checked for changes for incremental builds in addition
+     * to the defaults in {@link IncrementalMojoHelper}. Directories will be searched.
      */
-    @Parameter(property = "srcdir", defaultValue = "src")
-    private File srcdir;
+    @Parameter(property = "triggerFiles", alias = "trigger.files", required = false)
+    private Set<File> triggerFiles;
 
     /**
-     * Files that should be checked for changes, in addition to the srcdir files.
-     * Defaults to webpack.config.js in the {@link #workingDirectory}.
+     * Files that should NOT be checked for changes for incremental builds in addition
+     * to the defaults in {@link IncrementalMojoHelper}. Whole directories will be
+     * excluded.
      */
-    @Parameter(property = "triggerfiles")
-    private List<File> triggerfiles;
+    @Parameter(property = "excludedFilenames", alias = "excluded.filenames", required = false, defaultValue = "build,target,dist")
+    private Set<String> excludedFilenames;
 
     @Component
     private BuildContext buildContext;
@@ -81,7 +85,7 @@ public final class YarnMojo extends AbstractFrontendMojo {
 
     @Override
     public synchronized void execute(FrontendPluginFactory factory) throws TaskRunnerException {
-        IncrementalMojoHelper incrementalHelper = new IncrementalMojoHelper(incremental, getTargetDir(), workingDirectory);
+        IncrementalMojoHelper incrementalHelper = new IncrementalMojoHelper(incremental, getTargetDir(), workingDirectory, triggerFiles, excludedFilenames);
 
         ProxyConfig proxyConfig = getProxyConfig();
         boolean isYarnBerry = isYarnrcYamlFilePresent(this.session, this.workingDirectory);

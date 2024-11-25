@@ -16,6 +16,8 @@ import org.sonatype.plexus.build.incremental.BuildContext;
 
 import java.io.File;
 import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 @Mojo(name="npm",  defaultPhase = LifecyclePhase.GENERATE_RESOURCES, threadSafe = true)
 public final class NpmMojo extends AbstractFrontendMojo {
@@ -28,7 +30,10 @@ public final class NpmMojo extends AbstractFrontendMojo {
     @Parameter(defaultValue = "install", property = "frontend.npm.arguments", required = false)
     private String arguments;
 
-    @Parameter(defaultValue = "", property = "frontend.npm.incremental", required = false)
+    /**
+     * Enable or disable incremental builds, on by default
+     */
+    @Parameter(defaultValue = "true", property = "frontend.incremental", alias = "incrementalbuild.enabled", required = false)
     private String incremental;
 
     @Parameter(property = "frontend.npm.npmInheritsProxyConfigFromMaven", required = false, defaultValue = "true")
@@ -42,6 +47,21 @@ public final class NpmMojo extends AbstractFrontendMojo {
 
     @Parameter(property = "session", defaultValue = "${session}", readonly = true)
     private MavenSession session;
+
+    /**
+     * Files that should be checked for changes for incremental builds in addition
+     * to the defaults in {@link IncrementalMojoHelper}. Directories will be searched.
+     */
+    @Parameter(property = "triggerFiles", alias = "trigger.files", required = false)
+    private Set<File> triggerFiles;
+
+    /**
+     * Files that should NOT be checked for changes for incremental builds in addition
+     * to the defaults in {@link IncrementalMojoHelper}. Whole directories will be
+     * excluded.
+     */
+    @Parameter(property = "excludedFilenames", alias = "excluded.filenames", required = false)
+    private Set<String> excludedFilenames;
 
     @Component
     private BuildContext buildContext;
@@ -62,7 +82,7 @@ public final class NpmMojo extends AbstractFrontendMojo {
 
     @Override
     public synchronized void execute(FrontendPluginFactory factory) throws TaskRunnerException {
-        IncrementalMojoHelper incrementalHelper = new IncrementalMojoHelper(incremental, getTargetDir(), workingDirectory);
+        IncrementalMojoHelper incrementalHelper = new IncrementalMojoHelper(incremental, getTargetDir(), workingDirectory, triggerFiles, excludedFilenames);
 
         ProxyConfig proxyConfig = getProxyConfig();
         NpmRunner runner = factory.getNpmRunner(proxyConfig, getRegistryUrl());
