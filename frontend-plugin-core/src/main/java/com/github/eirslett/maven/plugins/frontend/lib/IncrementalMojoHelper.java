@@ -381,6 +381,6 @@ public class IncrementalMojoHelper {
     }
 
     private File getDigestFile() {
-        return new File(targetDirectory, "yarn-incremental-build-digest.json");
+        return new File(targetDirectory, "frontend-maven-plugin-incremental-build-digest.json");
     }
 }
