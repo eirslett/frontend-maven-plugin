@@ -62,7 +62,7 @@ public final class NpmMojo extends AbstractFrontendMojo {
 
     @Override
     public synchronized void execute(FrontendPluginFactory factory) throws TaskRunnerException {
-        IncrementalMojoHelper incrementalHelper = new IncrementalMojoHelper(incremental, workingDirectory);
+        IncrementalMojoHelper incrementalHelper = new IncrementalMojoHelper(incremental, getTargetDir(), workingDirectory);
 
         ProxyConfig proxyConfig = getProxyConfig();
         NpmRunner runner = factory.getNpmRunner(proxyConfig, getRegistryUrl());

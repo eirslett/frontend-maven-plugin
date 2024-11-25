@@ -5,6 +5,7 @@ import static com.github.eirslett.maven.plugins.frontend.lib.Utils.normalize;
 import static com.github.eirslett.maven.plugins.frontend.lib.Utils.prepend;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonList;
+import static java.util.Optional.empty;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -12,6 +13,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import com.github.eirslett.maven.plugins.frontend.lib.IncrementalBuildExecutionDigest.Execution.Runtime;
 import org.slf4j.Logger;
@@ -141,13 +143,14 @@ abstract class NodeTaskExecutor implements NodeTaskRunner {
         this.taskLocation = taskLocation;
     }
 
-    public Runtime getRuntime() throws TaskRunnerException {
+    public Optional<Runtime> getRuntime() {
         try {
-            String version = new NodeExecutor(config, prepend(getAbsoluteTaskLocation(), singletonList("--version")), emptyMap())
+            String version = new NodeExecutor(config, prepend(getAbsoluteTaskLocation(), singletonList(" --version")), emptyMap())
                     .executeAndGetResult(logger);
-            return new Runtime("node", version);
-        } catch (ProcessExecutionException e) {
-            throw new TaskRunnerException("Failed to get Node version", e);
+            return Optional.of(new Runtime("node", version));
+        } catch (Exception exception) {
+            logger.debug("Failed to get the Node version, because: ", exception);
+            return empty();
         }
     }
 }

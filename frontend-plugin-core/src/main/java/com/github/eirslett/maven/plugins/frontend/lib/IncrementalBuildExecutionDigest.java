@@ -15,6 +15,7 @@ import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Arrays.asList;
@@ -80,14 +81,14 @@ public class IncrementalBuildExecutionDigest {
     public static class Execution {
         public String arguments;
         public Map<String, String> environmentVariables;
-        public List<File> files;
+        public Set<File> files;
         public Runtime runtime;
 
         public Execution() {
             // for Jackson
         }
 
-        public Execution(String arguments, Map<String, String> environmentVariables, List<File> files, Runtime runtime) {
+        public Execution(String arguments, Map<String, String> environmentVariables, Set<File> files, Runtime runtime) {
             this.files = files;
             this.environmentVariables = environmentVariables;
             this.arguments = arguments;

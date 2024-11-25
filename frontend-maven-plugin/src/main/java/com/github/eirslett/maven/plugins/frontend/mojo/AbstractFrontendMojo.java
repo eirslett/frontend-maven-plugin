@@ -107,4 +107,7 @@ public abstract class AbstractFrontendMojo extends AbstractMojo {
         }
     }
 
+    public File getTargetDir() {
+        return new File(project.getBuild().getDirectory());
+    }
 }

@@ -2,34 +2,33 @@ package com.github.eirslett.maven.plugins.frontend.lib;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.eirslett.maven.plugins.frontend.lib.IncrementalBuildExecutionDigest.Execution;
-import com.github.eirslett.maven.plugins.frontend.lib.IncrementalBuildExecutionDigest.ExecutionCoordinates;
 import com.github.eirslett.maven.plugins.frontend.lib.IncrementalBuildExecutionDigest.Execution.Runtime;
+import com.github.eirslett.maven.plugins.frontend.lib.IncrementalBuildExecutionDigest.ExecutionCoordinates;
 import org.apache.commons.codec.digest.MurmurHash3;
 import org.slf4j.Logger;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
 import static com.github.eirslett.maven.plugins.frontend.lib.IncrementalBuildExecutionDigest.CURRENT_DIGEST_VERSION;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
-import static java.util.Collections.singletonMap;
 import static java.util.Objects.isNull;
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 import static org.slf4j.LoggerFactory.getLogger;
 
 public class IncrementalMojoHelper {
@@ -37,37 +36,61 @@ public class IncrementalMojoHelper {
     static final ObjectMapper OBJECT_MAPPER = new ObjectMapper()
             // Allow for reading without blowing up
             .configure(FAIL_ON_UNKNOWN_PROPERTIES, false);
+    private final File targetDirectory;
     private final File workingDirectory;
     private final boolean isActive;
 
-    public IncrementalMojoHelper(String activationFlag, File workingDirectory) {
+    private IncrementalBuildExecutionDigest digest;
+
+    public IncrementalMojoHelper(String activationFlag, File targetDirectory, File workingDirectory) {
+        this.targetDirectory = targetDirectory;
         this.workingDirectory = workingDirectory;
 
-        this.isActive = activationFlag != null && activationFlag.equals("true");
+        this.isActive = "true".equals(activationFlag);
     }
 
-    public boolean shouldExecute(String arguments, ExecutionCoordinates coordinates, Runtime runtime, Map<String, String> suppliedEnvVars) {
+    public boolean shouldExecute(String arguments, ExecutionCoordinates coordinates, Optional<Runtime> runtime, Map<String, String> suppliedEnvVars) {
         if (!isActive) {
             return true;
         }
 
+        if (!runtime.isPresent()) {
+            log.warn("Failed to do incremental compilation because the runtime version couldn't be fetched, see the debug logs");
+            return true;
+        }
+
         try {
-            ArrayList<File> filesToDigest = getDigestFiles();
-            IncrementalBuildExecutionDigest currDigest = createDigest(arguments, coordinates, filesToDigest, runtime, suppliedEnvVars);
+            File digestFileLocation = getDigestFile();
+            if (digestFileLocation.exists()) {
+                digest = readDigest(digestFileLocation);
+            }
 
-            try {
-                IncrementalBuildExecutionDigest prevDigest = readPreviousDigest();
+            if (isNull(digest)) {
+                digest = new IncrementalBuildExecutionDigest(CURRENT_DIGEST_VERSION, new HashMap<>());
+            }
 
-                if (currDigest.equals(prevDigest)) {
-                    log.info("Atlassian Fork FTW - No changes detected! - Skipping execution");
-                    // For now, we'll just assume all the target files are still there ;)
-                    return false; // TADAM! Build is not needed
-                }
-            } catch (FileNotFoundException e) {
-                // This is fine... we'll save the digest this time
-            } // Let any other IOException's get handled below
+            boolean digestVersionsMatch = Objects.equals(digest.digestVersion, CURRENT_DIGEST_VERSION);
 
-            saveDigestCandidate(currDigest);
+            Set<File> filesToDigest = getDigestFiles();
+            Execution thisExecution = new Execution(
+                    arguments,
+                    getAllEnvVars(suppliedEnvVars),
+                    createFilesDigest(filesToDigest),
+                    runtime.get());
+
+            boolean canSkipExecution = false;
+            if (digestVersionsMatch) {
+                Execution previousExecution = digest.executions.get(coordinates);
+                canSkipExecution = Objects.equals(previousExecution, thisExecution);
+            }
+
+            if (canSkipExecution) {
+                log.info("Atlassian Fork FTW - No changes detected! - Skipping execution");
+            }
+
+            digest.executions.put(coordinates, thisExecution);
+
+            return !canSkipExecution;
         } catch (Exception exception) {
             log.error("Failure while determining if an incremental build is needed. See debug logs");
             log.debug("Failure while determining if an incremental build was...", exception);
@@ -81,19 +104,22 @@ public class IncrementalMojoHelper {
             return;
         }
 
-        log.debug("Accepting yarn incremental build digest...");
-        if (getDigestFile().exists()) {
-            if (!getDigestFile().delete()) {
-                log.warn("Failed to delete the previous incremental build digest");
+        try {
+            log.debug("Accepting the incremental build digest...");
+            if (getDigestFile().exists()) {
+                if (!getDigestFile().delete()) {
+                    log.warn("Failed to delete the previous incremental build digest");
+                }
             }
-        }
 
-        if (!getDigestCandidateFile().renameTo(getDigestFile())) {
-            log.warn("Failed to accept the incremental build digest");
+            saveDigest(digest);
+        } catch (Exception exception) {
+            log.warn("Failed to save the incremental build digest, see the debug logs");
+            log.debug("Failed to save the incremental build digest, because: ", exception);
         }
     }
 
-    private ArrayList<File> getDigestFiles() throws IOException {
+    private Set<File> getDigestFiles() throws IOException {
         IncrementalVisitor visitor = new IncrementalVisitor();
 
         Files.walkFileTree(workingDirectory.toPath(), visitor);
@@ -196,11 +222,10 @@ public class IncrementalMojoHelper {
                 ".npmrc"
         ));
 
-        private final ArrayList<File> files = new ArrayList<>();
+        private final Set<File> files = new HashSet<>();
 
         @Override
-        public FileVisitResult preVisitDirectory(Path file, BasicFileAttributes attrs)
-        {
+        public FileVisitResult preVisitDirectory(Path file, BasicFileAttributes attrs) {
             if (IGNORED_DIRS.contains(file.getFileName().toString())) {
                 return FileVisitResult.SKIP_SUBTREE;
             } else {
@@ -227,7 +252,7 @@ public class IncrementalMojoHelper {
             return FileVisitResult.CONTINUE;
         }
 
-        public ArrayList<File> getFiles() {
+        public Set<File> getFiles() {
             return files;
         }
 
@@ -241,16 +266,7 @@ public class IncrementalMojoHelper {
         }
     }
 
-    private static IncrementalBuildExecutionDigest createDigest(String arguments,  ExecutionCoordinates coordinates, ArrayList<File> filesToDigest, Runtime runtime, Map<String, String> suppliedEnvVars) {
-        Map<String, String> environmentVariables = getAllEnvVars(suppliedEnvVars);
-        List<Execution.File> files = createFilesDigest(filesToDigest);
-
-        Execution execution = new Execution(arguments, environmentVariables, files, runtime);
-
-        return new IncrementalBuildExecutionDigest(CURRENT_DIGEST_VERSION, singletonMap(coordinates, execution));
-    }
-
-    private static List<Execution.File> createFilesDigest(ArrayList<File> digestFiles) {
+    private static Set<Execution.File> createFilesDigest(Set<File> digestFiles) {
         // Why not use parallelStream()? Well testing on JSM DC's
         // node_modules folders which are the worst case in DC shows 2s vs 3s
         // but for Stash and Jira SW it's faster to be single threaded. We might
@@ -269,8 +285,7 @@ public class IncrementalMojoHelper {
                         throw new RuntimeException(format("Failed to read file: %s", file), exception);
                     }
                 })
-                .sorted()
-                .collect(toList());
+                .collect(toSet());
     }
 
     private static Map<String, String> getAllEnvVars(Map<String, String> userDefinedEnvVars) {
@@ -290,8 +305,10 @@ public class IncrementalMojoHelper {
             effectiveEnvVars.put(envVarKey, nullStringIsEmpty(envVarValue));
         });
 
-        // These would override our defaults
-        effectiveEnvVars.putAll(userDefinedEnvVars);
+        if (userDefinedEnvVars != null) {
+            // These would override our defaults
+            effectiveEnvVars.putAll(userDefinedEnvVars);
+        }
 
         return effectiveEnvVars;
     }
@@ -306,23 +323,15 @@ public class IncrementalMojoHelper {
         return string;
     }
 
-    private void saveDigestCandidate(IncrementalBuildExecutionDigest currDigest) throws IOException {
-        OBJECT_MAPPER.writeValue(getDigestCandidateFile(), currDigest);
+    private void saveDigest(IncrementalBuildExecutionDigest digest) throws IOException {
+        OBJECT_MAPPER.writeValue(getDigestFile(), digest);
     }
 
-    private IncrementalBuildExecutionDigest readPreviousDigest() throws IOException {
-        return OBJECT_MAPPER.readValue(getDigestFile(), IncrementalBuildExecutionDigest.class);
-    }
-
-    private File getDigestCandidateFile() {
-        return new File(getTargetDir(), "yarn-incremental-build-digest.candidate.json");
+    private IncrementalBuildExecutionDigest readDigest(File digest) throws IOException {
+        return OBJECT_MAPPER.readValue(digest, IncrementalBuildExecutionDigest.class);
     }
 
     private File getDigestFile() {
-        return new File(getTargetDir(), "yarn-incremental-build-digest.json");
-    }
-
-    private File getTargetDir() {
-        return new File(workingDirectory, "target");
+        return new File(targetDirectory, "yarn-incremental-build-digest.json");
     }
 }

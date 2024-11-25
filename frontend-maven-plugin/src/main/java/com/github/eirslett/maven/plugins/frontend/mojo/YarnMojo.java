@@ -31,7 +31,7 @@ public final class YarnMojo extends AbstractFrontendMojo {
     @Parameter(defaultValue = "", property = "frontend.yarn.arguments", required = false)
     private String arguments;
 
-    @Parameter(defaultValue = "", property = " frontend.yarn.incremental", required = false)
+    @Parameter(defaultValue = "", property = "frontend.yarn.incremental", required = false)
     private String incremental;
 
     @Parameter(property = "frontend.yarn.yarnInheritsProxyConfigFromMaven", required = false,
@@ -81,7 +81,7 @@ public final class YarnMojo extends AbstractFrontendMojo {
 
     @Override
     public synchronized void execute(FrontendPluginFactory factory) throws TaskRunnerException {
-        IncrementalMojoHelper incrementalHelper = new IncrementalMojoHelper(incremental, workingDirectory);
+        IncrementalMojoHelper incrementalHelper = new IncrementalMojoHelper(incremental, getTargetDir(), workingDirectory);
 
         ProxyConfig proxyConfig = getProxyConfig();
         boolean isYarnBerry = isYarnrcYamlFilePresent(this.session, this.workingDirectory);

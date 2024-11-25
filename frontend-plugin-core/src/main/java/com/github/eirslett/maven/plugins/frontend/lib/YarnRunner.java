@@ -5,9 +5,11 @@ import com.github.eirslett.maven.plugins.frontend.lib.ProxyConfig.Proxy;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonList;
+import static java.util.Optional.empty;
 
 public interface YarnRunner extends NodeTaskRunner {
 }
@@ -56,14 +58,37 @@ final class DefaultYarnRunner extends YarnTaskExecutor implements YarnRunner {
         return arguments;
     }
 
+    /**
+     * Running {@code yarn versions} gives an output like this:
+     * <pre>
+     * yarn versions v1.22.22
+     * {
+     *   yarn: '1.22.22',
+     *   node: '18.17.0',
+     *   acorn: '8.8.2',
+     *   ada: '2.5.0',
+     *   ....
+     * }
+     * Done in 0.01s.
+     * </pre>
+     * The first line is repeated and the last one will cause an unnecessary diff. Running
+     * with {@code --silent culls the first and last lines}, but this isn't available on all yarn
+     * classic versions, e.g. 1.22.17
+     */
     @Override
-    public Runtime getRuntime() throws TaskRunnerException {
+    public Optional<Runtime> getRuntime() {
         try {
-            String version = new YarnExecutor(config, singletonList("node --version"), emptyMap())
+            String rawVersions = new YarnExecutor(config, singletonList("versions"), emptyMap())
                     .executeAndGetResult(logger);
-            return new Runtime("node", version);
-        } catch (ProcessExecutionException e) {
-            throw new TaskRunnerException("Failed to get Node version", e);
+            int startIndex = rawVersions.indexOf("{");
+            int endIndex = rawVersions.indexOf("}") + 1;
+            String desiredVersions = rawVersions.substring(startIndex, endIndex);
+            // Yes, yarn is not a runtime, but here we can glean a little more
+            // information that's more ideal to track
+            return Optional.of(new Runtime("yarn", desiredVersions));
+        } catch (Exception exception) {
+            logger.debug("Failed to get the runtime versions from yarn, because: ", exception);
+            return empty();
         }
     }
 }
