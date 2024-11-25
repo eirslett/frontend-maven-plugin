@@ -58,14 +58,14 @@ public class IncrementalMojoHelper {
         return isActive;
     }
 
-    public boolean shouldExecute(String arguments, ExecutionCoordinates coordinates, Optional<Runtime> runtime, Map<String, String> suppliedEnvVars) {
+    public boolean canBeSkipped(String arguments, ExecutionCoordinates coordinates, Optional<Runtime> runtime, Map<String, String> suppliedEnvVars) {
         if (!isActive) {
-            return true;
+            return false;
         }
 
         if (!runtime.isPresent()) {
             log.warn("Failed to do incremental compilation because the runtime version couldn't be fetched, see the debug logs");
-            return true;
+            return false;
         }
 
         try {
@@ -98,13 +98,13 @@ public class IncrementalMojoHelper {
 
             digest.executions.put(coordinates, thisExecution);
 
-            return !canSkipExecution;
+            return canSkipExecution;
         } catch (Exception exception) {
             log.error("Failure while determining if an incremental build is needed. See debug logs");
             log.debug("Failure while determining if an incremental build was...", exception);
         }
 
-        return true;
+        return false;
     }
 
     public void acceptIncrementalBuildDigest() {

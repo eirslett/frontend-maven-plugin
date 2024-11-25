@@ -92,7 +92,7 @@ public final class YarnMojo extends AbstractFrontendMojo {
         ExecutionCoordinates coordinates = new ExecutionCoordinates(execution.getGoal(), execution.getExecutionId(), execution.getLifecyclePhase());
 
         boolean incrementalEnabled = incrementalHelper.incrementalEnabled();
-        boolean isIncremental = incrementalEnabled && incrementalHelper.shouldExecute(arguments, coordinates, runner.getRuntime(), environmentVariables);
+        boolean isIncremental = incrementalEnabled && incrementalHelper.canBeSkipped(arguments, coordinates, runner.getRuntime(), environmentVariables);
 
         incrementExecutionCount(project.getArtifactId(), arguments, YARN, getFrontendMavenPluginVersion(), incrementalEnabled, isIncremental, () -> {
             if (isIncremental) {
