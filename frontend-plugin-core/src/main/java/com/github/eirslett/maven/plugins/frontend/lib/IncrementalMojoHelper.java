@@ -228,9 +228,9 @@ public class IncrementalMojoHelper {
         public FileVisitResult preVisitDirectory(Path file, BasicFileAttributes attrs) {
             if (IGNORED_DIRS.contains(file.getFileName().toString())) {
                 return FileVisitResult.SKIP_SUBTREE;
-            } else {
-                return FileVisitResult.CONTINUE;
             }
+
+            return FileVisitResult.CONTINUE;
         }
 
         @Override
@@ -258,7 +258,9 @@ public class IncrementalMojoHelper {
 
         static private String getFileExtension(String fileName) {
             int dotIndex = fileName.lastIndexOf('.');
-            if (dotIndex > 0 && dotIndex < fileName.length() - 1) {
+            if (dotIndex > 0 // skip over dot-files like .babelrc
+                    // check if the '.' is the last character == no extension
+                    && dotIndex < fileName.length() - 1) {
                 return fileName.substring(dotIndex + 1);
             } else {
                 return null;
