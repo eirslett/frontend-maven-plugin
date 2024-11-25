@@ -24,6 +24,11 @@ import java.util.Optional;
 import java.util.Set;
 
 import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
+import static com.fasterxml.jackson.databind.MapperFeature.AUTO_DETECT_CREATORS;
+import static com.fasterxml.jackson.databind.MapperFeature.AUTO_DETECT_GETTERS;
+import static com.fasterxml.jackson.databind.MapperFeature.AUTO_DETECT_IS_GETTERS;
+import static com.fasterxml.jackson.databind.MapperFeature.AUTO_DETECT_SETTERS;
+import static com.fasterxml.jackson.databind.SerializationFeature.INDENT_OUTPUT;
 import static com.github.eirslett.maven.plugins.frontend.lib.IncrementalBuildExecutionDigest.CURRENT_DIGEST_VERSION;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
@@ -32,9 +37,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 public class IncrementalMojoHelper {
     private static final Logger log = getLogger(IncrementalMojoHelper.class);
-    static final ObjectMapper OBJECT_MAPPER = new ObjectMapper()
-            // Allow for reading without blowing up
-            .configure(FAIL_ON_UNKNOWN_PROPERTIES, false);
+    private static ObjectMapper objectMapper;
     private final File targetDirectory;
     private final File workingDirectory;
     private final boolean isActive;
@@ -326,12 +329,26 @@ public class IncrementalMojoHelper {
         return string;
     }
 
+    /**
+     * This is expensive to init (200ms), should only do it once and as needed
+     */
+    static ObjectMapper getObjectMapper() {
+        if (isNull(objectMapper)) {
+            objectMapper = new ObjectMapper()
+                // Allow for reading without blowing up
+                .configure(FAIL_ON_UNKNOWN_PROPERTIES, false)
+                // for serialisation performance
+                .configure(INDENT_OUTPUT, false);
+        }
+        return objectMapper;
+    }
+
     private void saveDigest(IncrementalBuildExecutionDigest digest) throws IOException {
-        OBJECT_MAPPER.writeValue(getDigestFile(), digest);
+        getObjectMapper().writeValue(getDigestFile(), digest);
     }
 
     private IncrementalBuildExecutionDigest readDigest(File digest) throws IOException {
-        return OBJECT_MAPPER.readValue(digest, IncrementalBuildExecutionDigest.class);
+        return getObjectMapper().readValue(digest, IncrementalBuildExecutionDigest.class);
     }
 
     private File getDigestFile() {

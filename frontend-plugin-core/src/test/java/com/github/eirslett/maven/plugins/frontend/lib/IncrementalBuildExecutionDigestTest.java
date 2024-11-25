@@ -62,7 +62,7 @@ public class IncrementalBuildExecutionDigestTest {
                                         "  zlib: '1.2.13.1-motley'\n" +
                                         "}"))));
 
-        ObjectMapper objectMapper = IncrementalMojoHelper.OBJECT_MAPPER;
+        ObjectMapper objectMapper = IncrementalMojoHelper.getObjectMapper();
 
         String jsonString = objectMapper.writeValueAsString(digestToSerialize);
         IncrementalBuildExecutionDigest deserializedDigest = objectMapper.readValue(jsonString, IncrementalBuildExecutionDigest.class);
