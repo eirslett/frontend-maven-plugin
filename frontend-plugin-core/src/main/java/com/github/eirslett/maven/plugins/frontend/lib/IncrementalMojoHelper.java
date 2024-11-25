@@ -152,6 +152,8 @@ public class IncrementalMojoHelper {
                 "mjs",
                 "ts",
                 "tsx",
+                // snapshots
+                ".snap",
                 // CSS
                 "css",
                 "scss",
