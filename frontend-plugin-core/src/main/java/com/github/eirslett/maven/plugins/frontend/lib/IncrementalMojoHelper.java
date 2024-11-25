@@ -124,11 +124,15 @@ public class IncrementalMojoHelper {
             this.files = files;
         }
 
-        private static final Set<String> IGNORED_DIRS = new HashSet<>(asList(
+        /**
+         * It's ever so slightly faster for this to be a {@link List} instead of a
+         * {@link HashSet}, a couple more elements would tip it over.
+         */
+        private static final List<String> IGNORED_DIRS = asList(
                 "build",
                 "dist",
                 "target"
-        ));
+        );
 
         private static final Set<String> DIGEST_EXTENSIONS = new HashSet<>(asList(
                 // JS
