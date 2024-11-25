@@ -89,7 +89,7 @@ public final class NpmMojo extends AbstractFrontendMojo {
         ExecutionCoordinates coordinates = new ExecutionCoordinates(execution.getGoal(), execution.getExecutionId(), execution.getLifecyclePhase());
 
         boolean incrementalEnabled = incrementalHelper.incrementalEnabled();
-        boolean isIncremental = incrementalEnabled && incrementalHelper.canBeSkipped(arguments, coordinates, runner.getRuntime(), environmentVariables);
+        boolean isIncremental = incrementalEnabled && incrementalHelper.canBeSkipped(arguments, coordinates, runner.getRuntime(), environmentVariables, project.getArtifactId(), getFrontendMavenPluginVersion());
 
         incrementExecutionCount(project.getArtifactId(), arguments, NPM, getFrontendMavenPluginVersion(), incrementalEnabled, isIncremental, () -> {
             if (isIncremental) {

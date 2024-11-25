@@ -1,6 +1,7 @@
 package com.github.eirslett.maven.plugins.frontend.lib;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsReporter.Timer;
 import com.github.eirslett.maven.plugins.frontend.lib.IncrementalBuildExecutionDigest.Execution;
 import com.github.eirslett.maven.plugins.frontend.lib.IncrementalBuildExecutionDigest.Execution.Runtime;
 import com.github.eirslett.maven.plugins.frontend.lib.IncrementalBuildExecutionDigest.ExecutionCoordinates;
@@ -58,7 +59,10 @@ public class IncrementalMojoHelper {
         return isActive;
     }
 
-    public boolean canBeSkipped(String arguments, ExecutionCoordinates coordinates, Optional<Runtime> runtime, Map<String, String> suppliedEnvVars) {
+    public boolean canBeSkipped(String arguments, ExecutionCoordinates coordinates, Optional<Runtime> runtime, Map<String, String> suppliedEnvVars, String artifactId, String forkVersion) {
+        Timer timer = new Timer();
+        boolean failed = false;
+
         if (!isActive) {
             return false;
         }
@@ -102,9 +106,13 @@ public class IncrementalMojoHelper {
         } catch (Exception exception) {
             log.error("Failure while determining if an incremental build is needed. See debug logs");
             log.debug("Failure while determining if an incremental build was...", exception);
+            return false;
+        } finally {
+            timer.stop("execute.incremental.check", artifactId, forkVersion, "",
+                    new HashMap<String, String>() {{
+                        put("failed", Boolean.toString(failed));
+            }});
         }
-
-        return false;
     }
 
     public void acceptIncrementalBuildDigest() {
