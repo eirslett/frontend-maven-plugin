@@ -246,6 +246,7 @@ public class IncrementalMojoHelper {
                 // they were. This assumes that mtime bubbles.
                 String lastModifiedTime = Long.toString(file.toAbsolutePath().toFile().lastModified());
                 files.add(new Execution.File(file.toString(), 0, lastModifiedTime));
+                return FileVisitResult.SKIP_SUBTREE;
             }
 
             return FileVisitResult.CONTINUE;
