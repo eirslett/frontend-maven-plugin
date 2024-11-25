@@ -24,17 +24,6 @@ import org.codehaus.plexus.util.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class ArchiveExtractionException extends Exception {
-
-    ArchiveExtractionException(String message) {
-        super(message);
-    }
-
-    ArchiveExtractionException(String message, Throwable cause) {
-        super(message, cause);
-    }
-}
-
 interface ArchiveExtractor {
     public void extract(String archive, String destinationDirectory) throws ArchiveExtractionException;
 }

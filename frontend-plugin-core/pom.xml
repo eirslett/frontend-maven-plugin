@@ -3,7 +3,7 @@
     <parent>
         <artifactId>frontend-plugins</artifactId>
         <groupId>com.github.eirslett</groupId>
-        <version>1.15.0-atlassian-1-SNAPSHOT</version>
+        <version>1.15.1-atlassian-1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -78,19 +78,18 @@
             <version>2.2</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>33.1.0-jre</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.stefanbirkner</groupId>
+            <artifactId>system-lambda</artifactId>
+            <version>1.2.1</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-            </plugin>
-        </plugins>
-    </build>
 
 </project>

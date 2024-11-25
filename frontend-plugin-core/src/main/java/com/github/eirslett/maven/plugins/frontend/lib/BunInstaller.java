@@ -11,6 +11,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
+import java.util.Map;
+
+import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsInstallationWork.CACHED;
+import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsInstallationWork.DOWNLOADED;
+import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsInstallationWork.INSTALLED;
 
 public class BunInstaller {
 
@@ -21,6 +26,8 @@ public class BunInstaller {
     private static final Object LOCK = new Object();
 
     private String bunVersion, userName, password;
+
+    private Map<String, String> httpHeaders;
 
     private final Logger logger;
 
@@ -52,20 +59,22 @@ public class BunInstaller {
         return this;
     }
 
-    public void install() throws InstallationException {
+    public BunInstaller setHttpHeaders(Map<String, String> httpHeaders) {
+        this.httpHeaders = httpHeaders;
+        return this;
+    }
+
+    public AtlassianDevMetricsInstallationWork install() throws InstallationException {
         // use static lock object for a synchronized block
         synchronized (LOCK) {
             if (!bunIsAlreadyInstalled()) {
                 if (!this.bunVersion.startsWith("v")) {
                     this.logger.warn("Bun version does not start with naming convention 'v'.");
                 }
-                if (this.config.getPlatform().isWindows()) {
-                    throw new InstallationException("Unable to install bun on windows!");
-                } else {
-                    installBunDefault();
-                }
+                return installBunDefault();
             }
         }
+        return INSTALLED;
     }
 
     private boolean bunIsAlreadyInstalled() {
@@ -93,7 +102,7 @@ public class BunInstaller {
         }
     }
 
-    private void installBunDefault() throws InstallationException {
+    private AtlassianDevMetricsInstallationWork installBunDefault() throws InstallationException {
         try {
 
             logger.info("Installing Bun version {}", bunVersion);
@@ -105,15 +114,17 @@ public class BunInstaller {
 
             File archive = this.config.getCacheResolver().resolve(cacheDescriptor);
 
-            downloadFileIfMissing(downloadUrl, archive, this.userName, this.password);
+            AtlassianDevMetricsInstallationWork work =
+            downloadFileIfMissing(downloadUrl, archive, this.userName, this.password, this.httpHeaders);
 
             File installDirectory = getInstallDirectory();
 
             // We need to delete the existing bun directory first so we clean out any old files, and
             // so we can rename the package directory below.
+            File bunExtractDirectory = new File(installDirectory, createBunTargetArchitecturePath());
             try {
-                if (installDirectory.isDirectory()) {
-                    FileUtils.deleteDirectory(installDirectory);
+                if (bunExtractDirectory.isDirectory()) {
+                    FileUtils.deleteDirectory(bunExtractDirectory);
                 }
             } catch (IOException e) {
                 logger.warn("Failed to delete existing Bun installation.");
@@ -127,20 +138,24 @@ public class BunInstaller {
                             + "Please try the build again.", archive.getPath());
                     archive.delete();
                 }
-
                 throw e;
             }
 
             // Search for the bun binary
+            String bunExecutable = this.config.getPlatform().isWindows()  ? "bun.exe" : "bun";
             File bunBinary =
-                    new File(getInstallDirectory(), File.separator + createBunTargetArchitecturePath() + File.separator + "bun");
+                    new File(installDirectory, File.separator + createBunTargetArchitecturePath() + File.separator + bunExecutable);
             if (!bunBinary.exists()) {
                 throw new FileNotFoundException(
                         "Could not find the downloaded bun binary in " + bunBinary);
             } else {
-                File destinationDirectory = getInstallDirectory();
+                File destinationDirectory = new File(getInstallDirectory(), BunInstaller.INSTALL_PATH);
+                if (!destinationDirectory.exists()) {
+                    this.logger.info("Creating destination directory {}", destinationDirectory);
+                    destinationDirectory.mkdirs();
+                }
 
-                File destination = new File(destinationDirectory, "bun");
+                File destination = new File(destinationDirectory, bunExecutable);
                 this.logger.info("Copying bun binary from {} to {}", bunBinary, destination);
                 if (destination.exists() && !destination.delete()) {
                     throw new InstallationException("Could not install Bun: Was not allowed to delete " + destination);
@@ -156,8 +171,10 @@ public class BunInstaller {
                     throw new InstallationException(
                             "Could not install Bun: Was not allowed to make " + destination + " executable.");
                 }
+                FileUtils.deleteDirectory(bunExtractDirectory);
 
                 this.logger.info("Installed bun locally.");
+                return work;
             }
         } catch (IOException e) {
             throw new InstallationException("Could not install bun", e);
@@ -180,7 +197,7 @@ public class BunInstaller {
     private String createBunTargetArchitecturePath() {
         OS os = OS.guess();
         Architecture architecture = Architecture.guess();
-        String destOs = os.equals(OS.Linux) ? "linux" : os.equals(OS.Mac) ? "darwin" : null;
+        String destOs = os.equals(OS.Linux) ? "linux" : os.equals(OS.Mac) ? "darwin" : os.equals(OS.Windows) ? "windows" : null;
         String destArc = architecture.equals(Architecture.x64) ? "x64" : architecture.equals(
                 Architecture.arm64) ? "aarch64" : null;
         return String.format("%s-%s-%s", INSTALL_PATH, destOs, destArc);
@@ -200,16 +217,18 @@ public class BunInstaller {
         this.archiveExtractor.extract(archive.getPath(), destinationDirectory.getPath());
     }
 
-    private void downloadFileIfMissing(String downloadUrl, File destination, String userName, String password)
+    private AtlassianDevMetricsInstallationWork downloadFileIfMissing(String downloadUrl, File destination, String userName, String password, Map<String, String> httpHeaders)
             throws DownloadException {
         if (!destination.exists()) {
-            downloadFile(downloadUrl, destination, userName, password);
+            downloadFile(downloadUrl, destination, userName, password, httpHeaders);
+            return DOWNLOADED;
         }
+        return CACHED;
     }
 
-    private void downloadFile(String downloadUrl, File destination, String userName, String password)
+    private void downloadFile(String downloadUrl, File destination, String userName, String password, Map<String, String> httpHeaders)
             throws DownloadException {
         this.logger.info("Downloading {} to {}", downloadUrl, destination);
-        this.fileDownloader.download(downloadUrl, destination.getPath(), userName, password);
+        this.fileDownloader.download(downloadUrl, destination.getPath(), userName, password, httpHeaders);
     }
 }

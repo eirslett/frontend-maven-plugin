@@ -52,4 +52,24 @@ Only Atlassians may release a new version, [follow this guide](https://hello.atl
 
 ## Usage guidance
 
+### Format of the Node version
+
+It shouldn't matter if the `v` prefix is present, e.g. `14.8.0` and `v14.8.0`.
+
+Old, non-standard, and codename versions are also supported if they're [available](https://nodejs.org/dist), e.g. `latest-v12.x`.
+
+### Using Node version files
+
+The plugin should automatically detect the version from files like: `.node-version`, `.nvmrc`, and `.tool-versions`. Comments in the files should be ignored. If the file is not in the working directory, nor any of the parent directories, it can be manually set in the configuration like so:
+
+```xml
+<plugin>
+    <groupId>com.github.eirslett</groupId>
+    <artifactId>frontend-maven-plugin</artifactId>
+    <configuration>
+        <nodeVersionFile>${project.basedir}/dotfiles/.nvmrc</nodeVersionFile>
+    </configuration>
+</plugin>
+```
+
 [![Cheers from Atlassian](https://raw.githubusercontent.com/atlassian-internal/oss-assets/master/banner-cheers-light.png)](https://www.atlassian.com)

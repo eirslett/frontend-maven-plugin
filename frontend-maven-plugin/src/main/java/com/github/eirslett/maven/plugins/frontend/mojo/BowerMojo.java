@@ -2,7 +2,6 @@ package com.github.eirslett.maven.plugins.frontend.mojo;
 
 import com.github.eirslett.maven.plugins.frontend.lib.FrontendPluginFactory;
 import com.github.eirslett.maven.plugins.frontend.lib.ProxyConfig;
-import com.github.eirslett.maven.plugins.frontend.lib.TaskRunnerException;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -11,6 +10,9 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.settings.crypto.SettingsDecrypter;
 
 import java.util.Collections;
+
+import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsReporter.Goal.BOWER;
+import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsReporter.incrementExecutionCount;
 
 @Mojo(name = "bower", defaultPhase = LifecyclePhase.GENERATE_RESOURCES, threadSafe = true)
 public final class BowerMojo extends AbstractFrontendMojo {
@@ -42,9 +44,11 @@ public final class BowerMojo extends AbstractFrontendMojo {
     }
 
     @Override
-    protected synchronized void execute(FrontendPluginFactory factory) throws TaskRunnerException {
+    protected synchronized void execute(FrontendPluginFactory factory) throws Exception {
         ProxyConfig proxyConfig = getProxyConfig();
-        factory.getBowerRunner(proxyConfig).execute(arguments, environmentVariables);
+        incrementExecutionCount(project.getArtifactId(), arguments, BOWER, getFrontendMavenPluginVersion(), false, false, () ->
+        factory.getBowerRunner(proxyConfig).execute(arguments, environmentVariables)
+        );
     }
 
     private ProxyConfig getProxyConfig() {

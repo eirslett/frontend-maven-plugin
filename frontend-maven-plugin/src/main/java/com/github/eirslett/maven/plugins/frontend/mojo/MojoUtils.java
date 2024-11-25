@@ -80,7 +80,7 @@ class MojoUtils {
     static boolean shouldExecute(BuildContext buildContext, List<File> triggerfiles, File srcdir) {
 
     // If there is no buildContext, or this is not an incremental build, always execute.
-    if (buildContext == null || !buildContext.isIncremental()) {
+    if (!incrementalBuildEnabled(buildContext)) {
       return true;
     }
 
@@ -102,4 +102,8 @@ class MojoUtils {
     String[] includedFiles = scanner.getIncludedFiles();
     return (includedFiles != null && includedFiles.length > 0);
   }
+
+    static boolean incrementalBuildEnabled(BuildContext context) {
+        return context != null && context.isIncremental();
+    }
 }

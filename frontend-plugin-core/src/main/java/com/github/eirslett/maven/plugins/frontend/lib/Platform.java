@@ -5,6 +5,8 @@ import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static com.github.eirslett.maven.plugins.frontend.lib.NodeInstaller.NODEJS_ORG;
+
 enum Architecture { x86, x64, ppc64le, s390x, arm64, armv7l, ppc, ppc64;
     public static Architecture guess(){
         String arch = System.getProperty("os.arch");
@@ -84,7 +86,7 @@ class Platform {
     }
 
     public Platform(OS os, Architecture architecture) {
-        this("https://nodejs.org/dist/", os, architecture, null);
+        this("https://" + NODEJS_ORG + "/dist/", os, architecture, null);
     }
 
     public Platform(
@@ -117,7 +119,7 @@ class Platform {
                 // Currently, musl is Experimental. The download root can be overridden with config
                 // if this changes and there's not been an update to this project, yet.
                 // See https://github.com/nodejs/node/blob/master/BUILDING.md#platform-list
-                "https://unofficial-builds.nodejs.org/download/release/",
+                    "https://unofficial-builds." + NODEJS_ORG + "/download/release/",
                 os, architecture, "musl");
         }
         return new Platform(os, architecture);

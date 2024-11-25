@@ -6,12 +6,13 @@
     "jquery": "3.6.0"
   },
   "scripts": {
-    "test": "web-test-runner src/**/*.test.js --node-resolve",
+    "test": "web-test-runner src/**/*.test.js --node-resolve --puppeteer",
     "build": "vite build"
   },
   "devDependencies": {
     "@esm-bundle/chai": "^4.3.4-fix.0",
-    "@web/test-runner": "^0.16.1",
+    "@web/test-runner": "^0.19.0",
+    "@web/test-runner-puppeteer": "^0.17.0",
     "vite": "^4.3.9"
   }
 }

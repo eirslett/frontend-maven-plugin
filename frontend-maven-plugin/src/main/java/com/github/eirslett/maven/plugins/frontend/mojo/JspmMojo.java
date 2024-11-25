@@ -1,15 +1,12 @@
 package com.github.eirslett.maven.plugins.frontend.mojo;
 
 import com.github.eirslett.maven.plugins.frontend.lib.FrontendPluginFactory;
-import com.github.eirslett.maven.plugins.frontend.lib.TaskRunnerException;
-import org.apache.maven.plugin.AbstractMojo;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
-import java.io.File;
+import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsReporter.Goal.JSPM;
+import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsReporter.incrementExecutionCount;
 
 @Mojo(name="jspm",  defaultPhase = LifecyclePhase.GENERATE_RESOURCES, threadSafe = true)
 public class JspmMojo extends AbstractFrontendMojo {
@@ -32,8 +29,10 @@ public class JspmMojo extends AbstractFrontendMojo {
     }
 
     @Override
-    protected synchronized void execute(FrontendPluginFactory factory) throws TaskRunnerException {
+    protected synchronized void execute(FrontendPluginFactory factory) throws Exception {
+        incrementExecutionCount(project.getArtifactId(), arguments, JSPM, getFrontendMavenPluginVersion(), false, false, () -> {
         factory.getJspmRunner().execute(arguments, environmentVariables);
+        });
     }
 
 }

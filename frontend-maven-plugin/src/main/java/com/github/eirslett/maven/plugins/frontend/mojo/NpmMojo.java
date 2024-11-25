@@ -5,7 +5,6 @@ import com.github.eirslett.maven.plugins.frontend.lib.IncrementalBuildExecutionD
 import com.github.eirslett.maven.plugins.frontend.lib.IncrementalMojoHelper;
 import com.github.eirslett.maven.plugins.frontend.lib.NpmRunner;
 import com.github.eirslett.maven.plugins.frontend.lib.ProxyConfig;
-import com.github.eirslett.maven.plugins.frontend.lib.TaskRunnerException;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -16,8 +15,10 @@ import org.sonatype.plexus.build.incremental.BuildContext;
 
 import java.io.File;
 import java.util.Collections;
-import java.util.List;
 import java.util.Set;
+
+import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsReporter.Goal.NPM;
+import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsReporter.incrementExecutionCount;
 
 @Mojo(name="npm",  defaultPhase = LifecyclePhase.GENERATE_RESOURCES, threadSafe = true)
 public final class NpmMojo extends AbstractFrontendMojo {
@@ -81,25 +82,24 @@ public final class NpmMojo extends AbstractFrontendMojo {
     }
 
     @Override
-    public synchronized void execute(FrontendPluginFactory factory) throws TaskRunnerException {
+    public synchronized void execute(FrontendPluginFactory factory) throws Exception {
+        NpmRunner runner = factory.getNpmRunner(getProxyConfig(), getRegistryUrl());
+
         IncrementalMojoHelper incrementalHelper = new IncrementalMojoHelper(incremental, getTargetDir(), workingDirectory, triggerFiles, excludedFilenames);
-
-        ProxyConfig proxyConfig = getProxyConfig();
-        NpmRunner runner = factory.getNpmRunner(proxyConfig, getRegistryUrl());
-
         ExecutionCoordinates coordinates = new ExecutionCoordinates(execution.getGoal(), execution.getExecutionId(), execution.getLifecyclePhase());
-        if (incrementalHelper.shouldExecute(arguments, coordinates, runner.getRuntime(), environmentVariables)) {
-            File packageJson = new File(workingDirectory, "package.json");
-            if (buildContext == null || buildContext.hasDelta(packageJson) || !buildContext.isIncremental()) {
+
+        boolean incrementalEnabled = incrementalHelper.incrementalEnabled();
+        boolean isIncremental = incrementalEnabled && incrementalHelper.shouldExecute(arguments, coordinates, runner.getRuntime(), environmentVariables);
+
+        incrementExecutionCount(project.getArtifactId(), arguments, NPM, getFrontendMavenPluginVersion(), incrementalEnabled, isIncremental, () -> {
+            if (isIncremental) {
+                getLog().info("Skipping npm execution as no modified files in" + workingDirectory);
+            } else {
                 runner.execute(arguments, environmentVariables);
 
                 incrementalHelper.acceptIncrementalBuildDigest();
-            } else {
-                getLog().info("Skipping npm install as package.json unchanged");
             }
-        } else {
-            getLog().info("Skipping npm execution as no modified files in" + workingDirectory);
-        }
+        });
     }
 
     private ProxyConfig getProxyConfig() {

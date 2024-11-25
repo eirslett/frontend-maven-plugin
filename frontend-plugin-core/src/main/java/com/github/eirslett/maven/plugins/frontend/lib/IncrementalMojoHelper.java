@@ -54,6 +54,10 @@ public class IncrementalMojoHelper {
         this.isActive = "true".equals(activationFlag);
     }
 
+    public boolean incrementalEnabled() {
+        return isActive;
+    }
+
     public boolean shouldExecute(String arguments, ExecutionCoordinates coordinates, Optional<Runtime> runtime, Map<String, String> suppliedEnvVars) {
         if (!isActive) {
             return true;
