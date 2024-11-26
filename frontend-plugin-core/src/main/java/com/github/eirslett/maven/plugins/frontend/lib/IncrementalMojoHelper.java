@@ -73,9 +73,13 @@ public class IncrementalMojoHelper {
         }
 
         try {
-            File digestFileLocation = getDigestFile();
-            if (digestFileLocation.exists()) {
-                digest = readDigest(digestFileLocation);
+            try {
+                File digestFileLocation = getDigestFile();
+                if (digestFileLocation.exists()) {
+                    digest = readDigest(digestFileLocation);
+                }
+            } catch (FileNotFoundException exception) {
+                log.debug("Existing digest file doesn't exist");
             }
 
             if (isNull(digest)) {
