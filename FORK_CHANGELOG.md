@@ -8,7 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
-- [DCA11Y-1274]: Incremental builds for Yarn and NPM goals 
+- [DCA11Y-1274]: Incremental builds for Yarn, Corepack and NPM goals 
 
 ## [1.15.1-atlassian-1]
 
