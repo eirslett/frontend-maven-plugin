@@ -147,4 +147,8 @@ public abstract class AbstractFrontendMojo extends AbstractMojo {
     String getFrontendMavenPluginVersion() {
         return pluginDescriptor.getVersion();
     }
+
+    File getTargetDir() {
+        return new File(project.getBuild().getDirectory());
+    }
 }

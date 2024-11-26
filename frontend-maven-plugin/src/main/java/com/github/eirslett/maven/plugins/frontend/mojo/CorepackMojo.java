@@ -1,6 +1,9 @@
 package com.github.eirslett.maven.plugins.frontend.mojo;
 
+import com.github.eirslett.maven.plugins.frontend.lib.CorepackRunner;
 import com.github.eirslett.maven.plugins.frontend.lib.FrontendPluginFactory;
+import com.github.eirslett.maven.plugins.frontend.lib.IncrementalMojoHelper;
+import com.github.eirslett.maven.plugins.frontend.lib.IncrementalBuildExecutionDigest.ExecutionCoordinates;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -10,10 +13,10 @@ import org.apache.maven.settings.crypto.SettingsDecrypter;
 import org.sonatype.plexus.build.incremental.BuildContext;
 
 import java.io.File;
+import java.util.Set;
 
 import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsReporter.Goal.COREPACK;
 import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsReporter.incrementExecutionCount;
-import static com.github.eirslett.maven.plugins.frontend.mojo.MojoUtils.incrementalBuildEnabled;
 
 @Mojo(name="corepack",  defaultPhase = LifecyclePhase.GENERATE_RESOURCES, threadSafe = true)
 public final class CorepackMojo extends AbstractFrontendMojo {
@@ -24,11 +27,32 @@ public final class CorepackMojo extends AbstractFrontendMojo {
     @Parameter(defaultValue = "enable", property = "frontend.corepack.arguments", required = false)
     private String arguments;
 
+    /**
+     * Enable or disable incremental builds, on by default
+     */
+    @Parameter(defaultValue = "true", property = "frontend.incremental", required = false)
+    private String frontendIncremental;
+
     @Parameter(property = "session", defaultValue = "${session}", readonly = true)
     private MavenSession session;
 
     @Component
     private BuildContext buildContext;
+
+    /**
+     * Files that should be checked for changes for incremental builds in addition
+     * to the defaults in {@link IncrementalMojoHelper}. Directories will be searched.
+     */
+    @Parameter(property = "triggerFiles", required = false)
+    private Set<File> triggerFiles;
+
+    /**
+     * Files that should NOT be checked for changes for incremental builds in addition
+     * to the defaults in {@link IncrementalMojoHelper}. Whole directories will be
+     * excluded.
+     */
+    @Parameter(property = "excludedFilenames", required = false, defaultValue = "node_modules,lcov-report,coverage,screenshots,build,dist,target,.idea,.history,tmp,.settings,.vscode,dependency-reduced-pom.xml")
+    private Set<String> excludedFilenames;
 
     @Component(role = SettingsDecrypter.class)
     private SettingsDecrypter decrypter;
@@ -46,19 +70,20 @@ public final class CorepackMojo extends AbstractFrontendMojo {
 
     @Override
     public synchronized void execute(FrontendPluginFactory factory) throws Exception {
-        File packageJson = new File(workingDirectory, "package.json");
+        CorepackRunner runner = factory.getCorepackRunner();
 
-        boolean incrementalEnabled = incrementalBuildEnabled(buildContext);
-        boolean willBeIncremental = incrementalEnabled && buildContext.hasDelta(packageJson);
+        IncrementalMojoHelper incrementalHelper = new IncrementalMojoHelper(frontendIncremental, getTargetDir(), workingDirectory, triggerFiles, excludedFilenames);
+        ExecutionCoordinates coordinates = new ExecutionCoordinates(execution.getGoal(), execution.getExecutionId(), execution.getLifecyclePhase());
 
-        incrementExecutionCount(project.getArtifactId(), arguments, COREPACK, getFrontendMavenPluginVersion(), incrementalEnabled, willBeIncremental, () -> {
+        boolean incrementalEnabled = incrementalHelper.incrementalEnabled();
+        boolean isIncremental = incrementalEnabled && incrementalHelper.canBeSkipped(arguments, coordinates, runner.getRuntime(), environmentVariables, project.getArtifactId(), getFrontendMavenPluginVersion());
 
-        if (!willBeIncremental) {
-            factory.getCorepackRunner().execute(arguments, environmentVariables);
-        } else {
-            getLog().info("Skipping corepack install as package.json unchanged");
-        }
-
+        incrementExecutionCount(project.getArtifactId(), arguments, COREPACK, getFrontendMavenPluginVersion(), incrementalEnabled, isIncremental, () -> {
+            if (isIncremental) {
+                getLog().info("Skipping corepack execution as no modified files in " + workingDirectory);
+            } else {
+                runner.execute(arguments, environmentVariables);
+            }
         });
     }
 }

@@ -3,6 +3,9 @@ package com.github.eirslett.maven.plugins.frontend.lib;
 import static com.github.eirslett.maven.plugins.frontend.lib.Utils.implode;
 import static com.github.eirslett.maven.plugins.frontend.lib.Utils.normalize;
 import static com.github.eirslett.maven.plugins.frontend.lib.Utils.prepend;
+import static java.util.Collections.emptyMap;
+import static java.util.Collections.singletonList;
+import static java.util.Optional.empty;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -10,11 +13,13 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
+import com.github.eirslett.maven.plugins.frontend.lib.IncrementalBuildExecutionDigest.Execution.Runtime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-abstract class NodeTaskExecutor {
+abstract class NodeTaskExecutor implements NodeTaskRunner {
     private static final String DS = "//";
     private static final String AT = "@";
 
@@ -136,5 +141,16 @@ abstract class NodeTaskExecutor {
 
     public void setTaskLocation(String taskLocation) {
         this.taskLocation = taskLocation;
+    }
+
+    public Optional<Runtime> getRuntime() {
+        try {
+            String version = new NodeExecutor(config, singletonList("--version"), emptyMap())
+                    .executeAndGetResult(logger);
+            return Optional.of(new Runtime("node", version));
+        } catch (Exception exception) {
+            logger.debug("Failed to get the Node version, because: ", exception);
+            return empty();
+        }
     }
 }

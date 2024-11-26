@@ -16,13 +16,13 @@ abstract class YarnTaskExecutor {
 
     private static final String AT = "@";
 
-    private final Logger logger;
+    final Logger logger;
 
     private final String taskName;
 
     private final ArgumentsParser argumentsParser;
 
-    private final YarnExecutorConfig config;
+    final YarnExecutorConfig config;
 
     public YarnTaskExecutor(YarnExecutorConfig config, String taskLocation) {
         this(config, taskLocation, Collections.<String> emptyList());

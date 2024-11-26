@@ -1,7 +1,10 @@
 package com.github.eirslett.maven.plugins.frontend.mojo;
 
 import com.github.eirslett.maven.plugins.frontend.lib.FrontendPluginFactory;
+import com.github.eirslett.maven.plugins.frontend.lib.IncrementalBuildExecutionDigest.ExecutionCoordinates;
+import com.github.eirslett.maven.plugins.frontend.lib.IncrementalMojoHelper;
 import com.github.eirslett.maven.plugins.frontend.lib.ProxyConfig;
+import com.github.eirslett.maven.plugins.frontend.lib.YarnRunner;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -12,10 +15,10 @@ import org.sonatype.plexus.build.incremental.BuildContext;
 
 import java.io.File;
 import java.util.Collections;
+import java.util.Set;
 
 import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsReporter.Goal.YARN;
 import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsReporter.incrementExecutionCount;
-import static com.github.eirslett.maven.plugins.frontend.mojo.MojoUtils.incrementalBuildEnabled;
 import static com.github.eirslett.maven.plugins.frontend.mojo.YarnUtils.isYarnrcYamlFilePresent;
 
 @Mojo(name = "yarn", defaultPhase = LifecyclePhase.GENERATE_RESOURCES, threadSafe = true)
@@ -29,6 +32,12 @@ public final class YarnMojo extends AbstractFrontendMojo {
     @Parameter(defaultValue = "", property = "frontend.yarn.arguments", required = false)
     private String arguments;
 
+    /**
+     * Enable or disable incremental builds, on by default
+     */
+    @Parameter(defaultValue = "true", property = "frontend.incremental", required = false)
+    private String frontendIncremental;
+
     @Parameter(property = "frontend.yarn.yarnInheritsProxyConfigFromMaven", required = false,
         defaultValue = "true")
     private boolean yarnInheritsProxyConfigFromMaven;
@@ -41,6 +50,21 @@ public final class YarnMojo extends AbstractFrontendMojo {
 
     @Parameter(property = "session", defaultValue = "${session}", readonly = true)
     private MavenSession session;
+
+    /**
+     * Files that should be checked for changes for incremental builds in addition
+     * to the defaults in {@link IncrementalMojoHelper}. Directories will be searched.
+     */
+    @Parameter(property = "triggerFiles", required = false)
+    private Set<File> triggerFiles;
+
+    /**
+     * Files that should NOT be checked for changes for incremental builds in addition
+     * to the defaults in {@link IncrementalMojoHelper}. Whole directories will be
+     * excluded.
+     */
+    @Parameter(property = "excludedFilenames", required = false, defaultValue = "node_modules,lcov-report,coverage,screenshots,build,dist,target,.idea,.history,tmp,.settings,.vscode,dependency-reduced-pom.xml")
+    private Set<String> excludedFilenames;
 
     @Component
     private BuildContext buildContext;
@@ -61,22 +85,23 @@ public final class YarnMojo extends AbstractFrontendMojo {
 
     @Override
     public synchronized void execute(FrontendPluginFactory factory) throws Exception {
-        File packageJson = new File(this.workingDirectory, "package.json");
+        boolean isYarnBerry = isYarnrcYamlFilePresent(this.session, this.workingDirectory);
+        YarnRunner runner = factory.getYarnRunner(getProxyConfig(), getRegistryUrl(), isYarnBerry);
 
-        boolean incrementalEnabled = incrementalBuildEnabled(buildContext);
-        boolean willBeIncremental = incrementalEnabled && buildContext.hasDelta(packageJson);
+        IncrementalMojoHelper incrementalHelper = new IncrementalMojoHelper(frontendIncremental, getTargetDir(), workingDirectory, triggerFiles, excludedFilenames);
+        ExecutionCoordinates coordinates = new ExecutionCoordinates(execution.getGoal(), execution.getExecutionId(), execution.getLifecyclePhase());
 
-        incrementExecutionCount(project.getArtifactId(), arguments, YARN, getFrontendMavenPluginVersion(), incrementalEnabled, willBeIncremental, () -> {
+        boolean incrementalEnabled = incrementalHelper.incrementalEnabled();
+        boolean isIncremental = incrementalEnabled && incrementalHelper.canBeSkipped(arguments, coordinates, runner.getRuntime(), environmentVariables, project.getArtifactId(), getFrontendMavenPluginVersion());
 
-        if (!willBeIncremental) {
-            ProxyConfig proxyConfig = getProxyConfig();
-            boolean isYarnBerry = isYarnrcYamlFilePresent(this.session, this.workingDirectory);
-            factory.getYarnRunner(proxyConfig, getRegistryUrl(), isYarnBerry).execute(this.arguments,
-                this.environmentVariables);
-        } else {
-            getLog().info("Skipping yarn install as package.json unchanged");
-        }
+        incrementExecutionCount(project.getArtifactId(), arguments, YARN, getFrontendMavenPluginVersion(), incrementalEnabled, isIncremental, () -> {
+            if (isIncremental) {
+                getLog().info("Skipping yarn execution as no modified files in " + workingDirectory);
+            } else {
+                runner.execute(this.arguments, this.environmentVariables);
 
+                incrementalHelper.acceptIncrementalBuildDigest();
+            }
         });
     }
 

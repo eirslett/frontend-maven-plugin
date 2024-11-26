@@ -27,7 +27,6 @@ import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetrics
 import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsIncremental.NOT_ENABLED;
 import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsIncremental.REBUILDING_SKIPPED;
 import static com.github.eirslett.maven.plugins.frontend.lib.Utils.isBlank;
-import static com.google.common.primitives.Ints.checkedCast;
 import static java.lang.Boolean.getBoolean;
 import static java.lang.Runtime.getRuntime;
 import static java.lang.System.getProperty;

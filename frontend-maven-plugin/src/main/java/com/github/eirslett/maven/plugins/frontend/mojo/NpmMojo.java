@@ -1,6 +1,9 @@
 package com.github.eirslett.maven.plugins.frontend.mojo;
 
 import com.github.eirslett.maven.plugins.frontend.lib.FrontendPluginFactory;
+import com.github.eirslett.maven.plugins.frontend.lib.IncrementalBuildExecutionDigest.ExecutionCoordinates;
+import com.github.eirslett.maven.plugins.frontend.lib.IncrementalMojoHelper;
+import com.github.eirslett.maven.plugins.frontend.lib.NpmRunner;
 import com.github.eirslett.maven.plugins.frontend.lib.ProxyConfig;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugins.annotations.Component;
@@ -12,10 +15,10 @@ import org.sonatype.plexus.build.incremental.BuildContext;
 
 import java.io.File;
 import java.util.Collections;
+import java.util.Set;
 
 import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsReporter.Goal.NPM;
 import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsReporter.incrementExecutionCount;
-import static com.github.eirslett.maven.plugins.frontend.mojo.MojoUtils.incrementalBuildEnabled;
 
 @Mojo(name="npm",  defaultPhase = LifecyclePhase.GENERATE_RESOURCES, threadSafe = true)
 public final class NpmMojo extends AbstractFrontendMojo {
@@ -28,6 +31,12 @@ public final class NpmMojo extends AbstractFrontendMojo {
     @Parameter(defaultValue = "install", property = "frontend.npm.arguments", required = false)
     private String arguments;
 
+    /**
+     * Enable or disable incremental builds, on by default
+     */
+    @Parameter(defaultValue = "true", property = "frontend.incremental", required = false)
+    private String frontendIncremental;
+
     @Parameter(property = "frontend.npm.npmInheritsProxyConfigFromMaven", required = false, defaultValue = "true")
     private boolean npmInheritsProxyConfigFromMaven;
 
@@ -39,6 +48,21 @@ public final class NpmMojo extends AbstractFrontendMojo {
 
     @Parameter(property = "session", defaultValue = "${session}", readonly = true)
     private MavenSession session;
+
+    /**
+     * Files that should be checked for changes for incremental builds in addition
+     * to the defaults in {@link IncrementalMojoHelper}. Directories will be searched.
+     */
+    @Parameter(property = "triggerFiles", required = false)
+    private Set<File> triggerFiles;
+
+    /**
+     * Files that should NOT be checked for changes for incremental builds in addition
+     * to the defaults in {@link IncrementalMojoHelper}. Whole directories will be
+     * excluded.
+     */
+    @Parameter(property = "excludedFilenames", defaultValue = "node_modules,lcov-report,coverage,screenshots,build,dist,target,.idea,.history,tmp,.settings,.vscode,dependency-reduced-pom.xml", required = false)
+    private Set<String> excludedFilenames;
 
     @Component
     private BuildContext buildContext;
@@ -59,20 +83,22 @@ public final class NpmMojo extends AbstractFrontendMojo {
 
     @Override
     public synchronized void execute(FrontendPluginFactory factory) throws Exception {
-        File packageJson = new File(workingDirectory, "package.json");
+        NpmRunner runner = factory.getNpmRunner(getProxyConfig(), getRegistryUrl());
 
-        boolean incrementalEnabled = incrementalBuildEnabled(buildContext);
-        boolean willBeIncremental = incrementalEnabled && buildContext.hasDelta(packageJson);
+        IncrementalMojoHelper incrementalHelper = new IncrementalMojoHelper(frontendIncremental, getTargetDir(), workingDirectory, triggerFiles, excludedFilenames);
+        ExecutionCoordinates coordinates = new ExecutionCoordinates(execution.getGoal(), execution.getExecutionId(), execution.getLifecyclePhase());
 
-        incrementExecutionCount(project.getArtifactId(), arguments, NPM, getFrontendMavenPluginVersion(), incrementalEnabled, willBeIncremental, () -> {
+        boolean incrementalEnabled = incrementalHelper.incrementalEnabled();
+        boolean isIncremental = incrementalEnabled && incrementalHelper.canBeSkipped(arguments, coordinates, runner.getRuntime(), environmentVariables, project.getArtifactId(), getFrontendMavenPluginVersion());
 
-        if (!willBeIncremental) {
-            ProxyConfig proxyConfig = getProxyConfig();
-            factory.getNpmRunner(proxyConfig, getRegistryUrl()).execute(arguments, environmentVariables);
-        } else {
-            getLog().info("Skipping npm install as package.json unchanged");
-        }
+        incrementExecutionCount(project.getArtifactId(), arguments, NPM, getFrontendMavenPluginVersion(), incrementalEnabled, isIncremental, () -> {
+            if (isIncremental) {
+                getLog().info("Skipping npm execution as no modified files in " + workingDirectory);
+            } else {
+                runner.execute(arguments, environmentVariables);
 
+                incrementalHelper.acceptIncrementalBuildDigest();
+            }
         });
     }
 

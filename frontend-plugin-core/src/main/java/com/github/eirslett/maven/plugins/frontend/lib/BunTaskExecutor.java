@@ -15,13 +15,13 @@ abstract class BunTaskExecutor {
 
     private static final String AT = "@";
 
-    private final Logger logger;
+    final Logger logger;
 
     private final String taskName;
 
     private final ArgumentsParser argumentsParser;
 
-    private final BunExecutorConfig config;
+    final BunExecutorConfig config;
 
     public BunTaskExecutor(BunExecutorConfig config, String taskLocation) {
         this(config, taskLocation, Collections.emptyList());
