@@ -188,8 +188,10 @@ public class IncrementalMojoHelper {
                 "mjs",
                 "ts",
                 "tsx",
+                // patches
+                "patch",
                 // snapshots
-                ".snap",
+                "snap",
                 // CSS
                 "css",
                 "scss",
@@ -209,6 +211,7 @@ public class IncrementalMojoHelper {
                 "vtl",
                 "ftl",
                 // config
+                "graphql",
                 "json",
                 "xml",
                 "yaml",
@@ -263,11 +266,13 @@ public class IncrementalMojoHelper {
                 ".eslintrc",
                 ".eslintignore",
                 ".prettierrc",
+                ".prettierrc.js", // this would otherwise get skpped over
                 ".prettierignore",
                 ".stylelintrc",
                 ".stylelintignore",
                 ".browserslistrc",
-                ".npmrc"
+                ".npmrc",
+                ".swcrc"
         ));
 
         @Override

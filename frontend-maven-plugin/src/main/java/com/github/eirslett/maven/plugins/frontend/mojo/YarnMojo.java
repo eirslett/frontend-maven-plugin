@@ -63,7 +63,7 @@ public final class YarnMojo extends AbstractFrontendMojo {
      * to the defaults in {@link IncrementalMojoHelper}. Whole directories will be
      * excluded.
      */
-    @Parameter(property = "excludedFilenames", required = false, defaultValue = "node_modules,build,dist,target,.idea,.history,tmp,.settings,.vscode")
+    @Parameter(property = "excludedFilenames", required = false, defaultValue = "node_modules,coverage,screenshots,build,dist,target,.idea,.history,tmp,.settings,.vscode,coverage")
     private Set<String> excludedFilenames;
 
     @Component
