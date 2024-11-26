@@ -3,7 +3,7 @@
 
     <groupId>com.github.eirslett</groupId>
     <artifactId>frontend-plugins</artifactId>
-    <version>1.15.1-atlassian-2-SNAPSHOT</version>
+    <version>1.15.1-atlassian-2</version>
     <packaging>pom</packaging>
 
     <properties>
@@ -33,7 +33,8 @@
         <url>https://github.com/atlassian-forks/frontend-maven-plugin</url>
         <connection>scm:git:https://github.com/atlassian-forks/frontend-maven-plugin.git</connection>
         <developerConnection>scm:git:git@github.com:atlassian-forks/frontend-maven-plugin.git</developerConnection>
-    </scm>
+      <tag>frontend-plugins-1.15.1-atlassian-2</tag>
+  </scm>
 
     <developers>
         <developer>
