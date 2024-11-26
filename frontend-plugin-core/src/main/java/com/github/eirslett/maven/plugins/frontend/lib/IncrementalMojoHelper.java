@@ -6,9 +6,11 @@ import com.github.eirslett.maven.plugins.frontend.lib.IncrementalBuildExecutionD
 import com.github.eirslett.maven.plugins.frontend.lib.IncrementalBuildExecutionDigest.Execution.Runtime;
 import com.github.eirslett.maven.plugins.frontend.lib.IncrementalBuildExecutionDigest.ExecutionCoordinates;
 import org.apache.commons.codec.digest.MurmurHash3;
+import org.codehaus.plexus.util.StringUtils;
 import org.slf4j.Logger;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
@@ -95,13 +97,12 @@ public class IncrementalMojoHelper {
                     runtime.get());
 
             boolean canSkipExecution = false;
-            if (digestVersionsMatch) {
-                Execution previousExecution = digest.executions.get(coordinates);
+            Execution previousExecution = digest.executions.get(coordinates);
+            if (digestVersionsMatch && previousExecution != null) {
                 canSkipExecution = Objects.equals(previousExecution, thisExecution);
-            }
-
-            if (canSkipExecution) {
-                log.info("Atlassian Fork FTW - No changes detected! - Skipping execution");
+                if (canSkipExecution) {
+                    log.info("Atlassian Fork FTW - No changes detected! - Skipping execution");
+                }
             }
 
             digest.executions.put(coordinates, thisExecution);
