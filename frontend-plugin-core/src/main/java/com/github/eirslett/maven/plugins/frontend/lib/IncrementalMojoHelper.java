@@ -102,6 +102,35 @@ public class IncrementalMojoHelper {
                 canSkipExecution = Objects.equals(previousExecution, thisExecution);
                 if (canSkipExecution) {
                     log.info("Atlassian Fork FTW - No changes detected! - Skipping execution");
+                } else {
+                    log.info("A change was detected, couldn't do incremental compilation for executionId:  {} in artifactId: {}", coordinates.id, artifactId);
+
+                    if (log.isDebugEnabled()) {
+                        String argumentsDifference = StringUtils.difference(previousExecution.arguments, thisExecution.arguments);
+                        String envVarDifference = StringUtils.difference(previousExecution.environmentVariables.toString(), thisExecution.environmentVariables.toString());
+                        String runtimeDifference = StringUtils.difference(previousExecution.runtime.toString(), thisExecution.runtime.toString());
+
+                        Set<Execution.File> newFiles = new HashSet<>(thisExecution.files);
+                        newFiles.removeAll(previousExecution.files);
+                        Set<Execution.File> goneFiles = new HashSet<>(previousExecution.files);
+                        goneFiles.removeAll(thisExecution.files);
+
+                        if (!argumentsDifference.trim().isEmpty()) {
+                            log.debug("Difference in arguments was: <{}> previously: <{}>, currently <{}>",  argumentsDifference, previousExecution.arguments, thisExecution.arguments);
+                        }
+                        if (!envVarDifference.trim().isEmpty()) {
+                            log.debug("Difference in environment variables was: <{}> previously: <{}>, currently <{}>",  envVarDifference, previousExecution.environmentVariables, thisExecution.environmentVariables);
+                        }
+                        if (!runtimeDifference.trim().isEmpty()) {
+                            log.debug("Difference in runtime was: <{}> previously: <{}>, currently <{}>",  runtimeDifference, previousExecution.runtime, thisExecution.runtime);
+                        }
+                        if (!newFiles.isEmpty()) {
+                            log.debug("Some files are \"new\" (may have changed meta-data), there were: {}",  newFiles);
+                        }
+                        if (!goneFiles.isEmpty()) {
+                            log.debug("Some files are \"gone\" (may have changed meta-data), there were: {}",  goneFiles);
+                        }
+                    }
                 }
             }
 
