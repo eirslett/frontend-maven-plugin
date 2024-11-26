@@ -241,15 +241,6 @@ public class IncrementalMojoHelper {
                 return FileVisitResult.SKIP_SUBTREE;
             }
 
-            if ("node_modules".equals(filename)) {
-                // looking around inside can take a loooong time, we don't
-                // have to sacrifice much "correctness" and can lose the
-                // occasional rebuild when things are modified back to how
-                // they were. This assumes that mtime bubbles.
-                String lastModifiedTime = Long.toString(file.toAbsolutePath().toFile().lastModified());
-                files.add(new Execution.File(file.toString(), 0, lastModifiedTime));
-                return FileVisitResult.SKIP_SUBTREE;
-            }
 
             return FileVisitResult.CONTINUE;
         }
