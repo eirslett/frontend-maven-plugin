@@ -126,12 +126,14 @@ public class IncrementalMojoHelper {
 
         try {
             log.debug("Accepting the incremental build digest...");
-            if (getDigestFile().exists()) {
-                if (!getDigestFile().delete()) {
+            File digestFile = getDigestFile();
+            if (digestFile.exists()) {
+                if (!digestFile.delete()) {
                     log.warn("Failed to delete the previous incremental build digest");
                 }
             }
 
+            digestFile.getParentFile().mkdirs();
             saveDigest(digest);
         } catch (Exception exception) {
             log.warn("Failed to save the incremental build digest, see the debug logs");
