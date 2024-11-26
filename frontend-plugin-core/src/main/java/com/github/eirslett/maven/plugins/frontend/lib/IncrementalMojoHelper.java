@@ -192,8 +192,6 @@ public class IncrementalMojoHelper {
                 "tsx",
                 // patches
                 "patch",
-                // snapshots
-                "snap",
                 // CSS
                 "css",
                 "scss",
