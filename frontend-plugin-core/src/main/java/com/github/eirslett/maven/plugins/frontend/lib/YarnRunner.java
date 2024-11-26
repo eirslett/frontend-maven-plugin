@@ -82,7 +82,8 @@ final class DefaultYarnRunner extends YarnTaskExecutor implements YarnRunner {
                     .executeAndGetResult(logger);
             int startIndex = rawVersions.indexOf("{");
             int endIndex = rawVersions.indexOf("}") + 1;
-            String desiredVersions = rawVersions.substring(startIndex, endIndex);
+            String desiredVersions = rawVersions.substring(startIndex, endIndex)
+                    .replaceAll("\\s+", "");
             // Yes, yarn is not a runtime, but here we can glean a little more
             // information that's more ideal to track
             return Optional.of(new Runtime("yarn", desiredVersions));
