@@ -34,7 +34,7 @@ public final class NpmMojo extends AbstractFrontendMojo {
     /**
      * Enable or disable incremental builds, on by default
      */
-    @Parameter(defaultValue = "true", property = "frontend.incremental", alias = "incrementalbuild.enabled", required = false)
+    @Parameter(defaultValue = "true", property = "frontend.incremental", required = false)
     private String frontendIncremental;
 
     @Parameter(property = "frontend.npm.npmInheritsProxyConfigFromMaven", required = false, defaultValue = "true")
@@ -53,7 +53,7 @@ public final class NpmMojo extends AbstractFrontendMojo {
      * Files that should be checked for changes for incremental builds in addition
      * to the defaults in {@link IncrementalMojoHelper}. Directories will be searched.
      */
-    @Parameter(property = "triggerFiles", alias = "trigger.files", required = false)
+    @Parameter(property = "triggerFiles", required = false)
     private Set<File> triggerFiles;
 
     /**
@@ -61,7 +61,7 @@ public final class NpmMojo extends AbstractFrontendMojo {
      * to the defaults in {@link IncrementalMojoHelper}. Whole directories will be
      * excluded.
      */
-    @Parameter(property = "excludedFilenames", alias = "excluded.filenames", defaultValue = "node_modules,build,dist,target,.idea,.history,tmp,.settings,.vscode", required = false)
+    @Parameter(property = "excludedFilenames", defaultValue = "node_modules,build,dist,target,.idea,.history,tmp,.settings,.vscode", required = false)
     private Set<String> excludedFilenames;
 
     @Component
