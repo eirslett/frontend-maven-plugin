@@ -111,6 +111,15 @@ public class IncrementalBuildExecutionDigest {
             }
 
             @Override
+            public String toString() {
+                return "File{" +
+                        "filename='" + filename + '\'' +
+                        ", byteLength=" + byteLength +
+                        ", hash='" + hash + '\'' +
+                        '}';
+            }
+
+            @Override
             public boolean equals(Object o) {
                 if (!(o instanceof File)) return false;
                 File file = (File) o;
@@ -134,6 +143,14 @@ public class IncrementalBuildExecutionDigest {
             public Runtime(String runtime, String runtimeVersion) {
                 this.runtime = runtime;
                 this.runtimeVersion = runtimeVersion;
+            }
+
+            @Override
+            public String toString() {
+                return "Runtime{" +
+                        "runtime='" + runtime + '\'' +
+                        ", runtimeVersion='" + runtimeVersion + '\'' +
+                        '}';
             }
 
             @Override
