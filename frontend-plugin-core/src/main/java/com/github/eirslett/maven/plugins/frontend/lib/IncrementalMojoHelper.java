@@ -39,6 +39,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 public class IncrementalMojoHelper {
     private static final Logger log = getLogger(IncrementalMojoHelper.class);
+    private static final String SEE_DEBUG_LOGS_MSG = " See the Maven debug logs (run with -X) for more info";
     private static ObjectMapper objectMapper;
     private final File targetDirectory;
     private final File workingDirectory;
@@ -70,7 +71,7 @@ public class IncrementalMojoHelper {
         }
 
         if (!runtime.isPresent()) {
-            log.warn("Failed to do incremental compilation because the runtime version couldn't be fetched, see the debug logs");
+            log.warn("Failed to do incremental compilation because the runtime version couldn't be fetched." + SEE_DEBUG_LOGS_MSG);
             return false;
         }
 
@@ -81,7 +82,7 @@ public class IncrementalMojoHelper {
                     digest = readDigest(digestFileLocation);
                 }
             } catch (FileNotFoundException exception) {
-                log.debug("Existing digest file doesn't exist");
+                log.debug("No existing digest file", exception);
             }
 
             if (isNull(digest)) {
@@ -101,9 +102,10 @@ public class IncrementalMojoHelper {
             if (digestVersionsMatch && previousExecution != null) {
                 canSkipExecution = Objects.equals(previousExecution, thisExecution);
                 if (canSkipExecution) {
-                    log.info("Atlassian Fork FTW - No changes detected! - Skipping execution");
+                    log.info("No changes detected - skipping execution of frontend-maven-plugin! If it should have " +
+                            "have executed, adjust the triggerFiles and excludedFilenames in the configuration.");
                 } else {
-                    log.info("A change was detected, couldn't do incremental compilation for executionId:  {} in artifactId: {}", coordinates.id, artifactId);
+                    log.info("Didn't do incremental compilation because a change was detected for executionId:  {} in artifactId: {}" + SEE_DEBUG_LOGS_MSG, coordinates.id, artifactId);
 
                     if (log.isDebugEnabled()) {
                         String argumentsDifference = StringUtils.difference(previousExecution.arguments, thisExecution.arguments);
@@ -138,8 +140,8 @@ public class IncrementalMojoHelper {
 
             return canSkipExecution;
         } catch (Exception exception) {
-            log.error("Failure while determining if an incremental build is needed. See debug logs");
-            log.debug("Failure while determining if an incremental build was...", exception);
+            log.error("Failure while determining if an incremental build is possible." + SEE_DEBUG_LOGS_MSG);
+            log.debug("Failure while determining if an incremental build is possible, because: ", exception);
             return false;
         } finally {
             timer.stop("execute.incremental.check", artifactId, forkVersion, "",
@@ -155,18 +157,18 @@ public class IncrementalMojoHelper {
         }
 
         try {
-            log.debug("Accepting the incremental build digest...");
+            log.debug("Accepting the incremental build digest after a successful execution");
             File digestFile = getDigestFile();
             if (digestFile.exists()) {
                 if (!digestFile.delete()) {
-                    log.warn("Failed to delete the previous incremental build digest");
+                    log.warn("Failed to delete the previous incremental build digest. You'll have to delete it manually @ {}", digestFile.getAbsolutePath());
                 }
             }
 
             digestFile.getParentFile().mkdirs();
             saveDigest(digest);
         } catch (Exception exception) {
-            log.warn("Failed to save the incremental build digest, see the debug logs");
+            log.warn("Failed to save the incremental build digest." + SEE_DEBUG_LOGS_MSG);
             log.debug("Failed to save the incremental build digest, because: ", exception);
         }
     }
@@ -315,9 +317,9 @@ public class IncrementalMojoHelper {
         }
 
         @Override
-        public FileVisitResult visitFileFailed(Path path, IOException e) throws IOException {
-            log.debug("Failed to visit {}", path, e);
-            return super.visitFileFailed(path, e);
+        public FileVisitResult visitFileFailed(Path path, IOException exception) throws IOException {
+            log.debug("Failed to visit {}", path, exception);
+            return super.visitFileFailed(path, exception);
         }
 
         private static String getFileExtension(String fileName) {
