@@ -32,6 +32,7 @@ import static java.lang.Runtime.getRuntime;
 import static java.lang.System.getProperty;
 import static java.lang.System.getenv;
 import static java.time.Instant.now;
+import static java.util.Objects.isNull;
 import static java.util.concurrent.Executors.newSingleThreadScheduledExecutor;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.apache.http.entity.ContentType.APPLICATION_JSON;
@@ -262,6 +263,10 @@ public class AtlassianDevMetricsReporter  {
      * perfect
      */
     static String getScriptFromArguments(String arguments) {
+        if (isNull(arguments)) {
+            arguments = "";
+        }
+
         if (arguments.contains("test") || arguments.contains("check") || arguments.contains("visreg") || arguments.contains("jest") || arguments.contains("storybook")) {
             return "test";
         }
