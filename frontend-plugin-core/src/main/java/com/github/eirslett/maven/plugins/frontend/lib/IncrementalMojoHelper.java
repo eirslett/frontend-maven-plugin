@@ -149,6 +149,7 @@ public class IncrementalMojoHelper {
                 startTimeForSaveTimeUpdate = Optional.of(now());
             }
 
+            digest.digestVersion = CURRENT_DIGEST_VERSION;
             digest.executions.put(coordinates, thisExecution);
 
             return canSkipExecution;
