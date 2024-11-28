@@ -83,6 +83,8 @@ public final class CorepackMojo extends AbstractFrontendMojo {
                 getLog().info("Skipping corepack execution as no modified files in " + workingDirectory);
             } else {
                 runner.execute(arguments, environmentVariables);
+
+                incrementalHelper.acceptIncrementalBuildDigest();
             }
         });
     }
