@@ -17,6 +17,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -31,16 +33,19 @@ import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKN
 import static com.fasterxml.jackson.databind.SerializationFeature.INDENT_OUTPUT;
 import static com.github.eirslett.maven.plugins.frontend.lib.IncrementalBuildExecutionDigest.CURRENT_DIGEST_VERSION;
 import static java.lang.String.format;
+import static java.time.Instant.now;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptySet;
 import static java.util.Objects.isNull;
 import static java.util.Objects.requireNonNull;
+import static java.util.Optional.empty;
 import static org.slf4j.LoggerFactory.getLogger;
 
 public class IncrementalMojoHelper {
     private static final Logger log = getLogger(IncrementalMojoHelper.class);
     private static final String SEE_DEBUG_LOGS_MSG = " See the Maven debug logs (run with -X) for more info";
     private static ObjectMapper objectMapper;
+    private final ExecutionCoordinates coordinates;
     private final File targetDirectory;
     private final File workingDirectory;
     private final boolean isActive;
@@ -48,8 +53,10 @@ public class IncrementalMojoHelper {
     private final Set<String> excludedFilenames;
 
     private IncrementalBuildExecutionDigest digest;
+    private Optional<Instant> startTimeForSaveTimeUpdate = empty();
 
-    public IncrementalMojoHelper(String activationFlag, File targetDirectory, File workingDirectory, Set<File> triggerFiles, Set<String> excludedFilenames) {
+    public IncrementalMojoHelper(String activationFlag, ExecutionCoordinates coordinates, File targetDirectory, File workingDirectory, Set<File> triggerFiles, Set<String> excludedFilenames) {
+        this.coordinates = requireNonNull(coordinates, "coordinates");
         this.targetDirectory = requireNonNull(targetDirectory, "targetDirectory");
         this.workingDirectory = requireNonNull(workingDirectory, "workingDirectory");
         this.triggerFiles = isNull(triggerFiles) ? emptySet() : triggerFiles;
@@ -62,7 +69,7 @@ public class IncrementalMojoHelper {
         return isActive;
     }
 
-    public boolean canBeSkipped(String arguments, ExecutionCoordinates coordinates, Optional<Runtime> runtime, Map<String, String> suppliedEnvVars, String artifactId, String forkVersion) {
+    public boolean canBeSkipped(String arguments, Optional<Runtime> runtime, Map<String, String> suppliedEnvVars, String artifactId, String forkVersion) {
         Timer timer = new Timer();
         boolean failed = false;
 
@@ -100,10 +107,12 @@ public class IncrementalMojoHelper {
             boolean canSkipExecution = false;
             Execution previousExecution = digest.executions.get(coordinates);
             if (digestVersionsMatch && previousExecution != null) {
-                canSkipExecution = Objects.equals(previousExecution, thisExecution);
+                // patch it forward so we don't lose it and so the equality check works
+                thisExecution.millisecondsSaved = previousExecution.millisecondsSaved;
+                canSkipExecution = previousExecution.equals(thisExecution);
                 if (canSkipExecution) {
-                    log.info("No changes detected - skipping execution of frontend-maven-plugin! If it should have " +
-                            "have executed, adjust the triggerFiles and excludedFilenames in the configuration.");
+                    log.info("Saving {} by skipping execution of frontend-maven-plugin! No changes were detected. If it should have " +
+                            "have executed, adjust the triggerFiles and excludedFilenames in the configuration.", Duration.ofMillis(previousExecution.millisecondsSaved));
                 } else {
                     log.info("Didn't do incremental compilation because a change was detected for executionId:  {} in artifactId: {}" + SEE_DEBUG_LOGS_MSG, coordinates.id, artifactId);
 
@@ -134,6 +143,10 @@ public class IncrementalMojoHelper {
                         }
                     }
                 }
+
+                startTimeForSaveTimeUpdate = Optional.of(now());
+            } else {
+                startTimeForSaveTimeUpdate = Optional.of(now());
             }
 
             digest.executions.put(coordinates, thisExecution);
@@ -155,6 +168,10 @@ public class IncrementalMojoHelper {
         if (!isActive) {
             return;
         }
+
+        startTimeForSaveTimeUpdate.ifPresent(instant ->
+                digest.executions.get(coordinates).millisecondsSaved =
+                        Duration.between(instant, now()).toMillis());
 
         try {
             log.debug("Accepting the incremental build digest after a successful execution");

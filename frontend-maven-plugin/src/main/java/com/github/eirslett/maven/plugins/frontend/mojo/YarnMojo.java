@@ -88,11 +88,11 @@ public final class YarnMojo extends AbstractFrontendMojo {
         boolean isYarnBerry = isYarnrcYamlFilePresent(this.session, this.workingDirectory);
         YarnRunner runner = factory.getYarnRunner(getProxyConfig(), getRegistryUrl(), isYarnBerry);
 
-        IncrementalMojoHelper incrementalHelper = new IncrementalMojoHelper(frontendIncremental, getTargetDir(), workingDirectory, triggerFiles, excludedFilenames);
         ExecutionCoordinates coordinates = new ExecutionCoordinates(execution.getGoal(), execution.getExecutionId(), execution.getLifecyclePhase());
+        IncrementalMojoHelper incrementalHelper = new IncrementalMojoHelper(frontendIncremental, coordinates, getTargetDir(), workingDirectory, triggerFiles, excludedFilenames);
 
         boolean incrementalEnabled = incrementalHelper.incrementalEnabled();
-        boolean isIncremental = incrementalEnabled && incrementalHelper.canBeSkipped(arguments, coordinates, runner.getRuntime(), environmentVariables, project.getArtifactId(), getFrontendMavenPluginVersion());
+        boolean isIncremental = incrementalEnabled && incrementalHelper.canBeSkipped(arguments, runner.getRuntime(), environmentVariables, project.getArtifactId(), getFrontendMavenPluginVersion());
 
         incrementExecutionCount(project.getArtifactId(), arguments, YARN, getFrontendMavenPluginVersion(), incrementalEnabled, isIncremental, () -> {
             if (isIncremental) {
