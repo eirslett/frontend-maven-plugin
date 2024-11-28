@@ -17,7 +17,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
-- [DCA11Y-1274]: ".flattened-pom.xml" to the excluded filenames list after finding it in Jira
+- [DCA11Y-1274]: ".flattened-pom.xml" & ".git" to the excluded filenames list after finding it in Jira
 - [DCA11Y-1274]: Log message indicating how much time is saved
 
 ## [1.15.1-atlassian-2]
