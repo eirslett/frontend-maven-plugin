@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - [DCA11Y-1274]: Fix incremental with Yarn berry by fixing runtime detection
 - [DCA11Y-1274]: Corepack Mojo incremental works
 - [DCA11Y-1274]: Fix updating of digest versions without clean install
+- [DCA11Y-1274]: Download dev metrics now correctly report PAC
+- [DCA11Y-1145]: Fixed the legacy "downloadRoot" argument for PNPM & NPM installation
 
 ### Added
 

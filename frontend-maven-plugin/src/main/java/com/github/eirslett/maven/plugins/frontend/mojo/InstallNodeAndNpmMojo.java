@@ -122,8 +122,8 @@ public final class InstallNodeAndNpmMojo extends AbstractFrontendMojo {
 
         String validNodeVersion = getDownloadableVersion(nodeVersion);
 
-        final String nodeDownloadRoot = getNodeDownloadRoot();
-        final String npmDownloadRoot = getNpmDownloadRoot();
+        String nodeDownloadRoot = getNodeDownloadRoot();
+        String npmDownloadRoot = getNpmDownloadRoot();
 
         try {
             if (isAtlassianProject(project) &&
@@ -135,10 +135,10 @@ public final class InstallNodeAndNpmMojo extends AbstractFrontendMojo {
                 getLog().info("Atlassian project detected, going to use the internal mirrors (requires VPN)");
 
                 serverId = "maven-atlassian-com";
+                nodeDownloadRoot = isBlank(nodeDownloadRoot) ? ATLASSIAN_NODE_DOWNLOAD_ROOT : nodeDownloadRoot;
+                npmDownloadRoot = isBlank(npmDownloadRoot) ? ATLASSIAN_NPM_DOWNLOAD_ROOT : npmDownloadRoot;
                 try {
-                    install(factory, validNodeVersion,
-                            isBlank(nodeDownloadRoot) ? ATLASSIAN_NODE_DOWNLOAD_ROOT : nodeDownloadRoot,
-                            isBlank(npmDownloadRoot) ? ATLASSIAN_NPM_DOWNLOAD_ROOT : npmDownloadRoot);
+                    install(factory, validNodeVersion, nodeDownloadRoot, npmDownloadRoot);
                     return;
                 } catch (InstallationException exception) {
                     // Ignore as many filesystem exceptions unrelated to the mirror easily
@@ -149,7 +149,9 @@ public final class InstallNodeAndNpmMojo extends AbstractFrontendMojo {
                     pacAttemptFailed = true;
                     getLog().warn("Oh no couldn't use the internal mirrors! Falling back to upstream mirrors");
                     getLog().debug("Using internal mirrors failed because: ", exception);
-                } finally {
+
+                    nodeDownloadRoot = getNodeDownloadRoot();
+                    npmDownloadRoot = getNpmDownloadRoot();
                     serverId = null;
                 }
             }
@@ -163,6 +165,8 @@ public final class InstallNodeAndNpmMojo extends AbstractFrontendMojo {
             boolean finalFailed = failed;
             boolean finalPacAttemptFailed = pacAttemptFailed;
             boolean finalTriedToUsePac = triedToUsePac;
+            String finalNodeDownloadRoot = nodeDownloadRoot;
+            String finalNpmDownloadRoot = npmDownloadRoot;
             timer.stop(
                     "runtime.download",
                     project.getArtifactId(),
@@ -172,8 +176,8 @@ public final class InstallNodeAndNpmMojo extends AbstractFrontendMojo {
                         put("installation", "npm");
                         put("installation-work-runtime", runtimeWork.toString());
                         put("installation-work-package-manager", packageManagerWork.toString());
-                        put("runtime-host", getHostForMetric(nodeDownloadRoot, NODEJS_ORG, finalTriedToUsePac, finalPacAttemptFailed));
-                        put("package-manager-host", getHostForMetric(npmDownloadRoot, DEFAULT_NPM_DOWNLOAD_ROOT, finalTriedToUsePac, finalPacAttemptFailed));
+                        put("runtime-host", getHostForMetric(finalNodeDownloadRoot, NODEJS_ORG, finalTriedToUsePac, finalPacAttemptFailed));
+                        put("package-manager-host", getHostForMetric(finalNpmDownloadRoot, DEFAULT_NPM_DOWNLOAD_ROOT, finalTriedToUsePac, finalPacAttemptFailed));
                         put("failed", Boolean.toString(finalFailed));
                         put("pac-attempted-failed", Boolean.toString(finalPacAttemptFailed));
                         put("tried-to-use-pac", Boolean.toString(finalTriedToUsePac));
@@ -229,7 +233,7 @@ public final class InstallNodeAndNpmMojo extends AbstractFrontendMojo {
     }
 
     private String getNpmDownloadRoot() {
-        if (downloadRoot != null && !"".equals(downloadRoot) && NPMInstaller.DEFAULT_NPM_DOWNLOAD_ROOT.equals(npmDownloadRoot)) {
+        if (downloadRoot != null && !"".equals(downloadRoot) && isBlank(npmDownloadRoot)) {
             return downloadRoot;
         }
         return npmDownloadRoot;
