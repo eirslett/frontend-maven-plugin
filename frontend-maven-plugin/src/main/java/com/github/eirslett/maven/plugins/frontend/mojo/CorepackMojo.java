@@ -51,7 +51,7 @@ public final class CorepackMojo extends AbstractFrontendMojo {
      * to the defaults in {@link IncrementalMojoHelper}. Whole directories will be
      * excluded.
      */
-    @Parameter(property = "excludedFilenames", required = false, defaultValue = "node_modules,lcov-report,coverage,screenshots,build,dist,target,.idea,.history,tmp,.settings,.vscode,.git,dependency-reduced-pom.xml,.flattened-pom.xml")
+    @Parameter(property = "excludedFilenames", required = false, defaultValue = ".node,node_modules,lcov-report,coverage,screenshots,build,dist,target,.idea,.history,tmp,.settings,.vscode,.git,dependency-reduced-pom.xml,.flattened-pom.xml")
     private Set<String> excludedFilenames;
 
     @Component(role = SettingsDecrypter.class)
