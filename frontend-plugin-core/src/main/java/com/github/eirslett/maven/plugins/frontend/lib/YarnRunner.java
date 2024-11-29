@@ -60,8 +60,24 @@ final class DefaultYarnRunner extends YarnTaskExecutor implements YarnRunner {
     }
 
     /**
+     * <h3>Why not use? / Why not do this instead?</h3>
+     * <ul>
+     *     <li><i>Execute node/yarn from the path?</i>It's often different to the
+     *     Node version used by this plugin because people often have to mix
+     *     versions AND because this plugin executes all tasks from the version
+     *     it downloaded</li>
+     *     <li><i>Use the same command between yarn versions?</i>There is
+     *     no command compatible with all version of yarn we use and support</li>
+     *     <li><i>Use yarn to call node?</i>In Yarn classic it's not a reserved
+     *     command which can lead to crashes if a project has a "node"
+     *     script (reasonably common)</li>
+     * </ul>
+     * <h3>Output of the commands</h3>
+     * <h5>In Yarn Berry</h5>
      * <p>
-     * Running {@code yarn node --version} in yarn classic gives us an output like this:
+     * Running {@code yarn node --version} in yarn classic gives us an output
+     * like this of all the C++ libraries and the package name in the
+     * {@code package.json}:
      * <pre>
      * yarn node v1.22.22
      * v20.10.0
@@ -69,12 +85,14 @@ final class DefaultYarnRunner extends YarnTaskExecutor implements YarnRunner {
      * </pre>
      * while yarn berry will give us just the output
      * </p>
+     * <h5>In Yarn Classic</h5>
      * <p>
      * Running {@code yarn versions} gives an output like this:
      * <pre>
      * yarn versions v1.22.22
      * {
      *   yarn: '1.22.22',
+     *   '@atlassian/aui-workspace': '9.13.0-SNAPSHOT',
      *   node: '18.17.0',
      *   acorn: '8.8.2',
      *   ada: '2.5.0',
@@ -83,7 +101,7 @@ final class DefaultYarnRunner extends YarnTaskExecutor implements YarnRunner {
      * Done in 0.01s.
      * </pre>
      * The first line is repeated and the last one will cause an unnecessary diff. Running
-     * with {@code --silent culls the first and last lines}, but this isn't available on all yarn
+     * with {@code --silent} culls the first and last lines, but this isn't available on all yarn
      * classic versions, e.g. 1.22.17
      * </p>
      */
