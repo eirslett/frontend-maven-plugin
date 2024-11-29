@@ -53,7 +53,7 @@ public class IncrementalMojoHelper {
     private final Set<String> excludedFilenames;
 
     private IncrementalBuildExecutionDigest digest;
-    private Optional<Instant> startTimeForSaveTimeUpdate = empty();
+    private Optional<Instant> startTimeForSavedTimeUpdate = empty();
 
     public IncrementalMojoHelper(String activationFlag, ExecutionCoordinates coordinates, File targetDirectory, File workingDirectory, Set<File> triggerFiles, Set<String> excludedFilenames) {
         this.coordinates = requireNonNull(coordinates, "coordinates");
@@ -104,6 +104,9 @@ public class IncrementalMojoHelper {
                     createFilesDigest(),
                     runtime.get());
 
+            // The clock starts now
+            startTimeForSavedTimeUpdate = Optional.of(now());
+
             boolean canSkipExecution = false;
             Execution previousExecution = digest.executions.get(coordinates);
             if (digestVersionsMatch && previousExecution != null) {
@@ -111,6 +114,9 @@ public class IncrementalMojoHelper {
                 thisExecution.millisecondsSaved = previousExecution.millisecondsSaved;
                 canSkipExecution = previousExecution.equals(thisExecution);
                 if (canSkipExecution) {
+                    // Clear the time, we're about to skip execution so it'd report lower than it actually would save
+                    startTimeForSavedTimeUpdate = Optional.empty();
+
                     log.info("Saving {} by skipping execution of frontend-maven-plugin! No changes were detected. If it should have " +
                             "have executed, adjust the triggerFiles and excludedFilenames in the configuration.", Duration.ofMillis(previousExecution.millisecondsSaved));
                 } else {
@@ -143,10 +149,6 @@ public class IncrementalMojoHelper {
                         }
                     }
                 }
-
-                startTimeForSaveTimeUpdate = Optional.of(now());
-            } else {
-                startTimeForSaveTimeUpdate = Optional.of(now());
             }
 
             digest.digestVersion = CURRENT_DIGEST_VERSION;
@@ -170,7 +172,7 @@ public class IncrementalMojoHelper {
             return;
         }
 
-        startTimeForSaveTimeUpdate.ifPresent(instant ->
+        startTimeForSavedTimeUpdate.ifPresent(instant ->
                 digest.executions.get(coordinates).millisecondsSaved =
                         Duration.between(instant, now()).toMillis());
 
