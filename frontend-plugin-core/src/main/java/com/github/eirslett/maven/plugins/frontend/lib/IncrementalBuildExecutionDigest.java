@@ -26,7 +26,7 @@ public class IncrementalBuildExecutionDigest {
     /**
      * This should be incremented as soon as the digest schema or semantics change
      */
-    public static final Long CURRENT_DIGEST_VERSION = 1L;
+    public static final Long CURRENT_DIGEST_VERSION = 2L;
 
     private static final String SERIALIZATION_CHARSET = UTF_8.toString();
     /**
@@ -83,6 +83,7 @@ public class IncrementalBuildExecutionDigest {
         public Map<String, String> environmentVariables;
         public Set<File> files;
         public Runtime runtime;
+        public Long millisecondsSaved = 0L;
 
         public Execution() {
             // for Jackson
@@ -170,12 +171,12 @@ public class IncrementalBuildExecutionDigest {
         public boolean equals(Object o) {
             if (!(o instanceof Execution)) return false;
             Execution execution = (Execution) o;
-            return Objects.equals(files, execution.files) && Objects.equals(environmentVariables, execution.environmentVariables) && Objects.equals(arguments, execution.arguments) && Objects.equals(runtime, execution.runtime);
+            return Objects.equals(files, execution.files) && Objects.equals(environmentVariables, execution.environmentVariables) && Objects.equals(arguments, execution.arguments) && Objects.equals(runtime, execution.runtime) && Objects.equals(millisecondsSaved, execution.millisecondsSaved);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(files, environmentVariables, arguments, runtime);
+            return Objects.hash(files, environmentVariables, arguments, runtime, millisecondsSaved);
         }
     }
 

@@ -2,8 +2,8 @@ package com.github.eirslett.maven.plugins.frontend.mojo;
 
 import com.github.eirslett.maven.plugins.frontend.lib.CorepackRunner;
 import com.github.eirslett.maven.plugins.frontend.lib.FrontendPluginFactory;
-import com.github.eirslett.maven.plugins.frontend.lib.IncrementalMojoHelper;
 import com.github.eirslett.maven.plugins.frontend.lib.IncrementalBuildExecutionDigest.ExecutionCoordinates;
+import com.github.eirslett.maven.plugins.frontend.lib.IncrementalMojoHelper;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -17,6 +17,7 @@ import java.util.Set;
 
 import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsReporter.Goal.COREPACK;
 import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsReporter.incrementExecutionCount;
+import static com.github.eirslett.maven.plugins.frontend.lib.IncrementalMojoHelper.DEFAULT_EXCLUDED_FILENAMES;
 
 @Mojo(name="corepack",  defaultPhase = LifecyclePhase.GENERATE_RESOURCES, threadSafe = true)
 public final class CorepackMojo extends AbstractFrontendMojo {
@@ -51,7 +52,7 @@ public final class CorepackMojo extends AbstractFrontendMojo {
      * to the defaults in {@link IncrementalMojoHelper}. Whole directories will be
      * excluded.
      */
-    @Parameter(property = "excludedFilenames", required = false, defaultValue = "node_modules,lcov-report,coverage,screenshots,build,dist,target,.idea,.history,tmp,.settings,.vscode,dependency-reduced-pom.xml")
+    @Parameter(property = "excludedFilenames", required = false, defaultValue = DEFAULT_EXCLUDED_FILENAMES)
     private Set<String> excludedFilenames;
 
     @Component(role = SettingsDecrypter.class)
@@ -72,17 +73,19 @@ public final class CorepackMojo extends AbstractFrontendMojo {
     public synchronized void execute(FrontendPluginFactory factory) throws Exception {
         CorepackRunner runner = factory.getCorepackRunner();
 
-        IncrementalMojoHelper incrementalHelper = new IncrementalMojoHelper(frontendIncremental, getTargetDir(), workingDirectory, triggerFiles, excludedFilenames);
         ExecutionCoordinates coordinates = new ExecutionCoordinates(execution.getGoal(), execution.getExecutionId(), execution.getLifecyclePhase());
+        IncrementalMojoHelper incrementalHelper = new IncrementalMojoHelper(frontendIncremental, coordinates, getTargetDir(), workingDirectory, triggerFiles, excludedFilenames);
 
         boolean incrementalEnabled = incrementalHelper.incrementalEnabled();
-        boolean isIncremental = incrementalEnabled && incrementalHelper.canBeSkipped(arguments, coordinates, runner.getRuntime(), environmentVariables, project.getArtifactId(), getFrontendMavenPluginVersion());
+        boolean isIncremental = incrementalEnabled && incrementalHelper.canBeSkipped(arguments, runner.getRuntime(), environmentVariables, project.getArtifactId(), getFrontendMavenPluginVersion());
 
         incrementExecutionCount(project.getArtifactId(), arguments, COREPACK, getFrontendMavenPluginVersion(), incrementalEnabled, isIncremental, () -> {
             if (isIncremental) {
                 getLog().info("Skipping corepack execution as no modified files in " + workingDirectory);
             } else {
                 runner.execute(arguments, environmentVariables);
+
+                incrementalHelper.acceptIncrementalBuildDigest();
             }
         });
     }
