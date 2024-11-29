@@ -19,6 +19,7 @@ import java.util.Set;
 
 import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsReporter.Goal.NPM;
 import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsReporter.incrementExecutionCount;
+import static com.github.eirslett.maven.plugins.frontend.lib.IncrementalMojoHelper.DEFAULT_EXCLUDED_FILENAMES;
 
 @Mojo(name="npm",  defaultPhase = LifecyclePhase.GENERATE_RESOURCES, threadSafe = true)
 public final class NpmMojo extends AbstractFrontendMojo {
@@ -61,7 +62,7 @@ public final class NpmMojo extends AbstractFrontendMojo {
      * to the defaults in {@link IncrementalMojoHelper}. Whole directories will be
      * excluded.
      */
-    @Parameter(property = "excludedFilenames", defaultValue = ".node,node_modules,lcov-report,coverage,screenshots,build,dist,target,.idea,.history,tmp,.settings,.vscode,.git,dependency-reduced-pom.xml,.flattened-pom.xml", required = false)
+    @Parameter(property = "excludedFilenames", defaultValue = DEFAULT_EXCLUDED_FILENAMES, required = false)
     private Set<String> excludedFilenames;
 
     @Component

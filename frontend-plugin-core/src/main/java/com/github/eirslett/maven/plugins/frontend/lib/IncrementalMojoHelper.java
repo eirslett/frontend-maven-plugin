@@ -42,9 +42,30 @@ import static java.util.Optional.empty;
 import static org.slf4j.LoggerFactory.getLogger;
 
 public class IncrementalMojoHelper {
+    private static final String MVN_LIST_SEPARATOR = ",";
+    public static final String DEFAULT_EXCLUDED_FILENAMES =
+                    ".node" + MVN_LIST_SEPARATOR +
+                    "node_modules" + MVN_LIST_SEPARATOR +
+                    "lcov-report" + MVN_LIST_SEPARATOR +
+                    "coverage" + MVN_LIST_SEPARATOR +
+                    "screenshots" + MVN_LIST_SEPARATOR +
+                    "build" + MVN_LIST_SEPARATOR +
+                    "dist" + MVN_LIST_SEPARATOR +
+                    "target" + MVN_LIST_SEPARATOR +
+                    ".idea" + MVN_LIST_SEPARATOR +
+                    ".history" + MVN_LIST_SEPARATOR +
+                    "tmp" + MVN_LIST_SEPARATOR +
+                    ".settings" + MVN_LIST_SEPARATOR +
+                    ".vscode" + MVN_LIST_SEPARATOR +
+                    ".git" + MVN_LIST_SEPARATOR +
+                    "dependency-reduced-pom.xml" + MVN_LIST_SEPARATOR +
+                    ".flattened-pom.xml";
+
     private static final Logger log = getLogger(IncrementalMojoHelper.class);
     private static final String SEE_DEBUG_LOGS_MSG = " See the Maven debug logs (run with -X) for more info";
+
     private static ObjectMapper objectMapper;
+
     private final ExecutionCoordinates coordinates;
     private final File targetDirectory;
     private final File workingDirectory;
