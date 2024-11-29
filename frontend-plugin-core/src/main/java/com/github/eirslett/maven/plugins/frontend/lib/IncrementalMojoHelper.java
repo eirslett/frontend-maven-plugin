@@ -117,7 +117,7 @@ public class IncrementalMojoHelper {
                     // Clear the time, we're about to skip execution so it'd report lower than it actually would save
                     startTimeForSavedTimeUpdate = Optional.empty();
 
-                    log.info("Saving {} by skipping execution of frontend-maven-plugin! No changes were detected. If it should have " +
+                    log.info("Saving {} by skipping execution of frontend-maven-plugin! No changes were detected. If it should " +
                             "have executed, adjust the triggerFiles and excludedFilenames in the configuration.", Duration.ofMillis(previousExecution.millisecondsSaved));
                 } else {
                     log.info("Didn't do incremental compilation because a change was detected for executionId:  {} in artifactId: {}" + SEE_DEBUG_LOGS_MSG, coordinates.id, artifactId);
