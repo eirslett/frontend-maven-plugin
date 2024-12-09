@@ -20,7 +20,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           java-version: '11'
-          distribution: 'temurin' # Specify the Java distribution
+          distribution: 'temurin'
 
       # Step 3: Build the project
       - name: Build with Maven
@@ -29,8 +29,8 @@ jobs:
       # Step 4: Run source code scan with Semgrep
       - name: Run Semgrep
         run: |
-          curl -sSL https://semgrep.dev/install.sh | sh
-          ./semgrep scan --config=auto --json > semgrep-results.json
+          pip install semgrep
+          semgrep scan --config=auto --json > semgrep-results.json
 
       # Step 5: Upload scan report as an artifact
       - name: Upload Semgrep report
