@@ -30,7 +30,8 @@ jobs:
       - name: Run Semgrep
         run: |
           pip install semgrep
-          semgrep scan --config=auto --json > semgrep-results.json
+          semgrep scan --config=auto --error --json > semgrep-results.json
+          
 
       # Step 5: Upload scan report as an artifact
       - name: Upload Semgrep report
