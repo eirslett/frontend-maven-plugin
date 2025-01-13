@@ -54,9 +54,6 @@ final class DefaultFileDownloader implements FileDownloader {
 
     @Override
     public void download(String downloadUrl, String destination, String userName, String password, Map<String, String> httpHeaders) throws DownloadException {
-        // force tls to 1.2 since github removed weak cryptographic standards
-        // https://blog.github.com/2018-02-02-weak-cryptographic-standards-removal-notice/
-        System.setProperty("https.protocols", "TLSv1.2");
         String fixedDownloadUrl = downloadUrl;
         try {
             fixedDownloadUrl = FilenameUtils.separatorsToUnix(fixedDownloadUrl);
