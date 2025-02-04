@@ -89,6 +89,7 @@ to see how it should be set up: https://github.com/eirslett/frontend-maven-plugi
   - [Issues, Contributing](#issues-contributing)
   - [License](#license)
     
+
 **Recommendation:** _Try to run all your tasks via npm scripts instead of running bower, grunt, gulp etc. directly._
 
 ### Installing node and npm
@@ -97,6 +98,7 @@ The versions of Node and npm are downloaded from https://nodejs.org/dist, extrac
 in your [installation directory](#installation-directory) . Node/npm will only be "installed" locally to your project. 
 It will not be installed globally on the whole system (and it will not interfere with any Node/npm installations already 
 present). 
+If you want to use the existing Node in your system, simply add a `nodeExecutablePath` points to the existed node executable.  
 
 ```xml
 <plugin>
