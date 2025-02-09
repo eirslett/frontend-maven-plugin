@@ -1,6 +1,7 @@
 package com.github.eirslett.maven.plugins.frontend.lib;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -53,6 +54,11 @@ final class DefaultNpmRunner extends NodeTaskExecutor implements NpmRunner {
 
             proxyEnvironmentVariables.put("https_proxy", proxy.getUri().toString());
             proxyEnvironmentVariables.put("http_proxy", proxy.getUri().toString());
+            final String nonProxyHosts = proxy.getNonProxyHosts();
+            if (nonProxyHosts != null && !nonProxyHosts.isEmpty()) {
+                proxyEnvironmentVariables.put("no_proxy", nonProxyHosts.replaceAll("\\|",",").replaceAll("\\*",""));
+
+            }
         }
 
         return proxyEnvironmentVariables;
