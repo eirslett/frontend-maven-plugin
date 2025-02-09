@@ -56,7 +56,7 @@ final class DefaultNpmRunner extends NodeTaskExecutor implements NpmRunner {
             proxyEnvironmentVariables.put("http_proxy", proxy.getUri().toString());
             final String nonProxyHosts = proxy.getNonProxyHosts();
             if (nonProxyHosts != null && !nonProxyHosts.isEmpty()) {
-                proxyEnvironmentVariables.put("no_proxy", nonProxyHosts.replaceAll("\\|",",").replaceAll("\\*",""));
+                proxyEnvironmentVariables.put("no_proxy", nonProxyHosts.replace('|',',').replace("*",""));
 
             }
         }
