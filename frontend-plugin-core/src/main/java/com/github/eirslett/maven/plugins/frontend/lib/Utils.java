@@ -1,11 +1,14 @@
 package com.github.eirslett.maven.plugins.frontend.lib;
 
+import javax.annotation.Nullable;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-final class Utils {
+import static java.util.Objects.isNull;
+
+public final class Utils {
     public static List<String> merge(List<String> first, List<String> second) {
         ArrayList<String> result = new ArrayList<String>(first);
         result.addAll(second);
@@ -33,5 +36,9 @@ final class Utils {
 
     public static boolean isRelative(String path) {
         return !path.startsWith("/") && !path.startsWith("file:") && !path.matches("^[a-zA-Z]:\\\\.*");
+    }
+
+    public static boolean isBlank(@Nullable String string) {
+        return isNull(string) || string.trim().isEmpty();
     }
 }

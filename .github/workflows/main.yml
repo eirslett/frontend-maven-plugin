@@ -29,16 +29,3 @@ jobs:
       - name: "Run Maven"
         shell: bash
         run: mvn clean install --batch-mode -PintegrationTests
-      - name: "Deploy"
-        if: github.repository_owner == 'eirslett' && github.ref == 'refs/heads/master' && matrix.os == 'ubuntu-latest'
-        shell: bash
-        env:
-          GPG_KEY: ${{ secrets.GPG_KEY }}
-          GPG_KEY_NAME: ${{ secrets.GPG_KEY_NAME }}
-          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-          OSSRH_JIRA_USERNAME: ${{ secrets.OSSRH_JIRA_USERNAME }}
-          OSSRH_JIRA_PASSWORD: ${{ secrets.OSSRH_JIRA_PASSWORD }}
-        run: |
-          export GPG_TTY=$(tty)
-          echo -e "$GPG_KEY" | gpg --import --passphrase $GPG_PASSPHRASE --batch --yes
-          mvn --settings settings-github.xml -B deploy -Prelease -DskipTests

@@ -11,6 +11,10 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsInstallationWork.CACHED;
+import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsInstallationWork.DOWNLOADED;
+import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsInstallationWork.INSTALLED;
+
 public class PnpmInstaller {
 
     private static final String VERSION = "version";
@@ -20,7 +24,7 @@ public class PnpmInstaller {
     private static final Object LOCK = new Object();
 
     private String pnpmVersion, pnpmDownloadRoot, userName, password;
-    
+
     private Map<String, String> httpHeaders;
 
     private final Logger logger;
@@ -67,14 +71,15 @@ public class PnpmInstaller {
         return this;
     }
 
-    public void install() throws InstallationException {
+    public AtlassianDevMetricsInstallationWork install() throws InstallationException {
+        AtlassianDevMetricsInstallationWork state = INSTALLED;
         // use static lock object for a synchronized block
         synchronized (LOCK) {
             if (this.pnpmDownloadRoot == null || this.pnpmDownloadRoot.isEmpty()) {
                 this.pnpmDownloadRoot = DEFAULT_PNPM_DOWNLOAD_ROOT;
             }
             if (!pnpmIsAlreadyInstalled()) {
-                installPnpm();
+                state = installPnpm();
             }
 
             if (this.config.getPlatform().isWindows()) {
@@ -83,6 +88,7 @@ public class PnpmInstaller {
                 linkExecutable();
             }
         }
+        return state;
     }
 
     private boolean pnpmIsAlreadyInstalled() {
@@ -113,7 +119,7 @@ public class PnpmInstaller {
         }
     }
 
-    private void installPnpm() throws InstallationException {
+    private AtlassianDevMetricsInstallationWork installPnpm() throws InstallationException {
         try {
             this.logger.info("Installing pnpm version {}", this.pnpmVersion);
             String pnpmVersionClean = this.pnpmVersion.replaceFirst("^v(?=[0-9]+)", "");
@@ -123,7 +129,8 @@ public class PnpmInstaller {
 
             File archive = this.config.getCacheResolver().resolve(cacheDescriptor);
 
-            downloadFileIfMissing(downloadUrl, archive, this.userName, this.password, httpHeaders);
+            AtlassianDevMetricsInstallationWork state =
+                    downloadFileIfMissing(downloadUrl, archive, this.userName, this.password, httpHeaders);
 
             File installDirectory = getNodeInstallDirectory();
             File nodeModulesDirectory = new File(installDirectory, "node_modules");
@@ -172,6 +179,7 @@ public class PnpmInstaller {
 
             this.logger.info("Installed pnpm locally.");
 
+            return state;
         } catch (DownloadException e) {
             throw new InstallationException("Could not download pnpm", e);
         } catch (ArchiveExtractionException e) {
@@ -264,11 +272,13 @@ public class PnpmInstaller {
         this.archiveExtractor.extract(archive.getPath(), destinationDirectory.getPath());
     }
 
-    private void downloadFileIfMissing(String downloadUrl, File destination, String userName, String password, Map<String, String> httpHeaders)
+    private AtlassianDevMetricsInstallationWork downloadFileIfMissing(String downloadUrl, File destination, String userName, String password, Map<String, String> httpHeaders)
         throws DownloadException {
         if (!destination.exists()) {
             downloadFile(downloadUrl, destination, userName, password, httpHeaders);
+            return DOWNLOADED;
         }
+        return CACHED;
     }
 
     private void downloadFile(String downloadUrl, File destination, String userName, String password, Map<String, String> httpHeaders)

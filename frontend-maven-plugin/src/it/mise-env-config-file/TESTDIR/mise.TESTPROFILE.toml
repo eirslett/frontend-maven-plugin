@@ -1,0 +1,10 @@
+[tools]
+java = "temurin-21"
+maven = "3.9"
+pre-commit = "latest"
+ktlint = "latest"
+python = "3.12"
+# node 22.5.1
+node = "22.5.1"
+# node 22.5.1
+yarn = "1.22.22"

@@ -4,7 +4,7 @@
   <parent>
     <artifactId>frontend-plugins</artifactId>
     <groupId>com.github.eirslett</groupId>
-    <version>1.15.1-SNAPSHOT</version>
+    <version>1.15.1-atlassian-4-SNAPSHOT</version>
   </parent>
 
   <artifactId>frontend-maven-plugin</artifactId>
@@ -26,7 +26,7 @@
     <dependency>
       <groupId>com.github.eirslett</groupId>
       <artifactId>frontend-plugin-core</artifactId>
-      <version>${project.parent.version}</version>
+      <scope>compile</scope>
     </dependency>
 
     <dependency>
@@ -54,6 +54,12 @@
       <groupId>org.sonatype.plexus</groupId>
       <artifactId>plexus-build-api</artifactId>
       <version>0.0.7</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.code.findbugs</groupId>
+      <artifactId>jsr305</artifactId>
+      <version>3.0.2</version>
+      <scope>compile</scope>
     </dependency>
 
     <dependency>
@@ -85,29 +91,10 @@
           </execution>
         </executions>
       </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-source-plugin</artifactId>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-      </plugin>
     </plugins>
   </build>
 
   <profiles>
-    <profile>
-      <id>release</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-gpg-plugin</artifactId>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
     <profile>
       <id>integrationTests</id>
       <build>
@@ -155,6 +142,12 @@
                   <goal>run</goal>
                   <goal>verify</goal>
                 </goals>
+                <configuration>
+                  <environmentVariables>
+                    <MISE_CONFIG_DIR>TESTDIR</MISE_CONFIG_DIR>
+                    <MISE_ENV>TESTPROFILE</MISE_ENV>
+                  </environmentVariables>
+                </configuration>
               </execution>
             </executions>
           </plugin>

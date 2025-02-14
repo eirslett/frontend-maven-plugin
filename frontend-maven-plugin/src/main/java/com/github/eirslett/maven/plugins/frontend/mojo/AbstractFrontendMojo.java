@@ -1,13 +1,11 @@
 package com.github.eirslett.maven.plugins.frontend.mojo;
 
-import java.io.File;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
+import com.github.eirslett.maven.plugins.frontend.lib.FrontendPluginFactory;
+import com.github.eirslett.maven.plugins.frontend.lib.TaskRunnerException;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecution;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugin.descriptor.PluginDescriptor;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
@@ -15,14 +13,18 @@ import org.apache.maven.settings.Server;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.eclipse.aether.RepositorySystemSession;
 
-import com.github.eirslett.maven.plugins.frontend.lib.FrontendException;
-import com.github.eirslett.maven.plugins.frontend.lib.FrontendPluginFactory;
-import com.github.eirslett.maven.plugins.frontend.lib.TaskRunnerException;
+import java.io.File;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 public abstract class AbstractFrontendMojo extends AbstractMojo {
 
     @Component
     protected MojoExecution execution;
+
+    @Component
+    private PluginDescriptor pluginDescriptor;
 
     /**
      * Whether you should skip while running in the test phase (default is false)
@@ -58,7 +60,7 @@ public abstract class AbstractFrontendMojo extends AbstractMojo {
     protected Map<String, String> environmentVariables;
 
     @Parameter(defaultValue = "${project}", readonly = true)
-    private MavenProject project;
+    protected MavenProject project;
 
     @Parameter(defaultValue = "${repositorySystemSession}", readonly = true)
     private RepositorySystemSession repositorySystemSession;
@@ -78,7 +80,7 @@ public abstract class AbstractFrontendMojo extends AbstractMojo {
         return "test".equals(phase) || "integration-test".equals(phase);
     }
 
-    protected abstract void execute(FrontendPluginFactory factory) throws FrontendException;
+    protected abstract void execute(FrontendPluginFactory factory) throws Exception;
 
     /**
      * Implemented by children to determine if this execution should be skipped.
@@ -103,20 +105,20 @@ public abstract class AbstractFrontendMojo extends AbstractMojo {
                 } else {
                     throw new MojoFailureException("Failed to run task", e);
                 }
-            } catch (FrontendException e) {
+            } catch (Exception e) {
                 throw MojoUtils.toMojoFailureException(e);
             }
         } else {
             getLog().info("Skipping execution.");
         }
     }
-    
-    /** 
+
+    /**
      * Provides the HTTP-Headers from the server section of settings.xml.
-     * 
-     * @param server 
+     *
+     * @param server
      *           the &lt;server&gt; entry from the settings.xml
-     *           
+     *
      * @return the mapping from the name of each configured HTTP header to its value,
      *         an empty map if there is no such configuration
      */
@@ -124,9 +126,9 @@ public abstract class AbstractFrontendMojo extends AbstractMojo {
         if (server == null || !(server.getConfiguration() instanceof Xpp3Dom)) {
             return Collections.emptyMap();
         }
-        
+
         Xpp3Dom configuration = (Xpp3Dom) server.getConfiguration();
-        
+
         Map<String, String> result = new HashMap<>();
 
         Xpp3Dom httpHeaders = configuration.getChild("httpHeaders");
@@ -142,4 +144,11 @@ public abstract class AbstractFrontendMojo extends AbstractMojo {
         return result;
     }
 
+    String getFrontendMavenPluginVersion() {
+        return pluginDescriptor.getVersion();
+    }
+
+    File getTargetDir() {
+        return new File(project.getBuild().getDirectory());
+    }
 }

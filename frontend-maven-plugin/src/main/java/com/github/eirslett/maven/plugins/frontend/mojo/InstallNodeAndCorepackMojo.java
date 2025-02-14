@@ -1,20 +1,39 @@
 package com.github.eirslett.maven.plugins.frontend.mojo;
 
+import com.github.eirslett.maven.plugins.frontend.lib.ArchiveExtractionException;
+import com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsInstallationWork;
+import com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsReporter.Timer;
 import com.github.eirslett.maven.plugins.frontend.lib.CorepackInstaller;
+import com.github.eirslett.maven.plugins.frontend.lib.DownloadException;
 import com.github.eirslett.maven.plugins.frontend.lib.FrontendPluginFactory;
 import com.github.eirslett.maven.plugins.frontend.lib.InstallationException;
 import com.github.eirslett.maven.plugins.frontend.lib.NodeInstaller;
+import com.github.eirslett.maven.plugins.frontend.lib.NodeVersionDetector;
+import com.github.eirslett.maven.plugins.frontend.lib.NodeVersionHelper;
 import com.github.eirslett.maven.plugins.frontend.lib.ProxyConfig;
-
-import java.util.Map;
-
 import org.apache.maven.execution.MavenSession;
+import org.apache.maven.lifecycle.LifecycleExecutionException;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.apache.maven.settings.crypto.SettingsDecrypter;
 import org.apache.maven.settings.Server;
+import org.apache.maven.settings.crypto.SettingsDecrypter;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsInstallationWork.UNKNOWN;
+import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsReporter.formatNodeVersionForMetric;
+import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsReporter.getHostForMetric;
+import static com.github.eirslett.maven.plugins.frontend.lib.CorepackInstaller.ATLASSIAN_COREPACK_DOWNLOAD_ROOT;
+import static com.github.eirslett.maven.plugins.frontend.lib.CorepackInstaller.DEFAULT_COREPACK_DOWNLOAD_ROOT;
+import static com.github.eirslett.maven.plugins.frontend.lib.NodeInstaller.ATLASSIAN_NODE_DOWNLOAD_ROOT;
+import static com.github.eirslett.maven.plugins.frontend.lib.NodeInstaller.NODEJS_ORG;
+import static com.github.eirslett.maven.plugins.frontend.lib.NodeVersionHelper.getDownloadableVersion;
+import static com.github.eirslett.maven.plugins.frontend.lib.Utils.isBlank;
+import static com.github.eirslett.maven.plugins.frontend.mojo.AtlassianUtil.isAtlassianProject;
+import static java.util.Objects.isNull;
 
 @Mojo(name="install-node-and-corepack", defaultPhase = LifecyclePhase.GENERATE_RESOURCES, threadSafe = true)
 public final class InstallNodeAndCorepackMojo extends AbstractFrontendMojo {
@@ -28,14 +47,20 @@ public final class InstallNodeAndCorepackMojo extends AbstractFrontendMojo {
     /**
      * Where to download corepack binary from. Defaults to https://registry.npmjs.org/corepack/-/
      */
-    @Parameter(property = "corepackDownloadRoot", required = false, defaultValue = CorepackInstaller.DEFAULT_COREPACK_DOWNLOAD_ROOT)
+    @Parameter(property = "corepackDownloadRoot", required = false)
     private String corepackDownloadRoot;
 
     /**
      * The version of Node.js to install. IMPORTANT! Most Node.js version names start with 'v', for example 'v0.10.18'
      */
-    @Parameter(property="nodeVersion", required = true)
+    @Parameter(property="nodeVersion", required = false)
     private String nodeVersion;
+
+    /**
+     * The path to the file that contains the Node version to use
+     */
+    @Parameter(property = "nodeVersionFile", defaultValue = "", required = false)
+    private String nodeVersionFile;
 
     /**
      * The version of corepack to install. Note that the version string can optionally be prefixed with
@@ -64,20 +89,100 @@ public final class InstallNodeAndCorepackMojo extends AbstractFrontendMojo {
     @Component(role = SettingsDecrypter.class)
     private SettingsDecrypter decrypter;
 
+    private AtlassianDevMetricsInstallationWork packageManagerWork = UNKNOWN;
+    private AtlassianDevMetricsInstallationWork runtimeWork = UNKNOWN;
+
     @Override
     protected boolean skipExecution() {
         return this.skip;
     }
 
     @Override
-    public void execute(FrontendPluginFactory factory) throws InstallationException {
+    public void execute(FrontendPluginFactory factory) throws Exception {
+        boolean pacAttemptFailed = false;
+        boolean triedToUsePac = false;
+        boolean failed = false;
+        Timer timer = new Timer();
+
+        String nodeVersion = NodeVersionDetector.getNodeVersion(workingDirectory, this.nodeVersion, this.nodeVersionFile, project.getArtifactId(), getFrontendMavenPluginVersion());
+
+        if (isNull(nodeVersion)) {
+            throw new LifecycleExecutionException("Node version could not be detected from a file and was not set");
+        }
+
+        if (!NodeVersionHelper.validateVersion(nodeVersion)) {
+            throw new LifecycleExecutionException("Node version (" + nodeVersion + ") is not valid. If you think it actually is, raise an issue");
+        }
+
+        String validNodeVersion = getDownloadableVersion(nodeVersion);
+
+        try {
+            if (isAtlassianProject(project) && isBlank(serverId) &&
+                    (isBlank(nodeDownloadRoot) || isBlank(corepackDownloadRoot))
+            ) { // If they're overridden the settings, they be the boss
+                triedToUsePac = true;
+
+                getLog().info("Atlassian project detected, going to use the internal mirrors (requires VPN)");
+
+                serverId = "maven-atlassian-com";
+                try {
+                    install(factory, validNodeVersion,
+                            isBlank(nodeDownloadRoot) ? ATLASSIAN_NODE_DOWNLOAD_ROOT : nodeDownloadRoot,
+                            isBlank(corepackDownloadRoot) ? ATLASSIAN_COREPACK_DOWNLOAD_ROOT : corepackDownloadRoot);
+                    return;
+                } catch (InstallationException exception) {
+                    // Ignore as many filesystem exceptions unrelated to the mirror easily
+                    if (!(exception.getCause() instanceof DownloadException ||
+                            exception.getCause() instanceof ArchiveExtractionException)) {
+                        throw exception;
+                    }
+                    pacAttemptFailed = true;
+                    getLog().warn("Oh no couldn't use the internal mirrors! Falling back to upstream mirrors");
+                    getLog().debug("Using internal mirrors failed because: ", exception);
+                } finally {
+                    serverId = null;
+                }
+            }
+
+            String resolvedNodeDownloadRoot = getNodeDownloadRoot();
+            String resolvedCorepackDownloadRoot = getCorepackDownloadRoot();
+            if (isBlank(resolvedCorepackDownloadRoot)) {
+                resolvedCorepackDownloadRoot = DEFAULT_COREPACK_DOWNLOAD_ROOT;
+            }
+
+            install(factory, validNodeVersion, resolvedNodeDownloadRoot, resolvedCorepackDownloadRoot);
+        } catch (Exception exception) {
+            failed = true;
+            throw exception;
+        } finally {
+            // Please the compiler being effectively final
+            boolean finalFailed = failed;
+            boolean finalPacAttemptFailed = pacAttemptFailed;
+            boolean finalTriedToUsePac = triedToUsePac;
+            timer.stop(
+                    "runtime.download",
+                    project.getArtifactId(),
+                    getFrontendMavenPluginVersion(),
+                    formatNodeVersionForMetric(validNodeVersion),
+                    new HashMap<String, String>() {{
+                        put("installation", "corepack");
+                        put("installation-work-runtime", runtimeWork.toString());
+                        put("installation-work-package-manager", packageManagerWork.toString());
+                        put("runtime-host", getHostForMetric(nodeDownloadRoot, NODEJS_ORG, finalTriedToUsePac, finalPacAttemptFailed));
+                        put("package-manager-host", getHostForMetric(corepackDownloadRoot, DEFAULT_COREPACK_DOWNLOAD_ROOT, finalTriedToUsePac, finalPacAttemptFailed));
+                        put("failed", Boolean.toString(finalFailed));
+                        put("pac-attempted-failed", Boolean.toString(finalPacAttemptFailed));
+                        put("tried-to-use-pac", Boolean.toString(finalTriedToUsePac));
+                    }});
+        }
+    }
+
+    private void install(FrontendPluginFactory factory, String validNodeVersion, String resolvedNodeDownloadRoot, String resolvedCorepackDownloadRoot) throws InstallationException {
         ProxyConfig proxyConfig = MojoUtils.getProxyConfig(session, decrypter);
-        String resolvedNodeDownloadRoot = getNodeDownloadRoot();
-        String resolvedCorepackDownloadRoot = getCorepackDownloadRoot();
 
         // Setup the installers
         NodeInstaller nodeInstaller = factory.getNodeInstaller(proxyConfig);
-        nodeInstaller.setNodeVersion(nodeVersion)
+        nodeInstaller.setNodeVersion(validNodeVersion)
                 .setNodeDownloadRoot(resolvedNodeDownloadRoot);
         if ("provided".equals(corepackVersion)) {
             // This causes the node installer to copy over the whole
@@ -103,8 +208,8 @@ public final class InstallNodeAndCorepackMojo extends AbstractFrontendMojo {
         }
 
         // Perform the installation
-        nodeInstaller.install();
-        corepackInstaller.install();
+        runtimeWork = nodeInstaller.install();
+        packageManagerWork = corepackInstaller.install();
     }
 
     private String getNodeDownloadRoot() {

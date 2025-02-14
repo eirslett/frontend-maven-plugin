@@ -12,9 +12,18 @@ import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsInstallationWork.CACHED;
+import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsInstallationWork.DOWNLOADED;
+import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsInstallationWork.INSTALLED;
+import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsInstallationWork.PROVIDED;
+import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsInstallationWork.UNKNOWN;
+
 public class NPMInstaller {
 
     private static final String VERSION = "version";
+
+    public static final String ATLASSIAN_NPM_DOWNLOAD_ROOT =
+            "https://packages.atlassian.com/artifactory/api/npm/npm-remote/npm/-/";
 
     public static final String DEFAULT_NPM_DOWNLOAD_ROOT = "https://registry.npmjs.org/npm/-/";
 
@@ -23,7 +32,7 @@ public class NPMInstaller {
     private String nodeVersion, npmVersion, npmDownloadRoot, userName, password;
 
     private Map<String, String> httpHeaders;
-    
+
     private final Logger logger;
 
     private final InstallConfig config;
@@ -81,17 +90,25 @@ public class NPMInstaller {
 
     }
 
-    public void install() throws InstallationException {
+    public AtlassianDevMetricsInstallationWork install() throws InstallationException {
+        AtlassianDevMetricsInstallationWork work = UNKNOWN;
         // use static lock object for a synchronized block
         synchronized (LOCK) {
             if (this.npmDownloadRoot == null || this.npmDownloadRoot.isEmpty()) {
                 this.npmDownloadRoot = DEFAULT_NPM_DOWNLOAD_ROOT;
             }
-            if (!npmProvided() && !npmIsAlreadyInstalled()) {
-                installNpm();
+
+            boolean npmProvided = npmProvided();
+            if (npmProvided) work = PROVIDED;
+            boolean npmInstalled = npmIsAlreadyInstalled();
+            if (npmInstalled) work = INSTALLED;
+
+            if (!npmProvided && !npmInstalled) {
+                work = installNpm();
             }
             copyNpmScripts();
         }
+        return work;
     }
 
     private boolean npmIsAlreadyInstalled() {
@@ -122,7 +139,7 @@ public class NPMInstaller {
         }
     }
 
-    private void installNpm() throws InstallationException {
+    private AtlassianDevMetricsInstallationWork installNpm() throws InstallationException {
         try {
             this.logger.info("Installing npm version {}", this.npmVersion);
             final String downloadUrl = this.npmDownloadRoot + "npm-" + this.npmVersion + ".tgz";
@@ -131,6 +148,7 @@ public class NPMInstaller {
 
             File archive = this.config.getCacheResolver().resolve(cacheDescriptor);
 
+            AtlassianDevMetricsInstallationWork work =
             downloadFileIfMissing(downloadUrl, archive, this.userName, this.password, this.httpHeaders);
 
             File installDirectory = getNodeInstallDirectory();
@@ -179,6 +197,8 @@ public class NPMInstaller {
             }
 
             this.logger.info("Installed npm locally.");
+
+            return work;
         } catch (DownloadException e) {
             throw new InstallationException("Could not download npm", e);
         } catch (ArchiveExtractionException e) {
@@ -227,11 +247,13 @@ public class NPMInstaller {
         this.archiveExtractor.extract(archive.getPath(), destinationDirectory.getPath());
     }
 
-    private void downloadFileIfMissing(String downloadUrl, File destination, String userName, String password, Map<String, String> httpHeaders)
+    private AtlassianDevMetricsInstallationWork downloadFileIfMissing(String downloadUrl, File destination, String userName, String password, Map<String, String> httpHeaders)
         throws DownloadException {
         if (!destination.exists()) {
             downloadFile(downloadUrl, destination, userName, password, httpHeaders);
+            return DOWNLOADED;
         }
+        return CACHED;
     }
 
     private void downloadFile(String downloadUrl, File destination, String userName, String password, Map<String, String> httpHeaders)

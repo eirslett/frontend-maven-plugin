@@ -11,9 +11,16 @@ import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsInstallationWork.CACHED;
+import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsInstallationWork.DOWNLOADED;
+import static com.github.eirslett.maven.plugins.frontend.lib.AtlassianDevMetricsInstallationWork.INSTALLED;
+
 public class YarnInstaller {
 
     public static final String INSTALL_PATH = "/node/yarn";
+
+    public static final String ATLASSIAN_YARN_DOWNLOAD_ROOT =
+        "https://packages.atlassian.com/artifactory/yarn-dist/";
 
     public static final String DEFAULT_YARN_DOWNLOAD_ROOT =
         "https://github.com/yarnpkg/yarn/releases/download/";
@@ -23,7 +30,7 @@ public class YarnInstaller {
     private static final String YARN_ROOT_DIRECTORY = "dist";
 
     private String yarnVersion, yarnDownloadRoot, userName, password;
-    
+
     private Map<String, String> httpHeaders;
 
     private boolean isYarnBerry;
@@ -73,7 +80,7 @@ public class YarnInstaller {
         return this;
     }
 
-    public void install() throws InstallationException {
+    public AtlassianDevMetricsInstallationWork install() throws InstallationException {
         // use static lock object for a synchronized block
         synchronized (LOCK) {
             if (yarnDownloadRoot == null || yarnDownloadRoot.isEmpty()) {
@@ -83,9 +90,10 @@ public class YarnInstaller {
                 if (!yarnVersion.startsWith("v")) {
                     throw new InstallationException("Yarn version has to start with prefix 'v'.");
                 }
-                installYarn();
+                return installYarn();
             }
         }
+        return INSTALLED;
     }
 
     private boolean yarnIsAlreadyInstalled() {
@@ -116,7 +124,7 @@ public class YarnInstaller {
         }
     }
 
-    private void installYarn() throws InstallationException {
+    private AtlassianDevMetricsInstallationWork installYarn() throws InstallationException {
         try {
             logger.info("Installing Yarn version {}", yarnVersion);
             String downloadUrl = yarnDownloadRoot + yarnVersion;
@@ -129,6 +137,7 @@ public class YarnInstaller {
 
             File archive = config.getCacheResolver().resolve(cacheDescriptor);
 
+            AtlassianDevMetricsInstallationWork work =
             downloadFileIfMissing(downloadUrl, archive, userName, password, httpHeaders);
 
             File installDirectory = getInstallDirectory();
@@ -164,6 +173,8 @@ public class YarnInstaller {
             ensureCorrectYarnRootDirectory(installDirectory, yarnVersion);
 
             logger.info("Installed Yarn locally.");
+
+            return work;
         } catch (DownloadException e) {
             throw new InstallationException("Could not download Yarn", e);
         } catch (ArchiveExtractionException | IOException e) {
@@ -201,11 +212,13 @@ public class YarnInstaller {
         }
     }
 
-    private void downloadFileIfMissing(String downloadUrl, File destination, String userName, String password, Map<String, String> httpHeaders)
+    private AtlassianDevMetricsInstallationWork downloadFileIfMissing(String downloadUrl, File destination, String userName, String password, Map<String, String> httpHeaders)
         throws DownloadException {
         if (!destination.exists()) {
             downloadFile(downloadUrl, destination, userName, password, httpHeaders);
+            return DOWNLOADED;
         }
+        return CACHED;
     }
 
     private void downloadFile(String downloadUrl, File destination, String userName, String password, Map<String, String> httpHeaders)
