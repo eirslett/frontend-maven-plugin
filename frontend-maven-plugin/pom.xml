@@ -12,7 +12,7 @@
 
   <name>Maven Frontend Plugin</name>
   <prerequisites>
-    <maven>3.6.0</maven>
+    <maven>3.2.5</maven>
   </prerequisites>
 
   <description>
