@@ -10,22 +10,17 @@ jobs:
       fail-fast: false
       matrix:
         os: [macos-latest, ubuntu-latest, windows-latest]
+        java-version: ["11", "21"]
 
     steps:
       - name: Git checkout
         uses: actions/checkout@v4
-      - name: Use cache
-        uses: actions/cache@v4
-        with:
-          path: ~/.m2
-          key: "${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}"
-          restore-keys: |
-            ${{ runner.os }}-maven3-
       - name: Configure Java
         uses: actions/setup-java@v4
         with:
-          java-version: "11"
+          java-version: ${{ matrix.java-version }}
           distribution: temurin
+          cache: maven
       - name: "Run Maven"
         shell: bash
         run: mvn clean install --batch-mode -PintegrationTests
