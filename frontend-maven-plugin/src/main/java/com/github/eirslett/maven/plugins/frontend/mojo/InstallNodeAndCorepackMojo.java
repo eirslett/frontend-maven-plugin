@@ -16,6 +16,8 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.settings.crypto.SettingsDecrypter;
 import org.apache.maven.settings.Server;
 
+import static com.github.eirslett.maven.plugins.frontend.lib.CorepackInstaller.BUNDLED_COREPACK_VERSION;
+
 @Mojo(name="install-node-and-corepack", defaultPhase = LifecyclePhase.GENERATE_RESOURCES, threadSafe = true)
 public final class InstallNodeAndCorepackMojo extends AbstractFrontendMojo {
 
@@ -43,7 +45,7 @@ public final class InstallNodeAndCorepackMojo extends AbstractFrontendMojo {
      *
      * If not provided, then the corepack version bundled with Node will be used.
      */
-    @Parameter(property = "corepackVersion", required = false, defaultValue = "provided")
+    @Parameter(property = "corepackVersion", required = false, defaultValue = BUNDLED_COREPACK_VERSION)
     private String corepackVersion;
 
     /**
@@ -79,7 +81,7 @@ public final class InstallNodeAndCorepackMojo extends AbstractFrontendMojo {
         NodeInstaller nodeInstaller = factory.getNodeInstaller(proxyConfig);
         nodeInstaller.setNodeVersion(nodeVersion)
                 .setNodeDownloadRoot(resolvedNodeDownloadRoot);
-        if ("provided".equals(corepackVersion)) {
+        if (BUNDLED_COREPACK_VERSION.equals(corepackVersion)) {
             // This causes the node installer to copy over the whole
             // node_modules directory including the corepack module
             nodeInstaller.setNpmVersion("provided");
