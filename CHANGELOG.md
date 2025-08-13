@@ -4,6 +4,10 @@ Last public release: [![Maven Central](https://maven-badges.herokuapp.com/maven-
 
 ## Changelog
 
+### Unreleased
+
+* Explicitly inform the user to provide a corepack version when required
+
 ### 1.15.1
 
 * Fix #1150: Update lifecycle-mapping-metadata.xml for npx

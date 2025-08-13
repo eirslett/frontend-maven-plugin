@@ -13,6 +13,8 @@ import java.util.Map;
 
 public class CorepackInstaller {
 
+    public static final String BUNDLED_COREPACK_VERSION = "provided";
+
     private static final String VERSION = "version";
 
     public static final String DEFAULT_COREPACK_DOWNLOAD_ROOT = "https://registry.npmjs.org/corepack/-/";
@@ -22,7 +24,7 @@ public class CorepackInstaller {
     private String corepackVersion, corepackDownloadRoot, userName, password;
 
     private Map<String, String> httpHeaders;
-    
+
     private final Logger logger;
 
     private final InstallConfig config;
@@ -90,7 +92,7 @@ public class CorepackInstaller {
             final File corepackPackageJson = new File(
                 this.config.getInstallDirectory() + Utils.normalize("/node/node_modules/corepack/package.json"));
             if (corepackPackageJson.exists()) {
-                if ("provided".equals(this.corepackVersion)) {
+                if (BUNDLED_COREPACK_VERSION.equals(this.corepackVersion)) {
                     // Since we don't know which version it should be, we must assume that we have
                     // correctly setup the packaged version
                     return true;
@@ -120,6 +122,10 @@ public class CorepackInstaller {
 
     private void installCorepack() throws InstallationException {
         try {
+            if (BUNDLED_COREPACK_VERSION.equals(this.corepackVersion)) {
+                throw new InstallationException("The corepack version needs to be specified.");
+            }
+
             this.logger.info("Installing corepack version {}", this.corepackVersion);
             String corepackVersionClean = this.corepackVersion.replaceFirst("^v(?=[0-9]+)", "");
             final String downloadUrl = this.corepackDownloadRoot + "corepack-" + corepackVersionClean + ".tgz";
