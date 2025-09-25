@@ -3,7 +3,7 @@
 
     <groupId>com.github.eirslett</groupId>
     <artifactId>frontend-plugins</artifactId>
-    <version>1.15.3-SNAPSHOT</version>
+    <version>1.15.3</version>
     <packaging>pom</packaging>
 
     <properties>
@@ -34,7 +34,7 @@
         <url>https://github.com/eirslett/frontend-maven-plugin</url>
         <connection>scm:git:https://github.com/eirslett/frontend-maven-plugin.git</connection>
         <developerConnection>scm:git:git@github.com:eirslett/frontend-maven-plugin.git</developerConnection>
-      <tag>frontend-plugins-1.14.2</tag>
+      <tag>frontend-plugins-1.15.3</tag>
     </scm>
 
     <developers>
