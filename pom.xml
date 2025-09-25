@@ -84,6 +84,19 @@
                 </configuration>
             </plugin>
             <plugin>
+                <groupId>org.sonatype.central</groupId>
+                <artifactId>central-publishing-maven-plugin</artifactId>
+                <version>0.9.0</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <publishingServerId>central</publishingServerId>
+                     <autoPublish>true</autoPublish>
+                     <waitUntil>published</waitUntil>
+                </configuration>
+            </plugin>
+
+            <!-- Old OSSRH configuration, kept for reference
+            <plugin>
                 <groupId>org.sonatype.plugins</groupId>
                 <artifactId>nexus-staging-maven-plugin</artifactId>
                 <version>1.6.13</version>
@@ -91,7 +104,6 @@
                     <execution>
                         <id>default-deploy</id>
                         <phase>deploy</phase>
-                        <!-- By default, this is the phase deploy goal will bind to -->
                         <goals>
                             <goal>deploy</goal>
                         </goals>
@@ -103,6 +115,7 @@
                     <autoReleaseAfterClose>true</autoReleaseAfterClose>
                 </configuration>
             </plugin>
+            -->
         </plugins>
         <pluginManagement>
             <plugins>

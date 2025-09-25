@@ -25,14 +25,14 @@ jobs:
         shell: bash
         run: mvn clean install --batch-mode -PintegrationTests
       - name: "Deploy"
-        if: github.repository_owner == 'eirslett' && github.ref == 'refs/heads/master' && matrix.os == 'ubuntu-latest'
+        if: github.repository_owner == 'eirslett' && github.ref == 'refs/heads/master' && matrix.os == 'ubuntu-latest' && matrix.java-version == '11'
         shell: bash
         env:
           GPG_KEY: ${{ secrets.GPG_KEY }}
           GPG_KEY_NAME: ${{ secrets.GPG_KEY_NAME }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-          OSSRH_TOKEN_USERNAME: ${{ secrets.OSSRH_TOKEN_USERNAME }}
-          OSSRH_TOKEN_PASSWORD: ${{ secrets.OSSRH_TOKEN_PASSWORD }}
+          MAVEN_CENTRAL_TOKEN_USERNAME: ${{ secrets.MAVEN_CENTRAL_TOKEN_USERNAME }}
+          MAVEN_CENTRAL_TOKEN_PASSWORD: ${{ secrets.MAVEN_CENTRAL_TOKEN_PASSWORD }}
         run: |
           export GPG_TTY=$(tty)
           echo -e "$GPG_KEY" | gpg --import --passphrase $GPG_PASSPHRASE --batch --yes
