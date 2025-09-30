@@ -4,6 +4,10 @@ Last public release: [![Maven Central](https://maven-badges.herokuapp.com/maven-
 
 ## Changelog
 
+### 1.15.4
+
+* Fix https (TLS 1.3) issue
+
 ### 1.15.1
 
 * Fix #1150: Update lifecycle-mapping-metadata.xml for npx
