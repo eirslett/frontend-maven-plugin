@@ -1,7 +1,7 @@
 # frontend-maven-plugin
 
 [![Build](https://github.com/eirslett/frontend-maven-plugin/actions/workflows/main.yml/badge.svg)](https://github.com/eirslett/frontend-maven-plugin/actions/workflows/main.yml)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.eirslett/frontend-maven-plugin/badge.svg?style=flat)](https://maven-badges.herokuapp.com/maven-central/com.github.eirslett/frontend-maven-plugin/)
+![Maven Central Version](https://img.shields.io/maven-central/v/com.github.eirslett/frontend-maven-plugin)
 
 This plugin downloads/installs Node and NPM locally for your project, runs `npm install`, and then any combination of 
 [Bower](http://bower.io/), [Grunt](http://gruntjs.com/), [Gulp](http://gulpjs.com/), [Jspm](http://jspm.io), 
