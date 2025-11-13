@@ -215,19 +215,19 @@ if you need to override the version of corepack in use.
         </goals>
         <!-- optional: default phase is "generate-resources" -->
         <phase>generate-resources</phase>
+		<configuration>
+	        <nodeVersion>v20.12.2</nodeVersion>
+	
+	        <!-- Optional - only needed if Node <16.9, or if you need to use a version different
+	             from the one packaged with Node -->
+	        <corepackVersion>v0.25.2</corepackVersion>
+	
+	        <!-- optional: where to download node from. Defaults to https://nodejs.org/dist/ -->
+	        <nodeDownloadRoot>http://myproxy.example.org/nodejs/</nodeDownloadRoot>
+	        <!-- optional: where to download corepack from. Defaults to https://registry.npmjs.org/corepack/-/ -->
+	        <corepackDownloadRoot>http://myproxy.example.org/corepack/</corepackDownloadRoot>
+    	</configuration>
     </execution>
-    <configuration>
-        <nodeVersion>v20.12.2</nodeVersion>
-
-        <!-- Optional - only needed if Node <16.9, or if you need to use a version different
-             from the one packaged with Node -->
-        <corepackVersion>v0.25.2</corepackVersion>
-
-        <!-- optional: where to download node from. Defaults to https://nodejs.org/dist/ -->
-        <nodeDownloadRoot>http://myproxy.example.org/nodejs/</nodeDownloadRoot>
-        <!-- optional: where to download corepack from. Defaults to https://registry.npmjs.org/corepack/-/ -->
-        <corepackDownloadRoot>http://myproxy.example.org/corepack/</corepackDownloadRoot>
-    </configuration>
 </plugin>
 ```
 
