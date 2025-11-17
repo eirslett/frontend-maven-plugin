@@ -4,6 +4,8 @@ Last public release: [![Maven Central](https://maven-badges.herokuapp.com/maven-
 
 ## Changelog
 
+* Upgrades dependency `commons-io.commons-io` to version `2.21.0` because version `2.11.0` has a security issue ([GHSA-78wr-2p64-hpwj](https://github.com/advisories/GHSA-78wr-2p64-hpwj)).
+
 ### 1.15.4
 
 * Fix https (TLS 1.3) issue
