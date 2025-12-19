@@ -109,10 +109,14 @@ final class DefaultArchiveExtractor implements ArchiveExtractor {
                     tarIn = new TarArchiveInputStream(new GzipCompressorInputStream(fis));
 
                     TarArchiveEntry tarEntry = tarIn.getNextTarEntry();
-                    String canonicalDestinationDirectory = new File(destinationDirectory).getCanonicalPath();
+                    File destinationDir = new File(destinationDirectory);
+                    String canonicalDestinationDirectory = destinationDir.getCanonicalPath();
+                    // Use canonical path to ensure consistent symlink resolution on all platforms
+                    File canonicalDestinationDir = new File(canonicalDestinationDirectory);
                     while (tarEntry != null) {
-                        // Create a file for this tarEntry
-                        final File destPath = new File(destinationDirectory, tarEntry.getName());
+                        // Create a file for this tarEntry using canonical destination to ensure
+                        // consistent path resolution, especially with symlinks on Windows
+                        final File destPath = new File(canonicalDestinationDir, tarEntry.getName());
                         prepDestination(destPath, tarEntry.isDirectory());
 
                         if (!startsWithPath(destPath.getCanonicalPath(), canonicalDestinationDirectory)) {
