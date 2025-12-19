@@ -4,6 +4,12 @@ Last public release: [![Maven Central](https://maven-badges.herokuapp.com/maven-
 
 ## Changelog
 
+### 2.0.0
+
+This is a major version release, but there are no new features.
+Lots of dependencies and minimum version requirements have been upgraded,
+potentially breaking backwards compatibility.
+
 * Updates `org.apache.commons:commons-compress` to version `1.28.0` because of security issus found in version `1.21` Version `1.21` ([GHSA-4g9r-vxhx-9pgx](https://github.com/advisories/GHSA-4g9r-vxhx-9pgx), [GHSA-4265-ccf5-phj5](https://github.com/advisories/GHSA-4265-ccf5-phj5)).
 
 ### 1.15.4

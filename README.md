@@ -3,33 +3,36 @@
 [![Build](https://github.com/eirslett/frontend-maven-plugin/actions/workflows/main.yml/badge.svg)](https://github.com/eirslett/frontend-maven-plugin/actions/workflows/main.yml)
 ![Maven Central Version](https://img.shields.io/maven-central/v/com.github.eirslett/frontend-maven-plugin)
 
-This plugin downloads/installs Node and NPM locally for your project, runs `npm install`, and then any combination of 
-[Bower](http://bower.io/), [Grunt](http://gruntjs.com/), [Gulp](http://gulpjs.com/), [Jspm](http://jspm.io), 
+This plugin downloads/installs Node and NPM locally for your project, runs `npm install`, and then any combination of
+[Bower](http://bower.io/), [Grunt](http://gruntjs.com/), [Gulp](http://gulpjs.com/), [Jspm](http://jspm.io),
 [Karma](http://karma-runner.github.io/), or [Webpack](http://webpack.github.io/).
 It's supposed to work on Windows, OS X and Linux.
 
-If you prefer [Yarn](https://yarnpkg.com/) over [NPM](https://www.npmjs.com/) for your node package fetching, 
+If you prefer [Yarn](https://yarnpkg.com/) over [NPM](https://www.npmjs.com/) for your node package fetching,
 this plugin can also download Node and Yarn and then run `yarn install` for your project.
 
 #### What is this plugin meant to do?
+
 - Let you keep your frontend and backend builds as separate as possible, by
-reducing the amount of interaction between them to the bare minimum; using only 1 plugin.
+  reducing the amount of interaction between them to the bare minimum; using only 1 plugin.
 - Let you use Node.js and its libraries in your build process without installing Node/NPM
-globally for your build system
+  globally for your build system
 - Let you ensure that the version of Node and NPM being run is the same in every build environment
 
 #### What is this plugin not meant to do?
+
 - Not meant to replace the developer version of Node - frontend developers will still install Node on their
-laptops, but backend developers can run a clean build without even installing Node on their computer.
+  laptops, but backend developers can run a clean build without even installing Node on their computer.
 - Not meant to install Node for production uses. The Node usage is intended as part of a frontend build,
-running common javascript tasks such as minification, obfuscation, compression, packaging, testing etc.
+  running common javascript tasks such as minification, obfuscation, compression, packaging, testing etc.
 
 **Notice:** _This plugin does not support already installed Node or npm versions. Use the `exec-maven-plugin` instead._
 
 ## Requirements
 
-* _Maven 3.6_ and _Java 1.8_
-* For _Maven 2_ support take a look at the [wiki](https://github.com/eirslett/frontend-maven-plugin/wiki#maven-2).
+- _Maven 3.6_ and _Java 17_
+- Maven 4 seems to work fine with this plugin. (Feel free to report any issues.)
+- For _Maven 2_ support take a look at the [wiki](https://github.com/eirslett/frontend-maven-plugin/wiki#maven-2).
 
 ## Installation
 
@@ -53,9 +56,7 @@ Include the plugin as a dependency in your Maven project. Change `LATEST_VERSION
 Have a look at the [example project](frontend-maven-plugin/src/it/example%20project),
 to see how it should be set up: https://github.com/eirslett/frontend-maven-plugin/blob/master/frontend-maven-plugin/src/it/example%20project/pom.xml
 
-- [frontend-maven-plugin](#frontend-maven-plugin)
-      - [What is this plugin meant to do?](#what-is-this-plugin-meant-to-do)
-      - [What is this plugin not meant to do?](#what-is-this-plugin-not-meant-to-do)
+- [frontend-maven-plugin](#frontend-maven-plugin) - [What is this plugin meant to do?](#what-is-this-plugin-meant-to-do) - [What is this plugin not meant to do?](#what-is-this-plugin-not-meant-to-do)
   - [Requirements](#requirements)
   - [Installation](#installation)
   - [Usage](#usage)
@@ -87,15 +88,15 @@ to see how it should be set up: https://github.com/eirslett/frontend-maven-plugi
   - [To build this project:](#to-build-this-project)
   - [Issues, Contributing](#issues-contributing)
   - [License](#license)
-    
+
 **Recommendation:** _Try to run all your tasks via npm scripts instead of running bower, grunt, gulp etc. directly._
 
 ### Installing node and npm
 
-The versions of Node and npm are downloaded from https://nodejs.org/dist, extracted and put into a `node` folder created 
-in your [installation directory](#installation-directory) . Node/npm will only be "installed" locally to your project. 
-It will not be installed globally on the whole system (and it will not interfere with any Node/npm installations already 
-present). 
+The versions of Node and npm are downloaded from https://nodejs.org/dist, extracted and put into a `node` folder created
+in your [installation directory](#installation-directory) . Node/npm will only be "installed" locally to your project.
+It will not be installed globally on the whole system (and it will not interfere with any Node/npm installations already
+present).
 
 ```xml
 <plugin>
@@ -116,7 +117,7 @@ present).
 
         <!-- optional: with node version greater than 4.0.0 will use npm provided by node distribution -->
         <npmVersion>11.6.2</npmVersion>
-        
+
         <!-- optional: where to download node and npm from. Defaults to https://nodejs.org/dist/ -->
         <downloadRoot>http://myproxy.example.org/nodejs/</downloadRoot>
     </configuration>
@@ -147,20 +148,19 @@ You can use Nexus repository Manager to proxy npm registries. See https://help.s
 
 Instead of using Node with npm you can alternatively choose to install Node with Yarn as the package manager.
 
-The versions of Node and Yarn are downloaded from `https://nodejs.org/dist` for Node 
-and from the Github releases for Yarn, 
-extracted and put into a `node` folder created in your installation directory. 
-Node/Yarn will only be "installed" locally to your project. 
-It will not be installed globally on the whole system (and it will not interfere with any Node/Yarn installations already 
-present). 
+The versions of Node and Yarn are downloaded from `https://nodejs.org/dist` for Node
+and from the Github releases for Yarn,
+extracted and put into a `node` folder created in your installation directory.
+Node/Yarn will only be "installed" locally to your project.
+It will not be installed globally on the whole system (and it will not interfere with any Node/Yarn installations already
+present).
 
 If your project is using Yarn Berry (2.x or above), the Yarn version is handled per project but a Yarn 1.x install is still needed as a "bootstrap".
-The plugin will try to detect `.yarnrc.yml` file in the current Maven project/module folder, at the root of the multi-module project if relevant, and in the folder from which the `mvn` command was run. 
-If detected, the plugin will assume your project is using Yarn Berry. It will install the 1.x Yarn version you specify with `yarnVersion` as bootstrap, then hand over to your project-specific version.   
+The plugin will try to detect `.yarnrc.yml` file in the current Maven project/module folder, at the root of the multi-module project if relevant, and in the folder from which the `mvn` command was run.
+If detected, the plugin will assume your project is using Yarn Berry. It will install the 1.x Yarn version you specify with `yarnVersion` as bootstrap, then hand over to your project-specific version.
 
-Have a look at the example `POM` to see how it should be set up with Yarn: 
+Have a look at the example `POM` to see how it should be set up with Yarn:
 https://github.com/eirslett/frontend-maven-plugin/blob/master/frontend-maven-plugin/src/it/yarn-integration/pom.xml
-
 
 ```xml
 <plugin>
@@ -203,7 +203,6 @@ or
 https://github.com/eirslett/frontend-maven-plugin/blob/master/frontend-maven-plugin/src/it/corepack-integration/pom.xml
 if you need to override the version of corepack in use.
 
-
 ```xml
 <plugin>
     ...
@@ -233,10 +232,10 @@ if you need to override the version of corepack in use.
 
 ### Installing bun
 
-The version Bun is downloaded from https://github.com/oven-sh/bun/releases/download/, extracted and put into a `bun` folder created 
-in your [installation directory](#installation-directory) . Bun will only be "installed" locally to your project. 
-It will not be installed globally on the whole system (and it will not interfere with any Bun installations already 
-present). 
+The version Bun is downloaded from https://github.com/oven-sh/bun/releases/download/, extracted and put into a `bun` folder created
+in your [installation directory](#installation-directory) . Bun will only be "installed" locally to your project.
+It will not be installed globally on the whole system (and it will not interfere with any Bun installations already
+present).
 
 ```xml
 <plugin>
@@ -284,7 +283,7 @@ By default, colors will be shown in the log.
 </execution>
 ```
 
-**Notice:** _Remember to gitignore the `node_modules` folder, unless you actually want to commit it. Npm packages will 
+**Notice:** _Remember to gitignore the `node_modules` folder, unless you actually want to commit it. Npm packages will
 always be installed in `node_modules` next to your `package.json`, which is default npm behavior._
 
 #### npx
@@ -332,18 +331,22 @@ NOTE: if you have a private npm registry that mirrors the npm registry, be aware
 includes URLs to the npmjs.org module registry and yarn install will use these paths when installing modules.
 
 If you want yarn.lock to use your private npm registry, be sure to run these commands on your local machine before you generate yarn.lock:
+
 ```
 yarn config set registry <your_registry_url>
 yarn install
 ```
+
 This will create URLs in your yarn.lock file that reference your private npm registry.
 
 Another way to set a registry is to add a .npmrc file in your project's root directory that contains:
+
 ```
 registry=<your_registry_url>
 ```
 
 Also you can set a registry using a tag `npmRegistryURL`
+
 ```
 <execution>
     <id>yarn install</id>
@@ -365,7 +368,6 @@ Also you can set a registry using a tag `npmRegistryURL`
 ### Running corepack
 
 If your `packageManager` specifies `yarn`, then you'll want to have something like:
-
 
 ```xml
 <execution>
@@ -523,7 +525,7 @@ All jspm dependencies will be installed in the `jspm_packages` folder in your wo
 
 **Skipping tests:** If you run maven with the `-DskipTests` flag, karma tests will be skipped.
 
-**Ignoring failed tests:** If you want to ignore test failures run maven with the `-Dmaven.test.failure.ignore` flag, 
+**Ignoring failed tests:** If you want to ignore test failures run maven with the `-Dmaven.test.failure.ignore` flag,
 karma test results will not stop the build but test results will remain
 in test output files. Suitable for continuous integration tool builds.
 
@@ -535,8 +537,8 @@ The idea is that you use `karma.conf.js` while developing (using watch/livereloa
 it should generate xml reports, it should run only in PhantomJS, and/or it should generate
 code coverage reports.
 
-**Running Karma through Grunt or gulp:** You may choose to run Karma [directly through Grunt](https://github.com/karma-runner/grunt-karma) 
-or [through gulp](https://github.com/karma-runner/gulp-karma) instead, as part of the `grunt` or `gulp` execution. That 
+**Running Karma through Grunt or gulp:** You may choose to run Karma [directly through Grunt](https://github.com/karma-runner/grunt-karma)
+or [through gulp](https://github.com/karma-runner/gulp-karma) instead, as part of the `grunt` or `gulp` execution. That
 will help to separate your frontend and backend builds even more.
 
 ### Running Webpack
@@ -581,12 +583,12 @@ will help to separate your frontend and backend builds even more.
 </execution>
 ```
 
-### Optional Configuration 
+### Optional Configuration
 
 #### Working directory
 
-The working directory is where you've put `package.json` and your frontend configuration files (`Gruntfile.js` or 
-`gulpfile.js` etc). The default working directory is your project's base directory (the same directory as your `pom.xml`). 
+The working directory is where you've put `package.json` and your frontend configuration files (`Gruntfile.js` or
+`gulpfile.js` etc). The default working directory is your project's base directory (the same directory as your `pom.xml`).
 You can change the working directory if you want:
 
 ```xml
@@ -616,7 +618,7 @@ You can set this property on the different goals. Or choose to set it for all th
     <!-- optional -->
     <configuration>
         <installDirectory>target</installDirectory>
-    </configuration>    
+    </configuration>
 </plugin>
 ```
 
@@ -627,7 +629,7 @@ in your settings.xml file, the plugin will automatically use the proxy for downl
 as [passing the proxy to npm commands](https://docs.npmjs.com/misc/config#proxy).
 
 **Non Proxy Hosts:** npm does not currently support non proxy hosts - if you are using a proxy and npm install
-is not downloading from your repository, it may be because it cannot be accessed through your proxy. 
+is not downloading from your repository, it may be because it cannot be accessed through your proxy.
 If that is the case, you can stop the npm execution from inheriting the Maven proxy settings like this:
 
 ```xml
@@ -732,8 +734,10 @@ Run `$ mvn clean install`
 ## Issues, Contributing
 
 Please post any issues on the [Github's Issue tracker](https://github.com/eirslett/frontend-maven-plugin/issues).
-[Pull requests](https://github.com/eirslett/frontend-maven-plugin/pulls) are welcome!
 You can find a full list of [contributors here](https://github.com/eirslett/frontend-maven-plugin/graphs/contributors).
+The project is being maintained, but not actively. New features are only added if there is a popular demand for them and time allows. Development of this project has no financial backing, therefore it can sometimes take a while for changes to be merged and/or released.
+
+Pull requests that fix security issues are generally welcome. Note that most security vulnerabilities in library dependencies are not that relevant to this plugin, because it only processes trusted input (In the sense that we trust the official Node.js website to not contain malware.)
 
 ## License
 
