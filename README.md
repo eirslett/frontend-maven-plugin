@@ -112,10 +112,10 @@ present).
         </execution>
     </executions>
     <configuration>
-        <nodeVersion>v4.6.0</nodeVersion>
+        <nodeVersion>v24.12.0</nodeVersion>
 
         <!-- optional: with node version greater than 4.0.0 will use npm provided by node distribution -->
-        <npmVersion>2.15.9</npmVersion>
+        <npmVersion>11.6.2</npmVersion>
         
         <!-- optional: where to download node and npm from. Defaults to https://nodejs.org/dist/ -->
         <downloadRoot>http://myproxy.example.org/nodejs/</downloadRoot>
@@ -175,13 +175,13 @@ https://github.com/eirslett/frontend-maven-plugin/blob/master/frontend-maven-plu
         <phase>generate-resources</phase>
     </execution>
     <configuration>
-        <nodeVersion>v6.9.1</nodeVersion>
+        <nodeVersion>v24.12.0</nodeVersion>
         <yarnVersion>v0.16.1</yarnVersion>
 
         <!-- optional: where to download node from. Defaults to https://nodejs.org/dist/ -->
         <nodeDownloadRoot>http://myproxy.example.org/nodejs/</nodeDownloadRoot>
         <!-- optional: where to download yarn from. Defaults to https://github.com/yarnpkg/yarn/releases/download/ -->
-        <yarnDownloadRoot>http://myproxy.example.org/yarn/</yarnDownloadRoot>        
+        <yarnDownloadRoot>http://myproxy.example.org/yarn/</yarnDownloadRoot>
     </configuration>
 </plugin>
 ```
@@ -217,7 +217,7 @@ if you need to override the version of corepack in use.
         <phase>generate-resources</phase>
     </execution>
     <configuration>
-        <nodeVersion>v20.12.2</nodeVersion>
+        <nodeVersion>v24.12.0</nodeVersion>
 
         <!-- Optional - only needed if Node <16.9, or if you need to use a version different
              from the one packaged with Node -->
@@ -663,10 +663,9 @@ If you want to disable proxy for Yarn you can use `yarnInheritsProxyConfigFromMa
 
 ```
 
-
 #### Environment variables
 
-If you need to pass some variable to Node, you can set that using the property `environmentVariables` in configuration 
+If you need to pass some variable to Node, you can set that using the property `environmentVariables` in configuration
 tag of an execution like this:
 
 ```xml
@@ -675,16 +674,16 @@ tag of an execution like this:
         <!-- Simple var -->
         <Jon>Snow</Jon>
         <Tyrion>Lannister</Tyrion>
-        
+
         <!-- Var value take from maven properties -->
         <NODE_ENV>${NODE_ENV}</NODE_ENV>
-    </environmentVariables>        
+    </environmentVariables>
 </configuration>
 ```
 
 #### Ignoring Failure
 
-**Ignoring failed tests:** If you want to ignore test failures in specific execution  you can set that using the property `maven.test.failure.ignore` in configuration tag of an execution like this:
+**Ignoring failed tests:** If you want to ignore test failures in specific execution you can set that using the property `maven.test.failure.ignore` in configuration tag of an execution like this:
 
 ```xml
 <configuration>
@@ -703,15 +702,15 @@ For example, in a project using npm and gulp, if npm is skipped, gulp must also 
 
 Tools and property to enable skipping
 
-* npm `-Dskip.npm`
-* yarn `-Dskip.yarn`
-* bower `-Dskip.bower`
-* bun `-Dskip.bun`
-* grunt `-Dskip.grunt`
-* gulp `-Dskip.gulp`
-* jspm `-Dskip.jspm`
-* karma `-Dskip.karma`
-* webpack `-Dskip.webpack`
+- npm `-Dskip.npm`
+- yarn `-Dskip.yarn`
+- bower `-Dskip.bower`
+- bun `-Dskip.bun`
+- grunt `-Dskip.grunt`
+- gulp `-Dskip.gulp`
+- jspm `-Dskip.jspm`
+- karma `-Dskip.karma`
+- webpack `-Dskip.webpack`
 
 ## Eclipse M2E support
 
@@ -732,11 +731,10 @@ Run `$ mvn clean install`
 
 ## Issues, Contributing
 
-Please post any issues on the [Github's Issue tracker](https://github.com/eirslett/frontend-maven-plugin/issues). 
-[Pull requests](https://github.com/eirslett/frontend-maven-plugin/pulls) are welcome! 
+Please post any issues on the [Github's Issue tracker](https://github.com/eirslett/frontend-maven-plugin/issues).
+[Pull requests](https://github.com/eirslett/frontend-maven-plugin/pulls) are welcome!
 You can find a full list of [contributors here](https://github.com/eirslett/frontend-maven-plugin/graphs/contributors).
 
 ## License
 
 [Apache 2.0](LICENSE)
-

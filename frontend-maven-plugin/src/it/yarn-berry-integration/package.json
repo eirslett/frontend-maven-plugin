@@ -2,7 +2,7 @@
   "name": "example",
   "version": "0.0.1",
   "dependencies": {
-    "less": "~3.0.2"
+    "less": "~4.5.1"
   },
   "packageManager": "yarn@4.1.1"
 }

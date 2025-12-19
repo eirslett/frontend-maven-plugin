@@ -2,6 +2,6 @@
   "name": "example",
   "version": "0.0.1",
   "dependencies": {
-    "mocha": "^10.0.0"
+    "mocha": "^11.7.5"
   }
 }

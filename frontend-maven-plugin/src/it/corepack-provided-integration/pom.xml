@@ -27,7 +27,7 @@
                             <goal>install-node-and-corepack</goal>
                         </goals>
                         <configuration>
-                            <nodeVersion>v20.12.2</nodeVersion>
+                            <nodeVersion>v24.12.0</nodeVersion>
                         </configuration>
                     </execution>
 

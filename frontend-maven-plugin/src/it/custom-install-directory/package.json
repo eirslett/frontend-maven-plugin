@@ -2,7 +2,7 @@
   "name": "example",
   "version": "0.0.1",
   "dependencies": {
-    "less": "^4.1.3",
-    "mocha": "^10.2.0"
+    "less": "^4.5.1",
+    "mocha": "^11.7.5"
   }
 }

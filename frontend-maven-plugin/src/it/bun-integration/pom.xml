@@ -27,7 +27,7 @@
                             <goal>install-bun</goal>
                         </goals>
                         <configuration>
-                            <bunVersion>v1.1.27</bunVersion>
+                            <bunVersion>v1.3.5</bunVersion>
                         </configuration>
                     </execution>
 
