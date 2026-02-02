@@ -254,6 +254,9 @@ present).
     <configuration>
         <!-- The version of Bun to install. IMPORTANT! Most Bun version names start with 'v', for example -->
         <bunVersion>v1.1.34</bunVersion>
+
+        <!-- optional: where to download bun from. Defaults to https://github.com/oven-sh/bun/releases/download/ -->
+        <bunDownloadRoot>http://myproxy.example.org/bun/</bunDownloadRoot>
     </configuration>
 </plugin>
 ```

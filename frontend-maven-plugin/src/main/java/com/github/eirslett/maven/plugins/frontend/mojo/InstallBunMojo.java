@@ -15,6 +15,12 @@ import org.apache.maven.settings.crypto.SettingsDecrypter;
 public final class InstallBunMojo extends AbstractFrontendMojo {
 
     /**
+     * Where to download Bun binary from. Defaults to https://github.com/oven-sh/bun/releases/download/
+     */
+    @Parameter(property = "bunDownloadRoot", required = false)
+    private String bunDownloadRoot;
+
+    /**
      * The version of Bun to install. IMPORTANT! Most Bun version names start with 'v', for example
      * 'v1.0.0'
      */
@@ -49,10 +55,16 @@ public final class InstallBunMojo extends AbstractFrontendMojo {
         ProxyConfig proxyConfig = MojoUtils.getProxyConfig(this.session, this.decrypter);
         Server server = MojoUtils.decryptServer(this.serverId, this.session, this.decrypter);
         if (null != server) {
-            factory.getBunInstaller(proxyConfig).setBunVersion(this.bunVersion).setUserName(server.getUsername())
-                    .setPassword(server.getPassword()).setHttpHeaders(getHttpHeaders(server)).install();
+            factory.getBunInstaller(proxyConfig).setBunVersion(this.bunVersion)
+                    .setBunDownloadRoot(this.bunDownloadRoot)
+                    .setUserName(server.getUsername())
+                    .setPassword(server.getPassword())
+                    .setHttpHeaders(getHttpHeaders(server))
+                    .install();
         } else {
-            factory.getBunInstaller(proxyConfig).setBunVersion(this.bunVersion).install();
+            factory.getBunInstaller(proxyConfig).setBunVersion(this.bunVersion)
+                    .setBunDownloadRoot(this.bunDownloadRoot)
+                    .install();
         }
     }
 
