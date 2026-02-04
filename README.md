@@ -695,14 +695,22 @@ tag of an execution like this:
 
 #### Skipping Execution
 
-Each frontend build tool and package manager allows skipping execution.
+Each frontend build tool, package manager, and installation goal allows skipping execution.
 This is useful for projects that contain multiple builds (such as a module containing Java and frontend code).
 
-**Note** that if the package manager (npm or yarn) is skipped, other build tools will also need to be skipped because they
+**Note** that if the installation goals or package manager (npm or yarn) are skipped, other build tools will also need to be skipped because they
 would not have been downloaded.
 For example, in a project using npm and gulp, if npm is skipped, gulp must also be skipped or the build will fail.
 
-Tools and property to enable skipping
+Installation goals and property to enable skipping:
+
+- install-node-and-npm `-Dskip.installnodenpm`
+- install-node-and-yarn `-Dskip.installyarn`
+- install-node-and-pnpm `-Dskip.installnodepnpm`
+- install-node-and-corepack `-Dskip.installnodecorepack`
+- install-bun `-Dskip.installbun`
+
+Build tools and property to enable skipping:
 
 - npm `-Dskip.npm`
 - yarn `-Dskip.yarn`
