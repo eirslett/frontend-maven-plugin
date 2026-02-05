@@ -716,10 +716,14 @@ Build tools and property to enable skipping:
 - yarn `-Dskip.yarn`
 - bower `-Dskip.bower`
 - bun `-Dskip.bun`
+- corepack `-Dskip.corepack`
+- ember `-Dskip.ember`
 - grunt `-Dskip.grunt`
 - gulp `-Dskip.gulp`
 - jspm `-Dskip.jspm`
 - karma `-Dskip.karma`
+- npx `-Dskip.npx`
+- pnpm `-Dskip.pnpm`
 - webpack `-Dskip.webpack`
 
 ## Eclipse M2E support
