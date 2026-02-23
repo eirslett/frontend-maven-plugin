@@ -39,6 +39,7 @@ class ArgumentsParser {
         }
 
         final List<String> arguments = new LinkedList<>();
+        final List<String> allArguments = new LinkedList<>();
         final StringBuilder argumentBuilder = new StringBuilder();
         Character quote = null;
 
@@ -64,13 +65,15 @@ class ArgumentsParser {
 
         addArgument(argumentBuilder, arguments);
 
+        // Prepend additionalArguments before the other arguments
         for (String argument : this.additionalArguments) {
             if (!arguments.contains(argument)) {
-                arguments.add(argument);
+                allArguments.add(argument);
             }
         }
+        allArguments.addAll(arguments);
 
-        return new ArrayList<>(arguments);
+        return new ArrayList<>(allArguments);
     }
 
     private static void addArgument(StringBuilder argumentBuilder, List<String> arguments) {

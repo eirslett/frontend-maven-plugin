@@ -16,10 +16,10 @@ final class DefaultNpxRunner extends NodeTaskExecutor implements NpxRunner {
 
     // Visible for testing only.
     /**
-     * These are, in fact, npm arguments, that need to be split from the npx arguments by '--'.
+     * These are, in fact, npm arguments, that need to come before the package arguments.
      *
      * See an example:
-     * npx some-package -- --registry=http://myspecialregisty.com
+     * npx --registry=http://myspecialregisty.com some-package
      */
     static List<String> buildNpmArguments(ProxyConfig proxyConfig, String npmRegistryURL) {
         List<String> arguments = new ArrayList<>();
@@ -51,7 +51,6 @@ final class DefaultNpxRunner extends NodeTaskExecutor implements NpxRunner {
             npmArguments = arguments;
         } else {
             npmArguments = new ArrayList<>();
-            npmArguments.add("--");
             npmArguments.addAll(arguments);
         }
         
