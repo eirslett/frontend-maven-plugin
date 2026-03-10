@@ -154,17 +154,11 @@ class Platform {
     public String getNodeDownloadFilename(String nodeVersion, boolean archiveOnWindows) {
         if(isWindows() && !archiveOnWindows) {
             if(architecture == Architecture.x64){
-                if (nodeVersion.startsWith("v0.")) {
-                    return nodeVersion+"/x64/node.exe";
-                } else {
-                    return nodeVersion+"/win-x64/node.exe";
-                }
+                return nodeVersion+"/win-x64/node.exe";
+            } else if(architecture == Architecture.arm64){
+                return nodeVersion+"/win-arm64/node.exe";
             } else {
-                if (nodeVersion.startsWith("v0.")) {
-                	return nodeVersion + "/node.exe";
-                } else {
-                    return nodeVersion+"/win-x86/node.exe";
-                }
+                return nodeVersion+"/win-x86/node.exe";
             }
         } else {
             return nodeVersion + "/" + getLongNodeFilename(nodeVersion, archiveOnWindows) + "." + os.getArchiveExtension();
