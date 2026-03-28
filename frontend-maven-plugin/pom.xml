@@ -61,6 +61,12 @@
       <artifactId>plexus-utils</artifactId>
       <version>4.0.3</version>
     </dependency>
+
+    <dependency>
+      <groupId>org.codehaus.plexus</groupId>
+      <artifactId>plexus-xml</artifactId>
+      <version>3.0.1</version>
+    </dependency>
   </dependencies>
 
   <build>
