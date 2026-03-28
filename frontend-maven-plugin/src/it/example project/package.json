@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "example project for testing frontend-maven-plugin",
   "dependencies": {
-    "jquery": "3.7.1"
+    "jquery": "4.0.0"
   },
   "scripts": {
     "test": "web-test-runner src/**/*.test.js --node-resolve",
@@ -12,6 +12,6 @@
   "devDependencies": {
     "@esm-bundle/chai": "^4.3.4-fix.0",
     "@web/test-runner": "^0.20.2",
-    "vite": "^7.3.0"
+    "vite": "^8.0.3"
   }
 }
