@@ -12,6 +12,6 @@
   "devDependencies": {
     "@esm-bundle/chai": "^4.3.4-fix.0",
     "@web/test-runner": "^0.20.2",
-    "vite": "^8.0.3"
+    "vite": "^8.0.5"
   }
 }
