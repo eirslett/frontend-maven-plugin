@@ -21,7 +21,7 @@ public class BunInstaller {
             "https://github.com/oven-sh/bun/releases/download/";
     private static final Object LOCK = new Object();
 
-    private String bunVersion, userName, password;
+    private String bunVersion, bunDownloadRoot, userName, password;
 
     private Map<String, String> httpHeaders;
     
@@ -42,6 +42,11 @@ public class BunInstaller {
 
     public BunInstaller setBunVersion(String bunVersion) {
         this.bunVersion = bunVersion;
+        return this;
+    }
+
+    public BunInstaller setBunDownloadRoot(String bunDownloadRoot) {
+        this.bunDownloadRoot = bunDownloadRoot;
         return this;
     }
 
@@ -179,7 +184,11 @@ public class BunInstaller {
     }
 
     private String createDownloadUrl() {
-        String downloadUrl = String.format("%sbun-%s", DEFAULT_BUN_DOWNLOAD_ROOT, bunVersion);
+        String downloadRoot = this.bunDownloadRoot;
+        if (downloadRoot == null || downloadRoot.isEmpty()) {
+            downloadRoot = DEFAULT_BUN_DOWNLOAD_ROOT;
+        }
+        String downloadUrl = String.format("%sbun-%s", downloadRoot, bunVersion);
         String extension = "zip";
         String fileending = String.format("%s.%s", createBunTargetArchitecturePath(), extension);
 
