@@ -60,13 +60,13 @@ public class ArgumentsParserTest {
     public void testAdditionalArgumentsNoIntersection() {
         ArgumentsParser parser = new ArgumentsParser(Arrays.asList("foo", "bar"));
 
-        assertArrayEquals(new Object[] { "foobar", "foo", "bar" }, parser.parse("foobar").toArray());
+        assertArrayEquals(new Object[] { "foo", "bar", "foobar" }, parser.parse("foobar").toArray());
     }
 
     @Test
     public void testAdditionalArgumentsWithIntersection() {
         ArgumentsParser parser = new ArgumentsParser(Arrays.asList("foo", "foobar"));
 
-        assertArrayEquals(new Object[] { "bar", "foobar", "foo" }, parser.parse("bar foobar").toArray());
+        assertArrayEquals(new Object[] { "foo", "bar", "foobar" }, parser.parse("bar foobar").toArray());
     }
 }
