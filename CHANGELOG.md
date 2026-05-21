@@ -4,6 +4,10 @@ Last public release: [![Maven Central](https://maven-badges.herokuapp.com/maven-
 
 ## Changelog
 
+### 2.0.1
+
+* Use pnpm .mjs file if it exists to support 11+ ([#1224](https://github.com/eirslett/frontend-maven-plugin/issues/1224))
+
 ### 2.0.0
 
 This is a major version release, but there are no new features.
