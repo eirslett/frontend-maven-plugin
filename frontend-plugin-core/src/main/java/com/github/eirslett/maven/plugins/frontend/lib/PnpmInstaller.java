@@ -191,7 +191,7 @@ public class PnpmInstaller {
         }
 
         NodeExecutorConfig executorConfig = new InstallNodeExecutorConfig(this.config);
-        File pnpmJsExecutable = executorConfig.getPnpmCjsPath();
+        File pnpmJsExecutable = executorConfig.getPnpmExecutablePath();
 
         if (!pnpmJsExecutable.exists()) {
             throw new InstallationException("Could not link to pnpm executable, no pnpm installation found.");
@@ -216,7 +216,7 @@ public class PnpmInstaller {
         }
 
         NodeExecutorConfig executorConfig = new InstallNodeExecutorConfig(this.config);
-        File pnpmJsExecutable = executorConfig.getPnpmCjsPath();
+        File pnpmJsExecutable = executorConfig.getPnpmExecutablePath();
 
         if (!pnpmJsExecutable.exists()) {
             throw new InstallationException("Could not link to pnpm executable, no pnpm installation found.");
