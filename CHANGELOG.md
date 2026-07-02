@@ -4,6 +4,10 @@ Last public release: [![Maven Central](https://maven-badges.herokuapp.com/maven-
 
 ## Changelog
 
+### 2.0.2 (unreleased)
+
+* Add LoongArch64 (loong64) architecture support ([#1232](https://github.com/eirslett/frontend-maven-plugin/issues/1232))
+
 ### 2.0.1
 
 * Use pnpm .mjs file if it exists to support 11+ ([#1224](https://github.com/eirslett/frontend-maven-plugin/issues/1224))
