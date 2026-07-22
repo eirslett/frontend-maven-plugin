@@ -144,6 +144,24 @@ You can use Nexus repository Manager to proxy npm registries. See https://help.s
 
 **Notice:** _Remember to gitignore the `node` folder, unless you actually want to commit it._
 
+You can also read the Node.js version from a file instead of hardcoding it in the POM:
+
+```xml
+<configuration>
+    <!-- optional: path to a file containing the Node.js version (first non-empty, non-comment line) -->
+    <nodeVersionFile>${project.basedir}/.node-version</nodeVersionFile>
+</configuration>
+```
+
+Resolution order:
+
+1. `<nodeVersion>` when set
+2. `<nodeVersionFile>` when set
+3. a `.node-version` file in the [working directory](#working-directory) (defaults to the Maven project base directory)
+4. otherwise the build fails with a clear error (same expectation as before: a Node.js version must be provided)
+
+A leading `v` is added automatically when the version file omits it (so `24.12.0` becomes `v24.12.0`).
+
 ### Installing node and yarn
 
 Instead of using Node with npm you can alternatively choose to install Node with Yarn as the package manager.

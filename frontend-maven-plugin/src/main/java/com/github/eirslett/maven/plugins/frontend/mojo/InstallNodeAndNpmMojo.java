@@ -3,8 +3,10 @@ package com.github.eirslett.maven.plugins.frontend.mojo;
 import com.github.eirslett.maven.plugins.frontend.lib.FrontendPluginFactory;
 import com.github.eirslett.maven.plugins.frontend.lib.InstallationException;
 import com.github.eirslett.maven.plugins.frontend.lib.NPMInstaller;
+import com.github.eirslett.maven.plugins.frontend.lib.NodeVersionHelper;
 import com.github.eirslett.maven.plugins.frontend.lib.ProxyConfig;
 
+import java.io.File;
 import java.util.Map;
 
 import org.apache.maven.execution.MavenSession;
@@ -40,10 +42,21 @@ public final class InstallNodeAndNpmMojo extends AbstractFrontendMojo {
     private String downloadRoot;
 
     /**
-     * The version of Node.js to install. IMPORTANT! Most Node.js version names start with 'v', for example 'v0.10.18'
+     * The version of Node.js to install. IMPORTANT! Most Node.js version names start with 'v', for example 'v0.10.18'.
+     * <p>
+     * When omitted, the version is read from {@link #nodeVersionFile}, or from a {@code .node-version} file
+     * in the working directory when present.
      */
-    @Parameter(property="nodeVersion", required = true)
+    @Parameter(property = "nodeVersion")
     private String nodeVersion;
+
+    /**
+     * Path to a file that contains the Node.js version to install (for example {@code .node-version}).
+     * Used only when {@link #nodeVersion} is not set. The first non-empty, non-comment line is used.
+     * A leading {@code v} is added when missing.
+     */
+    @Parameter(property = "nodeVersionFile")
+    private File nodeVersionFile;
 
     /**
      * The version of NPM to install.
@@ -79,11 +92,13 @@ public final class InstallNodeAndNpmMojo extends AbstractFrontendMojo {
         ProxyConfig proxyConfig = MojoUtils.getProxyConfig(session, decrypter);
         String nodeDownloadRoot = getNodeDownloadRoot();
         String npmDownloadRoot = getNpmDownloadRoot();
+        String resolvedNodeVersion = NodeVersionHelper.resolveNodeVersion(
+                nodeVersion, nodeVersionFile, workingDirectory);
         Server server = MojoUtils.decryptServer(serverId, session, decrypter);
         if (null != server) {
             Map<String, String> httpHeaders = getHttpHeaders(server);
             factory.getNodeInstaller(proxyConfig)
-                .setNodeVersion(nodeVersion)
+                .setNodeVersion(resolvedNodeVersion)
                 .setNodeDownloadRoot(nodeDownloadRoot)
                 .setNpmVersion(npmVersion)
                 .setUserName(server.getUsername())
@@ -91,7 +106,7 @@ public final class InstallNodeAndNpmMojo extends AbstractFrontendMojo {
                 .setHttpHeaders(httpHeaders)
                 .install();
             factory.getNPMInstaller(proxyConfig)
-                .setNodeVersion(nodeVersion)
+                .setNodeVersion(resolvedNodeVersion)
                 .setNpmVersion(npmVersion)
                 .setNpmDownloadRoot(npmDownloadRoot)
                 .setUserName(server.getUsername())
@@ -100,12 +115,12 @@ public final class InstallNodeAndNpmMojo extends AbstractFrontendMojo {
                 .install();
         } else {
             factory.getNodeInstaller(proxyConfig)
-                .setNodeVersion(nodeVersion)
+                .setNodeVersion(resolvedNodeVersion)
                 .setNodeDownloadRoot(nodeDownloadRoot)
                 .setNpmVersion(npmVersion)
                 .install();
             factory.getNPMInstaller(proxyConfig)
-                .setNodeVersion(this.nodeVersion)
+                .setNodeVersion(resolvedNodeVersion)
                 .setNpmVersion(this.npmVersion)
                 .setNpmDownloadRoot(npmDownloadRoot)
                 .install();
