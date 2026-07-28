@@ -5,7 +5,7 @@ import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-enum Architecture { x86, x64, ppc64le, s390x, arm64, armv7l, ppc, ppc64;
+enum Architecture { x86, x64, ppc64le, s390x, arm64, armv7l, ppc, ppc64, loong64;
     public static Architecture guess(){
         String arch = System.getProperty("os.arch");
         String version = System.getProperty("os.version");
@@ -26,6 +26,8 @@ enum Architecture { x86, x64, ppc64le, s390x, arm64, armv7l, ppc, ppc64;
             return ppc64;
         } else if (arch.equals("ppc")) {
             return ppc;
+        } else if (arch.equals("loongarch64")) {
+                return loong64;
         } else {
             return arch.contains("64") ? x64 : x86;
         }
