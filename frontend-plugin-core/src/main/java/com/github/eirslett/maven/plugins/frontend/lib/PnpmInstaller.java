@@ -197,12 +197,9 @@ public class PnpmInstaller {
             throw new InstallationException("Could not link to pnpm executable, no pnpm installation found.");
         }
 
-        try {
-            if (Files.isSymbolicLink(pnpmExecutable.toPath())) {
-                Files.delete(pnpmExecutable.toPath());
-            }
+        this.logger.info("No pnpm executable found, creating symbolic link to {}.", pnpmJsExecutable.toPath());
 
-            this.logger.info("No pnpm executable found, creating symbolic link to {}.", pnpmJsExecutable.toPath());
+        try {
             Files.createSymbolicLink(pnpmExecutable.toPath(), pnpmJsExecutable.toPath());
         } catch (IOException e) {
             throw new InstallationException("Could not create symbolic link for pnpm executable.", e);
