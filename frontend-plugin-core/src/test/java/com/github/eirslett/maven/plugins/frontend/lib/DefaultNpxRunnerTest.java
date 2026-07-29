@@ -23,7 +23,7 @@ public class DefaultNpxRunnerTest {
     @Test
     public void buildArgument_withRegistryUrl() {
         List<String> arguments = DefaultNpxRunner.buildNpmArguments(new ProxyConfig(Collections.emptyList()), registryUrl);
-        Assertions.assertEquals(2, arguments.size());
-        assertThat(arguments, CoreMatchers.hasItems("--", "--registry=" + registryUrl));
+        Assertions.assertEquals(1, arguments.size());
+        assertThat(arguments, CoreMatchers.hasItems("--registry=" + registryUrl));
     }
 }
