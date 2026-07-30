@@ -56,6 +56,12 @@ public class PlatformTest {
     }
 
     @Test
+    public void detect_linux_loong64() {
+        Platform platform = Platform.guess(OS.Linux, Architecture.loong64, () -> false);
+        assertEquals("linux-loong64", platform.getNodeClassifier(NODE_VERSION_16));
+    }
+
+    @Test
     public void getNodeMajorVersion() {
         assertEquals(Integer.valueOf(8), Platform.getNodeMajorVersion(NODE_VERSION_8));
         assertEquals(Integer.valueOf(15), Platform.getNodeMajorVersion(NODE_VERSION_15));
