@@ -4,8 +4,10 @@ import com.github.eirslett.maven.plugins.frontend.lib.CorepackInstaller;
 import com.github.eirslett.maven.plugins.frontend.lib.FrontendPluginFactory;
 import com.github.eirslett.maven.plugins.frontend.lib.InstallationException;
 import com.github.eirslett.maven.plugins.frontend.lib.NodeInstaller;
+import com.github.eirslett.maven.plugins.frontend.lib.NodeVersionHelper;
 import com.github.eirslett.maven.plugins.frontend.lib.ProxyConfig;
 
+import java.io.File;
 import java.util.Map;
 
 import org.apache.maven.execution.MavenSession;
@@ -32,10 +34,21 @@ public final class InstallNodeAndCorepackMojo extends AbstractFrontendMojo {
     private String corepackDownloadRoot;
 
     /**
-     * The version of Node.js to install. IMPORTANT! Most Node.js version names start with 'v', for example 'v0.10.18'
+     * The version of Node.js to install. IMPORTANT! Most Node.js version names start with 'v', for example 'v0.10.18'.
+     * <p>
+     * When omitted, the version is read from {@link #nodeVersionFile}, or from a {@code .node-version} file
+     * in the working directory when present.
      */
-    @Parameter(property="nodeVersion", required = true)
+    @Parameter(property = "nodeVersion")
     private String nodeVersion;
+
+    /**
+     * Path to a file that contains the Node.js version to install (for example {@code .node-version}).
+     * Used only when {@link #nodeVersion} is not set. The first non-empty, non-comment line is used.
+     * A leading {@code v} is added when missing.
+     */
+    @Parameter(property = "nodeVersionFile")
+    private File nodeVersionFile;
 
     /**
      * The version of corepack to install. Note that the version string can optionally be prefixed with
@@ -74,10 +87,12 @@ public final class InstallNodeAndCorepackMojo extends AbstractFrontendMojo {
         ProxyConfig proxyConfig = MojoUtils.getProxyConfig(session, decrypter);
         String resolvedNodeDownloadRoot = getNodeDownloadRoot();
         String resolvedCorepackDownloadRoot = getCorepackDownloadRoot();
+        String resolvedNodeVersion = NodeVersionHelper.resolveNodeVersion(
+                nodeVersion, nodeVersionFile, workingDirectory);
 
         // Setup the installers
         NodeInstaller nodeInstaller = factory.getNodeInstaller(proxyConfig);
-        nodeInstaller.setNodeVersion(nodeVersion)
+        nodeInstaller.setNodeVersion(resolvedNodeVersion)
                 .setNodeDownloadRoot(resolvedNodeDownloadRoot);
         if ("provided".equals(corepackVersion)) {
             // This causes the node installer to copy over the whole

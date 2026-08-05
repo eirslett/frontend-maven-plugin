@@ -1,0 +1,10 @@
+{
+  "name": "example",
+  "version": "0.0.1",
+  "dependencies": {
+    "classnames": "^2.5.1"
+  },
+  "scripts": {
+    "prebuild": "npm install"
+  }
+}

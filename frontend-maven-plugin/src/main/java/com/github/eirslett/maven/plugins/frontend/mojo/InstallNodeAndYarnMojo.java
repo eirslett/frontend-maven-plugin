@@ -2,6 +2,7 @@ package com.github.eirslett.maven.plugins.frontend.mojo;
 
 import static com.github.eirslett.maven.plugins.frontend.mojo.YarnUtils.isYarnrcYamlFilePresent;
 
+import java.io.File;
 import java.util.Map;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugins.annotations.Component;
@@ -13,6 +14,7 @@ import org.apache.maven.settings.crypto.SettingsDecrypter;
 
 import com.github.eirslett.maven.plugins.frontend.lib.FrontendPluginFactory;
 import com.github.eirslett.maven.plugins.frontend.lib.InstallationException;
+import com.github.eirslett.maven.plugins.frontend.lib.NodeVersionHelper;
 import com.github.eirslett.maven.plugins.frontend.lib.ProxyConfig;
 import com.github.eirslett.maven.plugins.frontend.lib.YarnInstaller;
 
@@ -36,10 +38,21 @@ public final class InstallNodeAndYarnMojo extends AbstractFrontendMojo {
 
     /**
      * The version of Node.js to install. IMPORTANT! Most Node.js version names start with 'v', for example
-     * 'v0.10.18'
+     * 'v0.10.18'.
+     * <p>
+     * When omitted, the version is read from {@link #nodeVersionFile}, or from a {@code .node-version} file
+     * in the working directory when present.
      */
-    @Parameter(property = "nodeVersion", required = true)
+    @Parameter(property = "nodeVersion")
     private String nodeVersion;
+
+    /**
+     * Path to a file that contains the Node.js version to install (for example {@code .node-version}).
+     * Used only when {@link #nodeVersion} is not set. The first non-empty, non-comment line is used.
+     * A leading {@code v} is added when missing.
+     */
+    @Parameter(property = "nodeVersionFile")
+    private File nodeVersionFile;
 
     /**
      * The version of Yarn to install. IMPORTANT! Most Yarn names start with 'v', for example 'v0.15.0'.
@@ -74,13 +87,15 @@ public final class InstallNodeAndYarnMojo extends AbstractFrontendMojo {
     public void execute(FrontendPluginFactory factory) throws InstallationException {
         ProxyConfig proxyConfig = MojoUtils.getProxyConfig(this.session, this.decrypter);
         Server server = MojoUtils.decryptServer(this.serverId, this.session, this.decrypter);
+        String resolvedNodeVersion = NodeVersionHelper.resolveNodeVersion(
+                this.nodeVersion, this.nodeVersionFile, this.workingDirectory);
 
         boolean isYarnYamlFilePresent = isYarnrcYamlFilePresent(this.session, this.workingDirectory);
 
         if (null != server) {
             Map<String, String> httpHeaders = getHttpHeaders(server);
             factory.getNodeInstaller(proxyConfig).setNodeDownloadRoot(this.nodeDownloadRoot)
-                .setNodeVersion(this.nodeVersion).setUserName(server.getUsername())
+                .setNodeVersion(resolvedNodeVersion).setUserName(server.getUsername())
                 .setPassword(server.getPassword()).setHttpHeaders(httpHeaders).install();
             factory.getYarnInstaller(proxyConfig).setYarnDownloadRoot(this.yarnDownloadRoot)
                 .setYarnVersion(this.yarnVersion).setUserName(server.getUsername())
@@ -88,7 +103,7 @@ public final class InstallNodeAndYarnMojo extends AbstractFrontendMojo {
                 .setIsYarnBerry(isYarnYamlFilePresent).install();
         } else {
             factory.getNodeInstaller(proxyConfig).setNodeDownloadRoot(this.nodeDownloadRoot)
-                .setNodeVersion(this.nodeVersion).install();
+                .setNodeVersion(resolvedNodeVersion).install();
             factory.getYarnInstaller(proxyConfig).setYarnDownloadRoot(this.yarnDownloadRoot)
                 .setYarnVersion(this.yarnVersion).setIsYarnBerry(isYarnYamlFilePresent).install();
         }
