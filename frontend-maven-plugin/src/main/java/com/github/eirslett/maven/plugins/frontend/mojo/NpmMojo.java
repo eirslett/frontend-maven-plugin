@@ -25,7 +25,7 @@ public final class NpmMojo extends AbstractFrontendMojo {
     @Parameter(defaultValue = "install", property = "frontend.npm.arguments", required = false)
     private String arguments;
 
-    @Parameter(property = "frontend.npm.npmInheritsProxyConfigFromMaven", required = false, defaultValue = "true")
+    @Parameter(property = "frontend.npm.npmInheritsProxyConfigFromMaven", required = false, defaultValue = "false")
     private boolean npmInheritsProxyConfigFromMaven;
 
     /**
