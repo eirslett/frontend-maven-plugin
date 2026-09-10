@@ -33,6 +33,7 @@
                     <goal>jspm</goal>
                     <goal>ember</goal>
                     <goal>webpack</goal>
+                    <goal>vitest</goal>
                 </goals>
             </pluginExecutionFilter>
             <action>

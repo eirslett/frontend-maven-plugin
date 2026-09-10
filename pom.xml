@@ -16,7 +16,7 @@
     <description>
         This Maven plugin lets you install Node/NPM locally
         for your project, install dependencies with NPM,
-        run Grunt tasks, and/or run Karma tests.
+        run Grunt tasks, and/or run Karma or Vitest tests.
     </description>
 
     <url>https://github.com/eirslett/frontend-maven-plugin</url>
