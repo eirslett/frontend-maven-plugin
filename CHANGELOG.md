@@ -4,6 +4,10 @@ Last public release: [![Maven Central](https://maven-badges.herokuapp.com/maven-
 
 ## Changelog
 
+### 2.0.3
+
+* Add a `vitest` goal that runs in the test phase, with the same skipTests / testFailureIgnore behavior as Karma
+
 ### 2.0.1
 
 * Use pnpm .mjs file if it exists to support 11+ ([#1224](https://github.com/eirslett/frontend-maven-plugin/issues/1224))

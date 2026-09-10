@@ -5,7 +5,7 @@
 
 This plugin downloads/installs Node and NPM locally for your project, runs `npm install`, and then any combination of
 [Bower](http://bower.io/), [Grunt](http://gruntjs.com/), [Gulp](http://gulpjs.com/), [Jspm](http://jspm.io),
-[Karma](http://karma-runner.github.io/), or [Webpack](http://webpack.github.io/).
+[Karma](http://karma-runner.github.io/), [Vitest](https://vitest.dev/), or [Webpack](http://webpack.github.io/).
 It's supposed to work on Windows, OS X and Linux.
 
 If you prefer [Yarn](https://yarnpkg.com/) over [NPM](https://www.npmjs.com/) for your node package fetching,
@@ -74,6 +74,7 @@ to see how it should be set up: https://github.com/eirslett/frontend-maven-plugi
     - [Running gulp](#running-gulp)
     - [Running jspm](#running-jspm)
     - [Running Karma](#running-karma)
+    - [Running Vitest](#running-vitest)
     - [Running Webpack](#running-webpack)
     - [Running bun](#running-bun)
     - [Optional Configuration](#optional-configuration)
@@ -544,6 +545,36 @@ code coverage reports.
 or [through gulp](https://github.com/karma-runner/gulp-karma) instead, as part of the `grunt` or `gulp` execution. That
 will help to separate your frontend and backend builds even more.
 
+### Running Vitest
+
+```xml
+<execution>
+    <id>javascript tests</id>
+    <goals>
+        <goal>vitest</goal>
+    </goals>
+
+    <!-- optional: the default phase is "test". Some developers
+    choose to run vitest in the "integration-test" phase. -->
+    <phase>test</phase>
+
+    <configuration>
+        <!-- optional: the default is "run" so Maven does not start watch mode -->
+        <arguments>run</arguments>
+    </configuration>
+</execution>
+```
+
+**Skipping tests:** If you run maven with the `-DskipTests` flag, vitest tests will be skipped.
+
+**Ignoring failed tests:** If you want to ignore test failures run maven with the `-Dmaven.test.failure.ignore` flag,
+vitest test results will not stop the build but test results will remain
+in test output files. Suitable for continuous integration tool builds.
+
+**Watch mode:** Vitest defaults to watch mode when invoked without `run`. The plugin therefore
+defaults `<arguments>` to `run`. Pass extra CLI flags through `<arguments>`, for example
+`run --coverage` or `run --config vitest.config.ts`.
+
 ### Running Webpack
 
 ```xml
@@ -725,6 +756,7 @@ Build tools and property to enable skipping:
 - gulp `-Dskip.gulp`
 - jspm `-Dskip.jspm`
 - karma `-Dskip.karma`
+- vitest `-Dskip.vitest`
 - npx `-Dskip.npx`
 - pnpm `-Dskip.pnpm`
 - webpack `-Dskip.webpack`
@@ -739,7 +771,7 @@ these are set they check for changes in your source files before being run. See 
 
 ## Helper scripts
 
-During development, it's convenient to have the "npm", "bower", "grunt", "gulp" and "karma" commands
+During development, it's convenient to have the "npm", "bower", "grunt", "gulp", "karma" and "vitest" commands
 available on the command line. If you want that, use [those helper scripts](frontend-maven-plugin/src/it/example%20project/helper-scripts)!
 
 ## To build this project:

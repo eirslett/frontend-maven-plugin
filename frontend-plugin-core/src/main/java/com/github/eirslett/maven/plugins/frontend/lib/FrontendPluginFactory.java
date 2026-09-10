@@ -88,6 +88,10 @@ public final class FrontendPluginFactory {
         return new DefaultKarmaRunner(getExecutorConfig());
     }
 
+    public VitestRunner getVitestRunner(){
+        return new DefaultVitestRunner(getExecutorConfig());
+    }
+
     public GulpRunner getGulpRunner(){
         return new DefaultGulpRunner(getExecutorConfig());
     }

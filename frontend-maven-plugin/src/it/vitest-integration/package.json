@@ -1,0 +1,8 @@
+{
+  "name": "example",
+  "version": "0.0.1",
+  "type": "module",
+  "devDependencies": {
+    "vitest": "3.2.4"
+  }
+}
