@@ -62,7 +62,7 @@ final class ProcessExecutor {
 
     public int executeAndRedirectOutput(final Logger logger) throws ProcessExecutionException {
         OutputStream stdout = new LoggerOutputStream(logger::info);
-        OutputStream stderr = new LoggerOutputStream(logger::error);
+        OutputStream stderr = new LoggerOutputStream(logger::info);
 
         return execute(logger, stdout, stderr);
     }
